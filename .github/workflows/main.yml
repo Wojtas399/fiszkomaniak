@@ -47,7 +47,7 @@ jobs:
       - run: flutter build ios
 
   build_android:
-    name: Build IOS
+    name: Build Android
     needs: [ flutter_test ]
     runs-on: ubuntu-latest
     steps:
