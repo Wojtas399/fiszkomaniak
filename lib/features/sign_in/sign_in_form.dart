@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../components/button.dart';
-import 'components/alternative_options.dart';
+import 'components/sign_in_alternative_options.dart';
 import 'components/sign_in_inputs.dart';
 
 class SignInForm extends StatelessWidget {

@@ -52,7 +52,9 @@ class _AnimatedCard extends StatelessWidget {
           topRight: Radius.circular(borderRadius),
         ),
       ),
-      child: child,
+      child: SingleChildScrollView(
+        child: child,
+      ),
     );
   }
 }
@@ -69,8 +71,16 @@ class _AnimatedPadding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final InitialHomeModeProvider initialHomeModeProvider =
+        Provider.of<InitialHomeModeProvider>(context);
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double loginModeTopPadding = screenWidth * 0.22;
+    final double registerModeTopPadding = screenWidth * 0.07;
+    final double topPadding = initialHomeModeProvider.isLoginMode
+        ? loginModeTopPadding
+        : registerModeTopPadding;
     return AnimatedPadding(
-      padding: EdgeInsets.only(top: isKeyboardVisible ? 70 : 0),
+      padding: EdgeInsets.only(top: isKeyboardVisible ? topPadding : 0),
       duration: const Duration(milliseconds: 500),
       curve: Curves.fastOutSlowIn,
       child: child,

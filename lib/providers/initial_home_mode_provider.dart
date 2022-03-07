@@ -6,7 +6,7 @@ enum InitialHomeMode {
 }
 
 class InitialHomeModeProvider extends ChangeNotifier {
-  InitialHomeMode _mode = InitialHomeMode.login;
+  InitialHomeMode _mode = InitialHomeMode.register;
 
   bool get isLoginMode => _mode == InitialHomeMode.login;
 

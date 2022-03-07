@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/providers/initial_home_mode_provider.dart';
+import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +18,7 @@ class AlternativeOptions extends StatelessWidget {
           GestureDetector(
             onTap: () {
               initialHomeModeProvider.changeMode(InitialHomeMode.register);
-              _closeKeyboardIfIsOpened();
+              Utils.unfocusElements();
             },
             child: Text('Nie masz konta? Zarejestruj się!', style: _textStyle),
           ),
@@ -32,8 +33,4 @@ class AlternativeOptions extends StatelessWidget {
     color: Colors.black,
     fontSize: 12,
   );
-
-  void _closeKeyboardIfIsOpened() {
-    FocusManager.instance.primaryFocus?.unfocus();
-  }
 }
