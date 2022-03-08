@@ -1,9 +1,12 @@
+import 'package:fiszkomaniak/config/theme/text_field_theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
   final IconData icon;
   final String label;
+  final Function(String value) onChanged;
   final String? placeholder;
+  final String? Function(String? value)? validator;
   final ValueNotifier<bool> _isPassword = ValueNotifier(false);
   final ValueNotifier<bool> _isVisiblePassword = ValueNotifier(false);
 
@@ -11,7 +14,9 @@ class CustomTextField extends StatelessWidget {
     Key? key,
     required this.icon,
     required this.label,
+    required this.onChanged,
     this.placeholder,
+    this.validator,
     bool? isPassword,
   }) : super(key: key) {
     if (isPassword != null) {
@@ -21,71 +26,50 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Background(
-      child: ValueListenableBuilder(
-        valueListenable: _isPassword,
-        builder: (_, bool isPassword, Widget? child) {
-          return ValueListenableBuilder(
-            valueListenable: _isVisiblePassword,
-            builder: (_, bool isVisiblePassword, Widget? child) {
-              return TextField(
-                cursorColor: Colors.black,
-                obscureText: isPassword && !isVisiblePassword,
-                decoration: InputDecoration(
-                  labelText: label,
-                  labelStyle: const TextStyle(
-                    color: Colors.black,
+    return Stack(
+      children: [
+        const _Background(),
+        ValueListenableBuilder(
+          valueListenable: _isPassword,
+          builder: (_, bool isPassword, Widget? child) {
+            return ValueListenableBuilder(
+              valueListenable: _isVisiblePassword,
+              builder: (_, bool isVisiblePassword, Widget? child) {
+                return TextFormField(
+                  cursorColor: Colors.black,
+                  obscureText: isPassword && !isVisiblePassword,
+                  onChanged: onChanged,
+                  validator: validator,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  decoration: TextFieldTheme.basic(
+                    context: context,
+                    label: label,
+                    icon: icon,
+                    isPassword: isPassword,
+                    isVisiblePassword: isVisiblePassword,
+                    onPressedPasswordIcon: () {
+                      _isVisiblePassword.value = !isVisiblePassword;
+                    },
                   ),
-                  hintText: placeholder,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 8,
-                  ),
-                  border: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black.withOpacity(0.3),
-                    ),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 2.0,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  errorMaxLines: 2,
-                  prefixIconConstraints: const BoxConstraints(minWidth: 40),
-                  prefixIcon: Icon(icon),
-                  suffixIcon: isPassword
-                      ? IconButton(
-                          icon: Icon(
-                            isVisiblePassword == false
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            _isVisiblePassword.value = !isVisiblePassword;
-                          },
-                        )
-                      : null,
-                ),
-              );
-            },
-          );
-        },
-      ),
+                );
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 }
 
 class _Background extends StatelessWidget {
-  final Widget child;
-
-  const _Background({Key? key, required this.child}) : super(key: key);
+  const _Background({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 56,
+      width: 328,
+      margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.04),
         borderRadius: const BorderRadius.only(
@@ -93,7 +77,6 @@ class _Background extends StatelessWidget {
           topRight: Radius.circular(4),
         ),
       ),
-      child: child,
     );
   }
 }

@@ -8,27 +8,20 @@ class SignInForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 32,
-        right: 32,
-        top: 40,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const _Header(),
-          const SizedBox(height: 32),
-          const SignInInputs(),
-          const SizedBox(height: 32),
-          Button(
-            label: 'Zaloguj',
-            onPressed: () {},
-          ),
-          const SizedBox(height: 16),
-          const AlternativeOptions(),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _Header(),
+        const SizedBox(height: 24),
+        const SignInInputs(),
+        const SizedBox(height: 8),
+        Button(
+          label: 'Zaloguj',
+          onPressed: () {},
+        ),
+        const SizedBox(height: 16),
+        const AlternativeOptions(),
+      ],
     );
   }
 }

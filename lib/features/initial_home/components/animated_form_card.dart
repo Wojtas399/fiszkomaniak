@@ -38,8 +38,12 @@ class _AnimatedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final InitialHomeModeProvider initialHomeModeProvider =
         Provider.of<InitialHomeModeProvider>(context);
-    double height = initialHomeModeProvider.isLoginMode ? 510 : 580;
     double screenHeight = MediaQuery.of(context).size.height;
+    double heightInLoginMode = screenHeight * 0.6;
+    double heightInRegisterMode = screenHeight * 0.72;
+    double height = initialHomeModeProvider.isLoginMode
+        ? heightInLoginMode
+        : heightInRegisterMode;
     double borderRadius = isKeyboardVisible ? 0 : 40;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 500),
@@ -74,13 +78,18 @@ class _AnimatedPadding extends StatelessWidget {
     final InitialHomeModeProvider initialHomeModeProvider =
         Provider.of<InitialHomeModeProvider>(context);
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double loginModeTopPadding = screenWidth * 0.22;
-    final double registerModeTopPadding = screenWidth * 0.07;
+    final double loginModeTopPadding = screenWidth * 0.30;
+    final double registerModeTopPadding = screenWidth * 0.12;
     final double topPadding = initialHomeModeProvider.isLoginMode
         ? loginModeTopPadding
         : registerModeTopPadding;
     return AnimatedPadding(
-      padding: EdgeInsets.only(top: isKeyboardVisible ? topPadding : 0),
+      padding: EdgeInsets.only(
+        top: isKeyboardVisible ? topPadding : 32,
+        left: 32,
+        right: 32,
+        bottom: 56,
+      ),
       duration: const Duration(milliseconds: 500),
       curve: Curves.fastOutSlowIn,
       child: child,

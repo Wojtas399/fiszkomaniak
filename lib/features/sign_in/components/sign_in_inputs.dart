@@ -12,12 +12,14 @@ class SignInInputs extends StatelessWidget {
         CustomTextField(
           label: 'Adres e-mail',
           icon: MdiIcons.email,
+          onChanged: (String value) {},
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 8),
         CustomTextField(
           label: 'Hasło',
           icon: MdiIcons.lock,
           isPassword: true,
+          onChanged: (String value) {},
         ),
       ],
     );
