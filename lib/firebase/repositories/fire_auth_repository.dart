@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiszkomaniak/interfaces/auth_data_interface.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 import '../services/fire_auth_service.dart';
 
@@ -21,8 +22,11 @@ class FireAuthRepository implements AuthInterface {
   }
 
   @override
-  signUp() {
-    // TODO: implement signUp
-    throw UnimplementedError();
+  Future<void> signUp(AuthDataInterface data) async {
+    await _fireAuthService.signUp(
+      username: data.getUsername(),
+      email: data.getEmail(),
+      password: data.getPassword(),
+    );
   }
 }

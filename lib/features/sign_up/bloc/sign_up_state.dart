@@ -1,18 +1,18 @@
-class SignUpState {
-  final String username;
-  final String email;
-  final String password;
-  final String passwordConfirmation;
+import 'package:equatable/equatable.dart';
 
-  bool get isCorrectUsername => username.length >= 4;
+part 'sign_up_model.dart';
+
+class SignUpState extends SignUpModel {
+  bool get isCorrectUsername => super.username.length >= 4;
 
   bool get isCorrectEmail => RegExp(
         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-      ).hasMatch(email);
+      ).hasMatch(super.email);
 
-  bool get isCorrectPassword => password.length >= 6;
+  bool get isCorrectPassword => super.password.length >= 6;
 
-  bool get isCorrectPasswordConfirmation => password == passwordConfirmation;
+  bool get isCorrectPasswordConfirmation =>
+      super.password == super.passwordConfirmation;
 
   bool get isDisabledButton =>
       !isCorrectUsername ||
@@ -30,12 +30,17 @@ class SignUpState {
 
   String get incorrectPasswordConfirmationMessage => 'Hasła nie sa jednakowe';
 
-  SignUpState({
-    this.username = '',
-    this.email = '',
-    this.password = '',
-    this.passwordConfirmation = '',
-  });
+  const SignUpState({
+    String username = '',
+    String email = '',
+    String password = '',
+    String passwordConfirmation = '',
+  }) : super(
+          username: username,
+          email: email,
+          password: password,
+          passwordConfirmation: passwordConfirmation,
+        );
 
   SignUpState copyWith({
     String? username,

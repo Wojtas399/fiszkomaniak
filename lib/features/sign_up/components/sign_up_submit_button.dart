@@ -26,7 +26,6 @@ class SignUpSubmitButton extends StatelessWidget {
           username: state.username,
           email: state.email,
           password: state.password,
-          passwordConfirmation: state.passwordConfirmation,
         ));
   }
 }

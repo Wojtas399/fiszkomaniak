@@ -41,6 +41,7 @@ dependencies:
   hexcolor: ^2.0.6
   material_design_icons_flutter: ^5.0.6595
   flutter_keyboard_visibility: ^5.2.0
+  equatable: ^2.0.3
 
 dev_dependencies:
   flutter_test:
