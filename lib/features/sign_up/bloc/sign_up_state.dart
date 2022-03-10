@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/models/http_status_model.dart';
 
 part 'sign_up_model.dart';
 
@@ -35,11 +36,13 @@ class SignUpState extends SignUpModel {
     String email = '',
     String password = '',
     String passwordConfirmation = '',
+    HttpStatus httpStatus = const HttpStatusInitial(),
   }) : super(
           username: username,
           email: email,
           password: password,
           passwordConfirmation: passwordConfirmation,
+          httpStatus: httpStatus,
         );
 
   SignUpState copyWith({
@@ -47,12 +50,14 @@ class SignUpState extends SignUpModel {
     String? email,
     String? password,
     String? passwordConfirmation,
+    HttpStatus? httpStatus,
   }) {
     return SignUpState(
       username: username ?? this.username,
       email: email ?? this.email,
       password: password ?? this.password,
       passwordConfirmation: passwordConfirmation ?? this.passwordConfirmation,
+      httpStatus: httpStatus ?? const HttpStatusInitial(),
     );
   }
 }

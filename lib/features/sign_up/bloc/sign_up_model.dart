@@ -5,12 +5,14 @@ abstract class SignUpModel extends Equatable {
   final String email;
   final String password;
   final String passwordConfirmation;
+  final HttpStatus httpStatus;
 
   const SignUpModel({
     required this.username,
     required this.email,
     required this.password,
     required this.passwordConfirmation,
+    required this.httpStatus,
   });
 
   @override
@@ -19,5 +21,6 @@ abstract class SignUpModel extends Equatable {
         email,
         password,
         passwordConfirmation,
+        httpStatus,
       ];
 }
