@@ -26,11 +26,11 @@ class FireAuthService {
       );
       User? user = userCredential.user;
       if (user != null) {
-        _fireUserService.addUser(user.uid, username);
+        await _fireUserService.addUser(user.uid, username);
       }
     } on FirebaseAuthException catch (error) {
       if (error.code == 'email-already-in-use') {
-        throw 'Niestety podany adres e-mail jest już zajęty';
+        throw 'Na podany adres e-mail już zostało zarejestrowane konto...';
       }
     } catch (error) {
       rethrow;
