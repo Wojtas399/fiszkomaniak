@@ -21,19 +21,11 @@ class AuthBloc {
   }
 
   Future<void> signIn(SignInModel data) async {
-    try {
-      await _authInterface.signIn(data);
-    } catch (error) {
-      rethrow;
-    }
+    await _authInterface.signIn(data);
   }
 
   Future<void> signUp(SignUpModel data) async {
-    try {
-      await _authInterface.signUp(data);
-    } catch (error) {
-      rethrow;
-    }
+    await _authInterface.signUp(data);
   }
 
   void dispose() {

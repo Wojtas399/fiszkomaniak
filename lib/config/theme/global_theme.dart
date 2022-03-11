@@ -10,6 +10,7 @@ class GlobalTheme {
     ),
     textSelectionTheme: _CommonStyles.textSelectionThemeData,
     elevatedButtonTheme: _CommonStyles.elevatedButtonThemeData,
+    textButtonTheme: _CommonStyles.textButtonThemeData,
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -20,6 +21,7 @@ class GlobalTheme {
     ),
     textSelectionTheme: _CommonStyles.textSelectionThemeData,
     elevatedButtonTheme: _CommonStyles.elevatedButtonThemeData,
+    textButtonTheme: _CommonStyles.textButtonThemeData,
   );
 }
 
@@ -32,6 +34,14 @@ class _CommonStyles {
       backgroundColor: MaterialStateProperty.all<Color>(AppColors.primary),
       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+      ),
+    ),
+  );
+
+  static final textButtonThemeData = TextButtonThemeData(
+    style: ButtonStyle(
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       ),
     ),
   );

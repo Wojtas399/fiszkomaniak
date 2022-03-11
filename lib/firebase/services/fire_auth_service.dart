@@ -17,8 +17,20 @@ class FireAuthService {
     required String email,
     required String password,
   }) async {
-    print('email: $email');
-    print('password: ${password}');
+    try {
+      await FireInstances.auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (error) {
+      if (error.code == 'user-not-found') {
+        throw 'Nie znaleziono użytkownika zarejestrowanego na podany adres e-mail.';
+      } else if (error.code == 'wrong-password') {
+        throw 'Podano niepoprawne hasło dla tego użytkownika.';
+      }
+    } catch (error) {
+      rethrow;
+    }
   }
 
   Future<void> signUp({
@@ -38,7 +50,7 @@ class FireAuthService {
       }
     } on FirebaseAuthException catch (error) {
       if (error.code == 'email-already-in-use') {
-        throw 'Na podany adres e-mail już zostało zarejestrowane konto...';
+        throw 'Na podany adres e-mail już zostało zarejestrowane konto.';
       }
     } catch (error) {
       rethrow;

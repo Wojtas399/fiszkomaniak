@@ -70,7 +70,7 @@ class _FormStatusListener extends StatelessWidget {
           Navigator.pop(context);
           Dialogs.showDialogWithMessage(
             context: context,
-            title: 'Błąd',
+            title: 'Wystąpił błąd',
             message: httpStatus.message,
           );
         }
