@@ -1,7 +1,7 @@
-import 'package:fiszkomaniak/core/auth/auth_model.dart';
+import 'package:fiszkomaniak/core/auth/sign_in_model.dart';
+import 'package:fiszkomaniak/core/auth/sign_up_model.dart';
 import 'package:fiszkomaniak/core/auth/auth_subscriber.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
-import 'auth_model.dart';
 
 class AuthBloc {
   late final AuthInterface _authInterface;
@@ -15,12 +15,20 @@ class AuthBloc {
     _authSubscriber = authSubscriber;
   }
 
-  initialize() {
+  void initialize() {
     print('bloc initialize');
     _authSubscriber.subscribe();
   }
 
-  signUp(AuthModel data) async {
+  Future<void> signIn(SignInModel data) async {
+    try {
+      await _authInterface.signIn(data);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> signUp(SignUpModel data) async {
     try {
       await _authInterface.signUp(data);
     } catch (error) {
@@ -28,7 +36,7 @@ class AuthBloc {
     }
   }
 
-  dispose() {
+  void dispose() {
     _authSubscriber.unsubscribe();
   }
 }

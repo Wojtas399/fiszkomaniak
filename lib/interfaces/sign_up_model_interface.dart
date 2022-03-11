@@ -1,4 +1,4 @@
-abstract class AuthDataInterface {
+abstract class SignUpModelInterface {
   String getUsername();
 
   String getEmail();

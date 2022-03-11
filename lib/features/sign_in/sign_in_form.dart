@@ -1,5 +1,8 @@
+import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
+import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
+import 'package:fiszkomaniak/features/sign_in/components/sign_in_submit_button.dart';
 import 'package:flutter/material.dart';
-import '../../components/button.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'components/sign_in_alternative_options.dart';
 import 'components/sign_in_inputs.dart';
 
@@ -8,20 +11,20 @@ class SignInForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const _Header(),
-        const SizedBox(height: 24),
-        const SignInInputs(),
-        const SizedBox(height: 8),
-        Button(
-          label: 'Zaloguj',
-          onPressed: () {},
-        ),
-        const SizedBox(height: 16),
-        const AlternativeOptions(),
-      ],
+    return BlocProvider(
+      create: (_) => SignInBloc(authBloc: context.read<AuthBloc>()),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          _Header(),
+          SizedBox(height: 24),
+          SignInInputs(),
+          SizedBox(height: 8),
+          SignInSubmitButton(),
+          SizedBox(height: 16),
+          AlternativeOptions(),
+        ],
+      ),
     );
   }
 }

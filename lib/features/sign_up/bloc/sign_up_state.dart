@@ -1,9 +1,32 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 
-part 'sign_up_model.dart';
+abstract class _SignUpModel extends Equatable {
+  final String username;
+  final String email;
+  final String password;
+  final String passwordConfirmation;
+  final HttpStatus httpStatus;
 
-class SignUpState extends SignUpModel {
+  const _SignUpModel({
+    required this.username,
+    required this.email,
+    required this.password,
+    required this.passwordConfirmation,
+    required this.httpStatus,
+  });
+
+  @override
+  List<Object> get props => [
+        username,
+        email,
+        password,
+        passwordConfirmation,
+        httpStatus,
+      ];
+}
+
+class SignUpState extends _SignUpModel {
   bool get isCorrectUsername => super.username.length >= 4;
 
   bool get isCorrectEmail => RegExp(

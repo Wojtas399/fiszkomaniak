@@ -1,11 +1,11 @@
-import 'package:fiszkomaniak/interfaces/auth_data_interface.dart';
+import 'package:fiszkomaniak/interfaces/sign_up_model_interface.dart';
 
-class AuthModel implements AuthDataInterface {
+class SignUpModel implements SignUpModelInterface {
   final String username;
   final String email;
   final String password;
 
-  AuthModel({
+  SignUpModel({
     required this.username,
     required this.email,
     required this.password,

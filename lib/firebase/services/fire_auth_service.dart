@@ -13,6 +13,14 @@ class FireAuthService {
     return FireInstances.auth.userChanges();
   }
 
+  Future<void> signIn({
+    required String email,
+    required String password,
+  }) async {
+    print('email: $email');
+    print('password: ${password}');
+  }
+
   Future<void> signUp({
     required String username,
     required String email,
