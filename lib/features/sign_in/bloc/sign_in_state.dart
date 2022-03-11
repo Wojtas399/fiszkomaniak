@@ -21,6 +21,8 @@ abstract class _SignInModel extends Equatable {
 }
 
 class SignInState extends _SignInModel {
+  bool get isButtonDisabled => super.email.isEmpty || super.password.isEmpty;
+
   const SignInState({
     String email = '',
     String password = '',

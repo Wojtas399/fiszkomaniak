@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/core/auth/sign_in_model.dart';
-import 'package:fiszkomaniak/core/auth/sign_up_model.dart';
+import 'package:fiszkomaniak/models/sign_in_model.dart';
+import 'package:fiszkomaniak/models/sign_up_model.dart';
 import 'package:fiszkomaniak/core/auth/auth_subscriber.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 
@@ -16,7 +16,6 @@ class AuthBloc {
   }
 
   void initialize() {
-    print('bloc initialize');
     _authSubscriber.subscribe();
   }
 

@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
 import 'package:fiszkomaniak/features/sign_in/components/sign_in_submit_button.dart';
@@ -67,7 +68,7 @@ class _FormStatusListener extends StatelessWidget {
           Dialogs.showLoadingDialog(context: context);
         } else if (httpStatus is HttpStatusSuccess) {
           Navigator.pop(context);
-          print('Successfully signed in!');
+          Navigation.navigateToHome(context);
         } else if (httpStatus is HttpStatusFailure) {
           Navigator.pop(context);
           Dialogs.showDialogWithMessage(

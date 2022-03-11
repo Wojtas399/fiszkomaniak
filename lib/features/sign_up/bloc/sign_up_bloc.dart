@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
-import 'package:fiszkomaniak/core/auth/sign_up_model.dart';
+import 'package:fiszkomaniak/models/sign_up_model.dart';
 import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_event.dart';
 import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_state.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';

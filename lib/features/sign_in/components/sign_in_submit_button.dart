@@ -14,12 +14,12 @@ class SignInSubmitButton extends StatelessWidget {
       builder: (context, state) {
         return Button(
           label: 'Zaloguj',
-          onPressed: () {
-            context.read<SignInBloc>().add(SignInEventSubmitted(
-                  email: state.email,
-                  password: state.password,
-                ));
-          },
+          onPressed: state.isButtonDisabled
+              ? null
+              : () => context.read<SignInBloc>().add(SignInEventSubmitted(
+                    email: state.email,
+                    password: state.password,
+                  )),
         );
       },
     );

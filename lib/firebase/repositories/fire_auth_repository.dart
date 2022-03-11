@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiszkomaniak/interfaces/sign_in_model_interface.dart';
-import 'package:fiszkomaniak/interfaces/sign_up_model_interface.dart';
+import 'package:fiszkomaniak/models/sign_in_model.dart';
+import 'package:fiszkomaniak/models/sign_up_model.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 import '../services/fire_auth_service.dart';
 
@@ -17,19 +17,19 @@ class FireAuthRepository implements AuthInterface {
   }
 
   @override
-  Future<void> signIn(SignInModelInterface data) async {
+  Future<void> signIn(SignInModel data) async {
     await _fireAuthService.signIn(
-      email: data.getEmail(),
-      password: data.getPassword(),
+      email: data.email,
+      password: data.password,
     );
   }
 
   @override
-  Future<void> signUp(SignUpModelInterface data) async {
+  Future<void> signUp(SignUpModel data) async {
     await _fireAuthService.signUp(
-      username: data.getUsername(),
-      email: data.getEmail(),
-      password: data.getPassword(),
+      username: data.username,
+      email: data.email,
+      password: data.password,
     );
   }
 }
