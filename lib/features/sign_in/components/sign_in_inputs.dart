@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/components/textfield.dart';
+import 'package:fiszkomaniak/components/textfields/password_textfield.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,10 +22,8 @@ class SignInInputs extends StatelessWidget {
               onChanged: (String email) => _onEmailChanged(context, email),
             ),
             const SizedBox(height: 8),
-            CustomTextField(
+            PasswordTextField(
               label: 'Hasło',
-              icon: MdiIcons.lock,
-              isPassword: true,
               onChanged: (String password) => _onPasswordChanged(
                 context,
                 password,

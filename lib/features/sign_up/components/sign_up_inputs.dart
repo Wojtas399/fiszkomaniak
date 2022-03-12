@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/components/textfield.dart';
+import 'package:fiszkomaniak/components/textfields/password_textfield.dart';
 import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_bloc.dart';
 import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_event.dart';
 import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_state.dart';
@@ -42,10 +43,8 @@ class SignUpInputs extends StatelessWidget {
               ),
             ),
             const _FreeSpace(),
-            CustomTextField(
-              icon: MdiIcons.lock,
+            PasswordTextField(
               label: 'Hasło',
-              isPassword: true,
               onChanged: (String password) => _onPasswordChanged(
                 context,
                 password,
@@ -57,10 +56,8 @@ class SignUpInputs extends StatelessWidget {
               ),
             ),
             const _FreeSpace(),
-            CustomTextField(
-              icon: MdiIcons.lock,
+            PasswordTextField(
               label: 'Powtórz hasło',
-              isPassword: true,
               onChanged: (String passwordConfirmation) =>
                   _onPasswordConfirmationChanged(
                 context,
