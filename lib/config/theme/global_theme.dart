@@ -11,6 +11,7 @@ class GlobalTheme {
     textSelectionTheme: _CommonStyles.textSelectionThemeData,
     elevatedButtonTheme: _CommonStyles.elevatedButtonThemeData,
     textButtonTheme: _CommonStyles.textButtonThemeData,
+    appBarTheme: _CommonStyles.appBarTheme,
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -22,6 +23,7 @@ class GlobalTheme {
     textSelectionTheme: _CommonStyles.textSelectionThemeData,
     elevatedButtonTheme: _CommonStyles.elevatedButtonThemeData,
     textButtonTheme: _CommonStyles.textButtonThemeData,
+    appBarTheme: _CommonStyles.appBarTheme,
   );
 }
 
@@ -44,5 +46,10 @@ class _CommonStyles {
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       ),
     ),
+  );
+
+  static final appBarTheme = AppBarTheme(
+    backgroundColor: AppColors.secondary,
+    foregroundColor: Colors.black,
   );
 }

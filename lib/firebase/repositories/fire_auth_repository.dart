@@ -32,4 +32,9 @@ class FireAuthRepository implements AuthInterface {
       password: data.password,
     );
   }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _fireAuthService.sendPasswordResetEmail(email: email);
+  }
 }

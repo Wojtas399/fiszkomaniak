@@ -28,6 +28,7 @@ class FireAuthService {
       } else if (error.code == 'wrong-password') {
         throw 'Podano niepoprawne hasło dla tego użytkownika.';
       }
+      rethrow;
     } catch (error) {
       rethrow;
     }
@@ -52,6 +53,20 @@ class FireAuthService {
       if (error.code == 'email-already-in-use') {
         throw 'Na podany adres e-mail już zostało zarejestrowane konto.';
       }
+      rethrow;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    try {
+      await FireInstances.auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (error) {
+      if (error.code == 'user-not-found') {
+        throw 'Nie znaleziono konta zarejestrowanego na podany adres e-mail.';
+      }
+      rethrow;
     } catch (error) {
       rethrow;
     }

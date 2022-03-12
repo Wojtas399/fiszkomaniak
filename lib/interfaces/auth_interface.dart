@@ -8,4 +8,6 @@ abstract class AuthInterface {
   Future<void> signIn(SignInModel data);
 
   Future<void> signUp(SignUpModel data);
+
+  Future<void> sendPasswordResetEmail(String email);
 }

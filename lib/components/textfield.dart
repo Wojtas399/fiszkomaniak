@@ -68,7 +68,7 @@ class _Background extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 56,
-      width: 328,
+      width: double.infinity,
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.04),

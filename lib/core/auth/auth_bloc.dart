@@ -27,6 +27,10 @@ class AuthBloc {
     await _authInterface.signUp(data);
   }
 
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _authInterface.sendPasswordResetEmail(email);
+  }
+
   void dispose() {
     _authSubscriber.unsubscribe();
   }

@@ -1,3 +1,5 @@
+import 'package:fiszkomaniak/config/navigation.dart';
+import 'package:fiszkomaniak/features/reset_password/reset_password_page.dart';
 import 'package:fiszkomaniak/providers/initial_home_mode_provider.dart';
 import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,12 @@ class AlternativeOptions extends StatelessWidget {
             child: Text('Nie masz konta? Zarejestruj się!', style: _textStyle),
           ),
           const SizedBox(height: 16),
-          Text('Zapomniałeś hasła?', style: _textStyle),
+          GestureDetector(
+            onTap: () {
+              Navigation.navigateToPage(context, const ResetPasswordPage());
+            },
+            child: Text('Zapomniałeś hasła?', style: _textStyle),
+          ),
         ],
       ),
     );
