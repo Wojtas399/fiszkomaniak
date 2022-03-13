@@ -14,13 +14,15 @@ class ResetPasswordSubmitButton extends StatelessWidget {
       builder: (context, state) {
         return Button(
           label: 'Wyślij',
-          onPressed: () {
-            context
-                .read<ResetPasswordBloc>()
-                .add(ResetPasswordEventSend(email: state.email));
-          },
+          onPressed: state.isButtonDisabled
+              ? null
+              : () => _submit(context, state.email),
         );
       },
     );
+  }
+
+  _submit(BuildContext context, String email) {
+    context.read<ResetPasswordBloc>().add(ResetPasswordEventSend(email: email));
   }
 }

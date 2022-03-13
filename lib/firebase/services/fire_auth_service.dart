@@ -24,7 +24,7 @@ class FireAuthService {
       );
     } on FirebaseAuthException catch (error) {
       if (error.code == 'user-not-found') {
-        throw 'Nie znaleziono użytkownika zarejestrowanego na podany adres e-mail.';
+        throw 'Nie znaleziono użytkownika zarejestrowanego na podany adres email.';
       } else if (error.code == 'wrong-password') {
         throw 'Podano niepoprawne hasło dla tego użytkownika.';
       }
@@ -64,7 +64,9 @@ class FireAuthService {
       await FireInstances.auth.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (error) {
       if (error.code == 'user-not-found') {
-        throw 'Nie znaleziono konta zarejestrowanego na podany adres e-mail.';
+        throw 'Nie znaleziono konta zarejestrowanego na podany adres email.';
+      } else if (error.code == 'invalid-email') {
+        throw 'Podano niepoprawny adres email.';
       }
       rethrow;
     } catch (error) {

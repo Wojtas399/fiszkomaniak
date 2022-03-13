@@ -1,17 +1,15 @@
-import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 
-class ResetPasswordState extends Equatable {
+class ResetPasswordState {
   final String email;
   final HttpStatus httpStatus;
+
+  bool get isButtonDisabled => !email.isNotEmpty;
 
   const ResetPasswordState({
     this.email = '',
     this.httpStatus = const HttpStatusInitial(),
   });
-
-  @override
-  List<Object> get props => [email, httpStatus];
 
   ResetPasswordState copyWith({
     String? email,
