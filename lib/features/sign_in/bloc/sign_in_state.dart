@@ -1,47 +1,39 @@
-import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
+import 'package:fiszkomaniak/utils/utils.dart';
+import 'package:flutter/material.dart';
 
-abstract class _SignInModel extends Equatable {
-  final String email;
-  final String password;
+class SignInState {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final HttpStatus httpStatus;
 
-  const _SignInModel({
-    required this.email,
-    required this.password,
-    required this.httpStatus,
-  });
+  String get email => emailController.text;
 
-  @override
-  List<Object> get props => [
-        email,
-        password,
-        httpStatus,
-      ];
-}
+  String get password => passwordController.text;
 
-class SignInState extends _SignInModel {
-  bool get isButtonDisabled => super.email.isEmpty || super.password.isEmpty;
+  bool get isButtonDisabled =>
+      emailController.text.isEmpty || passwordController.text.isEmpty;
 
-  const SignInState({
-    String email = '',
-    String password = '',
-    HttpStatus httpStatus = const HttpStatusInitial(),
-  }) : super(
-          email: email,
-          password: password,
-          httpStatus: httpStatus,
-        );
-
-  SignInState copyWith({
+  SignInState({
     String? email,
     String? password,
-    HttpStatus? httpStatus,
+    this.httpStatus = const HttpStatusInitial(),
   }) {
+    emailController.text = email ?? '';
+    passwordController.text = password ?? '';
+    _setCursorsAtTheEndOfTextFieldValues();
+  }
+
+  SignInState copyWithHttpStatus(HttpStatus? httpStatus) {
     return SignInState(
-      email: email ?? this.email,
-      password: password ?? this.password,
+      email: emailController.text,
+      password: passwordController.text,
       httpStatus: httpStatus ?? const HttpStatusInitial(),
     );
+  }
+
+  void _setCursorsAtTheEndOfTextFieldValues() {
+    Utils.setCursorAtTheEndOfValueInsideTextField(emailController);
+    Utils.setCursorAtTheEndOfValueInsideTextField(passwordController);
   }
 }

@@ -8,26 +8,24 @@ import 'package:fiszkomaniak/models/http_status_model.dart';
 class SignInBloc extends Bloc<SignInEvent, SignInState> {
   final AuthBloc authBloc;
 
-  SignInBloc({required this.authBloc}) : super(const SignInState()) {
-    on<SignInEventEmailChanged>(
-      (event, emit) => emit(state.copyWith(email: event.email)),
-    );
-    on<SignInEventPasswordChanged>(
-      (event, emit) => emit(state.copyWith(password: event.password)),
+  SignInBloc({required this.authBloc}) : super(SignInState()) {
+    on<SignInEventRefresh>(
+      (event, emit) => emit(state.copyWithHttpStatus(null)),
     );
     on<SignInEventSubmitted>((event, emit) async {
-      emit(state.copyWith(httpStatus: HttpStatusSubmitting()));
+      emit(state.copyWithHttpStatus(HttpStatusSubmitting()));
       try {
         await authBloc.signIn(SignInModel(
           email: event.email,
           password: event.password,
         ));
-        emit(state.copyWith(httpStatus: HttpStatusSuccess()));
+        emit(state.copyWithHttpStatus(HttpStatusSuccess()));
       } catch (error) {
-        emit(state.copyWith(
-          httpStatus: HttpStatusFailure(message: error.toString()),
+        emit(state.copyWithHttpStatus(
+          HttpStatusFailure(message: error.toString()),
         ));
       }
     });
+    on<SignInEventResetValues>((event, emit) => emit(SignInState()));
   }
 }

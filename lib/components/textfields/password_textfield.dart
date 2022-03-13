@@ -5,14 +5,14 @@ import '../../config/theme/text_field_theme.dart';
 
 class PasswordTextField extends StatefulWidget {
   final String label;
-  final Function(String value) onChanged;
+  final Function(String value)? onChanged;
   final String? Function(String? value)? validator;
   final TextEditingController? controller;
 
   const PasswordTextField({
     Key? key,
     required this.label,
-    required this.onChanged,
+    this.onChanged,
     this.validator,
     this.controller,
   }) : super(key: key);

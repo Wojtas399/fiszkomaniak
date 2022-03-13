@@ -2,25 +2,12 @@ import 'package:equatable/equatable.dart';
 
 abstract class SignInEvent extends Equatable {
   const SignInEvent();
-}
-
-class SignInEventEmailChanged extends SignInEvent {
-  final String email;
-
-  const SignInEventEmailChanged({required this.email});
 
   @override
-  List<Object> get props => [email];
+  List<Object> get props => [];
 }
 
-class SignInEventPasswordChanged extends SignInEvent {
-  final String password;
-
-  const SignInEventPasswordChanged({required this.password});
-
-  @override
-  List<Object> get props => [password];
-}
+class SignInEventRefresh extends SignInEvent {}
 
 class SignInEventSubmitted extends SignInEvent {
   final String email;
@@ -31,3 +18,5 @@ class SignInEventSubmitted extends SignInEvent {
   @override
   List<Object> get props => [email, password];
 }
+
+class SignInEventResetValues extends SignInEvent {}
