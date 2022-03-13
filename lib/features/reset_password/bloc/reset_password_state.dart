@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 
-class ResetPasswordState {
+class ResetPasswordState extends Equatable {
   final String email;
   final HttpStatus httpStatus;
 
@@ -20,4 +21,7 @@ class ResetPasswordState {
       httpStatus: httpStatus ?? const HttpStatusInitial(),
     );
   }
+
+  @override
+  List<Object> get props => [email, httpStatus];
 }
