@@ -8,23 +8,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   final AuthBloc authBloc;
 
-  SignUpBloc({required this.authBloc}) : super(SignUpState()) {
-    on<SignUpEventStartUsernameEditing>(
-      (event, emit) => emit(state.copyWith(hasUsernameBeenEdited: true)),
+  SignUpBloc({required this.authBloc}) : super(const SignUpState()) {
+    on<SignUpEventUsernameChanged>(
+      (event, emit) => emit(state.copyWith(username: event.username)),
     );
-    on<SignUpEventStartEmailEditing>(
-      (event, emit) => emit(state.copyWith(hasEmailBeenEdited: true)),
+    on<SignUpEventEmailChanged>(
+      (event, emit) => emit(state.copyWith(email: event.email)),
     );
-    on<SignUpEventStartPasswordEditing>(
-      (event, emit) => emit(state.copyWith(hasPasswordBeenEdited: true)),
+    on<SignUpEventPasswordChanged>(
+      (event, emit) => emit(state.copyWith(password: event.password)),
     );
-    on<SignUpEventStartPasswordConfirmationEditing>(
-      (event, emit) => emit(
-        state.copyWith(hasPasswordConfirmationBeenEdited: true),
-      ),
+    on<SignUpEventPasswordConfirmationChanged>(
+      (event, emit) => emit(state.copyWith(
+        passwordConfirmation: event.passwordConfirmation,
+      )),
     );
-    on<SignUpEventRefresh>((event, emit) => emit(state.copyWith()));
-    on<SignUpEventSubmitted>((event, emit) async {
+    on<SignUpEventSubmit>((event, emit) async {
       emit(state.copyWith(httpStatus: HttpStatusSubmitting()));
       HttpStatus result = await authBloc.signUp(
         SignUpModel(
@@ -35,6 +34,6 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       );
       emit(state.copyWith(httpStatus: result));
     });
-    on<SignUpEventResetValues>((event, emit) => emit(SignUpState()));
+    on<SignUpEventReset>((event, emit) => emit(const SignUpState()));
   }
 }

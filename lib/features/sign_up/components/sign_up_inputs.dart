@@ -8,20 +8,38 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class SignUpInputs extends StatelessWidget {
-  const SignUpInputs({Key? key}) : super(key: key);
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordConfirmationController =
+      TextEditingController();
+
+  SignUpInputs({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
+        if (state.username == '') {
+          _usernameController.clear();
+        }
+        if (state.email == '') {
+          _emailController.clear();
+        }
+        if (state.password == '') {
+          _passwordController.clear();
+        }
+        if (state.passwordConfirmation == '') {
+          _passwordConfirmationController.clear();
+        }
         return Column(
           children: [
             CustomTextField(
               icon: MdiIcons.account,
               label: 'Nazwa użytkownika',
               placeholder: 'np. Jan Nowak',
-              controller: state.usernameController,
-              onChanged: (_) => _onUsernameChanged(context, state),
+              controller: _usernameController,
+              onChanged: (String value) => _onUsernameChanged(context, value),
               validator: (String? value) => _validator(
                 state.hasUsernameBeenEdited ? value : null,
                 state.isCorrectUsername,
@@ -33,8 +51,8 @@ class SignUpInputs extends StatelessWidget {
               icon: MdiIcons.email,
               label: 'Adres e-mail',
               placeholder: 'np. jan.nowak@example.com',
-              controller: state.emailController,
-              onChanged: (_) => _onEmailChanged(context, state),
+              controller: _emailController,
+              onChanged: (String value) => _onEmailChanged(context, value),
               validator: (String? value) => _validator(
                 state.hasEmailBeenEdited ? value : null,
                 state.isCorrectEmail,
@@ -44,8 +62,8 @@ class SignUpInputs extends StatelessWidget {
             const _FreeSpace(),
             PasswordTextField(
               label: 'Hasło',
-              controller: state.passwordController,
-              onChanged: (_) => _onPasswordChanged(context, state),
+              controller: _passwordController,
+              onChanged: (String value) => _onPasswordChanged(context, value),
               validator: (String? value) => _validator(
                 state.hasPasswordBeenEdited ? value : null,
                 state.isCorrectPassword,
@@ -55,8 +73,9 @@ class SignUpInputs extends StatelessWidget {
             const _FreeSpace(),
             PasswordTextField(
               label: 'Powtórz hasło',
-              controller: state.passwordConfirmationController,
-              onChanged: (_) => _onPasswordConfirmationChanged(context, state),
+              controller: _passwordConfirmationController,
+              onChanged: (String value) =>
+                  _onPasswordConfirmationChanged(context, value),
               validator: (String? value) => _validator(
                 state.hasPasswordConfirmationBeenEdited ? value : null,
                 state.isCorrectPasswordConfirmation,
@@ -69,41 +88,22 @@ class SignUpInputs extends StatelessWidget {
     );
   }
 
-  void _onUsernameChanged(BuildContext context, SignUpState state) {
-    if (!state.hasUsernameBeenEdited) {
-      context.read<SignUpBloc>().add(SignUpEventStartUsernameEditing());
-    } else {
-      _refreshState(context);
-    }
+  void _onUsernameChanged(BuildContext context, String value) {
+    context.read<SignUpBloc>().add(SignUpEventUsernameChanged(username: value));
   }
 
-  void _onEmailChanged(BuildContext context, SignUpState state) {
-    if (!state.hasEmailBeenEdited) {
-      context.read<SignUpBloc>().add(SignUpEventStartEmailEditing());
-    } else {
-      _refreshState(context);
-    }
+  void _onEmailChanged(BuildContext context, String value) {
+    context.read<SignUpBloc>().add(SignUpEventEmailChanged(email: value));
   }
 
-  void _onPasswordChanged(BuildContext context, SignUpState state) {
-    if (!state.hasPasswordBeenEdited) {
-      context.read<SignUpBloc>().add(SignUpEventStartPasswordEditing());
-    } else {
-      _refreshState(context);
-    }
+  void _onPasswordChanged(BuildContext context, String value) {
+    context.read<SignUpBloc>().add(SignUpEventPasswordChanged(password: value));
   }
 
-  void _onPasswordConfirmationChanged(
-    BuildContext context,
-    SignUpState state,
-  ) {
-    if (!state.hasPasswordConfirmationBeenEdited) {
-      context
-          .read<SignUpBloc>()
-          .add(SignUpEventStartPasswordConfirmationEditing());
-    } else {
-      _refreshState(context);
-    }
+  void _onPasswordConfirmationChanged(BuildContext context, String value) {
+    context.read<SignUpBloc>().add(
+          SignUpEventPasswordConfirmationChanged(passwordConfirmation: value),
+        );
   }
 
   String? _validator(
@@ -120,10 +120,6 @@ class SignUpInputs extends StatelessWidget {
       return incorrectValueMessage;
     }
     return null;
-  }
-
-  void _refreshState(BuildContext context) {
-    context.read<SignUpBloc>().add(SignUpEventRefresh());
   }
 }
 

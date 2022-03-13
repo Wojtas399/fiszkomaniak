@@ -22,7 +22,7 @@ class SignUpSubmitButton extends StatelessWidget {
   }
 
   void _submit(BuildContext context, SignUpState state) {
-    context.read<SignUpBloc>().add(SignUpEventSubmitted(
+    context.read<SignUpBloc>().add(SignUpEventSubmit(
           username: state.username,
           email: state.email,
           password: state.password,

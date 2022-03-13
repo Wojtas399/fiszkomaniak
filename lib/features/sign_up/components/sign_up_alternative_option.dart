@@ -23,7 +23,7 @@ class SignUpAlternativeOption extends StatelessWidget {
               onTap: () {
                 initialHomeModeProvider.changeMode(InitialHomeMode.login);
                 Utils.unfocusElements();
-                context.read<SignUpBloc>().add(SignUpEventResetValues());
+                context.read<SignUpBloc>().add(SignUpEventReset());
               },
               child: const Text(
                 'Masz już konto? Zaloguj się!',

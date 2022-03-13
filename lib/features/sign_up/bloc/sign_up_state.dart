@@ -1,35 +1,36 @@
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
-import 'package:fiszkomaniak/utils/utils.dart';
-import 'package:flutter/cupertino.dart';
 
-class SignUpState {
+abstract class _SignUpModel extends Equatable {
+  final String username;
+  final String email;
+  final String password;
+  final String passwordConfirmation;
+
+  const _SignUpModel({
+    required this.username,
+    required this.email,
+    required this.password,
+    required this.passwordConfirmation,
+  });
+}
+
+class SignUpState extends _SignUpModel {
   final bool hasUsernameBeenEdited;
   final bool hasEmailBeenEdited;
   final bool hasPasswordBeenEdited;
   final bool hasPasswordConfirmationBeenEdited;
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController passwordConfirmationController =
-      TextEditingController();
   final HttpStatus httpStatus;
 
-  String get username => usernameController.text;
-
-  String get email => emailController.text;
-
-  String get password => passwordController.text;
-
-  bool get isCorrectUsername => usernameController.text.length >= 4;
+  bool get isCorrectUsername => username.length >= 4;
 
   bool get isCorrectEmail => RegExp(
         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-      ).hasMatch(emailController.text);
+      ).hasMatch(email);
 
-  bool get isCorrectPassword => passwordController.text.length >= 6;
+  bool get isCorrectPassword => password.length >= 6;
 
-  bool get isCorrectPasswordConfirmation =>
-      passwordController.text == passwordConfirmationController.text;
+  bool get isCorrectPasswordConfirmation => password == passwordConfirmation;
 
   bool get isDisabledButton =>
       !isCorrectUsername ||
@@ -47,53 +48,55 @@ class SignUpState {
 
   String get incorrectPasswordConfirmationMessage => 'Hasła nie sa jednakowe';
 
-  SignUpState({
+  const SignUpState({
+    String username = '',
+    String email = '',
+    String password = '',
+    String passwordConfirmation = '',
     this.hasUsernameBeenEdited = false,
     this.hasEmailBeenEdited = false,
     this.hasPasswordBeenEdited = false,
     this.hasPasswordConfirmationBeenEdited = false,
+    this.httpStatus = const HttpStatusInitial(),
+  }) : super(
+          username: username,
+          email: email,
+          password: password,
+          passwordConfirmation: passwordConfirmation,
+        );
+
+  SignUpState copyWith({
     String? username,
     String? email,
     String? password,
     String? passwordConfirmation,
-    this.httpStatus = const HttpStatusInitial(),
-  }) {
-    usernameController.text = username ?? '';
-    emailController.text = email ?? '';
-    passwordController.text = password ?? '';
-    passwordConfirmationController.text = passwordConfirmation ?? '';
-    _setCursorsAtTheEndOfTextFieldValues();
-  }
-
-  SignUpState copyWith({
-    bool? hasUsernameBeenEdited,
-    bool? hasEmailBeenEdited,
-    bool? hasPasswordBeenEdited,
-    bool? hasPasswordConfirmationBeenEdited,
     HttpStatus? httpStatus,
   }) {
     return SignUpState(
-      hasUsernameBeenEdited:
-          hasUsernameBeenEdited ?? this.hasUsernameBeenEdited,
-      hasEmailBeenEdited: hasEmailBeenEdited ?? this.hasEmailBeenEdited,
-      hasPasswordBeenEdited:
-          hasPasswordBeenEdited ?? this.hasPasswordBeenEdited,
-      hasPasswordConfirmationBeenEdited: hasPasswordConfirmationBeenEdited ??
-          this.hasPasswordConfirmationBeenEdited,
-      username: usernameController.text,
-      email: emailController.text,
-      password: passwordController.text,
-      passwordConfirmation: passwordConfirmationController.text,
+      hasUsernameBeenEdited: username != null ? true : hasUsernameBeenEdited,
+      hasEmailBeenEdited: email != null ? true : hasEmailBeenEdited,
+      hasPasswordBeenEdited: password != null ? true : hasPasswordBeenEdited,
+      hasPasswordConfirmationBeenEdited: passwordConfirmation != null
+          ? true
+          : hasPasswordConfirmationBeenEdited,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      passwordConfirmation: passwordConfirmation ?? this.passwordConfirmation,
       httpStatus: httpStatus ?? const HttpStatusInitial(),
     );
   }
 
-  void _setCursorsAtTheEndOfTextFieldValues() {
-    Utils.setCursorAtTheEndOfValueInsideTextField(usernameController);
-    Utils.setCursorAtTheEndOfValueInsideTextField(emailController);
-    Utils.setCursorAtTheEndOfValueInsideTextField(passwordController);
-    Utils.setCursorAtTheEndOfValueInsideTextField(
-      passwordConfirmationController,
-    );
-  }
+  @override
+  List<Object> get props => [
+        username,
+        email,
+        password,
+        passwordConfirmation,
+        hasUsernameBeenEdited,
+        hasEmailBeenEdited,
+        hasPasswordBeenEdited,
+        hasPasswordConfirmationBeenEdited,
+        httpStatus,
+      ];
 }

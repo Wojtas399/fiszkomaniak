@@ -1,7 +1,9 @@
-class SignUpModel {
-  late String _username;
-  late String _email;
-  late String _password;
+import 'package:equatable/equatable.dart';
+
+class SignUpModel extends Equatable {
+  late final String _username;
+  late final String _email;
+  late final String _password;
 
   SignUpModel({
     required String username,
@@ -18,4 +20,11 @@ class SignUpModel {
   String get email => _email;
 
   String get password => _password;
+
+  @override
+  List<Object> get props => [
+        _username,
+        _email,
+        _password,
+      ];
 }
