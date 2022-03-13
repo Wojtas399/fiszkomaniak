@@ -7,12 +7,14 @@ class PasswordTextField extends StatefulWidget {
   final String label;
   final Function(String value) onChanged;
   final String? Function(String? value)? validator;
+  final TextEditingController? controller;
 
   const PasswordTextField({
     Key? key,
     required this.label,
     required this.onChanged,
     this.validator,
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -32,6 +34,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           obscureText: !_isPasswordVisible,
           onChanged: widget.onChanged,
           validator: widget.validator,
+          controller: widget.controller,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: TextFieldTheme.basic(
             context: context,

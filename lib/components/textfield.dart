@@ -8,6 +8,7 @@ class CustomTextField extends StatelessWidget {
   final Function(String value) onChanged;
   final String? placeholder;
   final String? Function(String? value)? validator;
+  final TextEditingController? controller;
 
   const CustomTextField({
     Key? key,
@@ -16,6 +17,7 @@ class CustomTextField extends StatelessWidget {
     required this.onChanged,
     this.placeholder,
     this.validator,
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -27,6 +29,7 @@ class CustomTextField extends StatelessWidget {
           cursorColor: Colors.black,
           onChanged: onChanged,
           validator: validator,
+          controller: controller,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: TextFieldTheme.basic(
             context: context,

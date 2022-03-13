@@ -8,21 +8,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   final AuthBloc authBloc;
 
-  SignUpBloc({required this.authBloc}) : super(const SignUpState()) {
-    on<SignUpEventUsernameChanged>(
-      (event, emit) => emit(state.copyWith(username: event.username)),
+  SignUpBloc({required this.authBloc}) : super(SignUpState()) {
+    on<SignUpEventStartUsernameEditing>(
+      (event, emit) => emit(state.copyWith(hasUsernameBeenEdited: true)),
     );
-    on<SignUpEventEmailChanged>(
-      (event, emit) => emit(state.copyWith(email: event.email)),
+    on<SignUpEventStartEmailEditing>(
+      (event, emit) => emit(state.copyWith(hasEmailBeenEdited: true)),
     );
-    on<SignUpEventPasswordChanged>(
-      (event, emit) => emit(state.copyWith(password: event.password)),
+    on<SignUpEventStartPasswordEditing>(
+      (event, emit) => emit(state.copyWith(hasPasswordBeenEdited: true)),
     );
-    on<SignUpEventPasswordConfirmationChanged>(
-      (event, emit) => emit(state.copyWith(
-        passwordConfirmation: event.passwordConfirmation,
-      )),
+    on<SignUpEventStartPasswordConfirmationEditing>(
+      (event, emit) => emit(
+        state.copyWith(hasPasswordConfirmationBeenEdited: true),
+      ),
     );
+    on<SignUpEventRefresh>((event, emit) => emit(state.copyWith()));
     on<SignUpEventSubmitted>((event, emit) async {
       emit(state.copyWith(httpStatus: HttpStatusSubmitting()));
       try {
@@ -40,5 +41,6 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         ));
       }
     });
+    on<SignUpEventResetValues>((event, emit) => emit(SignUpState()));
   }
 }
