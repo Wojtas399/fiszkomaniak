@@ -16,7 +16,7 @@ class SignInSubmitButton extends StatelessWidget {
           label: 'Zaloguj',
           onPressed: state.isButtonDisabled
               ? null
-              : () => context.read<SignInBloc>().add(SignInEventSubmitted(
+              : () => context.read<SignInBloc>().add(SignInEventSubmit(
                     email: state.email,
                     password: state.password,
                   )),

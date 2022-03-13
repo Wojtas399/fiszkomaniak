@@ -1,21 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 
-abstract class _SignUpModel extends Equatable {
+class SignUpState extends Equatable {
   final String username;
   final String email;
   final String password;
   final String passwordConfirmation;
-
-  const _SignUpModel({
-    required this.username,
-    required this.email,
-    required this.password,
-    required this.passwordConfirmation,
-  });
-}
-
-class SignUpState extends _SignUpModel {
   final bool hasUsernameBeenEdited;
   final bool hasEmailBeenEdited;
   final bool hasPasswordBeenEdited;
@@ -49,21 +39,16 @@ class SignUpState extends _SignUpModel {
   String get incorrectPasswordConfirmationMessage => 'Hasła nie sa jednakowe';
 
   const SignUpState({
-    String username = '',
-    String email = '',
-    String password = '',
-    String passwordConfirmation = '',
+    this.username = '',
+    this.email = '',
+    this.password = '',
+    this.passwordConfirmation = '',
     this.hasUsernameBeenEdited = false,
     this.hasEmailBeenEdited = false,
     this.hasPasswordBeenEdited = false,
     this.hasPasswordConfirmationBeenEdited = false,
     this.httpStatus = const HttpStatusInitial(),
-  }) : super(
-          username: username,
-          email: email,
-          password: password,
-          passwordConfirmation: passwordConfirmation,
-        );
+  });
 
   SignUpState copyWith({
     String? username,

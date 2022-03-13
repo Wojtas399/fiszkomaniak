@@ -50,7 +50,7 @@ class _SignUpOption extends StatelessWidget {
       onTap: () {
         initialHomeModeProvider.changeMode(InitialHomeMode.register);
         Utils.unfocusElements();
-        context.read<SignInBloc>().add(SignInEventResetValues());
+        context.read<SignInBloc>().add(SignInEventReset());
       },
       child: Text('Nie masz konta? Zarejestruj się!', style: textStyle),
     );

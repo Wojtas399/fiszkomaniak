@@ -1,39 +1,35 @@
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
-import 'package:fiszkomaniak/utils/utils.dart';
-import 'package:flutter/material.dart';
 
-class SignInState {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+class SignInState extends Equatable {
+  final String email;
+  final String password;
   final HttpStatus httpStatus;
 
-  String get email => emailController.text;
+  bool get isButtonDisabled => email.isEmpty || password.isEmpty;
 
-  String get password => passwordController.text;
+  const SignInState({
+    this.email = '',
+    this.password = '',
+    this.httpStatus = const HttpStatusInitial(),
+  });
 
-  bool get isButtonDisabled =>
-      emailController.text.isEmpty || passwordController.text.isEmpty;
-
-  SignInState({
+  SignInState copyWith({
     String? email,
     String? password,
-    this.httpStatus = const HttpStatusInitial(),
+    HttpStatus? httpStatus,
   }) {
-    emailController.text = email ?? '';
-    passwordController.text = password ?? '';
-    _setCursorsAtTheEndOfTextFieldValues();
-  }
-
-  SignInState copyWithHttpStatus(HttpStatus? httpStatus) {
     return SignInState(
-      email: emailController.text,
-      password: passwordController.text,
+      email: email ?? this.email,
+      password: password ?? this.password,
       httpStatus: httpStatus ?? const HttpStatusInitial(),
     );
   }
 
-  void _setCursorsAtTheEndOfTextFieldValues() {
-    Utils.setCursorAtTheEndOfValueInsideTextField(emailController);
-    Utils.setCursorAtTheEndOfValueInsideTextField(passwordController);
-  }
+  @override
+  List<Object> get props => [
+        email,
+        password,
+        httpStatus,
+      ];
 }

@@ -20,14 +20,14 @@ class SignInForm extends StatelessWidget {
       child: _FormStatusListener(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            _Header(),
-            SizedBox(height: 24),
+          children: [
+            const _Header(),
+            const SizedBox(height: 24),
             SignInInputs(),
-            SizedBox(height: 8),
-            SignInSubmitButton(),
-            SizedBox(height: 16),
-            AlternativeOptions(),
+            const SizedBox(height: 8),
+            const SignInSubmitButton(),
+            const SizedBox(height: 16),
+            const AlternativeOptions(),
           ],
         ),
       ),

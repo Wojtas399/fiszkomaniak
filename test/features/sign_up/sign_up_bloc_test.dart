@@ -42,6 +42,7 @@ void main() {
     expect(state.isCorrectPassword, false);
     expect(state.isCorrectPasswordConfirmation, true);
     expect(state.isDisabledButton, true);
+    expect(state.httpStatus, const HttpStatusInitial());
   });
 
   blocTest(

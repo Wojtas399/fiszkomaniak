@@ -8,25 +8,34 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../bloc/sign_in_state.dart';
 
 class SignInInputs extends StatelessWidget {
-  const SignInInputs({Key? key}) : super(key: key);
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  SignInInputs({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignInBloc, SignInState>(
       builder: (context, state) {
+        if (state.email == '') {
+          _emailController.clear();
+        }
+        if (state.password == '') {
+          _passwordController.clear();
+        }
         return Column(
           children: [
             CustomTextField(
               label: 'Adres e-mail',
               icon: MdiIcons.email,
-              controller: state.emailController,
-              onChanged: (_) => _refreshState(context),
+              controller: _emailController,
+              onChanged: (String value) => _onEmailChanged(context, value),
             ),
             const SizedBox(height: 8),
             PasswordTextField(
               label: 'Hasło',
-              controller: state.passwordController,
-              onChanged: (_) => _refreshState(context),
+              controller: _passwordController,
+              onChanged: (String value) => _onPasswordChanged(context, value),
             ),
           ],
         );
@@ -34,7 +43,11 @@ class SignInInputs extends StatelessWidget {
     );
   }
 
-  void _refreshState(BuildContext context) {
-    context.read<SignInBloc>().add(SignInEventRefresh());
+  void _onEmailChanged(BuildContext context, String value) {
+    context.read<SignInBloc>().add(SignInEventEmailChanged(email: value));
+  }
+
+  void _onPasswordChanged(BuildContext context, String value) {
+    context.read<SignInBloc>().add(SignInEventPasswordChanged(password: value));
   }
 }

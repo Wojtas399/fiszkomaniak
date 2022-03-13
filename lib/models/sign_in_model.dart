@@ -1,13 +1,11 @@
-class SignInModel {
-  late String _email;
-  late String _password;
+import 'package:equatable/equatable.dart';
 
-  SignInModel({required String email, required String password}) {
-    _email = email;
-    _password = password;
-  }
+class SignInModel extends Equatable {
+  final String email;
+  final String password;
 
-  String get email => _email;
+  const SignInModel({required this.email, required this.password});
 
-  String get password => _password;
+  @override
+  List<Object> get props => [email, password];
 }
