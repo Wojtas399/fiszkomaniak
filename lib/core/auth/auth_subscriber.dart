@@ -12,13 +12,7 @@ class AuthSubscriber {
   }
 
   subscribe() {
-    _subscription = _authInterface.getUserChangesStream().listen((user) {
-      if (user == null) {
-        print('User is NOT signed in');
-      } else {
-        print('User is signed in!');
-      }
-    });
+    _subscription = _authInterface.getUserChangesStream().listen((user) {});
   }
 
   unsubscribe() {

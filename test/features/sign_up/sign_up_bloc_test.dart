@@ -13,7 +13,7 @@ class MockAuthBloc extends Mock implements AuthBloc {}
 void main() {
   final AuthBloc authBloc = MockAuthBloc();
   late SignUpBloc signUpBloc;
-  final SignUpModel data = SignUpModel(
+  const SignUpModel data = SignUpModel(
     username: 'username',
     email: 'email@example.com',
     password: 'password123',

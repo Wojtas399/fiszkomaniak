@@ -34,7 +34,7 @@ void main() {
   });
 
   test('sign in, success', () async {
-    final SignInModel data = SignInModel(
+    const SignInModel data = SignInModel(
       email: 'email@example.com',
       password: 'password123',
     );
@@ -46,7 +46,7 @@ void main() {
   });
 
   test('sign in, failure', () async {
-    final SignInModel data = SignInModel(
+    const SignInModel data = SignInModel(
       email: 'email@example.com',
       password: 'password123',
     );
@@ -61,7 +61,7 @@ void main() {
   });
 
   test('sign up, success', () async {
-    final SignUpModel data = SignUpModel(
+    const SignUpModel data = SignUpModel(
       username: 'username',
       email: 'email@example.com',
       password: 'password123',
@@ -74,7 +74,7 @@ void main() {
   });
 
   test('sign up, failure', () async {
-    final SignUpModel data = SignUpModel(
+    const SignUpModel data = SignUpModel(
       username: 'username',
       email: 'email@example.com',
       password: 'password123',
