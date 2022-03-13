@@ -26,20 +26,14 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     on<SignUpEventRefresh>((event, emit) => emit(state.copyWith()));
     on<SignUpEventSubmitted>((event, emit) async {
       emit(state.copyWith(httpStatus: HttpStatusSubmitting()));
-      try {
-        await authBloc.signUp(
-          SignUpModel(
-            username: event.username,
-            email: event.email,
-            password: event.password,
-          ),
-        );
-        emit(state.copyWith(httpStatus: HttpStatusSuccess()));
-      } catch (error) {
-        emit(state.copyWith(
-          httpStatus: HttpStatusFailure(message: error.toString()),
-        ));
-      }
+      HttpStatus result = await authBloc.signUp(
+        SignUpModel(
+          username: event.username,
+          email: event.email,
+          password: event.password,
+        ),
+      );
+      emit(state.copyWith(httpStatus: result));
     });
     on<SignUpEventResetValues>((event, emit) => emit(SignUpState()));
   }

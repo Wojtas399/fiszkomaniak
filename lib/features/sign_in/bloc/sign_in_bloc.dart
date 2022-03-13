@@ -14,17 +14,11 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     );
     on<SignInEventSubmitted>((event, emit) async {
       emit(state.copyWithHttpStatus(HttpStatusSubmitting()));
-      try {
-        await authBloc.signIn(SignInModel(
-          email: event.email,
-          password: event.password,
-        ));
-        emit(state.copyWithHttpStatus(HttpStatusSuccess()));
-      } catch (error) {
-        emit(state.copyWithHttpStatus(
-          HttpStatusFailure(message: error.toString()),
-        ));
-      }
+      HttpStatus result = await authBloc.signIn(SignInModel(
+        email: event.email,
+        password: event.password,
+      ));
+      emit(state.copyWithHttpStatus(result));
     });
     on<SignInEventResetValues>((event, emit) => emit(SignInState()));
   }

@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:fiszkomaniak/models/sign_in_model.dart';
 import 'package:fiszkomaniak/models/sign_up_model.dart';
 import 'package:fiszkomaniak/core/auth/auth_subscriber.dart';
@@ -19,16 +20,31 @@ class AuthBloc {
     _authSubscriber.subscribe();
   }
 
-  Future<void> signIn(SignInModel data) async {
-    await _authInterface.signIn(data);
+  Future<HttpStatus> signIn(SignInModel data) async {
+    try {
+      await _authInterface.signIn(data);
+      return HttpStatusSuccess();
+    } catch (error) {
+      return HttpStatusFailure(message: error.toString());
+    }
   }
 
-  Future<void> signUp(SignUpModel data) async {
-    await _authInterface.signUp(data);
+  Future<HttpStatus> signUp(SignUpModel data) async {
+    try {
+      await _authInterface.signUp(data);
+      return HttpStatusSuccess();
+    } catch (error) {
+      return HttpStatusFailure(message: error.toString());
+    }
   }
 
-  Future<void> sendPasswordResetEmail(String email) async {
-    await _authInterface.sendPasswordResetEmail(email);
+  Future<HttpStatus> sendPasswordResetEmail(String email) async {
+    try {
+      await _authInterface.sendPasswordResetEmail(email);
+      return HttpStatusSuccess();
+    } catch (error) {
+      return HttpStatusFailure(message: error.toString());
+    }
   }
 
   void dispose() {

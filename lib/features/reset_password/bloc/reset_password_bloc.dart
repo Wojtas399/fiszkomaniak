@@ -15,14 +15,8 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
     on<ResetPasswordEventSend>(
       (event, emit) async {
         emit(state.copyWith(httpStatus: HttpStatusSubmitting()));
-        try {
-          await authBloc.sendPasswordResetEmail(event.email);
-          emit(state.copyWith(httpStatus: HttpStatusSuccess()));
-        } catch (error) {
-          emit(state.copyWith(
-            httpStatus: HttpStatusFailure(message: error.toString()),
-          ));
-        }
+        HttpStatus result = await authBloc.sendPasswordResetEmail(event.email);
+        emit(state.copyWith(httpStatus: result));
       },
     );
   }
