@@ -1,12 +1,11 @@
 import 'package:fiszkomaniak/config/route_animations.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../features/home/home.dart';
 
 class Navigation {
-  static void navigateToHome(BuildContext context) {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const Home()),
-    );
+  static void navigateToHome() {
+    Get.offAll(const Home());
   }
 
   static Future<dynamic> navigateToPage(

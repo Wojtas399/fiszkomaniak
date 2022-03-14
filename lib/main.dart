@@ -5,6 +5,7 @@ import 'package:fiszkomaniak/providers/auth/auth_interface_provider.dart';
 import 'package:fiszkomaniak/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         final themeProvider = Provider.of<ThemeProvider>(context);
         return AuthInterfaceProvider(
           child: AuthBlocProvider(
-            child: MaterialApp(
+            child: GetMaterialApp(
               title: 'Fiszkomaniak',
               themeMode: themeProvider.themeMode,
               theme: GlobalTheme.lightTheme,
