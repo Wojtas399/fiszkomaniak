@@ -1,11 +1,14 @@
+import 'package:fiszkomaniak/config/keys.dart';
 import 'package:fiszkomaniak/config/route_animations.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import '../features/home/home.dart';
 
 class Navigation {
   static void navigateToHome() {
-    Get.offAll(const Home());
+    final currentState = Keys.navigatorKey.currentState;
+    if (currentState != null) {
+      currentState.pushReplacement(MaterialPageRoute(builder: (_) => Home()));
+    }
   }
 
   static Future<dynamic> navigateToPage(
