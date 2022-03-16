@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class ResetPasswordAppBar extends StatelessWidget
+class AppBarWithCloseButton extends StatelessWidget
     implements PreferredSizeWidget {
-  const ResetPasswordAppBar({Key? key}) : super(key: key);
+  final String label;
+
+  const AppBarWithCloseButton({
+    Key? key,
+    required this.label,
+  }) : super(key: key);
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -11,7 +16,7 @@ class ResetPasswordAppBar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text('Zmiana hasła'),
+      title: Text(label),
       leading: IconButton(
         onPressed: () {
           Navigator.pop(context);

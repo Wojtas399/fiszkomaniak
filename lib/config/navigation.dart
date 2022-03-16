@@ -11,10 +11,10 @@ class Navigation {
     }
   }
 
-  static Future<dynamic> navigateToPage(
-    BuildContext context,
-    Widget child,
-  ) async {
-    return await Navigator.of(context).push(RouteAnimations(page: child));
+  static void navigateToPageWithSlideUpAnim(Widget child) {
+    final currentState = Keys.navigatorKey.currentState;
+    if (currentState != null) {
+      currentState.push(RouteAnimations(page: child));
+    }
   }
 }

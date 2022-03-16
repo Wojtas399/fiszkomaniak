@@ -57,6 +57,12 @@ class _CommonStyles {
   static final appBarTheme = AppBarTheme(
     backgroundColor: AppColors.secondary,
     foregroundColor: Colors.black,
+    titleTextStyle: const TextStyle(
+      color: Colors.black,
+      fontWeight: FontWeight.w500,
+      fontSize: 20,
+      letterSpacing: 0.15,
+    ),
   );
 
   static final bottomAppBarTheme = BottomAppBarTheme(

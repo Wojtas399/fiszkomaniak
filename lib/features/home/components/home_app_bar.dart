@@ -1,3 +1,5 @@
+import 'package:fiszkomaniak/config/navigation.dart';
+import 'package:fiszkomaniak/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -13,10 +15,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(
-        _pageNames[displayingPageNumber],
-        style: Theme.of(context).textTheme.headline6,
-      ),
+      title: Text(_pageNames[displayingPageNumber]),
       centerTitle: true,
       leadingWidth: 200,
       leading: const _AvatarAndDays(),
@@ -30,7 +29,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           padding: const EdgeInsets.all(0),
           onPressed: () {
-            print('Settings');
+            Navigation.navigateToPageWithSlideUpAnim(const SettingsPage());
           },
           icon: const Icon(MdiIcons.cog),
         ),
