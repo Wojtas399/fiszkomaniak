@@ -6,6 +6,7 @@ class SwitchOptionItem extends StatelessWidget {
   final String text;
   final IconData icon;
   final bool? isSwitched;
+  final bool? disabled;
   final Function(bool isSwitched) onSwitchChanged;
 
   const SwitchOptionItem({
@@ -13,7 +14,8 @@ class SwitchOptionItem extends StatelessWidget {
     required this.text,
     required this.icon,
     required this.onSwitchChanged,
-    this.isSwitched = false,
+    this.isSwitched,
+    this.disabled,
   }) : super(key: key);
 
   @override
@@ -24,6 +26,7 @@ class SwitchOptionItem extends StatelessWidget {
       trailing: SettingsSwitch(
         isSwitched: isSwitched,
         onSwitchChanged: onSwitchChanged,
+        disabled: disabled,
       ),
     );
   }

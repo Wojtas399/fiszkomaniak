@@ -1,8 +1,8 @@
 import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
+import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
 import 'package:fiszkomaniak/features/settings/bloc/settings_bloc.dart';
 import 'package:fiszkomaniak/features/settings/components/settings_appearance_section.dart';
 import 'package:fiszkomaniak/features/settings/components/settings_notifications_section.dart';
-import 'package:fiszkomaniak/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,7 +15,7 @@ class SettingsPage extends StatelessWidget {
       appBar: const AppBarWithCloseButton(label: 'Ustawienia'),
       body: BlocProvider(
         create: (_) => SettingsBloc(
-          themeProvider: context.read<ThemeProvider>(),
+          appearanceSettingsBloc: context.read<AppearanceSettingsBloc>(),
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),

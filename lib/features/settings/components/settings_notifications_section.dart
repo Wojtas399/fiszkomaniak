@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/features/settings/bloc/settings_bloc.dart';
-import 'package:fiszkomaniak/features/settings/bloc/settings_event.dart';
 import 'package:fiszkomaniak/features/settings/bloc/settings_state.dart';
 import 'package:fiszkomaniak/features/settings/components/settings_switch.dart';
 import 'package:fiszkomaniak/features/settings/components/switch_option_item.dart';
@@ -18,54 +17,34 @@ class SettingsNotificationsSection extends StatelessWidget {
         return Section(
           title: 'Powiadomienia',
           trailing: SettingsSwitch(
-            isSwitched: state.areAllNotifications,
-            onSwitchChanged: (bool isSwitched) {
-              context
-                  .read<SettingsBloc>()
-                  .add(SettingsEventAllNotificationsChanged());
-            },
+            isSwitched: false,
+            onSwitchChanged: (bool isSwitched) {},
           ),
           child: Column(
             children: [
               SwitchOptionItem(
                 icon: MdiIcons.calendarCheckOutline,
                 text: 'Sesje (zaplanowana godzina)',
-                isSwitched: state.arePlannedSessionsNotifications,
-                onSwitchChanged: (bool isSwitched) {
-                  context
-                      .read<SettingsBloc>()
-                      .add(SettingsEventPlannedSessionsNotificationsChanged());
-                },
+                isSwitched: false,
+                onSwitchChanged: (bool isSwitched) {},
               ),
               SwitchOptionItem(
                 icon: MdiIcons.calendarCheckOutline,
                 text: 'Sesje (15 min przed)',
-                isSwitched: state.areDefaultSessionsNotifications,
-                onSwitchChanged: (bool isSwitched) {
-                  context
-                      .read<SettingsBloc>()
-                      .add(SettingsEventDefaultSessionsNotificationsChanged());
-                },
+                isSwitched: false,
+                onSwitchChanged: (bool isSwitched) {},
               ),
               SwitchOptionItem(
                 icon: MdiIcons.trophyOutline,
                 text: 'Osiągnięcia',
-                isSwitched: state.areAchievementsNotifications,
-                onSwitchChanged: (bool isSwitched) {
-                  context
-                      .read<SettingsBloc>()
-                      .add(SettingsEventAchievementNotificationsChanged());
-                },
+                isSwitched: false,
+                onSwitchChanged: (bool isSwitched) {},
               ),
               SwitchOptionItem(
                 icon: MdiIcons.medalOutline,
                 text: 'Możliwa utrata dni',
-                isSwitched: state.areDaysNotifications,
-                onSwitchChanged: (bool isSwitched) {
-                  context
-                      .read<SettingsBloc>()
-                      .add(SettingsEventDaysNotificationsChanged());
-                },
+                isSwitched: false,
+                onSwitchChanged: (bool isSwitched) {},
               ),
             ],
           ),

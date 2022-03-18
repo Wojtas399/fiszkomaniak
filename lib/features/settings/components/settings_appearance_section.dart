@@ -22,18 +22,40 @@ class SettingsAppearanceSection extends StatelessWidget {
               SwitchOptionItem(
                 icon: MdiIcons.shieldMoonOutline,
                 text: 'Ciemny motyw',
-                isSwitched: state.isDarkMode,
+                isSwitched: state.appearanceSettings.isDarkModeOn,
+                disabled: state
+                    .appearanceSettings.isDarkModeCompatibilityWithSystemOn,
                 onSwitchChanged: (bool isSwitched) {
                   context
                       .read<SettingsBloc>()
-                      .add(SettingsEventDarkModeChanged());
+                      .add(SettingsEventAppearanceSettingsChanged(
+                        isDarkModeOn: isSwitched,
+                      ));
+                },
+              ),
+              SwitchOptionItem(
+                icon: MdiIcons.shieldSyncOutline,
+                text: 'Motyw systemowy',
+                isSwitched: state
+                    .appearanceSettings.isDarkModeCompatibilityWithSystemOn,
+                onSwitchChanged: (bool isSwitched) {
+                  context
+                      .read<SettingsBloc>()
+                      .add(SettingsEventAppearanceSettingsChanged(
+                        isDarkModeCompatibilityWithSystemOn: isSwitched,
+                      ));
                 },
               ),
               SwitchOptionItem(
                 icon: MdiIcons.clockRemoveOutline,
                 text: 'Ukryj czas podczas sesji',
+                isSwitched: state.appearanceSettings.isSessionTimerVisibilityOn,
                 onSwitchChanged: (bool isSwitched) {
-                  print(isSwitched);
+                  context
+                      .read<SettingsBloc>()
+                      .add(SettingsEventAppearanceSettingsChanged(
+                        isSessionTimerOn: isSwitched,
+                      ));
                 },
               ),
             ],

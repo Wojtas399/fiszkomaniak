@@ -3,12 +3,14 @@ import 'package:rxdart/rxdart.dart';
 
 class SettingsSwitch extends StatelessWidget {
   final bool? isSwitched;
+  final bool? disabled;
   final Function(bool isSwitched)? onSwitchChanged;
   final _isSwitched = BehaviorSubject<bool>.seeded(false);
 
   SettingsSwitch({
     Key? key,
     this.isSwitched,
+    this.disabled,
     this.onSwitchChanged,
   }) : super(key: key) {
     _isSwitched.add(isSwitched ?? false);
@@ -26,10 +28,12 @@ class SettingsSwitch extends StatelessWidget {
           child: Switch(
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             value: isSwitched,
-            onChanged: (bool value) {
-              _isSwitched.add(value);
-              onSwitchChanged!(value);
-            },
+            onChanged: disabled == true
+                ? null
+                : (bool value) {
+                    _isSwitched.add(value);
+                    onSwitchChanged!(value);
+                  },
             activeColor: Theme.of(context).colorScheme.primary,
           ),
         );
