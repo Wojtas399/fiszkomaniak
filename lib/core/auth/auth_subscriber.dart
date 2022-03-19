@@ -14,7 +14,7 @@ class AuthSubscriber {
   subscribe() {
     _subscription = _authInterface.getUserChangesStream().listen((user) {
       if (user != null) {
-        Navigation.navigateToHome();
+        Navigation.pushReplacementToHome();
       }
     });
   }

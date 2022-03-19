@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -29,7 +28,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           padding: const EdgeInsets.all(0),
           onPressed: () {
-            Navigation.navigateToPageWithSlideUpAnim(const SettingsPage());
+            Navigation.navigateToSettings(context);
           },
           icon: const Icon(MdiIcons.cog),
         ),

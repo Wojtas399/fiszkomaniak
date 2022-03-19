@@ -44,7 +44,7 @@ class AppearanceSettingsBloc
     AppearanceSettingsEventUpdate event,
     Emitter<AppearanceSettingsState> emit,
   ) async {
-    AppearanceSettingsState currentState = state;
+    final AppearanceSettingsState currentState = state;
     try {
       emit(state.copyWith(
         isDarkModeOn: event.isDarkModeOn,
