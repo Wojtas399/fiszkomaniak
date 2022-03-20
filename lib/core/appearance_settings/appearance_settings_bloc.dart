@@ -32,9 +32,7 @@ class AppearanceSettingsBloc
       ));
     } catch (error) {
       emit(state.copyWith(
-        httpStatus: const HttpStatusFailure(
-          message: 'Cannot load appearance settings',
-        ),
+        httpStatus: HttpStatusFailure(message: error.toString()),
       ));
     }
   }
@@ -51,7 +49,7 @@ class AppearanceSettingsBloc
             event.isDarkModeCompatibilityWithSystemOn,
         isSessionTimerInvisibilityOn: event.isSessionTimerInvisibilityOn,
       ));
-      await _interface.saveAppearanceSettings(
+      await _interface.updateAppearanceSettings(
         isDarkModeOn: event.isDarkModeOn,
         isDarkModeCompatibilityWithSystemOn:
             event.isDarkModeCompatibilityWithSystemOn,

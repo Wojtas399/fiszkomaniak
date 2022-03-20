@@ -63,12 +63,12 @@ class FireSettingsRepository implements SettingsInterface {
         areLossOfDaysNotificationsOn: areLossOfDaysNotificationsOn,
       );
     } else {
-      throw 'Cannot load one of the notifications settings';
+      throw 'Cannot load one of the notifications settings.';
     }
   }
 
   @override
-  Future<void> saveAppearanceSettings({
+  Future<void> updateAppearanceSettings({
     bool? isDarkModeOn,
     bool? isDarkModeCompatibilityWithSystemOn,
     bool? isSessionTimerInvisibilityOn,
@@ -81,7 +81,7 @@ class FireSettingsRepository implements SettingsInterface {
   }
 
   @override
-  Future<void> saveNotificationsSettings({
+  Future<void> updateNotificationsSettings({
     bool? areSessionsPlannedNotificationsOn,
     bool? areSessionsDefaultNotificationsOn,
     bool? areAchievementsNotificationsOn,

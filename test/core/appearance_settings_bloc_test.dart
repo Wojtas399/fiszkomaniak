@@ -64,16 +64,16 @@ void main() {
     'load, failure',
     build: () => appearanceSettingsBloc,
     setUp: () {
-      when(() => settingsInterface.loadAppearanceSettings()).thenThrow('');
+      when(() => settingsInterface.loadAppearanceSettings()).thenThrow(
+        'Error...',
+      );
     },
     act: (AppearanceSettingsBloc bloc) => bloc.add(
       AppearanceSettingsEventLoad(),
     ),
     expect: () => [
       const AppearanceSettingsState(
-        httpStatus: HttpStatusFailure(
-          message: 'Cannot load appearance settings',
-        ),
+        httpStatus: HttpStatusFailure(message: 'Error...'),
       ),
     ],
     verify: (_) {
@@ -85,7 +85,7 @@ void main() {
     'update, success',
     build: () => appearanceSettingsBloc,
     setUp: () {
-      when(() => settingsInterface.saveAppearanceSettings(isDarkModeOn: true))
+      when(() => settingsInterface.updateAppearanceSettings(isDarkModeOn: true))
           .thenAnswer((_) async => '');
     },
     act: (AppearanceSettingsBloc bloc) => bloc.add(
@@ -95,8 +95,9 @@ void main() {
       const AppearanceSettingsState(isDarkModeOn: true),
     ],
     verify: (_) {
-      verify(() => settingsInterface.saveAppearanceSettings(isDarkModeOn: true))
-          .called(1);
+      verify(
+        () => settingsInterface.updateAppearanceSettings(isDarkModeOn: true),
+      ).called(1);
     },
   );
 
@@ -104,7 +105,7 @@ void main() {
     'update, failure',
     build: () => appearanceSettingsBloc,
     setUp: () {
-      when(() => settingsInterface.saveAppearanceSettings(isDarkModeOn: true))
+      when(() => settingsInterface.updateAppearanceSettings(isDarkModeOn: true))
           .thenThrow('Error...');
     },
     act: (AppearanceSettingsBloc bloc) => bloc.add(
@@ -118,8 +119,9 @@ void main() {
       ),
     ],
     verify: (_) {
-      verify(() => settingsInterface.saveAppearanceSettings(isDarkModeOn: true))
-          .called(1);
+      verify(
+        () => settingsInterface.updateAppearanceSettings(isDarkModeOn: true),
+      ).called(1);
     },
   );
 }

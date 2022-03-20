@@ -67,16 +67,16 @@ void main() {
     'load, failure',
     build: () => notificationsSettingsBloc,
     setUp: () {
-      when(() => settingsInterface.loadAppearanceSettings()).thenThrow('');
+      when(() => settingsInterface.loadNotificationsSettings()).thenThrow(
+        'Error...',
+      );
     },
     act: (NotificationsSettingsBloc bloc) => bloc.add(
       NotificationsSettingsEventLoad(),
     ),
     expect: () => [
       const NotificationsSettingsState(
-        httpStatus: HttpStatusFailure(
-          message: 'Cannot load notifications settings',
-        ),
+        httpStatus: HttpStatusFailure(message: 'Error...'),
       ),
     ],
     verify: (_) {
@@ -88,7 +88,7 @@ void main() {
     'update, success',
     build: () => notificationsSettingsBloc,
     setUp: () {
-      when(() => settingsInterface.saveNotificationsSettings(
+      when(() => settingsInterface.updateNotificationsSettings(
             areSessionsDefaultNotificationsOn: true,
             areAchievementsNotificationsOn: true,
           )).thenAnswer((_) async => '');
@@ -106,7 +106,7 @@ void main() {
       ),
     ],
     verify: (_) {
-      verify(() => settingsInterface.saveNotificationsSettings(
+      verify(() => settingsInterface.updateNotificationsSettings(
             areSessionsDefaultNotificationsOn: true,
             areAchievementsNotificationsOn: true,
           )).called(1);
@@ -117,7 +117,7 @@ void main() {
     'update, failure',
     build: () => notificationsSettingsBloc,
     setUp: () {
-      when(() => settingsInterface.saveNotificationsSettings(
+      when(() => settingsInterface.updateNotificationsSettings(
             areSessionsDefaultNotificationsOn: true,
             areAchievementsNotificationsOn: true,
           )).thenThrow('Error...');
@@ -140,7 +140,7 @@ void main() {
       ),
     ],
     verify: (_) {
-      verify(() => settingsInterface.saveNotificationsSettings(
+      verify(() => settingsInterface.updateNotificationsSettings(
             areSessionsDefaultNotificationsOn: true,
             areAchievementsNotificationsOn: true,
           )).called(1);

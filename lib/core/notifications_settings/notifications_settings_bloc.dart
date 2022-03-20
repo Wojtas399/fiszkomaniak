@@ -34,9 +34,7 @@ class NotificationsSettingsBloc
       ));
     } catch (error) {
       emit(state.copyWith(
-        httpStatus: const HttpStatusFailure(
-          message: 'Cannot load notifications settings',
-        ),
+        httpStatus: HttpStatusFailure(message: error.toString()),
       ));
     }
   }
@@ -55,7 +53,7 @@ class NotificationsSettingsBloc
         areAchievementsNotificationsOn: event.areAchievementsNotificationsOn,
         areLossOfDaysNotificationsOn: event.areLossOfDaysNotificationsOn,
       ));
-      await _interface.saveNotificationsSettings(
+      await _interface.updateNotificationsSettings(
         areSessionsPlannedNotificationsOn:
             event.areSessionsPlannedNotificationsOn,
         areSessionsDefaultNotificationsOn:
