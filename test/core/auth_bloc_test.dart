@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/core/auth/auth_subscriber.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
+import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/models/sign_in_model.dart';
 import 'package:fiszkomaniak/models/sign_up_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,15 +11,19 @@ class MockAuthInterface extends Mock implements AuthInterface {}
 
 class MockAuthSubscriber extends Mock implements AuthSubscriber {}
 
+class MockSettingsInterface extends Mock implements SettingsInterface {}
+
 void main() {
   final AuthInterface authInterface = MockAuthInterface();
   final AuthSubscriber authSubscriber = MockAuthSubscriber();
+  final SettingsInterface settingsInterface = MockSettingsInterface();
   late AuthBloc authBloc;
 
   setUp(() {
     authBloc = AuthBloc(
       authInterface: authInterface,
       authSubscriber: authSubscriber,
+      settingsInterface: settingsInterface,
     );
   });
 
@@ -71,6 +76,7 @@ void main() {
     await authBloc.signUp(data);
 
     verify(() => authInterface.signUp(data)).called(1);
+    verify(() => settingsInterface.setDefaultSettings()).called(1);
   });
 
   test('sign up, failure', () async {
@@ -85,6 +91,7 @@ void main() {
       await authBloc.signUp(data);
     } catch (error) {
       verify(() => authInterface.signUp(data)).called(1);
+      verifyNever(() => settingsInterface.setDefaultSettings());
       expect(error, 'Error...');
     }
   });

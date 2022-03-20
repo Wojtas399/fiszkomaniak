@@ -9,9 +9,9 @@ class NotificationsSettingsEventUpdate extends NotificationsSettingsEvent {
   final bool? areLossOfDaysNotificationsOn;
 
   NotificationsSettingsEventUpdate({
-    required this.areSessionsPlannedNotificationsOn,
-    required this.areSessionsDefaultNotificationsOn,
-    required this.areAchievementsNotificationsOn,
-    required this.areLossOfDaysNotificationsOn,
+    this.areSessionsPlannedNotificationsOn,
+    this.areSessionsDefaultNotificationsOn,
+    this.areAchievementsNotificationsOn,
+    this.areLossOfDaysNotificationsOn,
   });
 }
