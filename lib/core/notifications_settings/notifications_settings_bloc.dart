@@ -1,19 +1,17 @@
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_state.dart';
-import 'package:fiszkomaniak/interfaces/notifications_settings_storage_interface.dart';
+import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:fiszkomaniak/models/settings/notifications_settings_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NotificationsSettingsBloc
     extends Bloc<NotificationsSettingsEvent, NotificationsSettingsState> {
-  late final NotificationsSettingsStorageInterface _interface;
+  late final SettingsInterface _interface;
 
-  NotificationsSettingsBloc({
-    required NotificationsSettingsStorageInterface
-        notificationsSettingsStorageInterface,
-  }) : super(const NotificationsSettingsState()) {
-    _interface = notificationsSettingsStorageInterface;
+  NotificationsSettingsBloc({required SettingsInterface settingsInterface})
+      : super(const NotificationsSettingsState()) {
+    _interface = settingsInterface;
     on<NotificationsSettingsEventLoad>(_load);
     on<NotificationsSettingsEventUpdate>(_update);
   }
@@ -23,7 +21,8 @@ class NotificationsSettingsBloc
     Emitter<NotificationsSettingsState> emit,
   ) async {
     try {
-      NotificationsSettings settings = await _interface.load();
+      final NotificationsSettings settings =
+          await _interface.loadNotificationsSettings();
       emit(state.copyWith(
         areSessionsPlannedNotificationsOn:
             settings.areSessionsPlannedNotificationsOn,
@@ -56,7 +55,7 @@ class NotificationsSettingsBloc
         areAchievementsNotificationsOn: event.areAchievementsNotificationsOn,
         areLossOfDaysNotificationsOn: event.areLossOfDaysNotificationsOn,
       ));
-      await _interface.save(
+      await _interface.saveNotificationsSettings(
         areSessionsPlannedNotificationsOn:
             event.areSessionsPlannedNotificationsOn,
         areSessionsDefaultNotificationsOn:

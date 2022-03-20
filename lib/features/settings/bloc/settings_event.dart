@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
 import 'package:fiszkomaniak/models/settings/notifications_settings_model.dart';
 
 abstract class SettingsEvent {}
@@ -5,12 +6,12 @@ abstract class SettingsEvent {}
 class SettingsEventAppearanceSettingsChanged extends SettingsEvent {
   final bool? isDarkModeOn;
   final bool? isDarkModeCompatibilityWithSystemOn;
-  final bool? isSessionTimerOn;
+  final bool? isSessionTimerInvisibilityOn;
 
   SettingsEventAppearanceSettingsChanged({
     this.isDarkModeOn,
     this.isDarkModeCompatibilityWithSystemOn,
-    this.isSessionTimerOn,
+    this.isSessionTimerInvisibilityOn,
   });
 }
 
@@ -25,6 +26,14 @@ class SettingsEventNotificationsSettingsChanged extends SettingsEvent {
     this.areSessionsDefaultNotificationsOn,
     this.areAchievementsNotificationsOn,
     this.areLossOfDaysNotificationsOn,
+  });
+}
+
+class SettingsEventEmitNewAppearanceSettings extends SettingsEvent {
+  final AppearanceSettings appearanceSettings;
+
+  SettingsEventEmitNewAppearanceSettings({
+    required this.appearanceSettings,
   });
 }
 

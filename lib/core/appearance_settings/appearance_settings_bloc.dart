@@ -1,19 +1,17 @@
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_event.dart';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_state.dart';
+import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../interfaces/appearance_settings_storage_interface.dart';
 
 class AppearanceSettingsBloc
     extends Bloc<AppearanceSettingsEvent, AppearanceSettingsState> {
-  late final AppearanceSettingsStorageInterface _interface;
+  late final SettingsInterface _interface;
 
-  AppearanceSettingsBloc({
-    required AppearanceSettingsStorageInterface
-        appearanceSettingsStorageInterface,
-  }) : super(const AppearanceSettingsState()) {
-    _interface = appearanceSettingsStorageInterface;
+  AppearanceSettingsBloc({required SettingsInterface settingsInterface})
+      : super(const AppearanceSettingsState()) {
+    _interface = settingsInterface;
     on<AppearanceSettingsEventLoad>(_load);
     on<AppearanceSettingsEventUpdate>(_update);
   }
@@ -23,12 +21,13 @@ class AppearanceSettingsBloc
     Emitter<AppearanceSettingsState> emit,
   ) async {
     try {
-      AppearanceSettings settings = await _interface.load();
+      final AppearanceSettings settings =
+          await _interface.loadAppearanceSettings();
       emit(state.copyWith(
         isDarkModeOn: settings.isDarkModeOn,
         isDarkModeCompatibilityWithSystemOn:
             settings.isDarkModeCompatibilityWithSystemOn,
-        isSessionTimerVisibilityOn: settings.isSessionTimerVisibilityOn,
+        isSessionTimerInvisibilityOn: settings.isSessionTimerInvisibilityOn,
         httpStatus: HttpStatusSuccess(),
       ));
     } catch (error) {
@@ -50,20 +49,20 @@ class AppearanceSettingsBloc
         isDarkModeOn: event.isDarkModeOn,
         isDarkModeCompatibilityWithSystemOn:
             event.isDarkModeCompatibilityWithSystemOn,
-        isSessionTimerVisibilityOn: event.isSessionTimerVisibilityOn,
+        isSessionTimerInvisibilityOn: event.isSessionTimerInvisibilityOn,
       ));
-      await _interface.save(
+      await _interface.saveAppearanceSettings(
         isDarkModeOn: event.isDarkModeOn,
         isDarkModeCompatibilityWithSystemOn:
             event.isDarkModeCompatibilityWithSystemOn,
-        isSessionTimerVisibilityOn: event.isSessionTimerVisibilityOn,
+        isSessionTimerInvisibilityOn: event.isSessionTimerInvisibilityOn,
       );
     } catch (error) {
       emit(state.copyWith(
         isDarkModeOn: currentState.isDarkModeOn,
         isDarkModeCompatibilityWithSystemOn:
             currentState.isDarkModeCompatibilityWithSystemOn,
-        isSessionTimerVisibilityOn: currentState.isSessionTimerVisibilityOn,
+        isSessionTimerInvisibilityOn: currentState.isSessionTimerInvisibilityOn,
         httpStatus: HttpStatusFailure(message: error.toString()),
       ));
     }

@@ -1,4 +1,5 @@
-import 'package:fiszkomaniak/providers/notifications_settings_bloc_provider.dart';
+import 'package:fiszkomaniak/providers/settings/appearance_settings_bloc_provider.dart';
+import 'package:fiszkomaniak/providers/settings/notifications_settings_bloc_provider.dart';
 import 'package:flutter/material.dart';
 
 class HomeProviders extends StatelessWidget {
@@ -8,8 +9,10 @@ class HomeProviders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NotificationsSettingsBlocProvider(
-      child: child,
+    return AppearanceSettingsBlocProvider(
+      child: NotificationsSettingsBlocProvider(
+        child: child,
+      ),
     );
   }
 }

@@ -49,12 +49,13 @@ class SettingsAppearanceSection extends StatelessWidget {
               SwitchOptionItem(
                 icon: MdiIcons.clockRemoveOutline,
                 text: 'Ukryj czas podczas sesji',
-                isSwitched: state.appearanceSettings.isSessionTimerVisibilityOn,
+                isSwitched:
+                    state.appearanceSettings.isSessionTimerInvisibilityOn,
                 onSwitchChanged: (bool isSwitched) {
                   context
                       .read<SettingsBloc>()
                       .add(SettingsEventAppearanceSettingsChanged(
-                        isSessionTimerOn: isSwitched,
+                        isSessionTimerInvisibilityOn: isSwitched,
                       ));
                 },
               ),

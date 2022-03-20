@@ -7,19 +7,19 @@ class AppearanceSettingsState extends AppearanceSettings {
   const AppearanceSettingsState({
     bool isDarkModeOn = false,
     bool isDarkModeCompatibilityWithSystemOn = false,
-    bool isSessionTimerVisibilityOn = false,
+    bool isSessionTimerInvisibilityOn = false,
     this.httpStatus = const HttpStatusInitial(),
   }) : super(
           isDarkModeOn: isDarkModeOn,
           isDarkModeCompatibilityWithSystemOn:
               isDarkModeCompatibilityWithSystemOn,
-          isSessionTimerVisibilityOn: isSessionTimerVisibilityOn,
+          isSessionTimerInvisibilityOn: isSessionTimerInvisibilityOn,
         );
 
   AppearanceSettingsState copyWith({
     bool? isDarkModeOn,
     bool? isDarkModeCompatibilityWithSystemOn,
-    bool? isSessionTimerVisibilityOn,
+    bool? isSessionTimerInvisibilityOn,
     HttpStatus? httpStatus,
   }) {
     return AppearanceSettingsState(
@@ -27,8 +27,8 @@ class AppearanceSettingsState extends AppearanceSettings {
       isDarkModeCompatibilityWithSystemOn:
           isDarkModeCompatibilityWithSystemOn ??
               this.isDarkModeCompatibilityWithSystemOn,
-      isSessionTimerVisibilityOn:
-          isSessionTimerVisibilityOn ?? this.isSessionTimerVisibilityOn,
+      isSessionTimerInvisibilityOn:
+          isSessionTimerInvisibilityOn ?? this.isSessionTimerInvisibilityOn,
       httpStatus: httpStatus ?? const HttpStatusInitial(),
     );
   }
@@ -37,7 +37,7 @@ class AppearanceSettingsState extends AppearanceSettings {
   List<Object> get props => [
         isDarkModeOn,
         isDarkModeCompatibilityWithSystemOn,
-        isSessionTimerVisibilityOn,
+        isSessionTimerInvisibilityOn,
         httpStatus,
       ];
 }

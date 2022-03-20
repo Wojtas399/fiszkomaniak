@@ -11,7 +11,7 @@ class SettingsState extends Equatable {
     this.appearanceSettings = const AppearanceSettings(
       isDarkModeOn: false,
       isDarkModeCompatibilityWithSystemOn: false,
-      isSessionTimerVisibilityOn: false,
+      isSessionTimerInvisibilityOn: false,
     ),
     this.notificationsSettings = const NotificationsSettings(
       areSessionsPlannedNotificationsOn: false,

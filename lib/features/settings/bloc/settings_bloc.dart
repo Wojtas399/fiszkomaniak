@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_event.dart';
+import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_state.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_state.dart';
 import 'package:fiszkomaniak/features/settings/bloc/settings_event.dart';
@@ -13,6 +14,7 @@ import '../../../core/notifications_settings/notifications_settings_bloc.dart';
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   late final AppearanceSettingsBloc _appearanceSettingsBloc;
   late final NotificationsSettingsBloc _notificationsSettingsBloc;
+  StreamSubscription? _appearanceSettingsSubscription;
   StreamSubscription? _notificationsSettingsSubscription;
 
   SettingsBloc({
@@ -24,8 +26,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
               isDarkModeOn: appearanceSettingsBloc.state.isDarkModeOn,
               isDarkModeCompatibilityWithSystemOn: appearanceSettingsBloc
                   .state.isDarkModeCompatibilityWithSystemOn,
-              isSessionTimerVisibilityOn:
-                  appearanceSettingsBloc.state.isSessionTimerVisibilityOn,
+              isSessionTimerInvisibilityOn:
+                  appearanceSettingsBloc.state.isSessionTimerInvisibilityOn,
             ),
             notificationsSettings: NotificationsSettings(
               areSessionsPlannedNotificationsOn: notificationsSettingsBloc
@@ -37,15 +39,36 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
               areLossOfDaysNotificationsOn:
                   notificationsSettingsBloc.state.areLossOfDaysNotificationsOn,
             ),
+            areAllNotificationsOn: notificationsSettingsBloc
+                    .state.areSessionsPlannedNotificationsOn &&
+                notificationsSettingsBloc
+                    .state.areSessionsDefaultNotificationsOn &&
+                notificationsSettingsBloc
+                    .state.areAchievementsNotificationsOn &&
+                notificationsSettingsBloc.state.areLossOfDaysNotificationsOn,
           ),
         ) {
     _appearanceSettingsBloc = appearanceSettingsBloc;
     _notificationsSettingsBloc = notificationsSettingsBloc;
+    _setAppearanceSettingsSubscriber();
     _setNotificationsSettingsSubscriber();
     on<SettingsEventAppearanceSettingsChanged>(_updateAppearanceSettings);
     on<SettingsEventNotificationsSettingsChanged>(_updateNotificationsSettings);
+    on<SettingsEventEmitNewAppearanceSettings>(_emitNewAppearanceSettings);
     on<SettingsEventEmitNewNotificationsSettings>(
       _emitNewNotificationsSettings,
+    );
+  }
+
+  void _setAppearanceSettingsSubscriber() {
+    final Stream<AppearanceSettingsState> stream =
+        _appearanceSettingsBloc.stream;
+    _appearanceSettingsSubscription = stream.listen(
+      (settings) {
+        add(SettingsEventEmitNewAppearanceSettings(
+          appearanceSettings: settings,
+        ));
+      },
     );
   }
 
@@ -74,15 +97,15 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         isDarkModeCompatibilityWithSystemOn:
             event.isDarkModeCompatibilityWithSystemOn ??
                 currentAppearanceSettings.isDarkModeCompatibilityWithSystemOn,
-        isSessionTimerVisibilityOn: event.isSessionTimerOn ??
-            currentAppearanceSettings.isSessionTimerVisibilityOn,
+        isSessionTimerInvisibilityOn: event.isSessionTimerInvisibilityOn ??
+            currentAppearanceSettings.isSessionTimerInvisibilityOn,
       ),
     ));
     _appearanceSettingsBloc.add(AppearanceSettingsEventUpdate(
       isDarkModeOn: event.isDarkModeOn,
       isDarkModeCompatibilityWithSystemOn:
           event.isDarkModeCompatibilityWithSystemOn,
-      isSessionTimerVisibilityOn: event.isSessionTimerOn,
+      isSessionTimerInvisibilityOn: event.isSessionTimerInvisibilityOn,
     ));
   }
 
@@ -116,14 +139,24 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     ));
   }
 
+  void _emitNewAppearanceSettings(
+    SettingsEventEmitNewAppearanceSettings event,
+    Emitter<SettingsState> emit,
+  ) {
+    emit(state.copyWith(
+      appearanceSettings: event.appearanceSettings,
+    ));
+  }
+
   void _emitNewNotificationsSettings(
     SettingsEventEmitNewNotificationsSettings event,
     Emitter<SettingsState> emit,
   ) {
     emit(state.copyWith(
       notificationsSettings: event.notificationsSettings,
-      areAllNotificationsOn:
-          _areAllNotificationsOn(event.notificationsSettings),
+      areAllNotificationsOn: _areAllNotificationsOn(
+        event.notificationsSettings,
+      ),
     ));
   }
 
@@ -136,6 +169,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   @override
   Future<void> close() {
+    _appearanceSettingsSubscription?.cancel();
     _notificationsSettingsSubscription?.cancel();
     return super.close();
   }

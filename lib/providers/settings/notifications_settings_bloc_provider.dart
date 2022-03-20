@@ -1,6 +1,6 @@
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
-import 'package:fiszkomaniak/injections/memory_storage_provider.dart';
+import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,8 +16,7 @@ class NotificationsSettingsBlocProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => NotificationsSettingsBloc(
-        notificationsSettingsStorageInterface: MemoryStorageProvider
-            .provideNotificationsSettingsStorageInterface(),
+        settingsInterface: context.read<SettingsInterface>(),
       )..add(NotificationsSettingsEventLoad()),
       child: child,
     );
