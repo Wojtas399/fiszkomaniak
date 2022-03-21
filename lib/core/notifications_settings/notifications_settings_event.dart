@@ -1,4 +1,9 @@
-abstract class NotificationsSettingsEvent {}
+import 'package:equatable/equatable.dart';
+
+abstract class NotificationsSettingsEvent extends Equatable {
+  @override
+  List<Object> get props => [];
+}
 
 class NotificationsSettingsEventLoad extends NotificationsSettingsEvent {}
 
@@ -14,4 +19,12 @@ class NotificationsSettingsEventUpdate extends NotificationsSettingsEvent {
     this.areAchievementsNotificationsOn,
     this.areLossOfDaysNotificationsOn,
   });
+
+  @override
+  List<Object> get props => [
+        areSessionsPlannedNotificationsOn ?? false,
+        areSessionsDefaultNotificationsOn ?? false,
+        areAchievementsNotificationsOn ?? false,
+        areLossOfDaysNotificationsOn ?? false,
+      ];
 }
