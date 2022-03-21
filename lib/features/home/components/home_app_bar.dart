@@ -23,9 +23,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         leading: const _AvatarAndDays(),
         actions: [
           IconButton(
-            onPressed: () {
-              print('Notifications');
-            },
+            onPressed: () {},
             icon: const Icon(MdiIcons.bell),
           ),
           IconButton(
