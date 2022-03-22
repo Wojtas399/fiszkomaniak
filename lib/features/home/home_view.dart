@@ -58,7 +58,7 @@ class _ActionButton extends StatelessWidget {
       child: FittedBox(
         child: FloatingActionButton(
           onPressed: () {},
-          child: const Icon(MdiIcons.plus),
+          child: const Icon(MdiIcons.plus, size: 32),
         ),
       ),
     );

@@ -73,6 +73,5 @@ class _CommonStyles {
   static final floatingActionButtonThemeData = FloatingActionButtonThemeData(
     backgroundColor: AppColors.primary,
     foregroundColor: Colors.white,
-    iconSize: 32,
   );
 }
