@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/components/textfield.dart';
+import 'package:fiszkomaniak/components/textfields/textfield.dart';
 import 'package:fiszkomaniak/components/textfields/password_textfield.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_event.dart';

@@ -1,7 +1,7 @@
+import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/features/reset_password/bloc/reset_password_bloc.dart';
-import 'package:fiszkomaniak/features/reset_password/components/reset_password_app_bar.dart';
 import 'package:fiszkomaniak/features/reset_password/components/reset_password_submit_button.dart';
 import 'package:fiszkomaniak/features/reset_password/components/reset_password_text_and_input.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
@@ -22,7 +22,7 @@ class ResetPasswordPage extends StatelessWidget {
       ),
       child: _StatusListener(
         child: Scaffold(
-          appBar: const ResetPasswordAppBar(),
+          appBar: const AppBarWithCloseButton(label: 'Zmiana hasła'),
           body: SafeArea(
             child: _LostFocusAreaWithPaddings(
               child: Column(

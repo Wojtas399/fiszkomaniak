@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 
 class AuthSubscriber {
@@ -12,7 +12,11 @@ class AuthSubscriber {
   }
 
   subscribe() {
-    _subscription = _authInterface.getUserChangesStream().listen((user) {});
+    _subscription = _authInterface.getUserChangesStream().listen((user) {
+      if (user != null) {
+        Navigation.pushReplacementToHome();
+      }
+    });
   }
 
   unsubscribe() {

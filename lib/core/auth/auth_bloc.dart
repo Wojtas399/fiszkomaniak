@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:fiszkomaniak/models/sign_in_model.dart';
 import 'package:fiszkomaniak/models/sign_up_model.dart';
@@ -7,13 +8,16 @@ import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 class AuthBloc {
   late final AuthInterface _authInterface;
   late final AuthSubscriber _authSubscriber;
+  late final SettingsInterface _settingsInterface;
 
   AuthBloc({
     required AuthInterface authInterface,
     required AuthSubscriber authSubscriber,
+    required SettingsInterface settingsInterface,
   }) {
     _authInterface = authInterface;
     _authSubscriber = authSubscriber;
+    _settingsInterface = settingsInterface;
   }
 
   void initialize() {
@@ -32,6 +36,7 @@ class AuthBloc {
   Future<HttpStatus> signUp(SignUpModel data) async {
     try {
       await _authInterface.signUp(data);
+      await _settingsInterface.setDefaultSettings();
       return HttpStatusSuccess();
     } catch (error) {
       return HttpStatusFailure(message: error.toString());

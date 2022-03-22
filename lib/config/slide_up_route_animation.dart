@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class RouteAnimations<T> extends PageRouteBuilder<T> {
+class SlideUpRouteAnimation<T> extends PageRouteBuilder<T> {
   final Widget page;
 
-  RouteAnimations({required this.page})
+  SlideUpRouteAnimation({required this.page})
       : super(
           pageBuilder: (context, animation, secondaryAnimation) => page,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {

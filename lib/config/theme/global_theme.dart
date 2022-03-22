@@ -12,6 +12,9 @@ class GlobalTheme {
     elevatedButtonTheme: _CommonStyles.elevatedButtonThemeData,
     textButtonTheme: _CommonStyles.textButtonThemeData,
     appBarTheme: _CommonStyles.appBarTheme,
+    canvasColor: AppColors.secondary,
+    bottomAppBarTheme: _CommonStyles.bottomAppBarTheme,
+    floatingActionButtonTheme: _CommonStyles.floatingActionButtonThemeData,
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -24,6 +27,9 @@ class GlobalTheme {
     elevatedButtonTheme: _CommonStyles.elevatedButtonThemeData,
     textButtonTheme: _CommonStyles.textButtonThemeData,
     appBarTheme: _CommonStyles.appBarTheme,
+    canvasColor: AppColors.secondary,
+    bottomAppBarTheme: _CommonStyles.bottomAppBarTheme,
+    floatingActionButtonTheme: _CommonStyles.floatingActionButtonThemeData,
   );
 }
 
@@ -51,5 +57,21 @@ class _CommonStyles {
   static final appBarTheme = AppBarTheme(
     backgroundColor: AppColors.secondary,
     foregroundColor: Colors.black,
+    titleTextStyle: const TextStyle(
+      color: Colors.black,
+      fontWeight: FontWeight.w500,
+      fontSize: 20,
+      letterSpacing: 0.15,
+    ),
+  );
+
+  static final bottomAppBarTheme = BottomAppBarTheme(
+    color: AppColors.secondary,
+    shape: const CircularNotchedRectangle(),
+  );
+
+  static final floatingActionButtonThemeData = FloatingActionButtonThemeData(
+    backgroundColor: AppColors.primary,
+    foregroundColor: Colors.white,
   );
 }

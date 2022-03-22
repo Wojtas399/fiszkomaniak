@@ -11,4 +11,9 @@ class ThemeProvider extends ChangeNotifier {
     _themeMode = isOnDarkMode ? ThemeMode.dark : ThemeMode.light;
     notifyListeners();
   }
+
+  setSystemTheme() {
+    _themeMode = ThemeMode.system;
+    notifyListeners();
+  }
 }

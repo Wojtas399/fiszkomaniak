@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/core/auth/auth_subscriber.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
+import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,7 @@ class AuthBlocProvider extends StatelessWidget {
         authSubscriber: AuthSubscriber(
           authInterface: context.read<AuthInterface>(),
         ),
+        settingsInterface: context.read<SettingsInterface>(),
       )..initialize(),
       child: child,
       dispose: (_, bloc) => bloc.dispose(),
