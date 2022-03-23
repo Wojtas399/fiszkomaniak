@@ -63,7 +63,7 @@ class FireSettingsService {
           throw 'Cannot find notifications settings for this user.';
         }
       } else {
-        throw 'There is no logged user.';
+        throw FireUser.noLoggedUserMessage;
       }
     } catch (error) {
       rethrow;
@@ -87,7 +87,7 @@ class FireSettingsService {
           ).toJson(),
         );
       } else {
-        throw 'There is no logged user.';
+        throw FireUser.noLoggedUserMessage;
       }
     } catch (error) {
       rethrow;
@@ -114,7 +114,7 @@ class FireSettingsService {
           ).toJson(),
         );
       } else {
-        throw 'There is no logged user.';
+        throw FireUser.noLoggedUserMessage;
       }
     } catch (error) {
       rethrow;

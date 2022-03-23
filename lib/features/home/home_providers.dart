@@ -1,3 +1,5 @@
+import 'package:fiszkomaniak/providers/courses/courses_bloc_provider.dart';
+import 'package:fiszkomaniak/providers/courses/courses_interface_provider.dart';
 import 'package:fiszkomaniak/providers/settings/appearance_settings_bloc_provider.dart';
 import 'package:fiszkomaniak/providers/settings/notifications_settings_bloc_provider.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +11,13 @@ class HomeProviders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppearanceSettingsBlocProvider(
-      child: NotificationsSettingsBlocProvider(
-        child: child,
+    return CoursesInterfaceProvider(
+      child: CoursesBlocProvider(
+        child: AppearanceSettingsBlocProvider(
+          child: NotificationsSettingsBlocProvider(
+            child: child,
+          ),
+        ),
       ),
     );
   }
