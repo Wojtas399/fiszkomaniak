@@ -20,4 +20,8 @@ class Navigation {
   static void navigateToSettings(BuildContext context) {
     Navigator.of(context).pushNamed(AppRouter.settings);
   }
+
+  static void navigateToCourseCreator(BuildContext context) {
+    Navigator.of(context).pushNamed(AppRouter.courseCreator);
+  }
 }
