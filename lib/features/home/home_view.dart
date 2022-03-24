@@ -6,7 +6,7 @@ import 'package:fiszkomaniak/features/sessions/sessions_page.dart';
 import 'package:fiszkomaniak/features/study/study_page.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'components/action_button.dart';
+import 'components/home_action_button.dart';
 
 class HomeView extends StatelessWidget {
   final PageController _pageController = PageController(initialPage: 2);
@@ -34,7 +34,7 @@ class HomeView extends StatelessWidget {
               AccountPage(),
             ],
           ),
-          floatingActionButton: const ActionButton(),
+          floatingActionButton: const HomeActionButton(),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: HomeBottomNavigationBar(

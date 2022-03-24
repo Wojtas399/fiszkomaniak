@@ -1,10 +1,11 @@
 import 'package:fiszkomaniak/config/navigation.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_arguments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class ActionButton extends StatelessWidget {
-  const ActionButton({Key? key}) : super(key: key);
+class HomeActionButton extends StatelessWidget {
+  const HomeActionButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,10 @@ class ActionButton extends StatelessWidget {
           child: const Icon(MdiIcons.archive),
           label: 'Kurs',
           onTap: () {
-            Navigation.navigateToCourseCreator(context);
+            Navigation.navigateToCourseCreator(
+              context,
+              const CourseCreatorCreateMode(),
+            );
           },
         ),
         SpeedDialChild(

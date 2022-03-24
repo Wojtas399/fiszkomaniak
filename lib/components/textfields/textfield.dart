@@ -30,7 +30,6 @@ class CustomTextField extends StatelessWidget {
       children: [
         const TextFieldBackground(),
         TextFormField(
-          cursorColor: Colors.black,
           onChanged: onChanged,
           validator: validator,
           controller: controller,

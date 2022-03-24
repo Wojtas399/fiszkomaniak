@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_arguments.dart';
 import 'package:fiszkomaniak/features/home/home.dart';
 import 'package:fiszkomaniak/features/home/home_view.dart';
 import 'package:fiszkomaniak/features/settings/settings_page.dart';
@@ -19,7 +20,11 @@ class AppRouter {
       case settings:
         return SlideUpRouteAnimation(page: const SettingsPage());
       case courseCreator:
-        return SlideUpRouteAnimation(page: const CourseCreator());
+        return SlideUpRouteAnimation(
+          page: CourseCreator(
+            mode: routeSettings.arguments as CourseCreatorMode,
+          ),
+        );
       default:
         return MaterialPageRoute(builder: (_) => const Home());
     }

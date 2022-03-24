@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class GlobalTheme {
   static final ThemeData lightTheme = ThemeData(
+    brightness: Brightness.light,
     scaffoldBackgroundColor: AppColors.backgroundLight,
     colorScheme: const ColorScheme.light().copyWith(
       primary: AppColors.primary,
@@ -18,6 +19,7 @@ class GlobalTheme {
   );
 
   static final ThemeData darkTheme = ThemeData(
+    brightness: Brightness.dark,
     scaffoldBackgroundColor: AppColors.backgroundDark,
     colorScheme: const ColorScheme.dark().copyWith(
       primary: AppColors.primary,
