@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/models/http_status_model.dart';
 import '../course_creator_arguments.dart';
 
 class CourseCreatorState extends Equatable {
   final CourseCreatorMode mode;
   final String courseName;
   final bool hasCourseNameBeenEdited;
+  final HttpStatus httpStatus;
 
   bool get isButtonDisabled => courseName.isEmpty;
 
@@ -30,18 +32,21 @@ class CourseCreatorState extends Equatable {
     this.mode = const CourseCreatorCreateMode(),
     this.courseName = '',
     this.hasCourseNameBeenEdited = false,
+    this.httpStatus = const HttpStatusInitial(),
   });
 
   CourseCreatorState copyWith({
     CourseCreatorMode? mode,
     String? courseName,
     bool? hasCourseNameBeenEdited,
+    HttpStatus? httpStatus,
   }) {
     return CourseCreatorState(
       mode: mode ?? this.mode,
       courseName: courseName ?? this.courseName,
       hasCourseNameBeenEdited:
           hasCourseNameBeenEdited ?? this.hasCourseNameBeenEdited,
+      httpStatus: httpStatus ?? const HttpStatusInitial(),
     );
   }
 
@@ -50,5 +55,6 @@ class CourseCreatorState extends Equatable {
         mode,
         courseName,
         hasCourseNameBeenEdited,
+        httpStatus,
       ];
 }

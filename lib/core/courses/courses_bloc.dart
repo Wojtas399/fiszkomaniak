@@ -3,6 +3,7 @@ import 'package:fiszkomaniak/core/courses/courses_event.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/changed_document.dart';
 
@@ -43,7 +44,17 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     CoursesEventAddNewCourse event,
     Emitter<CoursesState> emit,
   ) async {
-    print(event.name);
+    try {
+      emit(state.copyWith(httpStatus: HttpStatusSubmitting()));
+      await _coursesInterface.addNewCourse(event.name);
+      emit(state.copyWith(httpStatus: HttpStatusSuccess()));
+    } catch (error) {
+      emit(
+        state.copyWith(
+          httpStatus: HttpStatusFailure(message: error.toString()),
+        ),
+      );
+    }
   }
 
   void _onCourseAdded(
