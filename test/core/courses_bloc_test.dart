@@ -58,7 +58,7 @@ void main() {
         ]),
       );
     },
-    act: (CoursesBloc bloc) => bloc.add(CoursesEventInitialize()),
+    act: (_) => coursesBloc.add(CoursesEventInitialize()),
     expect: () => [
       const CoursesState(allCourses: [
         Course(id: 'c1', name: 'course 1'),
@@ -91,7 +91,7 @@ void main() {
       when(() => coursesInterface.addNewCourse('new course name'))
           .thenAnswer((_) async => '');
     },
-    act: (CoursesBloc bloc) => bloc.add(
+    act: (_) => coursesBloc.add(
       CoursesEventAddNewCourse(name: 'new course name'),
     ),
     expect: () => [
@@ -112,7 +112,7 @@ void main() {
       when(() => coursesInterface.addNewCourse('new course name'))
           .thenThrow('Error...');
     },
-    act: (CoursesBloc bloc) => bloc.add(
+    act: (_) => coursesBloc.add(
       CoursesEventAddNewCourse(name: 'new course name'),
     ),
     expect: () => [
@@ -135,7 +135,7 @@ void main() {
             newCourseName: 'course123',
           )).thenAnswer((_) async => '');
     },
-    act: (CoursesBloc bloc) => bloc.add(
+    act: (_) => coursesBloc.add(
       CoursesEventUpdateCourseName(courseId: 'c1', newCourseName: 'course123'),
     ),
     expect: () => [
@@ -163,7 +163,7 @@ void main() {
             newCourseName: 'course123',
           )).thenThrow('Error...');
     },
-    act: (CoursesBloc bloc) => bloc.add(
+    act: (_) => coursesBloc.add(
       CoursesEventUpdateCourseName(courseId: 'c1', newCourseName: 'course123'),
     ),
     expect: () => [
@@ -187,7 +187,7 @@ void main() {
       when(() => coursesInterface.removeCourse('c1'))
           .thenAnswer((_) async => '');
     },
-    act: (CoursesBloc bloc) => bloc.add(
+    act: (_) => coursesBloc.add(
       CoursesEventRemoveCourse(courseId: 'c1'),
     ),
     expect: () => [
@@ -207,7 +207,7 @@ void main() {
     setUp: () {
       when(() => coursesInterface.removeCourse('c1')).thenThrow('Error...');
     },
-    act: (CoursesBloc bloc) => bloc.add(
+    act: (_) => coursesBloc.add(
       CoursesEventRemoveCourse(courseId: 'c1'),
     ),
     expect: () => [
@@ -224,7 +224,7 @@ void main() {
   blocTest(
     'on course added',
     build: () => coursesBloc,
-    act: (CoursesBloc bloc) => bloc.add(CoursesEventCourseAdded(
+    act: (_) => coursesBloc.add(CoursesEventCourseAdded(
       course: const Course(id: 'c1', name: 'course 1'),
     )),
     expect: () => [
@@ -237,11 +237,11 @@ void main() {
   blocTest(
     'on course modified',
     build: () => coursesBloc,
-    act: (CoursesBloc bloc) {
-      bloc.add(CoursesEventCourseAdded(
+    act: (_) {
+      coursesBloc.add(CoursesEventCourseAdded(
         course: const Course(id: 'c1', name: 'course 1'),
       ));
-      bloc.add(CoursesEventCourseModified(
+      coursesBloc.add(CoursesEventCourseModified(
         course: const Course(id: 'c1', name: 'course 1234'),
       ));
     },
@@ -258,11 +258,11 @@ void main() {
   blocTest(
     'on course removed',
     build: () => coursesBloc,
-    act: (CoursesBloc bloc) {
-      bloc.add(CoursesEventCourseAdded(
+    act: (_) {
+      coursesBloc.add(CoursesEventCourseAdded(
         course: const Course(id: 'c1', name: 'course 1'),
       ));
-      bloc.add(CoursesEventCourseRemoved(courseId: 'c1'));
+      coursesBloc.add(CoursesEventCourseRemoved(courseId: 'c1'));
     },
     expect: () => [
       const CoursesState(allCourses: [

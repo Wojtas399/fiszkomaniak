@@ -32,8 +32,6 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     } else if (creatorMode is CourseCreatorEditMode) {
       emit(state.copyWith(
         mode: creatorMode,
-        courseId: creatorMode.courseId,
-        originalCourseName: creatorMode.courseName,
         courseName: creatorMode.courseName,
       ));
     }
@@ -45,7 +43,6 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
   ) {
     emit(state.copyWith(
       courseName: event.courseName,
-      hasCourseNameBeenEdited: true,
     ));
   }
 
@@ -57,13 +54,10 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     if (mode is CourseCreatorCreateMode) {
       _coursesBloc.add(CoursesEventAddNewCourse(name: state.courseName));
     } else if (mode is CourseCreatorEditMode) {
-      String? courseId = state.courseId;
-      if (courseId != null) {
-        _coursesBloc.add(CoursesEventUpdateCourseName(
-          courseId: courseId,
-          newCourseName: state.courseName,
-        ));
-      }
+      _coursesBloc.add(CoursesEventUpdateCourseName(
+        courseId: mode.courseId,
+        newCourseName: state.courseName,
+      ));
     }
   }
 
