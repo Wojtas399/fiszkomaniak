@@ -11,8 +11,8 @@ class MockFireAuthService extends Mock implements FireAuthService {}
 
 void main() {
   final FireAuthService fireAuthService = MockFireAuthService();
-  late FireAuthRepository fireAuthRepository;
   final auth = MockFirebaseAuth();
+  late FireAuthRepository fireAuthRepository;
 
   setUp(() {
     fireAuthRepository = FireAuthRepository(fireAuthService: fireAuthService);
