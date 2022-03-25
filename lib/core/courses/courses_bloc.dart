@@ -28,13 +28,10 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
       (courses) {
         for (final course in courses) {
           if (course.changeType == TypeOfDocumentChange.added) {
-            print('Document added: ${course.doc.name}');
             add(CoursesEventCourseAdded(course: course.doc));
           } else if (course.changeType == TypeOfDocumentChange.modified) {
-            print('Document modified');
             add(CoursesEventCourseModified(course: course.doc));
           } else if (course.changeType == TypeOfDocumentChange.removed) {
-            print('Document removed');
             add(CoursesEventCourseRemoved(courseId: course.doc.id));
           }
         }
