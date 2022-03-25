@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/config/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 class GlobalTheme {
   static final ThemeData lightTheme = ThemeData(
@@ -32,6 +33,7 @@ class GlobalTheme {
     canvasColor: AppColors.secondary,
     bottomAppBarTheme: _CommonStyles.bottomAppBarTheme,
     floatingActionButtonTheme: _CommonStyles.floatingActionButtonThemeData,
+    cardTheme: CardTheme(color: HexColor('#4D4981')),
   );
 }
 
