@@ -78,7 +78,9 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     CoursesEventCourseRemoved event,
     Emitter<CoursesState> emit,
   ) {
-    //TODO
+    List<Course> allCourses = [...state.allCourses];
+    allCourses.removeWhere((course) => course.id == event.courseId);
+    emit(state.copyWith(allCourses: allCourses));
   }
 
   @override
