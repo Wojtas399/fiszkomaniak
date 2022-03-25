@@ -5,7 +5,7 @@ import '../fire_instances.dart';
 
 class FireCoursesService {
   Stream<QuerySnapshot<CourseDbModel>> getCoursesSnapshots() {
-    String? loggedUserId = FireUser.getLoggedUserId();
+    final String? loggedUserId = FireUser.getLoggedUserId();
     if (loggedUserId != null) {
       return _getCoursesRef(loggedUserId).snapshots();
     } else {
@@ -15,9 +15,40 @@ class FireCoursesService {
 
   Future<void> addNewCourse(String name) async {
     try {
-      String? loggedUserId = FireUser.getLoggedUserId();
+      final String? loggedUserId = FireUser.getLoggedUserId();
       if (loggedUserId != null) {
         await _getCoursesRef(loggedUserId).add(CourseDbModel(name: name));
+      } else {
+        throw FireUser.noLoggedUserMessage;
+      }
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> updateCourseName({
+    required String courseId,
+    required String newName,
+  }) async {
+    try {
+      final String? loggedUserId = FireUser.getLoggedUserId();
+      if (loggedUserId != null) {
+        await _getCoursesRef(loggedUserId)
+            .doc(courseId)
+            .update(CourseDbModel(name: newName).toJson());
+      } else {
+        throw FireUser.noLoggedUserMessage;
+      }
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> removeCourse(String courseId) async {
+    try {
+      final String? loggedUserId = FireUser.getLoggedUserId();
+      if (loggedUserId != null) {
+        await _getCoursesRef(loggedUserId).doc(courseId).delete();
       } else {
         throw FireUser.noLoggedUserMessage;
       }

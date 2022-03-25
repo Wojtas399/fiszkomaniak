@@ -27,3 +27,19 @@ class CoursesEventAddNewCourse extends CoursesEvent {
 
   CoursesEventAddNewCourse({required this.name});
 }
+
+class CoursesEventUpdateCourseName extends CoursesEvent {
+  final String courseId;
+  final String newCourseName;
+
+  CoursesEventUpdateCourseName({
+    required this.courseId,
+    required this.newCourseName,
+  });
+}
+
+class CoursesEventRemoveCourse extends CoursesEvent {
+  final String courseId;
+
+  CoursesEventRemoveCourse({required this.courseId});
+}

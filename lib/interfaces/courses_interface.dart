@@ -6,7 +6,10 @@ abstract class CoursesInterface {
 
   Future<void> addNewCourse(String name);
 
-  Future<void> changeCourseName(String newName);
+  Future<void> updateCourseName({
+    required String courseId,
+    required String newCourseName,
+  });
 
-  Future<void> removeCourse(String id);
+  Future<void> removeCourse(String courseId);
 }

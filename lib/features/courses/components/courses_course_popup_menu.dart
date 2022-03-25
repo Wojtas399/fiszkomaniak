@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class CoursesCoursePopupMenu extends StatelessWidget {
-  const CoursesCoursePopupMenu({Key? key}) : super(key: key);
+  final Function(CoursePopupAction action) onActionSelected;
+
+  const CoursesCoursePopupMenu({
+    Key? key,
+    required this.onActionSelected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +32,9 @@ class CoursesCoursePopupMenu extends StatelessWidget {
                 Text('Edytuj'),
               ],
             ),
+            onTap: () {
+              onActionSelected(CoursePopupAction.edit);
+            },
           ),
           PopupMenuItem(
             child: Row(
@@ -36,9 +44,17 @@ class CoursesCoursePopupMenu extends StatelessWidget {
                 Text('Usuń'),
               ],
             ),
+            onTap: () {
+              onActionSelected(CoursePopupAction.remove);
+            },
           ),
         ],
       ),
     );
   }
+}
+
+enum CoursePopupAction {
+  edit,
+  remove,
 }

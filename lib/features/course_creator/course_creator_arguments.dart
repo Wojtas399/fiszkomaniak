@@ -7,7 +7,11 @@ class CourseCreatorCreateMode extends CourseCreatorMode {
 }
 
 class CourseCreatorEditMode extends CourseCreatorMode {
+  final String courseId;
   final String courseName;
 
-  const CourseCreatorEditMode({required this.courseName});
+  const CourseCreatorEditMode({
+    required this.courseId,
+    required this.courseName,
+  });
 }

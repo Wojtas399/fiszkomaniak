@@ -25,4 +25,14 @@ class Dialogs {
       builder: (_) => MessageDialog(title: title, message: message),
     );
   }
+
+  static void showSnackbarWithMessage({
+    required BuildContext context,
+    required String message,
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      behavior: SnackBarBehavior.floating,
+    ));
+  }
 }

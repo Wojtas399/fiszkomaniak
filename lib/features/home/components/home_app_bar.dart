@@ -29,7 +29,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
           IconButton(
             padding: const EdgeInsets.all(0),
             onPressed: () {
-              Navigation.navigateToSettings(context);
+              Navigation.navigateToSettings();
             },
             icon: const Icon(MdiIcons.cog),
           ),

@@ -13,7 +13,14 @@ class HttpStatusInitial extends HttpStatus {
 
 class HttpStatusSubmitting extends HttpStatus {}
 
-class HttpStatusSuccess extends HttpStatus {}
+class HttpStatusSuccess extends HttpStatus {
+  final String? message;
+
+  const HttpStatusSuccess({this.message});
+
+  @override
+  List<Object> get props => [message ?? ''];
+}
 
 class HttpStatusFailure extends HttpStatus {
   final String message;

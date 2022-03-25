@@ -33,15 +33,19 @@ class FireCoursesRepository implements CoursesInterface {
   }
 
   @override
-  Future<void> changeCourseName(String newName) {
-    // TODO: implement changeCourseName
-    throw UnimplementedError();
+  Future<void> updateCourseName({
+    required String courseId,
+    required String newCourseName,
+  }) async {
+    await _fireCoursesService.updateCourseName(
+      courseId: courseId,
+      newName: newCourseName,
+    );
   }
 
   @override
-  Future<void> removeCourse(String id) {
-    // TODO: implement removeCourse
-    throw UnimplementedError();
+  Future<void> removeCourse(String courseId) async {
+    await _fireCoursesService.removeCourse(courseId);
   }
 
   ChangedDocument<Course>? _convertFireDocumentToChangedDocumentModel(

@@ -27,7 +27,7 @@ class AuthBloc {
   Future<HttpStatus> signIn(SignInModel data) async {
     try {
       await _authInterface.signIn(data);
-      return HttpStatusSuccess();
+      return const HttpStatusSuccess();
     } catch (error) {
       return HttpStatusFailure(message: error.toString());
     }
@@ -37,7 +37,7 @@ class AuthBloc {
     try {
       await _authInterface.signUp(data);
       await _settingsInterface.setDefaultSettings();
-      return HttpStatusSuccess();
+      return const HttpStatusSuccess();
     } catch (error) {
       return HttpStatusFailure(message: error.toString());
     }
@@ -46,7 +46,7 @@ class AuthBloc {
   Future<HttpStatus> sendPasswordResetEmail(String email) async {
     try {
       await _authInterface.sendPasswordResetEmail(email);
-      return HttpStatusSuccess();
+      return const HttpStatusSuccess();
     } catch (error) {
       return HttpStatusFailure(message: error.toString());
     }

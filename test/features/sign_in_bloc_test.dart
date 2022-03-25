@@ -55,13 +55,13 @@ void main() {
     build: () => signInBloc,
     setUp: () {
       when(() => authBloc.signIn(data))
-          .thenAnswer((_) async => HttpStatusSuccess());
+          .thenAnswer((_) async => const HttpStatusSuccess());
     },
     act: (SignInBloc bloc) =>
         bloc.add(SignInEventSubmit(email: data.email, password: data.password)),
     expect: () => [
       SignInState(httpStatus: HttpStatusSubmitting()),
-      SignInState(httpStatus: HttpStatusSuccess()),
+      const SignInState(httpStatus: HttpStatusSuccess()),
     ],
   );
 

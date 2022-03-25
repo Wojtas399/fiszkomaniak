@@ -15,7 +15,9 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
       : super(const CoursesState()) {
     _coursesInterface = coursesInterface;
     on<CoursesEventInitialize>(_initialize);
-    on<CoursesEventAddNewCourse>(_add);
+    on<CoursesEventAddNewCourse>(_addNewCourse);
+    on<CoursesEventUpdateCourseName>(_updateCourseName);
+    on<CoursesEventRemoveCourse>(_removeCourse);
     on<CoursesEventCourseAdded>(_onCourseAdded);
     on<CoursesEventCourseModified>(_onCourseModified);
     on<CoursesEventCourseRemoved>(_onCourseRemoved);
@@ -40,14 +42,63 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     );
   }
 
-  Future<void> _add(
+  Future<void> _addNewCourse(
     CoursesEventAddNewCourse event,
     Emitter<CoursesState> emit,
   ) async {
     try {
       emit(state.copyWith(httpStatus: HttpStatusSubmitting()));
       await _coursesInterface.addNewCourse(event.name);
-      emit(state.copyWith(httpStatus: HttpStatusSuccess()));
+      emit(state.copyWith(
+        httpStatus: const HttpStatusSuccess(
+          message: 'Pomyślnie dodano nowy kurs.',
+        ),
+      ));
+    } catch (error) {
+      emit(
+        state.copyWith(
+          httpStatus: HttpStatusFailure(message: error.toString()),
+        ),
+      );
+    }
+  }
+
+  Future<void> _updateCourseName(
+    CoursesEventUpdateCourseName event,
+    Emitter<CoursesState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(httpStatus: HttpStatusSubmitting()));
+      await _coursesInterface.updateCourseName(
+        courseId: event.courseId,
+        newCourseName: event.newCourseName,
+      );
+      emit(state.copyWith(
+        httpStatus: const HttpStatusSuccess(
+          message: 'Pomyślnie zmieniono nazwę kursu.',
+        ),
+      ));
+    } catch (error) {
+      emit(
+        state.copyWith(
+          httpStatus: HttpStatusFailure(message: error.toString()),
+        ),
+      );
+    }
+  }
+
+  Future<void> _removeCourse(
+    CoursesEventRemoveCourse event,
+    Emitter<CoursesState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(httpStatus: HttpStatusSubmitting()));
+      await _coursesInterface.removeCourse(event.courseId);
+      emit(state.copyWith(
+        httpStatus: const HttpStatusSuccess(
+          message: 'Pomyślnie usunięto kurs.',
+        ),
+      ));
     } catch (error) {
       emit(
         state.copyWith(
@@ -71,7 +122,12 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     CoursesEventCourseModified event,
     Emitter<CoursesState> emit,
   ) {
-    //TODO
+    List<Course> allCourses = [...state.allCourses];
+    final modifiedCourseIndex = allCourses.indexWhere(
+      (course) => course.id == event.course.id,
+    );
+    allCourses[modifiedCourseIndex] = event.course;
+    emit(state.copyWith(allCourses: allCourses));
   }
 
   void _onCourseRemoved(

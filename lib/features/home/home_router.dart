@@ -6,17 +6,33 @@ import 'package:fiszkomaniak/features/home/home_view.dart';
 import 'package:fiszkomaniak/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 
-class AppRouter {
+class HomeRouter extends StatelessWidget {
+  static final navigatorKey = GlobalKey<NavigatorState>();
+
   static const String home = '/';
 
   static const String settings = '/settings';
 
-  static const String courseCreator = '/course_creator';
+  static const String courseCreator = '/course-creator';
 
-  static Route<dynamic> generateRoute(RouteSettings routeSettings) {
+  const HomeRouter({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(
+      key: navigatorKey,
+      initialRoute: home,
+      onGenerateRoute: _onGenerateRoute,
+    );
+  }
+
+  Route<dynamic> _onGenerateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
       case home:
-        return MaterialPageRoute(builder: (_) => HomeView());
+        return MaterialPageRoute(
+          builder: (_) => HomeView(),
+          settings: routeSettings,
+        );
       case settings:
         return SlideUpRouteAnimation(page: const SettingsPage());
       case courseCreator:
@@ -26,7 +42,10 @@ class AppRouter {
           ),
         );
       default:
-        return MaterialPageRoute(builder: (_) => const Home());
+        return MaterialPageRoute(
+          builder: (_) => const Home(),
+          settings: routeSettings,
+        );
     }
   }
 }

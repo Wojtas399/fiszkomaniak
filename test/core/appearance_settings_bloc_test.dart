@@ -48,7 +48,7 @@ void main() {
       AppearanceSettingsEventLoad(),
     ),
     expect: () => [
-      AppearanceSettingsState(
+      const AppearanceSettingsState(
         isDarkModeOn: true,
         isDarkModeCompatibilityWithSystemOn: false,
         isSessionTimerInvisibilityOn: false,

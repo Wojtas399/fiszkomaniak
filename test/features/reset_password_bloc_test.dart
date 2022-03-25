@@ -44,14 +44,14 @@ void main() {
     build: () => resetPasswordBloc,
     setUp: () {
       when(() => authBloc.sendPasswordResetEmail(email))
-          .thenAnswer((_) async => HttpStatusSuccess());
+          .thenAnswer((_) async => const HttpStatusSuccess());
     },
     act: (ResetPasswordBloc bloc) => bloc.add(
       ResetPasswordEventSend(email: email),
     ),
     expect: () => [
       ResetPasswordState(httpStatus: HttpStatusSubmitting()),
-      ResetPasswordState(httpStatus: HttpStatusSuccess()),
+      const ResetPasswordState(httpStatus: HttpStatusSuccess()),
     ],
   );
 

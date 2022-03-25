@@ -50,7 +50,7 @@ void main() {
       NotificationsSettingsEventLoad(),
     ),
     expect: () => [
-      NotificationsSettingsState(
+      const NotificationsSettingsState(
         areSessionsPlannedNotificationsOn: true,
         areSessionsDefaultNotificationsOn: false,
         areAchievementsNotificationsOn: false,

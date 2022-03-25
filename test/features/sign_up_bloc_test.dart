@@ -168,7 +168,7 @@ void main() {
     build: () => signUpBloc,
     setUp: () {
       when(() => authBloc.signUp(data))
-          .thenAnswer((_) async => HttpStatusSuccess());
+          .thenAnswer((_) async => const HttpStatusSuccess());
     },
     act: (SignUpBloc bloc) => bloc.add(SignUpEventSubmit(
       username: data.username,
@@ -177,7 +177,7 @@ void main() {
     )),
     expect: () => [
       SignUpState(httpStatus: HttpStatusSubmitting()),
-      SignUpState(httpStatus: HttpStatusSuccess()),
+      const SignUpState(httpStatus: HttpStatusSuccess()),
     ],
     verify: (_) => verify(() => authBloc.signUp(data)).called(1),
   );

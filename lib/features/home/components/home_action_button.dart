@@ -21,10 +21,7 @@ class HomeActionButton extends StatelessWidget {
           child: const Icon(MdiIcons.archive),
           label: 'Kurs',
           onTap: () {
-            Navigation.navigateToCourseCreator(
-              context,
-              const CourseCreatorCreateMode(),
-            );
+            Navigation.navigateToCourseCreator(const CourseCreatorCreateMode());
           },
         ),
         SpeedDialChild(

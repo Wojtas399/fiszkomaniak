@@ -4,11 +4,13 @@ import '../course_creator_arguments.dart';
 
 class CourseCreatorState extends Equatable {
   final CourseCreatorMode mode;
+  final String? courseId;
+  final String originalCourseName;
   final String courseName;
   final bool hasCourseNameBeenEdited;
   final HttpStatus httpStatus;
 
-  bool get isButtonDisabled => courseName.isEmpty;
+  bool get isButtonDisabled => originalCourseName == courseName;
 
   String get title {
     if (mode is CourseCreatorCreateMode) {
@@ -30,6 +32,8 @@ class CourseCreatorState extends Equatable {
 
   const CourseCreatorState({
     this.mode = const CourseCreatorCreateMode(),
+    this.courseId,
+    this.originalCourseName = '',
     this.courseName = '',
     this.hasCourseNameBeenEdited = false,
     this.httpStatus = const HttpStatusInitial(),
@@ -37,12 +41,16 @@ class CourseCreatorState extends Equatable {
 
   CourseCreatorState copyWith({
     CourseCreatorMode? mode,
+    String? courseId,
+    String? originalCourseName,
     String? courseName,
     bool? hasCourseNameBeenEdited,
     HttpStatus? httpStatus,
   }) {
     return CourseCreatorState(
       mode: mode ?? this.mode,
+      courseId: courseId ?? this.courseId,
+      originalCourseName: originalCourseName ?? this.originalCourseName,
       courseName: courseName ?? this.courseName,
       hasCourseNameBeenEdited:
           hasCourseNameBeenEdited ?? this.hasCourseNameBeenEdited,

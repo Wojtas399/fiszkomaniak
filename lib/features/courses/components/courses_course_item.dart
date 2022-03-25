@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 class CoursesCourseItem extends StatelessWidget {
   final String title;
   final int amountOfGroups;
+  final Function(CoursePopupAction action) onActionSelected;
 
   const CoursesCourseItem({
     Key? key,
     required this.title,
     required this.amountOfGroups,
+    required this.onActionSelected,
   }) : super(key: key);
 
   @override
@@ -31,7 +33,7 @@ class CoursesCourseItem extends StatelessWidget {
                 title: title,
                 amountOfGroups: amountOfGroups,
               ),
-              const CoursesCoursePopupMenu(),
+              CoursesCoursePopupMenu(onActionSelected: onActionSelected),
             ],
           ),
         ),
