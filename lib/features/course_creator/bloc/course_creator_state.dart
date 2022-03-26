@@ -12,7 +12,7 @@ class CourseCreatorState extends Equatable {
     if (mode is CourseCreatorCreateMode) {
       return courseName.isEmpty;
     } else if (mode is CourseCreatorEditMode) {
-      return courseName == mode.courseName;
+      return courseName == mode.courseName || courseName.isEmpty;
     }
     return true;
   }

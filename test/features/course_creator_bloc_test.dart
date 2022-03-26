@@ -29,7 +29,86 @@ void main() {
     expect(state.mode, const CourseCreatorCreateMode());
     expect(state.courseName, '');
     expect(state.httpStatus, const HttpStatusInitial());
+    expect(courseCreatorBloc.state.isButtonDisabled, true);
   });
+
+  blocTest(
+    'is button disabled, create mode, not empty string',
+    build: () => courseCreatorBloc,
+    act: (_) => courseCreatorBloc.add(CourseCreatorEventCourseNameChanged(
+      courseName: 'courseName',
+    )),
+    verify: (_) {
+      expect(courseCreatorBloc.state.isButtonDisabled, false);
+    },
+  );
+
+  blocTest(
+    'is button disabled, edit mode, initial state',
+    build: () => courseCreatorBloc,
+    setUp: () {
+      when(() => coursesBloc.stream).thenAnswer(
+        (_) => Stream.value(const CoursesState()),
+      );
+    },
+    act: (_) => courseCreatorBloc.add(CourseCreatorEventInitialize(
+      mode: const CourseCreatorEditMode(
+        courseId: 'c1',
+        courseName: 'courseName',
+      ),
+    )),
+    verify: (_) {
+      expect(courseCreatorBloc.state.isButtonDisabled, true);
+    },
+  );
+
+  blocTest(
+    'is button disabled, edit mode, course name different than original value',
+    build: () => courseCreatorBloc,
+    setUp: () {
+      when(() => coursesBloc.stream).thenAnswer(
+        (_) => Stream.value(const CoursesState()),
+      );
+    },
+    act: (_) {
+      courseCreatorBloc.add(CourseCreatorEventInitialize(
+        mode: const CourseCreatorEditMode(
+          courseId: 'c1',
+          courseName: 'courseName',
+        ),
+      ));
+      courseCreatorBloc.add(
+        CourseCreatorEventCourseNameChanged(courseName: 'course'),
+      );
+    },
+    verify: (_) {
+      expect(courseCreatorBloc.state.isButtonDisabled, false);
+    },
+  );
+
+  blocTest(
+    'is button disabled, edit mode, empty string',
+    build: () => courseCreatorBloc,
+    setUp: () {
+      when(() => coursesBloc.stream).thenAnswer(
+        (_) => Stream.value(const CoursesState()),
+      );
+    },
+    act: (_) {
+      courseCreatorBloc.add(CourseCreatorEventInitialize(
+        mode: const CourseCreatorEditMode(
+          courseId: 'c1',
+          courseName: 'courseName',
+        ),
+      ));
+      courseCreatorBloc.add(
+        CourseCreatorEventCourseNameChanged(courseName: ''),
+      );
+    },
+    verify: (_) {
+      expect(courseCreatorBloc.state.isButtonDisabled, true);
+    },
+  );
 
   blocTest(
     'initialize, create mode',
