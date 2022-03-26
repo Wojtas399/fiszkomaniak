@@ -28,7 +28,7 @@ class AppearanceSettingsBloc
         isDarkModeCompatibilityWithSystemOn:
             settings.isDarkModeCompatibilityWithSystemOn,
         isSessionTimerInvisibilityOn: settings.isSessionTimerInvisibilityOn,
-        httpStatus: HttpStatusSuccess(),
+        httpStatus: const HttpStatusSuccess(),
       ));
     } catch (error) {
       emit(state.copyWith(

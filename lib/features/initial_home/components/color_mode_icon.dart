@@ -13,10 +13,7 @@ class ColorModeIcon extends StatelessWidget {
       right: 16,
       child: IconButton(
         onPressed: () {
-          final themeProvider = Provider.of<ThemeProvider>(
-            context,
-            listen: false,
-          );
+          final themeProvider = context.read<ThemeProvider>();
           themeProvider.toggleTheme(!themeProvider.isDarkMode);
         },
         icon: const Icon(MdiIcons.shieldMoonOutline),

@@ -12,9 +12,6 @@ class TextFieldTheme {
   }) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(
-        color: Colors.black,
-      ),
       hintText: placeholder,
       contentPadding: const EdgeInsets.symmetric(
         vertical: 10,

@@ -34,7 +34,6 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       children: [
         const TextFieldBackground(),
         TextFormField(
-          cursorColor: Colors.black,
           obscureText: !_isPasswordVisible,
           onChanged: widget.onChanged,
           validator: widget.validator,

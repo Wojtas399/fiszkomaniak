@@ -12,15 +12,18 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color disabledColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
     return SizedBox(
       width: 320,
       height: 51,
       child: ElevatedButton(
         onPressed: onPressed,
-        style: ElevatedButton.styleFrom(onSurface: Colors.black),
+        style: ElevatedButton.styleFrom(onSurface: disabledColor),
         child: Text(
-          label,
-          style: const TextStyle(color: Colors.white),
+          label.toUpperCase(),
+          style: const TextStyle(color: Colors.white, fontSize: 14),
         ),
       ),
     );
