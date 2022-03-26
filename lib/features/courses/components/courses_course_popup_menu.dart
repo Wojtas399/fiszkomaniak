@@ -11,44 +11,42 @@ class CoursesCoursePopupMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 24,
-      height: 24,
-      child: PopupMenuButton(
-        splashRadius: 24,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(8.0),
+    return Container(
+      margin: const EdgeInsets.only(top: 4, right: 4),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(100),
+        child: Material(
+          color: Colors.transparent,
+          child: PopupMenuButton(
+            icon: const Icon(MdiIcons.dotsVertical),
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                child: Row(
+                  children: const [
+                    Icon(MdiIcons.squareEditOutline),
+                    SizedBox(width: 16),
+                    Text('Edytuj'),
+                  ],
+                ),
+                onTap: () {
+                  onActionSelected(CoursePopupAction.edit);
+                },
+              ),
+              PopupMenuItem(
+                child: Row(
+                  children: const [
+                    Icon(MdiIcons.deleteOutline),
+                    SizedBox(width: 16),
+                    Text('Usuń'),
+                  ],
+                ),
+                onTap: () {
+                  onActionSelected(CoursePopupAction.remove);
+                },
+              ),
+            ],
           ),
         ),
-        icon: const Icon(MdiIcons.dotsVertical),
-        padding: const EdgeInsets.all(0),
-        itemBuilder: (_) => [
-          PopupMenuItem(
-            child: Row(
-              children: const [
-                Icon(MdiIcons.squareEditOutline),
-                SizedBox(width: 16),
-                Text('Edytuj'),
-              ],
-            ),
-            onTap: () {
-              onActionSelected(CoursePopupAction.edit);
-            },
-          ),
-          PopupMenuItem(
-            child: Row(
-              children: const [
-                Icon(MdiIcons.deleteOutline),
-                SizedBox(width: 16),
-                Text('Usuń'),
-              ],
-            ),
-            onTap: () {
-              onActionSelected(CoursePopupAction.remove);
-            },
-          ),
-        ],
       ),
     );
   }

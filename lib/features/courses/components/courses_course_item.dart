@@ -23,19 +23,16 @@ class CoursesCourseItem extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CoursesCourseItemInfo(
-                title: title,
-                amountOfGroups: amountOfGroups,
-              ),
-              CoursesCoursePopupMenu(onActionSelected: onActionSelected),
-            ],
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CoursesCourseItemInfo(
+              title: title,
+              amountOfGroups: amountOfGroups,
+            ),
+            CoursesCoursePopupMenu(onActionSelected: onActionSelected),
+          ],
         ),
       ),
     );

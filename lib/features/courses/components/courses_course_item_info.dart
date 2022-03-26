@@ -12,19 +12,22 @@ class CoursesCourseItemInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.subtitle1,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Liczba grup: $amountOfGroups',
-          style: Theme.of(context).textTheme.caption,
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Liczba grup: $amountOfGroups',
+            style: Theme.of(context).textTheme.caption,
+          ),
+        ],
+      ),
     );
   }
 }
