@@ -30,7 +30,7 @@ class NotificationsSettingsBloc
             settings.areSessionsDefaultNotificationsOn,
         areAchievementsNotificationsOn: settings.areAchievementsNotificationsOn,
         areLossOfDaysNotificationsOn: settings.areLossOfDaysNotificationsOn,
-        httpStatus: HttpStatusSuccess(),
+        httpStatus: const HttpStatusSuccess(),
       ));
     } catch (error) {
       emit(state.copyWith(

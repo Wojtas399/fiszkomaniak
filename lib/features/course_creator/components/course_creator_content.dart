@@ -12,7 +12,7 @@ import '../bloc/course_creator_state.dart';
 class CourseCreatorContent extends StatelessWidget {
   final TextEditingController courseNameController = TextEditingController();
 
-  CourseCreatorContent({Key? key}) : super(key: key) {}
+  CourseCreatorContent({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

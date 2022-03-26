@@ -6,7 +6,7 @@ import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
-import 'package:fiszkomaniak/providers/courses/courses_interface_provider.dart';
+import 'package:fiszkomaniak/providers/courses_interface_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
