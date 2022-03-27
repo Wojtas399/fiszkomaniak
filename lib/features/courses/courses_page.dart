@@ -2,6 +2,8 @@ import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_event.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
+import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_arguments.dart';
 import 'package:fiszkomaniak/features/courses/components/courses_course_item.dart';
 import 'package:fiszkomaniak/features/courses/components/courses_course_popup_menu.dart';
@@ -15,23 +17,41 @@ class CoursesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CoursesBloc, CoursesState>(
-      builder: (BuildContext context, CoursesState state) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: state.allCourses
-                  .map((course) => CoursesCourseItem(
-                        title: course.name,
-                        amountOfGroups: 4,
-                        onActionSelected: (CoursePopupAction action) {
-                          _manageCourseAction(context, action, course);
-                        },
-                      ))
-                  .toList(),
-            ),
-          ),
+      builder: (_, CoursesState coursesState) {
+        return BlocBuilder<GroupsBloc, GroupsState>(
+          builder: (BuildContext context, GroupsState groupsState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: coursesState.allCourses
+                      .map(
+                        (course) => _generateCourseItem(
+                          context,
+                          course,
+                          groupsState,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            );
+          },
         );
+      },
+    );
+  }
+
+  Widget _generateCourseItem(
+    BuildContext context,
+    Course course,
+    GroupsState groupsState,
+  ) {
+    return CoursesCourseItem(
+      title: course.name,
+      amountOfGroups: groupsState.getGroupsByCourseId(course.id).length,
+      onActionSelected: (CoursePopupAction action) {
+        _manageCourseAction(context, action, course);
       },
     );
   }
