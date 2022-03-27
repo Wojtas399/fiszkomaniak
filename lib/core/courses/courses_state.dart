@@ -21,6 +21,10 @@ class CoursesState extends Equatable {
     );
   }
 
+  String getCourseNameById(String courseId) {
+    return allCourses.firstWhere((course) => course.id == courseId).name;
+  }
+
   @override
   List<Object> get props => [
         allCourses,
