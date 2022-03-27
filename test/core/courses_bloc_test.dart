@@ -48,7 +48,7 @@ void main() {
             doc: Course(id: 'c3', name: 'course 3'),
           ),
           const ChangedDocument(
-            changeType: TypeOfDocumentChange.modified,
+            changeType: TypeOfDocumentChange.updated,
             doc: Course(id: 'c3', name: 'course 123'),
           ),
           const ChangedDocument(

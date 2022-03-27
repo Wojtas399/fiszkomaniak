@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiszkomaniak/firebase/fire_utils.dart';
 import 'package:fiszkomaniak/firebase/services/fire_courses_service.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
@@ -54,7 +55,7 @@ class FireCoursesRepository implements CoursesInterface {
     final docData = docChange.doc.data();
     if (docData != null) {
       return ChangedDocument(
-        changeType: _convertChangeType(docChange.type),
+        changeType: FireUtils.convertChangeType(docChange.type),
         doc: Course(
           id: docChange.doc.id,
           name: docData.name,
@@ -62,16 +63,5 @@ class FireCoursesRepository implements CoursesInterface {
       );
     }
     return null;
-  }
-
-  TypeOfDocumentChange _convertChangeType(DocumentChangeType fireChangeType) {
-    switch (fireChangeType) {
-      case DocumentChangeType.added:
-        return TypeOfDocumentChange.added;
-      case DocumentChangeType.modified:
-        return TypeOfDocumentChange.modified;
-      case DocumentChangeType.removed:
-        return TypeOfDocumentChange.removed;
-    }
   }
 }

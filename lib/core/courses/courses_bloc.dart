@@ -27,12 +27,16 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     _coursesSubscription = _coursesInterface.getCoursesSnapshots().listen(
       (courses) {
         for (final course in courses) {
-          if (course.changeType == TypeOfDocumentChange.added) {
-            add(CoursesEventCourseAdded(course: course.doc));
-          } else if (course.changeType == TypeOfDocumentChange.modified) {
-            add(CoursesEventCourseModified(course: course.doc));
-          } else if (course.changeType == TypeOfDocumentChange.removed) {
-            add(CoursesEventCourseRemoved(courseId: course.doc.id));
+          switch (course.changeType) {
+            case TypeOfDocumentChange.added:
+              add(CoursesEventCourseAdded(course: course.doc));
+              break;
+            case TypeOfDocumentChange.updated:
+              add(CoursesEventCourseModified(course: course.doc));
+              break;
+            case TypeOfDocumentChange.removed:
+              add(CoursesEventCourseRemoved(courseId: course.doc.id));
+              break;
           }
         }
       },

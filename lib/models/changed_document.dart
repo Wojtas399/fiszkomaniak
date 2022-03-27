@@ -13,4 +13,4 @@ class ChangedDocument<T> extends Equatable {
   List<Object> get props => [changeType];
 }
 
-enum TypeOfDocumentChange { added, modified, removed }
+enum TypeOfDocumentChange { added, updated, removed }
