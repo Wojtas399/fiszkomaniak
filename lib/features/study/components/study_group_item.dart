@@ -7,6 +7,7 @@ class StudyGroupItem extends StatelessWidget {
   final String groupName;
   final int amountOfLearnedFlashcards;
   final int amountOfAllFlashcards;
+  final VoidCallback? onTap;
 
   const StudyGroupItem({
     Key? key,
@@ -14,6 +15,7 @@ class StudyGroupItem extends StatelessWidget {
     required this.groupName,
     required this.amountOfLearnedFlashcards,
     required this.amountOfAllFlashcards,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -21,25 +23,28 @@ class StudyGroupItem extends StatelessWidget {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 8),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              StudyGroupItemInfo(
-                courseName: courseName,
-                groupName: groupName,
-              ),
-              const SizedBox(height: 8),
-              FlashcardsProgressBar(
-                amountOfLearnedFlashcards: amountOfLearnedFlashcards,
-                amountOfAllFlashcards: amountOfAllFlashcards,
-              ),
-            ],
+      child: GestureDetector(
+        onTap: onTap,
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                StudyGroupItemInfo(
+                  courseName: courseName,
+                  groupName: groupName,
+                ),
+                const SizedBox(height: 8),
+                FlashcardsProgressBar(
+                  amountOfLearnedFlashcards: amountOfLearnedFlashcards,
+                  amountOfAllFlashcards: amountOfAllFlashcards,
+                ),
+              ],
+            ),
           ),
         ),
       ),

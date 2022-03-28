@@ -4,11 +4,13 @@ import 'package:hexcolor/hexcolor.dart';
 class FlashcardsProgressBar extends StatelessWidget {
   final int amountOfLearnedFlashcards;
   final int amountOfAllFlashcards;
+  final double barHeight;
 
   const FlashcardsProgressBar({
     Key? key,
     required this.amountOfLearnedFlashcards,
     required this.amountOfAllFlashcards,
+    this.barHeight = 10,
   }) : super(key: key);
 
   @override
@@ -23,6 +25,7 @@ class FlashcardsProgressBar extends StatelessWidget {
         _ProgressBar(
           amountOfLearnedFlashcards: amountOfLearnedFlashcards,
           amountOfAllFlashcards: amountOfAllFlashcards,
+          barHeight: barHeight,
         ),
       ],
     );
@@ -32,11 +35,13 @@ class FlashcardsProgressBar extends StatelessWidget {
 class _ProgressBar extends StatelessWidget {
   final int amountOfLearnedFlashcards;
   final int amountOfAllFlashcards;
+  final double barHeight;
 
   const _ProgressBar({
     Key? key,
     required this.amountOfLearnedFlashcards,
     required this.amountOfAllFlashcards,
+    required this.barHeight,
   }) : super(key: key);
 
   @override
@@ -44,7 +49,7 @@ class _ProgressBar extends StatelessWidget {
     return Container(
       width: double.infinity,
       clipBehavior: Clip.hardEdge,
-      height: 10,
+      height: barHeight,
       decoration: BoxDecoration(
         color: HexColor('#B983FF').withOpacity(0.2),
         borderRadius: BorderRadius.circular(12),

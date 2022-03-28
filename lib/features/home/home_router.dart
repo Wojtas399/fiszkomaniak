@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_arguments.dart';
+import 'package:fiszkomaniak/features/group_preview/group_preview_page.dart';
 import 'package:fiszkomaniak/features/home/home.dart';
 import 'package:fiszkomaniak/features/home/home_view.dart';
 import 'package:fiszkomaniak/features/settings/settings_page.dart';
@@ -14,6 +15,8 @@ class HomeRouter extends StatelessWidget {
   static const String settings = '/settings';
 
   static const String courseCreator = '/course-creator';
+
+  static const String groupPreview = '/group-preview';
 
   const HomeRouter({Key? key}) : super(key: key);
 
@@ -40,6 +43,10 @@ class HomeRouter extends StatelessWidget {
           page: CourseCreator(
             mode: routeSettings.arguments as CourseCreatorMode,
           ),
+        );
+      case groupPreview:
+        return SlideUpRouteAnimation(
+          page: GroupPreview(groupId: routeSettings.arguments as String),
         );
       default:
         return MaterialPageRoute(

@@ -23,7 +23,7 @@ class Navigation {
     HomeRouter.navigatorKey.currentState?.pushNamed(HomeRouter.settings);
   }
 
-  static void navigateToCourseCreator(CourseCreatorMode mode) async {
+  static Future<void> navigateToCourseCreator(CourseCreatorMode mode) async {
     await Future.delayed(
       const Duration(milliseconds: 1),
       () {
@@ -32,6 +32,13 @@ class Navigation {
           arguments: mode,
         );
       },
+    );
+  }
+
+  static void navigateToGroupPreview(String groupId) {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.groupPreview,
+      arguments: groupId,
     );
   }
 }

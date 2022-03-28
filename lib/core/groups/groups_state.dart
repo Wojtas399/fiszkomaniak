@@ -21,6 +21,10 @@ class GroupsState extends Equatable {
     );
   }
 
+  Group getGroupById(String groupId) {
+    return allGroups.firstWhere((group) => group.id == groupId);
+  }
+
   List<Group> getGroupsByCourseId(String courseId) {
     return allGroups.where((group) => group.courseId == courseId).toList();
   }

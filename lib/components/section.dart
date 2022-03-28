@@ -48,7 +48,7 @@ class _Header extends StatelessWidget {
           flex: 12,
           child: Text(
             title,
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headline6,
           ),
         ),
         Expanded(

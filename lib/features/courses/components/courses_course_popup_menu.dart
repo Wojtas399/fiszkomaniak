@@ -18,6 +18,7 @@ class CoursesCoursePopupMenu extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: PopupMenuButton(
+            tooltip: '',
             icon: const Icon(MdiIcons.dotsVertical),
             itemBuilder: (_) => [
               PopupMenuItem(

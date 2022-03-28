@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
@@ -29,6 +30,9 @@ class StudyPage extends StatelessWidget {
                             groupName: group.name,
                             amountOfLearnedFlashcards: 250,
                             amountOfAllFlashcards: 500,
+                            onTap: () {
+                              Navigation.navigateToGroupPreview(group.id);
+                            },
                           ),
                         )
                         .toList(),
