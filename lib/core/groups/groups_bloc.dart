@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:fiszkomaniak/core/groups/groups_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
+import 'package:fiszkomaniak/core/groups/groups_status.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
@@ -30,13 +31,13 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
         _groupsInterface.getGroupsSnapshots().listen((groups) {
       for (final group in groups) {
         switch (group.changeType) {
-          case TypeOfDocumentChange.added:
+          case DbDocChangeType.added:
             add(GroupsEventGroupAdded(group: group.doc));
             break;
-          case TypeOfDocumentChange.updated:
+          case DbDocChangeType.updated:
             add(GroupsEventGroupUpdated(group: group.doc));
             break;
-          case TypeOfDocumentChange.removed:
+          case DbDocChangeType.removed:
             add(GroupsEventGroupRemoved(groupId: group.doc.id));
             break;
         }
@@ -88,11 +89,19 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
     //TODO
   }
 
-  void _removeGroup(
+  Future<void> _removeGroup(
     GroupsEventRemoveGroup event,
     Emitter<GroupsState> emit,
-  ) {
-    //TODO
+  ) async {
+    try {
+      emit(state.copyWith(status: GroupsStatusLoading()));
+      await _groupsInterface.removeGroup(event.groupId);
+      emit(state.copyWith(status: GroupsStatusGroupRemoved()));
+    } catch (error) {
+      emit(
+        state.copyWith(status: GroupsStatusError(message: error.toString())),
+      );
+    }
   }
 
   @override

@@ -1,28 +1,32 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
-import 'package:fiszkomaniak/models/http_status_model.dart';
+import 'groups_status.dart';
 
 class GroupsState extends Equatable {
   final List<Group> allGroups;
-  final HttpStatus httpStatus;
+  final GroupsStatus status;
 
   const GroupsState({
     this.allGroups = const [],
-    this.httpStatus = const HttpStatusInitial(),
+    this.status = const GroupsStatusInitial(),
   });
 
   GroupsState copyWith({
     List<Group>? allGroups,
-    HttpStatus? httpStatus,
+    GroupsStatus? status,
   }) {
     return GroupsState(
       allGroups: allGroups ?? this.allGroups,
-      httpStatus: httpStatus ?? const HttpStatusInitial(),
+      status: status ?? GroupsStatusLoaded(),
     );
   }
 
-  Group getGroupById(String groupId) {
-    return allGroups.firstWhere((group) => group.id == groupId);
+  Group? getGroupById(String groupId) {
+    final List<Group?> groups = [...allGroups];
+    return groups.firstWhere(
+      (group) => group?.id == groupId,
+      orElse: () => null,
+    );
   }
 
   List<Group> getGroupsByCourseId(String courseId) {
@@ -32,6 +36,6 @@ class GroupsState extends Equatable {
   @override
   List<Object> get props => [
         allGroups,
-        httpStatus,
+        status,
       ];
 }

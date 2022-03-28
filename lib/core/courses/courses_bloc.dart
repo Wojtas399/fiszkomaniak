@@ -28,13 +28,13 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
       (courses) {
         for (final course in courses) {
           switch (course.changeType) {
-            case TypeOfDocumentChange.added:
+            case DbDocChangeType.added:
               add(CoursesEventCourseAdded(course: course.doc));
               break;
-            case TypeOfDocumentChange.updated:
+            case DbDocChangeType.updated:
               add(CoursesEventCourseModified(course: course.doc));
               break;
-            case TypeOfDocumentChange.removed:
+            case DbDocChangeType.removed:
               add(CoursesEventCourseRemoved(courseId: course.doc.id));
               break;
           }

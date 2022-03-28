@@ -36,23 +36,23 @@ void main() {
       when(() => coursesInterface.getCoursesSnapshots()).thenAnswer(
         (_) => Stream.value([
           const ChangedDocument(
-            changeType: TypeOfDocumentChange.added,
+            changeType: DbDocChangeType.added,
             doc: Course(id: 'c1', name: 'course 1'),
           ),
           const ChangedDocument(
-            changeType: TypeOfDocumentChange.added,
+            changeType: DbDocChangeType.added,
             doc: Course(id: 'c2', name: 'course 2'),
           ),
           const ChangedDocument(
-            changeType: TypeOfDocumentChange.added,
+            changeType: DbDocChangeType.added,
             doc: Course(id: 'c3', name: 'course 3'),
           ),
           const ChangedDocument(
-            changeType: TypeOfDocumentChange.updated,
+            changeType: DbDocChangeType.updated,
             doc: Course(id: 'c3', name: 'course 123'),
           ),
           const ChangedDocument(
-            changeType: TypeOfDocumentChange.removed,
+            changeType: DbDocChangeType.removed,
             doc: Course(id: 'c3', name: 'course 123'),
           ),
         ]),

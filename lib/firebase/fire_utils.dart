@@ -2,16 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/changed_document.dart';
 
 class FireUtils {
-  static TypeOfDocumentChange convertChangeType(
+  static DbDocChangeType convertChangeType(
     DocumentChangeType fireChangeType,
   ) {
     switch (fireChangeType) {
       case DocumentChangeType.added:
-        return TypeOfDocumentChange.added;
+        return DbDocChangeType.added;
       case DocumentChangeType.modified:
-        return TypeOfDocumentChange.updated;
+        return DbDocChangeType.updated;
       case DocumentChangeType.removed:
-        return TypeOfDocumentChange.removed;
+        return DbDocChangeType.removed;
     }
   }
 }

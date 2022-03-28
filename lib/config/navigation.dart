@@ -19,6 +19,12 @@ class Navigation {
     ));
   }
 
+  static void backHome() {
+    HomeRouter.navigatorKey.currentState?.popUntil(
+      ModalRoute.withName(HomeRouter.home),
+    );
+  }
+
   static void navigateToSettings() {
     HomeRouter.navigatorKey.currentState?.pushNamed(HomeRouter.settings);
   }
