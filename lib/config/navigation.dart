@@ -41,6 +41,10 @@ class Navigation {
     );
   }
 
+  static void navigateToGroupCreator() {
+    HomeRouter.navigatorKey.currentState?.pushNamed(HomeRouter.groupCreator);
+  }
+
   static void navigateToGroupPreview(String groupId) {
     HomeRouter.navigatorKey.currentState?.pushNamed(
       HomeRouter.groupPreview,

@@ -27,6 +27,9 @@ class HomeActionButton extends StatelessWidget {
         SpeedDialChild(
           child: const Icon(MdiIcons.folder),
           label: 'Grupa',
+          onTap: () {
+            Navigation.navigateToGroupCreator();
+          },
         ),
         SpeedDialChild(
           child: const Icon(MdiIcons.paletteSwatch),
