@@ -61,6 +61,13 @@ class HomeListeners extends StatelessWidget {
             final GroupsStatus status = state.status;
             if (status is GroupsStatusLoading) {
               Dialogs.showLoadingDialog(context: context);
+            } else if (status is GroupsStatusGroupAdded) {
+              Navigator.of(context, rootNavigator: true).pop();
+              Navigation.backHome();
+              Dialogs.showSnackbarWithMessage(
+                context: context,
+                message: 'Pomyślnie dodano nową grupę',
+              );
             } else if (status is GroupsStatusGroupRemoved) {
               Navigator.of(context, rootNavigator: true).pop();
               Navigation.backHome();

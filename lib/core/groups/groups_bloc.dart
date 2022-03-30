@@ -12,7 +12,7 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
   StreamSubscription<List<ChangedDocument<Group>>>? _groupsSubscription;
 
   GroupsBloc({required GroupsInterface groupsInterface})
-      : super(const GroupsState()) {
+      : super(GroupsState()) {
     _groupsInterface = groupsInterface;
     on<GroupsEventInitialize>(_initialize);
     on<GroupsEventGroupAdded>(_groupAdded);
@@ -75,11 +75,24 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
     emit(state.copyWith(allGroups: allGroups));
   }
 
-  void _addGroup(
+  Future<void> _addGroup(
     GroupsEventAddGroup event,
     Emitter<GroupsState> emit,
-  ) {
-    //TODO
+  ) async {
+    try {
+      emit(state.copyWith(status: GroupsStatusLoading()));
+      await _groupsInterface.addNewGroup(
+        name: event.name,
+        courseId: event.courseId,
+        nameForQuestions: event.nameForQuestions,
+        nameForAnswers: event.nameForAnswers,
+      );
+      emit(state.copyWith(status: GroupsStatusGroupAdded()));
+    } catch (error) {
+      emit(
+        state.copyWith(status: GroupsStatusError(message: error.toString())),
+      );
+    }
   }
 
   void _updateGroup(

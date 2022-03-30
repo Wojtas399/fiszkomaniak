@@ -16,17 +16,22 @@ class StudyPage extends StatelessWidget {
       builder: (_, CoursesState coursesState) {
         return BlocBuilder<GroupsBloc, GroupsState>(
           builder: (_, GroupsState groupsState) {
-            return SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView(
+            return SingleChildScrollView(
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 16,
+                    right: 16,
+                    bottom: 32,
+                    left: 16,
+                  ),
                   child: Column(
                     children: groupsState.allGroups
                         .map(
                           (group) => StudyGroupItem(
-                            courseName: coursesState.getCourseNameById(
-                              group.courseId,
-                            ),
+                            courseName: coursesState
+                                    .getCourseNameById(group.courseId) ??
+                                '',
                             groupName: group.name,
                             amountOfLearnedFlashcards: 250,
                             amountOfAllFlashcards: 500,

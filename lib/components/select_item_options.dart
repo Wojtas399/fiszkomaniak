@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class SelectItemOptions extends StatelessWidget {
-  final List<String> options;
+  final Map<String, String> options;
 
   const SelectItemOptions({Key? key, required this.options}) : super(key: key);
 
@@ -18,8 +18,12 @@ class SelectItemOptions extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
-            children:
-                options.map((option) => _OptionItem(text: option)).toList(),
+            children: options.entries
+                .map((option) => _OptionItem(
+                      itemKey: option.key,
+                      value: option.value,
+                    ))
+                .toList(),
           ),
         ),
       ),
@@ -28,9 +32,14 @@ class SelectItemOptions extends StatelessWidget {
 }
 
 class _OptionItem extends StatelessWidget {
-  final String text;
+  final String itemKey;
+  final String value;
 
-  const _OptionItem({Key? key, required this.text}) : super(key: key);
+  const _OptionItem({
+    Key? key,
+    required this.itemKey,
+    required this.value,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +50,15 @@ class _OptionItem extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Text(
-            text,
+            value,
             style: Theme.of(context).textTheme.subtitle1,
           ),
         ),
         onTap: () {
-          Navigator.of(context).pop(text);
+          Navigator.of(context).pop({
+            'key': itemKey,
+            'value': value,
+          });
         },
       ),
     );

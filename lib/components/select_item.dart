@@ -8,8 +8,8 @@ class SelectItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  final List<String> options;
-  final Function(String value) onOptionSelected;
+  final Map<String, String> options;
+  final Function(String key, String value) onOptionSelected;
   final BehaviorSubject<String> value$ = BehaviorSubject<String>.seeded('');
 
   SelectItem({
@@ -26,15 +26,7 @@ class SelectItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () async {
-        String? selectedOption = await Navigator.of(context).push(
-          SlideLeftRouteAnimation(page: SelectItemOptions(options: options)),
-        );
-        if (selectedOption != null) {
-          value$.add(selectedOption);
-          onOptionSelected(selectedOption);
-        }
-      },
+      onTap: () => _onTap(context),
       borderRadius: const BorderRadius.all(Radius.circular(4)),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
@@ -65,5 +57,21 @@ class SelectItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _onTap(BuildContext context) async {
+    final selectedOption = await Navigator.of(context).push(
+      SlideLeftRouteAnimation(
+        page: SelectItemOptions(options: options),
+      ),
+    );
+    if (selectedOption != null) {
+      String? key = selectedOption['key'];
+      String? value = selectedOption['value'];
+      if (key != null && value != null) {
+        value$.add(value);
+        onOptionSelected(key, value);
+      }
+    }
   }
 }

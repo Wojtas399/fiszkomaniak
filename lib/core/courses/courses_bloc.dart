@@ -12,7 +12,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   StreamSubscription<List<ChangedDocument<Course>>>? _coursesSubscription;
 
   CoursesBloc({required CoursesInterface coursesInterface})
-      : super(const CoursesState()) {
+      : super(CoursesState()) {
     _coursesInterface = coursesInterface;
     on<CoursesEventInitialize>(_initialize);
     on<CoursesEventAddNewCourse>(_addNewCourse);

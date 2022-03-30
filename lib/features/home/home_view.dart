@@ -23,6 +23,7 @@ class HomeView extends StatelessWidget {
         builder: (_, AsyncSnapshot<int> snapshot) {
           int displayingPageNumber = snapshot.data ?? 0;
           return Scaffold(
+            extendBody: true,
             appBar: HomeAppBar(displayingPageNumber: displayingPageNumber),
             body: PageView(
               controller: _pageController,

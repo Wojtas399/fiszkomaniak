@@ -30,7 +30,7 @@ class GroupPreviewInformation extends StatelessWidget {
               ItemWithIcon(
                 icon: MdiIcons.archiveOutline,
                 label: 'Kurs',
-                text: coursesState.getCourseNameById(courseId),
+                text: coursesState.getCourseNameById(courseId) ?? '',
               ),
               ItemWithIcon(
                 icon: MdiIcons.fileOutline,
