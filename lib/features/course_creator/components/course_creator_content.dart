@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/button.dart';
-import '../../../components/textfields/textfield.dart';
+import '../../../components/textfields/custom_textfield.dart';
 import '../bloc/course_creator_state.dart';
 
 class CourseCreatorContent extends StatelessWidget {

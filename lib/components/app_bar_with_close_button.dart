@@ -4,11 +4,13 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 class AppBarWithCloseButton extends StatelessWidget
     implements PreferredSizeWidget {
   final String label;
+  final IconData closeIcon;
   final List<Widget>? actions;
 
   const AppBarWithCloseButton({
     Key? key,
     required this.label,
+    this.closeIcon = MdiIcons.close,
     this.actions,
   }) : super(key: key);
 
@@ -26,7 +28,7 @@ class AppBarWithCloseButton extends StatelessWidget
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: const Icon(MdiIcons.close),
+            icon: Icon(closeIcon),
           ),
         ),
       ),

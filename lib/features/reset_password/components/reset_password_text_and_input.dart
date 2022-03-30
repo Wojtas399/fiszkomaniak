@@ -2,7 +2,7 @@ import 'package:fiszkomaniak/features/reset_password/bloc/reset_password_bloc.da
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../../components/textfields/textfield.dart';
+import '../../../components/textfields/custom_textfield.dart';
 import '../bloc/reset_password_event.dart';
 import '../bloc/reset_password_state.dart';
 
