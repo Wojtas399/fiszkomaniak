@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
-import '../course_creator_arguments.dart';
+import '../course_creator_mode.dart';
 
 class CourseCreatorState extends Equatable {
   final CourseCreatorMode mode;

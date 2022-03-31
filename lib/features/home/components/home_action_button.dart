@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_arguments.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

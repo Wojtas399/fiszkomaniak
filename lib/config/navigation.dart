@@ -1,6 +1,6 @@
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_arguments.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/features/reset_password/reset_password_page.dart';
 import 'package:fiszkomaniak/main.dart';
 import 'package:flutter/material.dart';

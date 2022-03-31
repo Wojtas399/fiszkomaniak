@@ -2,7 +2,7 @@ import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.da
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_event.dart';
 import 'package:fiszkomaniak/features/course_creator/components/course_creator_app_bar.dart';
 import 'package:fiszkomaniak/features/course_creator/components/course_creator_content.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_arguments.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/courses/courses_bloc.dart';

@@ -4,7 +4,7 @@ import 'package:fiszkomaniak/core/courses/courses_event.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_arguments.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/features/courses/components/courses_course_item.dart';
 import 'package:fiszkomaniak/features/courses/components/courses_course_popup_menu.dart';
 import 'package:flutter/material.dart';

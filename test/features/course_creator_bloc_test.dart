@@ -5,7 +5,7 @@ import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_event.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_arguments.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
