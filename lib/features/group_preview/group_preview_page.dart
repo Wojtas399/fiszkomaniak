@@ -1,6 +1,8 @@
 import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_event.dart';
+import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/group_preview/components/group_preview_content.dart';
 import 'package:fiszkomaniak/features/group_preview/components/group_preview_popup_menu.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
@@ -24,7 +26,10 @@ class GroupPreview extends StatelessWidget {
             actions: [
               GroupPreviewPopupMenu(
                 onPopupActionSelected: (GroupPopupAction action) {
-                  _managePopupAction(context, action);
+                  final Group? group = state.getGroupById(groupId);
+                  if (group != null) {
+                    _managePopupAction(context, action, group);
+                  }
                 },
               ),
             ],
@@ -44,10 +49,14 @@ class GroupPreview extends StatelessWidget {
     );
   }
 
-  void _managePopupAction(BuildContext context, GroupPopupAction action) {
+  void _managePopupAction(
+    BuildContext context,
+    GroupPopupAction action,
+    Group group,
+  ) {
     switch (action) {
       case GroupPopupAction.edit:
-        // TODO: Handle this case.
+        Navigation.navigateToGroupCreator(GroupCreatorEditMode(group: group));
         break;
       case GroupPopupAction.addFlashcards:
         // TODO: Handle this case.

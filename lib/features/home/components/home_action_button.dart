@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -28,7 +29,7 @@ class HomeActionButton extends StatelessWidget {
           child: const Icon(MdiIcons.folder),
           label: 'Grupa',
           onTap: () {
-            Navigation.navigateToGroupCreator();
+            Navigation.navigateToGroupCreator(const GroupCreatorCreateMode());
           },
         ),
         SpeedDialChild(

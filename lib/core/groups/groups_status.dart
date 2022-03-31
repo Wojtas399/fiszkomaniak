@@ -17,6 +17,8 @@ class GroupsStatusLoaded extends GroupsStatus {}
 
 class GroupsStatusGroupAdded extends GroupsStatus {}
 
+class GroupsStatusGroupUpdated extends GroupsStatus {}
+
 class GroupsStatusGroupRemoved extends GroupsStatus {}
 
 class GroupsStatusError extends GroupsStatus {

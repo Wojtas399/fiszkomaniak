@@ -13,7 +13,7 @@ class GroupCreatorSubmitButton extends StatelessWidget {
     return BlocBuilder<GroupCreatorBloc, GroupCreatorState>(
       builder: (BuildContext context, GroupCreatorState state) {
         return Button(
-          label: 'utwórz',
+          label: state.modeButtonText,
           onPressed: state.isButtonDisabled
               ? null
               : () {

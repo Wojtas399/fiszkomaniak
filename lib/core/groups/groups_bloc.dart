@@ -95,11 +95,25 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
     }
   }
 
-  void _updateGroup(
+  Future<void> _updateGroup(
     GroupsEventUpdateGroup event,
     Emitter<GroupsState> emit,
-  ) {
-    //TODO
+  ) async {
+    try {
+      emit(state.copyWith(status: GroupsStatusLoading()));
+      await _groupsInterface.updateGroup(
+        groupId: event.groupId,
+        courseId: event.courseId,
+        name: event.name,
+        nameForQuestion: event.nameForQuestions,
+        nameForAnswers: event.nameForAnswers,
+      );
+      emit(state.copyWith(status: GroupsStatusGroupUpdated()));
+    } catch (error) {
+      emit(
+        state.copyWith(status: GroupsStatusError(message: error.toString())),
+      );
+    }
   }
 
   Future<void> _removeGroup(

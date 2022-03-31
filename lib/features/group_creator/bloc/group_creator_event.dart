@@ -1,8 +1,13 @@
+import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 
 abstract class GroupCreatorEvent {}
 
-class GroupCreatorEventInitialize extends GroupCreatorEvent {}
+class GroupCreatorEventInitialize extends GroupCreatorEvent {
+  final GroupCreatorMode mode;
+
+  GroupCreatorEventInitialize({required this.mode});
+}
 
 class GroupCreatorEventCourseChanged extends GroupCreatorEvent {
   final Course course;

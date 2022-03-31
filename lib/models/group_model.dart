@@ -24,3 +24,19 @@ class Group extends Equatable {
         nameForAnswers,
       ];
 }
+
+Group createGroup({
+  String id = '',
+  String name = '',
+  String courseId = '',
+  String nameForQuestions = '',
+  String nameForAnswers = '',
+}) {
+  return Group(
+    id: id,
+    name: name,
+    courseId: courseId,
+    nameForQuestions: nameForQuestions,
+    nameForAnswers: nameForAnswers,
+  );
+}

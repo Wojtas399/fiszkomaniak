@@ -58,12 +58,14 @@ class GroupsEventAddGroup extends GroupsEvent {
 }
 
 class GroupsEventUpdateGroup extends GroupsEvent {
+  final String groupId;
   final String? name;
   final String? courseId;
   final String? nameForQuestions;
   final String? nameForAnswers;
 
   GroupsEventUpdateGroup({
+    required this.groupId,
     this.name,
     this.courseId,
     this.nameForQuestions,
@@ -72,6 +74,7 @@ class GroupsEventUpdateGroup extends GroupsEvent {
 
   @override
   List<Object> get props => [
+        groupId,
         name ?? '',
         courseId ?? '',
         nameForQuestions ?? '',

@@ -9,12 +9,10 @@ class CourseCreatorState extends Equatable {
 
   bool get isButtonDisabled {
     final CourseCreatorMode mode = this.mode;
-    if (mode is CourseCreatorCreateMode) {
-      return courseName.isEmpty;
-    } else if (mode is CourseCreatorEditMode) {
+    if (mode is CourseCreatorEditMode) {
       return courseName == mode.courseName || courseName.isEmpty;
     }
-    return true;
+    return courseName.isEmpty;
   }
 
   String get title {

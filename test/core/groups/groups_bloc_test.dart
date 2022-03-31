@@ -243,6 +243,70 @@ void main() {
   );
 
   blocTest(
+    'update group, success',
+    build: () => groupsBloc,
+    setUp: () {
+      when(
+        () => groupsInterface.updateGroup(
+          groupId: 'g1',
+          name: 'name',
+          courseId: 'c1',
+        ),
+      ).thenAnswer((_) async => '');
+    },
+    act: (_) => groupsBloc.add(GroupsEventUpdateGroup(
+      groupId: 'g1',
+      name: 'name',
+      courseId: 'c1',
+    )),
+    expect: () => [
+      GroupsState(status: GroupsStatusLoading()),
+      GroupsState(status: GroupsStatusGroupUpdated()),
+    ],
+    verify: (_) {
+      verify(
+        () => groupsInterface.updateGroup(
+          groupId: 'g1',
+          name: 'name',
+          courseId: 'c1',
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'update group, failure',
+    build: () => groupsBloc,
+    setUp: () {
+      when(
+        () => groupsInterface.updateGroup(
+          groupId: 'g1',
+          name: 'name',
+          courseId: 'c1',
+        ),
+      ).thenThrow('Error...');
+    },
+    act: (_) => groupsBloc.add(GroupsEventUpdateGroup(
+      groupId: 'g1',
+      name: 'name',
+      courseId: 'c1',
+    )),
+    expect: () => [
+      GroupsState(status: GroupsStatusLoading()),
+      GroupsState(status: const GroupsStatusError(message: 'Error...')),
+    ],
+    verify: (_) {
+      verify(
+        () => groupsInterface.updateGroup(
+          groupId: 'g1',
+          name: 'name',
+          courseId: 'c1',
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest(
     'remove group, success',
     build: () => groupsBloc,
     setUp: () {

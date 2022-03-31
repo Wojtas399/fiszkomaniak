@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
@@ -41,8 +42,16 @@ class Navigation {
     );
   }
 
-  static void navigateToGroupCreator() {
-    HomeRouter.navigatorKey.currentState?.pushNamed(HomeRouter.groupCreator);
+  static Future<void> navigateToGroupCreator(GroupCreatorMode mode) async {
+    await Future.delayed(
+      const Duration(milliseconds: 1),
+      () {
+        HomeRouter.navigatorKey.currentState?.pushNamed(
+          HomeRouter.groupCreator,
+          arguments: mode,
+        );
+      },
+    );
   }
 
   static void navigateToGroupPreview(String groupId) {
