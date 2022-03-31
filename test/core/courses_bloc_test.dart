@@ -60,24 +60,24 @@ void main() {
     },
     act: (_) => coursesBloc.add(CoursesEventInitialize()),
     expect: () => [
-      const CoursesState(allCourses: [
+      CoursesState(allCourses: const [
         Course(id: 'c1', name: 'course 1'),
       ]),
-      const CoursesState(allCourses: [
+      CoursesState(allCourses: const [
         Course(id: 'c1', name: 'course 1'),
         Course(id: 'c2', name: 'course 2'),
       ]),
-      const CoursesState(allCourses: [
+      CoursesState(allCourses: const [
         Course(id: 'c1', name: 'course 1'),
         Course(id: 'c2', name: 'course 2'),
         Course(id: 'c3', name: 'course 3'),
       ]),
-      const CoursesState(allCourses: [
+      CoursesState(allCourses: const [
         Course(id: 'c1', name: 'course 1'),
         Course(id: 'c2', name: 'course 2'),
         Course(id: 'c3', name: 'course 123'),
       ]),
-      const CoursesState(allCourses: [
+      CoursesState(allCourses: const [
         Course(id: 'c1', name: 'course 1'),
         Course(id: 'c2', name: 'course 2'),
       ]),
@@ -96,8 +96,10 @@ void main() {
     ),
     expect: () => [
       CoursesState(httpStatus: HttpStatusSubmitting()),
-      const CoursesState(
-        httpStatus: HttpStatusSuccess(message: 'Pomyślnie dodano nowy kurs.'),
+      CoursesState(
+        httpStatus: const HttpStatusSuccess(
+          message: 'Pomyślnie dodano nowy kurs.',
+        ),
       ),
     ],
     verify: (_) {
@@ -117,8 +119,8 @@ void main() {
     ),
     expect: () => [
       CoursesState(httpStatus: HttpStatusSubmitting()),
-      const CoursesState(
-        httpStatus: HttpStatusFailure(message: 'Error...'),
+      CoursesState(
+        httpStatus: const HttpStatusFailure(message: 'Error...'),
       ),
     ],
     verify: (_) {
@@ -140,8 +142,8 @@ void main() {
     ),
     expect: () => [
       CoursesState(httpStatus: HttpStatusSubmitting()),
-      const CoursesState(
-        httpStatus: HttpStatusSuccess(
+      CoursesState(
+        httpStatus: const HttpStatusSuccess(
           message: 'Pomyślnie zmieniono nazwę kursu.',
         ),
       ),
@@ -168,8 +170,8 @@ void main() {
     ),
     expect: () => [
       CoursesState(httpStatus: HttpStatusSubmitting()),
-      const CoursesState(
-        httpStatus: HttpStatusFailure(message: 'Error...'),
+      CoursesState(
+        httpStatus: const HttpStatusFailure(message: 'Error...'),
       ),
     ],
     verify: (_) {
@@ -192,8 +194,10 @@ void main() {
     ),
     expect: () => [
       CoursesState(httpStatus: HttpStatusSubmitting()),
-      const CoursesState(
-        httpStatus: HttpStatusSuccess(message: 'Pomyślnie usunięto kurs.'),
+      CoursesState(
+        httpStatus: const HttpStatusSuccess(
+          message: 'Pomyślnie usunięto kurs.',
+        ),
       ),
     ],
     verify: (_) {
@@ -212,8 +216,8 @@ void main() {
     ),
     expect: () => [
       CoursesState(httpStatus: HttpStatusSubmitting()),
-      const CoursesState(
-        httpStatus: HttpStatusFailure(message: 'Error...'),
+      CoursesState(
+        httpStatus: const HttpStatusFailure(message: 'Error...'),
       ),
     ],
     verify: (_) {
@@ -228,7 +232,7 @@ void main() {
       course: const Course(id: 'c1', name: 'course 1'),
     )),
     expect: () => [
-      const CoursesState(allCourses: [
+      CoursesState(allCourses: const [
         Course(id: 'c1', name: 'course 1'),
       ])
     ],
@@ -246,10 +250,10 @@ void main() {
       ));
     },
     expect: () => [
-      const CoursesState(allCourses: [
+      CoursesState(allCourses: const [
         Course(id: 'c1', name: 'course 1'),
       ]),
-      const CoursesState(allCourses: [
+      CoursesState(allCourses: const [
         Course(id: 'c1', name: 'course 1234'),
       ]),
     ],
@@ -265,10 +269,10 @@ void main() {
       coursesBloc.add(CoursesEventCourseRemoved(courseId: 'c1'));
     },
     expect: () => [
-      const CoursesState(allCourses: [
+      CoursesState(allCourses: const [
         Course(id: 'c1', name: 'course 1'),
       ]),
-      const CoursesState(allCourses: []),
+      CoursesState(allCourses: const []),
     ],
   );
 }

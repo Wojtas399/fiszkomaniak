@@ -48,7 +48,7 @@ void main() {
     build: () => courseCreatorBloc,
     setUp: () {
       when(() => coursesBloc.stream).thenAnswer(
-        (_) => Stream.value(const CoursesState()),
+        (_) => Stream.value(CoursesState()),
       );
     },
     act: (_) => courseCreatorBloc.add(CourseCreatorEventInitialize(
@@ -67,7 +67,7 @@ void main() {
     build: () => courseCreatorBloc,
     setUp: () {
       when(() => coursesBloc.stream).thenAnswer(
-        (_) => Stream.value(const CoursesState()),
+        (_) => Stream.value(CoursesState()),
       );
     },
     act: (_) {
@@ -91,7 +91,7 @@ void main() {
     build: () => courseCreatorBloc,
     setUp: () {
       when(() => coursesBloc.stream).thenAnswer(
-        (_) => Stream.value(const CoursesState()),
+        (_) => Stream.value(CoursesState()),
       );
     },
     act: (_) {
@@ -115,7 +115,7 @@ void main() {
     build: () => courseCreatorBloc,
     setUp: () {
       when(() => coursesBloc.stream).thenAnswer(
-        (_) => Stream.value(const CoursesState()),
+        (_) => Stream.value(CoursesState()),
       );
     },
     act: (_) => courseCreatorBloc.add(
@@ -131,7 +131,7 @@ void main() {
     build: () => courseCreatorBloc,
     setUp: () {
       when(() => coursesBloc.stream).thenAnswer(
-        (_) => Stream.value(const CoursesState()),
+        (_) => Stream.value(CoursesState()),
       );
     },
     act: (_) => courseCreatorBloc.add(
@@ -188,7 +188,7 @@ void main() {
     build: () => courseCreatorBloc,
     setUp: () {
       when(() => coursesBloc.stream).thenAnswer(
-        (_) => Stream.value(const CoursesState()),
+        (_) => Stream.value(CoursesState()),
       );
     },
     act: (_) {

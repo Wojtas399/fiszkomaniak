@@ -169,6 +169,80 @@ void main() {
   );
 
   blocTest(
+    'add group, success',
+    build: () => groupsBloc,
+    setUp: () {
+      when(
+        () => groupsInterface.addNewGroup(
+          name: 'name',
+          courseId: 'courseId',
+          nameForQuestions: 'nameForQuestions',
+          nameForAnswers: 'nameForAnswers',
+        ),
+      ).thenAnswer((_) async => '');
+    },
+    act: (_) => groupsBloc.add(
+      GroupsEventAddGroup(
+        name: 'name',
+        courseId: 'courseId',
+        nameForQuestions: 'nameForQuestions',
+        nameForAnswers: 'nameForAnswers',
+      ),
+    ),
+    expect: () => [
+      GroupsState(status: GroupsStatusLoading()),
+      GroupsState(status: GroupsStatusGroupAdded()),
+    ],
+    verify: (_) {
+      verify(
+        () => groupsInterface.addNewGroup(
+          name: 'name',
+          courseId: 'courseId',
+          nameForQuestions: 'nameForQuestions',
+          nameForAnswers: 'nameForAnswers',
+        ),
+      );
+    },
+  );
+
+  blocTest(
+    'add group, failure',
+    build: () => groupsBloc,
+    setUp: () {
+      when(
+        () => groupsInterface.addNewGroup(
+          name: 'name',
+          courseId: 'courseId',
+          nameForQuestions: 'nameForQuestions',
+          nameForAnswers: 'nameForAnswers',
+        ),
+      ).thenThrow('Error...');
+    },
+    act: (_) => groupsBloc.add(
+      GroupsEventAddGroup(
+        name: 'name',
+        courseId: 'courseId',
+        nameForQuestions: 'nameForQuestions',
+        nameForAnswers: 'nameForAnswers',
+      ),
+    ),
+    expect: () => [
+      GroupsState(status: GroupsStatusLoading()),
+      GroupsState(status: const GroupsStatusError(message: 'Error...')),
+    ],
+    verify: (_) {
+      verify(
+        () => groupsInterface.addNewGroup(
+          name: 'name',
+          courseId: 'courseId',
+          nameForQuestions: 'nameForQuestions',
+          nameForAnswers: 'nameForAnswers',
+        ),
+      );
+    },
+  );
+
+  blocTest(
     'remove group, success',
     build: () => groupsBloc,
     setUp: () {
@@ -193,7 +267,7 @@ void main() {
     act: (_) => groupsBloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
     expect: () => [
       GroupsState(status: GroupsStatusLoading()),
-      const GroupsState(status: GroupsStatusError(message: 'Error...')),
+      GroupsState(status: const GroupsStatusError(message: 'Error...')),
     ],
     verify: (_) {
       verify(() => groupsInterface.removeGroup('g1')).called(1);

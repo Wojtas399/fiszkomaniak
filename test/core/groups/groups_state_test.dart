@@ -30,7 +30,7 @@ void main() {
   ];
 
   setUp(() {
-    groupsState = const GroupsState();
+    groupsState = GroupsState();
   });
 
   test('initial state', () {
