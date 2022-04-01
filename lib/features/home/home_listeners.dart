@@ -19,6 +19,7 @@ class HomeListeners extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Dialogs dialogs = Dialogs();
     return MultiBlocListener(
       listeners: [
         BlocListener<AppearanceSettingsBloc, AppearanceSettingsState>(
@@ -35,21 +36,17 @@ class HomeListeners extends StatelessWidget {
           listener: (BuildContext context, CoursesState state) {
             HttpStatus status = state.httpStatus;
             if (status is HttpStatusSubmitting) {
-              Dialogs.showLoadingDialog(context: context);
+              dialogs.showLoadingDialog();
             } else if (status is HttpStatusSuccess) {
               Navigator.of(context, rootNavigator: true).pop();
               Navigation.backHome();
               final String? message = status.message;
               if (message != null) {
-                Dialogs.showSnackbarWithMessage(
-                  context: context,
-                  message: message,
-                );
+                dialogs.showSnackbarWithMessage(message);
               }
             } else if (status is HttpStatusFailure) {
               Navigator.of(context, rootNavigator: true).pop();
-              Dialogs.showDialogWithMessage(
-                context: context,
+              dialogs.showDialogWithMessage(
                 title: 'Wystąpił błąd...',
                 message: status.message,
               );
@@ -60,32 +57,24 @@ class HomeListeners extends StatelessWidget {
           listener: (BuildContext context, GroupsState state) {
             final GroupsStatus status = state.status;
             if (status is GroupsStatusLoading) {
-              Dialogs.showLoadingDialog(context: context);
+              dialogs.showLoadingDialog();
             } else if (status is GroupsStatusGroupAdded) {
               Navigator.of(context, rootNavigator: true).pop();
               Navigation.backHome();
-              Dialogs.showSnackbarWithMessage(
-                context: context,
-                message: 'Pomyślnie dodano nową grupę.',
-              );
+              dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
             } else if (status is GroupsStatusGroupUpdated) {
               Navigator.of(context, rootNavigator: true).pop();
               Navigator.pop(context);
-              Dialogs.showSnackbarWithMessage(
-                context: context,
-                message: 'Pomyślnie zaktualizowano grupę.',
+              dialogs.showSnackbarWithMessage(
+                'Pomyślnie zaktualizowano grupę.',
               );
             } else if (status is GroupsStatusGroupRemoved) {
               Navigator.of(context, rootNavigator: true).pop();
               Navigation.backHome();
-              Dialogs.showSnackbarWithMessage(
-                context: context,
-                message: 'Pomyślnie usunięto grupę.',
-              );
+              dialogs.showSnackbarWithMessage('Pomyślnie usunięto grupę.');
             } else if (status is GroupsStatusError) {
               Navigator.of(context, rootNavigator: true).pop();
-              Dialogs.showDialogWithMessage(
-                context: context,
+              dialogs.showDialogWithMessage(
                 title: 'Wystąpił błąd...',
                 message: status.message,
               );
