@@ -20,7 +20,7 @@ class CourseCreatorContent extends StatelessWidget {
       builder: (BuildContext context, CourseCreatorState state) {
         CourseCreatorMode mode = state.mode;
         if (mode is CourseCreatorEditMode &&
-            mode.courseName == state.courseName) {
+            mode.course.name == state.courseName) {
           courseNameController.text = state.courseName;
         }
         return OnTapFocusLoseArea(

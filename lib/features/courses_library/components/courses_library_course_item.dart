@@ -1,13 +1,13 @@
-import 'package:fiszkomaniak/features/courses/components/courses_course_item_info.dart';
-import 'package:fiszkomaniak/features/courses/components/courses_course_popup_menu.dart';
+import 'package:fiszkomaniak/features/courses_library/components/courses_library_course_item_info.dart';
+import 'package:fiszkomaniak/features/courses_library/components/courses_library_course_popup_menu.dart';
 import 'package:flutter/material.dart';
 
-class CoursesCourseItem extends StatelessWidget {
+class CoursesLibraryCourseItem extends StatelessWidget {
   final String title;
   final int amountOfGroups;
   final Function(CoursePopupAction action) onActionSelected;
 
-  const CoursesCourseItem({
+  const CoursesLibraryCourseItem({
     Key? key,
     required this.title,
     required this.amountOfGroups,
@@ -27,11 +27,11 @@ class CoursesCourseItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CoursesCourseItemInfo(
+            CoursesLibraryCourseItemInfo(
               title: title,
               amountOfGroups: amountOfGroups,
             ),
-            CoursesCoursePopupMenu(onActionSelected: onActionSelected),
+            CoursesLibraryCoursePopupMenu(onActionSelected: onActionSelected),
           ],
         ),
       ),

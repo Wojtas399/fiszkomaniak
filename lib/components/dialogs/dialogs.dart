@@ -5,18 +5,21 @@ import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:flutter/material.dart';
 
 class Dialogs {
+  bool _isLoadingDialogOpened = false;
+
   Future<void> showLoadingDialog({
     BuildContext? context,
     String? loadingText,
   }) async {
     final BuildContext? homeContext = HomeRouter.navigatorKey.currentContext;
     final BuildContext? mainContext = context ?? homeContext;
-    if (mainContext != null) {
+    if (mainContext != null && !_isLoadingDialogOpened) {
+      _isLoadingDialogOpened = true;
       await showDialog(
         context: mainContext,
         barrierDismissible: false,
         builder: (_) => SimpleLoadingDialog(text: loadingText),
-      );
+      ).then((_) => _isLoadingDialogOpened = false);
     }
   }
 

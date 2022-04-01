@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,19 +19,14 @@ void main() {
   });
 
   test('copy with mode', () {
+    final Course course = createCourse(id: 'c1', name: 'name');
     final CourseCreatorState state1 = state.copyWith(
-      mode: const CourseCreatorEditMode(courseId: 'c1', courseName: 'name'),
+      mode: CourseCreatorEditMode(course: course),
     );
     final CourseCreatorState state2 = state1.copyWith();
 
-    expect(
-      state1.mode,
-      const CourseCreatorEditMode(courseId: 'c1', courseName: 'name'),
-    );
-    expect(
-      state2.mode,
-      const CourseCreatorEditMode(courseId: 'c1', courseName: 'name'),
-    );
+    expect(state1.mode, CourseCreatorEditMode(course: course));
+    expect(state2.mode, CourseCreatorEditMode(course: course));
   });
 
   test('copy with course name', () {
@@ -61,9 +57,8 @@ void main() {
 
   test('is button disabled, edit mode, data not edited', () {
     final CourseCreatorState updatedState = state.copyWith(
-      mode: const CourseCreatorEditMode(
-        courseId: 'c1',
-        courseName: 'courseName',
+      mode: CourseCreatorEditMode(
+        course: createCourse(id: 'c1', name: 'courseName'),
       ),
       courseName: 'courseName',
     );
@@ -73,9 +68,8 @@ void main() {
 
   test('is button disabled, edit mode, data edited', () {
     final CourseCreatorState state1 = state.copyWith(
-      mode: const CourseCreatorEditMode(
-        courseId: 'c1',
-        courseName: 'courseName',
+      mode: CourseCreatorEditMode(
+        course: createCourse(id: 'c1', name: 'courseName'),
       ),
       courseName: 'courseName',
     );
@@ -88,9 +82,8 @@ void main() {
 
   test('is button disabled, edit mode, empty string', () {
     final CourseCreatorState state1 = state.copyWith(
-      mode: const CourseCreatorEditMode(
-        courseId: 'c1',
-        courseName: 'courseName',
+      mode: CourseCreatorEditMode(
+        course: createCourse(id: 'c1', name: 'courseName'),
       ),
       courseName: 'courseName',
     );
@@ -107,10 +100,7 @@ void main() {
 
   test('title, edit mode', () {
     final CourseCreatorState updatedState = state.copyWith(
-      mode: const CourseCreatorEditMode(
-        courseId: 'c1',
-        courseName: 'courseName',
-      ),
+      mode: CourseCreatorEditMode(course: createCourse()),
     );
 
     expect(updatedState.title, 'Edycja kursu');
@@ -122,10 +112,7 @@ void main() {
 
   test('button text, edit mode', () {
     final CourseCreatorState updatedState = state.copyWith(
-      mode: const CourseCreatorEditMode(
-        courseId: 'c1',
-        courseName: 'courseName',
-      ),
+      mode: CourseCreatorEditMode(course: createCourse()),
     );
 
     expect(updatedState.buttonText, 'zapisz');

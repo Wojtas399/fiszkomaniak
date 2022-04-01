@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/features/account/account_page.dart';
-import 'package:fiszkomaniak/features/courses/courses_page.dart';
+import 'package:fiszkomaniak/features/courses_library/courses_library_page.dart';
 import 'package:fiszkomaniak/features/home/components/home_app_bar.dart';
 import 'package:fiszkomaniak/features/home/components/home_bottom_navigation_bar.dart';
 import 'package:fiszkomaniak/features/home/home_listeners.dart';
@@ -33,7 +33,7 @@ class HomeView extends StatelessWidget {
               children: const [
                 StudyPage(),
                 SessionsPage(),
-                CoursesPage(),
+                CoursesLibraryPage(),
                 AccountPage(),
               ],
             ),

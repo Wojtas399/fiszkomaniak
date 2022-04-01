@@ -90,3 +90,12 @@ class GroupsEventRemoveGroup extends GroupsEvent {
   @override
   List<Object> get props => [groupId];
 }
+
+class GroupsEventRemoveGroupsFromCourse extends GroupsEvent {
+  final String courseId;
+
+  GroupsEventRemoveGroupsFromCourse({required this.courseId});
+
+  @override
+  List<Object> get props => [courseId];
+}

@@ -21,6 +21,7 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
     on<GroupsEventAddGroup>(_addGroup);
     on<GroupsEventUpdateGroup>(_updateGroup);
     on<GroupsEventRemoveGroup>(_removeGroup);
+    on<GroupsEventRemoveGroupsFromCourse>(_removeGroupsFromCourse);
   }
 
   void _initialize(
@@ -124,6 +125,21 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
       emit(state.copyWith(status: GroupsStatusLoading()));
       await _groupsInterface.removeGroup(event.groupId);
       emit(state.copyWith(status: GroupsStatusGroupRemoved()));
+    } catch (error) {
+      emit(
+        state.copyWith(status: GroupsStatusError(message: error.toString())),
+      );
+    }
+  }
+
+  Future<void> _removeGroupsFromCourse(
+    GroupsEventRemoveGroupsFromCourse event,
+    Emitter<GroupsState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: GroupsStatusLoading()));
+      await _groupsInterface.removeGroupsFromCourse(event.courseId);
+      emit(state.copyWith(status: GroupsStatusGroupsFromCourseRemoved()));
     } catch (error) {
       emit(
         state.copyWith(status: GroupsStatusError(message: error.toString())),

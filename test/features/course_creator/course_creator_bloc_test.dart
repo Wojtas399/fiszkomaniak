@@ -6,6 +6,7 @@ import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.da
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_event.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -50,12 +51,12 @@ void main() {
     },
     act: (_) => courseCreatorBloc.add(
       CourseCreatorEventInitialize(
-        mode: const CourseCreatorEditMode(courseId: 'c1', courseName: 'c123'),
+        mode: CourseCreatorEditMode(course: createCourse(name: 'c123')),
       ),
     ),
     expect: () => [
-      const CourseCreatorState(
-        mode: CourseCreatorEditMode(courseId: 'c1', courseName: 'c123'),
+      CourseCreatorState(
+        mode: CourseCreatorEditMode(course: createCourse(name: 'c123')),
         courseName: 'c123',
       ),
     ],
@@ -107,7 +108,9 @@ void main() {
     },
     act: (_) {
       courseCreatorBloc.add(CourseCreatorEventInitialize(
-        mode: const CourseCreatorEditMode(courseId: 'c1', courseName: 'c123'),
+        mode: CourseCreatorEditMode(
+          course: createCourse(id: 'c1', name: 'c123'),
+        ),
       ));
       courseCreatorBloc.add(CourseCreatorEventCourseNameChanged(
         courseName: 'course name',
@@ -115,12 +118,16 @@ void main() {
       courseCreatorBloc.add(CourseCreatorEventSaveChanges());
     },
     expect: () => [
-      const CourseCreatorState(
-        mode: CourseCreatorEditMode(courseId: 'c1', courseName: 'c123'),
+      CourseCreatorState(
+        mode: CourseCreatorEditMode(
+          course: createCourse(id: 'c1', name: 'c123'),
+        ),
         courseName: 'c123',
       ),
-      const CourseCreatorState(
-        mode: CourseCreatorEditMode(courseId: 'c1', courseName: 'c123'),
+      CourseCreatorState(
+        mode: CourseCreatorEditMode(
+          course: createCourse(id: 'c1', name: 'c123'),
+        ),
         courseName: 'course name',
       ),
     ],

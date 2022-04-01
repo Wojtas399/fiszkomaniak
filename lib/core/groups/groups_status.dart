@@ -21,6 +21,8 @@ class GroupsStatusGroupUpdated extends GroupsStatus {}
 
 class GroupsStatusGroupRemoved extends GroupsStatus {}
 
+class GroupsStatusGroupsFromCourseRemoved extends GroupsStatus {}
+
 class GroupsStatusError extends GroupsStatus {
   final String message;
 

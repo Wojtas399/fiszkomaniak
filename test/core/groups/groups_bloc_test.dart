@@ -13,62 +13,32 @@ class MockGroupsInterface extends Mock implements GroupsInterface {}
 
 void main() {
   final GroupsInterface groupsInterface = MockGroupsInterface();
-  late GroupsBloc groupsBloc;
+  late GroupsBloc bloc;
   final List<ChangedDocument<Group>> snapshots = [
-    const ChangedDocument(
+    ChangedDocument(
       changeType: DbDocChangeType.added,
-      doc: Group(
-        id: 'g1',
-        name: 'group 1',
-        courseId: 'c1',
-        nameForQuestions: 'nameQ1',
-        nameForAnswers: 'nameA1',
-      ),
+      doc: createGroup(id: 'g1'),
     ),
-    const ChangedDocument(
+    ChangedDocument(
       changeType: DbDocChangeType.added,
-      doc: Group(
-        id: 'g2',
-        name: 'group 2',
-        courseId: 'c2',
-        nameForQuestions: 'nameQ2',
-        nameForAnswers: 'nameA2',
-      ),
+      doc: createGroup(id: 'g2'),
     ),
-    const ChangedDocument(
+    ChangedDocument(
       changeType: DbDocChangeType.added,
-      doc: Group(
-        id: 'g3',
-        name: 'group 3',
-        courseId: 'c2',
-        nameForQuestions: 'nameQ3',
-        nameForAnswers: 'nameA3',
-      ),
+      doc: createGroup(id: 'g3', name: 'group3'),
     ),
-    const ChangedDocument(
+    ChangedDocument(
       changeType: DbDocChangeType.updated,
-      doc: Group(
-        id: 'g3',
-        name: 'group name 3',
-        courseId: 'c2',
-        nameForQuestions: 'nameQ3',
-        nameForAnswers: 'nameA3',
-      ),
+      doc: createGroup(id: 'g3', name: 'group 3'),
     ),
-    const ChangedDocument(
+    ChangedDocument(
       changeType: DbDocChangeType.removed,
-      doc: Group(
-        id: 'g3',
-        name: 'group name 3',
-        courseId: 'c2',
-        nameForQuestions: 'nameQ3',
-        nameForAnswers: 'nameA3',
-      ),
+      doc: createGroup(id: 'g3'),
     )
   ];
 
   setUp(() {
-    groupsBloc = GroupsBloc(groupsInterface: groupsInterface);
+    bloc = GroupsBloc(groupsInterface: groupsInterface);
   });
 
   tearDown(() {
@@ -77,12 +47,12 @@ void main() {
 
   blocTest(
     'initialize',
-    build: () => groupsBloc,
+    build: () => bloc,
     setUp: () {
       when(() => groupsInterface.getGroupsSnapshots())
           .thenAnswer((_) => Stream.value(snapshots));
     },
-    act: (_) => groupsBloc.add(GroupsEventInitialize()),
+    act: (_) => bloc.add(GroupsEventInitialize()),
     expect: () => [
       GroupsState(
         allGroups: [snapshots[0].doc],
@@ -120,8 +90,8 @@ void main() {
 
   blocTest(
     'group added',
-    build: () => groupsBloc,
-    act: (_) => groupsBloc.add(GroupsEventGroupAdded(group: snapshots[0].doc)),
+    build: () => bloc,
+    act: (_) => bloc.add(GroupsEventGroupAdded(group: snapshots[0].doc)),
     expect: () => [
       GroupsState(
         allGroups: [snapshots[0].doc],
@@ -132,10 +102,10 @@ void main() {
 
   blocTest(
     'group updated',
-    build: () => groupsBloc,
+    build: () => bloc,
     act: (_) {
-      groupsBloc.add(GroupsEventGroupAdded(group: snapshots[2].doc));
-      groupsBloc.add(GroupsEventGroupUpdated(group: snapshots[3].doc));
+      bloc.add(GroupsEventGroupAdded(group: snapshots[2].doc));
+      bloc.add(GroupsEventGroupUpdated(group: snapshots[3].doc));
     },
     expect: () => [
       GroupsState(
@@ -151,10 +121,10 @@ void main() {
 
   blocTest(
     'group removed',
-    build: () => groupsBloc,
+    build: () => bloc,
     act: (_) {
-      groupsBloc.add(GroupsEventGroupAdded(group: snapshots[1].doc));
-      groupsBloc.add(GroupsEventGroupRemoved(groupId: 'g2'));
+      bloc.add(GroupsEventGroupAdded(group: snapshots[1].doc));
+      bloc.add(GroupsEventGroupRemoved(groupId: 'g2'));
     },
     expect: () => [
       GroupsState(
@@ -170,7 +140,7 @@ void main() {
 
   blocTest(
     'add group, success',
-    build: () => groupsBloc,
+    build: () => bloc,
     setUp: () {
       when(
         () => groupsInterface.addNewGroup(
@@ -181,7 +151,7 @@ void main() {
         ),
       ).thenAnswer((_) async => '');
     },
-    act: (_) => groupsBloc.add(
+    act: (_) => bloc.add(
       GroupsEventAddGroup(
         name: 'name',
         courseId: 'courseId',
@@ -207,7 +177,7 @@ void main() {
 
   blocTest(
     'add group, failure',
-    build: () => groupsBloc,
+    build: () => bloc,
     setUp: () {
       when(
         () => groupsInterface.addNewGroup(
@@ -218,7 +188,7 @@ void main() {
         ),
       ).thenThrow('Error...');
     },
-    act: (_) => groupsBloc.add(
+    act: (_) => bloc.add(
       GroupsEventAddGroup(
         name: 'name',
         courseId: 'courseId',
@@ -244,7 +214,7 @@ void main() {
 
   blocTest(
     'update group, success',
-    build: () => groupsBloc,
+    build: () => bloc,
     setUp: () {
       when(
         () => groupsInterface.updateGroup(
@@ -254,7 +224,7 @@ void main() {
         ),
       ).thenAnswer((_) async => '');
     },
-    act: (_) => groupsBloc.add(GroupsEventUpdateGroup(
+    act: (_) => bloc.add(GroupsEventUpdateGroup(
       groupId: 'g1',
       name: 'name',
       courseId: 'c1',
@@ -276,7 +246,7 @@ void main() {
 
   blocTest(
     'update group, failure',
-    build: () => groupsBloc,
+    build: () => bloc,
     setUp: () {
       when(
         () => groupsInterface.updateGroup(
@@ -286,7 +256,7 @@ void main() {
         ),
       ).thenThrow('Error...');
     },
-    act: (_) => groupsBloc.add(GroupsEventUpdateGroup(
+    act: (_) => bloc.add(GroupsEventUpdateGroup(
       groupId: 'g1',
       name: 'name',
       courseId: 'c1',
@@ -308,11 +278,11 @@ void main() {
 
   blocTest(
     'remove group, success',
-    build: () => groupsBloc,
+    build: () => bloc,
     setUp: () {
       when(() => groupsInterface.removeGroup('g1')).thenAnswer((_) async => '');
     },
-    act: (_) => groupsBloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
+    act: (_) => bloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
     expect: () => [
       GroupsState(status: GroupsStatusLoading()),
       GroupsState(status: GroupsStatusGroupRemoved()),
@@ -324,17 +294,53 @@ void main() {
 
   blocTest(
     'remove group, failure',
-    build: () => groupsBloc,
+    build: () => bloc,
     setUp: () {
       when(() => groupsInterface.removeGroup('g1')).thenThrow('Error...');
     },
-    act: (_) => groupsBloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
+    act: (_) => bloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
     expect: () => [
       GroupsState(status: GroupsStatusLoading()),
       GroupsState(status: const GroupsStatusError(message: 'Error...')),
     ],
     verify: (_) {
       verify(() => groupsInterface.removeGroup('g1')).called(1);
+    },
+  );
+
+  blocTest(
+    'remove groups from course, success',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => groupsInterface.removeGroupsFromCourse('c1'),
+      ).thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(GroupsEventRemoveGroupsFromCourse(courseId: 'c1')),
+    expect: () => [
+      GroupsState(status: GroupsStatusLoading()),
+      GroupsState(status: GroupsStatusGroupsFromCourseRemoved()),
+    ],
+    verify: (_) {
+      verify(() => groupsInterface.removeGroupsFromCourse('c1')).called(1);
+    },
+  );
+
+  blocTest(
+    'remove groups from course, failure',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => groupsInterface.removeGroupsFromCourse('c1'),
+      ).thenThrow('Error...');
+    },
+    act: (_) => bloc.add(GroupsEventRemoveGroupsFromCourse(courseId: 'c1')),
+    expect: () => [
+      GroupsState(status: GroupsStatusLoading()),
+      GroupsState(status: const GroupsStatusError(message: 'Error...')),
+    ],
+    verify: (_) {
+      verify(() => groupsInterface.removeGroupsFromCourse('c1')).called(1);
     },
   );
 }

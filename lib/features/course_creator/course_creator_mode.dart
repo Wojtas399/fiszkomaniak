@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/models/course_model.dart';
 
 abstract class CourseCreatorMode extends Equatable {
   const CourseCreatorMode();
@@ -12,17 +13,10 @@ class CourseCreatorCreateMode extends CourseCreatorMode {
 }
 
 class CourseCreatorEditMode extends CourseCreatorMode {
-  final String courseId;
-  final String courseName;
+  final Course course;
 
-  const CourseCreatorEditMode({
-    required this.courseId,
-    required this.courseName,
-  });
+  const CourseCreatorEditMode({required this.course});
 
   @override
-  List<Object> get props => [
-        courseId,
-        courseName,
-      ];
+  List<Object> get props => [course];
 }

@@ -1,10 +1,12 @@
-class GroupDbModel {
+import 'package:equatable/equatable.dart';
+
+class GroupDbModel extends Equatable {
   final String? name;
   final String? courseId;
   final String? nameForQuestions;
   final String? nameForAnswers;
 
-  GroupDbModel({
+  const GroupDbModel({
     required this.name,
     required this.courseId,
     required this.nameForQuestions,
@@ -27,4 +29,12 @@ class GroupDbModel {
       'nameForAnswers': nameForAnswers,
     }..removeWhere((key, value) => value == null);
   }
+
+  @override
+  List<Object> get props => [
+        name ?? '',
+        courseId ?? '',
+        nameForQuestions ?? '',
+        nameForAnswers ?? '',
+      ];
 }

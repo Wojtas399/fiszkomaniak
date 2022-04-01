@@ -65,6 +65,26 @@ class FireGroupsService {
     }
   }
 
+  Future<void> removeGroupsFromCourse(String courseId) async {
+    try {
+      final String? loggedUserId = FireUser.getLoggedUserId();
+      if (loggedUserId != null) {
+        final batch = FireInstances.firestore.batch();
+        final matchedDocuments = await _getGroupsRef(loggedUserId)
+            .where('courseId', isEqualTo: courseId)
+            .get();
+        for (final document in matchedDocuments.docs) {
+          batch.delete(document.reference);
+        }
+        await batch.commit();
+      } else {
+        throw FireUser.noLoggedUserMessage;
+      }
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   CollectionReference<GroupDbModel> _getGroupsRef(
     String userId,
   ) {
