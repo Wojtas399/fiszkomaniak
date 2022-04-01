@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/http_status_model.dart';
+import 'package:fiszkomaniak/core/courses/courses_status.dart';
 import '../../models/course_model.dart';
 
 class CoursesState extends Equatable {
   late final List<Course> _allCourses;
-  final HttpStatus httpStatus;
+  final CoursesStatus status;
 
   List<Course> get allCourses {
     List<Course> sortedCourses = [..._allCourses];
@@ -16,18 +16,18 @@ class CoursesState extends Equatable {
 
   CoursesState({
     List<Course> allCourses = const [],
-    this.httpStatus = const HttpStatusInitial(),
+    this.status = const CoursesStatusInitial(),
   }) {
     _allCourses = allCourses;
   }
 
   CoursesState copyWith({
     List<Course>? allCourses,
-    HttpStatus? httpStatus,
+    CoursesStatus? status,
   }) {
     return CoursesState(
       allCourses: allCourses ?? this.allCourses,
-      httpStatus: httpStatus ?? const HttpStatusInitial(),
+      status: status ?? const CoursesStatusLoaded(),
     );
   }
 
@@ -46,6 +46,6 @@ class CoursesState extends Equatable {
   @override
   List<Object> get props => [
         allCourses,
-        httpStatus,
+        status,
       ];
 }

@@ -2,10 +2,10 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_event.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
+import 'package:fiszkomaniak/core/courses/courses_status.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -26,7 +26,7 @@ void main() {
   test('initial state', () {
     final CoursesState state = coursesBloc.state;
     expect(state.allCourses, []);
-    expect(state.httpStatus, const HttpStatusInitial());
+    expect(state.status, const CoursesStatusInitial());
   });
 
   blocTest(
@@ -35,52 +35,67 @@ void main() {
     setUp: () {
       when(() => coursesInterface.getCoursesSnapshots()).thenAnswer(
         (_) => Stream.value([
-          const ChangedDocument(
+          ChangedDocument(
             changeType: DbDocChangeType.added,
-            doc: Course(id: 'c1', name: 'course 1'),
+            doc: createCourse(id: 'c1'),
           ),
-          const ChangedDocument(
+          ChangedDocument(
             changeType: DbDocChangeType.added,
-            doc: Course(id: 'c2', name: 'course 2'),
+            doc: createCourse(id: 'c2'),
           ),
-          const ChangedDocument(
+          ChangedDocument(
             changeType: DbDocChangeType.added,
-            doc: Course(id: 'c3', name: 'course 3'),
+            doc: createCourse(id: 'c3', name: 'course 3'),
           ),
-          const ChangedDocument(
+          ChangedDocument(
             changeType: DbDocChangeType.updated,
-            doc: Course(id: 'c3', name: 'course 123'),
+            doc: createCourse(id: 'c3', name: 'course 123'),
           ),
-          const ChangedDocument(
+          ChangedDocument(
             changeType: DbDocChangeType.removed,
-            doc: Course(id: 'c3', name: 'course 123'),
+            doc: createCourse(id: 'c3', name: 'course 123'),
           ),
         ]),
       );
     },
     act: (_) => coursesBloc.add(CoursesEventInitialize()),
     expect: () => [
-      CoursesState(allCourses: const [
-        Course(id: 'c1', name: 'course 1'),
-      ]),
-      CoursesState(allCourses: const [
-        Course(id: 'c1', name: 'course 1'),
-        Course(id: 'c2', name: 'course 2'),
-      ]),
-      CoursesState(allCourses: const [
-        Course(id: 'c1', name: 'course 1'),
-        Course(id: 'c2', name: 'course 2'),
-        Course(id: 'c3', name: 'course 3'),
-      ]),
-      CoursesState(allCourses: const [
-        Course(id: 'c1', name: 'course 1'),
-        Course(id: 'c2', name: 'course 2'),
-        Course(id: 'c3', name: 'course 123'),
-      ]),
-      CoursesState(allCourses: const [
-        Course(id: 'c1', name: 'course 1'),
-        Course(id: 'c2', name: 'course 2'),
-      ]),
+      CoursesState(
+        allCourses: [
+          createCourse(id: 'c1'),
+        ],
+        status: const CoursesStatusLoaded(),
+      ),
+      CoursesState(
+        allCourses: [
+          createCourse(id: 'c1'),
+          createCourse(id: 'c2'),
+        ],
+        status: const CoursesStatusLoaded(),
+      ),
+      CoursesState(
+        allCourses: [
+          createCourse(id: 'c1'),
+          createCourse(id: 'c2'),
+          createCourse(id: 'c3', name: 'course 3'),
+        ],
+        status: const CoursesStatusLoaded(),
+      ),
+      CoursesState(
+        allCourses: [
+          createCourse(id: 'c1'),
+          createCourse(id: 'c2'),
+          createCourse(id: 'c3', name: 'course 123'),
+        ],
+        status: const CoursesStatusLoaded(),
+      ),
+      CoursesState(
+        allCourses: [
+          createCourse(id: 'c1'),
+          createCourse(id: 'c2'),
+        ],
+        status: const CoursesStatusLoaded(),
+      ),
     ],
   );
 
@@ -95,12 +110,8 @@ void main() {
       CoursesEventAddNewCourse(name: 'new course name'),
     ),
     expect: () => [
-      CoursesState(httpStatus: HttpStatusSubmitting()),
-      CoursesState(
-        httpStatus: const HttpStatusSuccess(
-          message: 'Pomyślnie dodano nowy kurs.',
-        ),
-      ),
+      CoursesState(status: CoursesStatusLoading()),
+      CoursesState(status: CoursesStatusCourseAdded()),
     ],
     verify: (_) {
       verify(() => coursesInterface.addNewCourse('new course name')).called(1);
@@ -118,10 +129,8 @@ void main() {
       CoursesEventAddNewCourse(name: 'new course name'),
     ),
     expect: () => [
-      CoursesState(httpStatus: HttpStatusSubmitting()),
-      CoursesState(
-        httpStatus: const HttpStatusFailure(message: 'Error...'),
-      ),
+      CoursesState(status: CoursesStatusLoading()),
+      CoursesState(status: const CoursesStatusError(message: 'Error...')),
     ],
     verify: (_) {
       verify(() => coursesInterface.addNewCourse('new course name')).called(1);
@@ -132,27 +141,27 @@ void main() {
     'update course name, success',
     build: () => coursesBloc,
     setUp: () {
-      when(() => coursesInterface.updateCourseName(
-            courseId: 'c1',
-            newCourseName: 'course123',
-          )).thenAnswer((_) async => '');
+      when(
+        () => coursesInterface.updateCourseName(
+          courseId: 'c1',
+          newCourseName: 'course123',
+        ),
+      ).thenAnswer((_) async => '');
     },
     act: (_) => coursesBloc.add(
       CoursesEventUpdateCourseName(courseId: 'c1', newCourseName: 'course123'),
     ),
     expect: () => [
-      CoursesState(httpStatus: HttpStatusSubmitting()),
-      CoursesState(
-        httpStatus: const HttpStatusSuccess(
-          message: 'Pomyślnie zmieniono nazwę kursu.',
-        ),
-      ),
+      CoursesState(status: CoursesStatusLoading()),
+      CoursesState(status: CoursesStatusCourseUpdated()),
     ],
     verify: (_) {
-      verify(() => coursesInterface.updateCourseName(
-            courseId: 'c1',
-            newCourseName: 'course123',
-          )).called(1);
+      verify(
+        () => coursesInterface.updateCourseName(
+          courseId: 'c1',
+          newCourseName: 'course123',
+        ),
+      ).called(1);
     },
   );
 
@@ -160,25 +169,27 @@ void main() {
     'update course name, failure',
     build: () => coursesBloc,
     setUp: () {
-      when(() => coursesInterface.updateCourseName(
-            courseId: 'c1',
-            newCourseName: 'course123',
-          )).thenThrow('Error...');
+      when(
+        () => coursesInterface.updateCourseName(
+          courseId: 'c1',
+          newCourseName: 'course123',
+        ),
+      ).thenThrow('Error...');
     },
     act: (_) => coursesBloc.add(
       CoursesEventUpdateCourseName(courseId: 'c1', newCourseName: 'course123'),
     ),
     expect: () => [
-      CoursesState(httpStatus: HttpStatusSubmitting()),
-      CoursesState(
-        httpStatus: const HttpStatusFailure(message: 'Error...'),
-      ),
+      CoursesState(status: CoursesStatusLoading()),
+      CoursesState(status: const CoursesStatusError(message: 'Error...')),
     ],
     verify: (_) {
-      verify(() => coursesInterface.updateCourseName(
-            courseId: 'c1',
-            newCourseName: 'course123',
-          )).called(1);
+      verify(
+        () => coursesInterface.updateCourseName(
+          courseId: 'c1',
+          newCourseName: 'course123',
+        ),
+      ).called(1);
     },
   );
 
@@ -193,12 +204,8 @@ void main() {
       CoursesEventRemoveCourse(courseId: 'c1'),
     ),
     expect: () => [
-      CoursesState(httpStatus: HttpStatusSubmitting()),
-      CoursesState(
-        httpStatus: const HttpStatusSuccess(
-          message: 'Pomyślnie usunięto kurs.',
-        ),
-      ),
+      CoursesState(status: CoursesStatusLoading()),
+      CoursesState(status: CoursesStatusCourseRemoved()),
     ],
     verify: (_) {
       verify(() => coursesInterface.removeCourse('c1')).called(1);
@@ -215,10 +222,8 @@ void main() {
       CoursesEventRemoveCourse(courseId: 'c1'),
     ),
     expect: () => [
-      CoursesState(httpStatus: HttpStatusSubmitting()),
-      CoursesState(
-        httpStatus: const HttpStatusFailure(message: 'Error...'),
-      ),
+      CoursesState(status: CoursesStatusLoading()),
+      CoursesState(status: const CoursesStatusError(message: 'Error...')),
     ],
     verify: (_) {
       verify(() => coursesInterface.removeCourse('c1')).called(1);
@@ -228,13 +233,14 @@ void main() {
   blocTest(
     'on course added',
     build: () => coursesBloc,
-    act: (_) => coursesBloc.add(CoursesEventCourseAdded(
-      course: const Course(id: 'c1', name: 'course 1'),
-    )),
+    act: (_) => coursesBloc.add(
+      CoursesEventCourseAdded(course: createCourse(id: 'c1')),
+    ),
     expect: () => [
-      CoursesState(allCourses: const [
-        Course(id: 'c1', name: 'course 1'),
-      ])
+      CoursesState(
+        allCourses: [createCourse(id: 'c1')],
+        status: const CoursesStatusLoaded(),
+      )
     ],
   );
 
@@ -243,19 +249,21 @@ void main() {
     build: () => coursesBloc,
     act: (_) {
       coursesBloc.add(CoursesEventCourseAdded(
-        course: const Course(id: 'c1', name: 'course 1'),
+        course: createCourse(id: 'c1', name: 'course 1'),
       ));
       coursesBloc.add(CoursesEventCourseModified(
-        course: const Course(id: 'c1', name: 'course 1234'),
+        course: createCourse(id: 'c1', name: 'course 1234'),
       ));
     },
     expect: () => [
-      CoursesState(allCourses: const [
-        Course(id: 'c1', name: 'course 1'),
-      ]),
-      CoursesState(allCourses: const [
-        Course(id: 'c1', name: 'course 1234'),
-      ]),
+      CoursesState(
+        allCourses: [createCourse(id: 'c1', name: 'course 1')],
+        status: const CoursesStatusLoaded(),
+      ),
+      CoursesState(
+        allCourses: [createCourse(id: 'c1', name: 'course 1234')],
+        status: const CoursesStatusLoaded(),
+      ),
     ],
   );
 
@@ -263,16 +271,18 @@ void main() {
     'on course removed',
     build: () => coursesBloc,
     act: (_) {
-      coursesBloc.add(CoursesEventCourseAdded(
-        course: const Course(id: 'c1', name: 'course 1'),
-      ));
+      coursesBloc.add(CoursesEventCourseAdded(course: createCourse(id: 'c1')));
       coursesBloc.add(CoursesEventCourseRemoved(courseId: 'c1'));
     },
     expect: () => [
-      CoursesState(allCourses: const [
-        Course(id: 'c1', name: 'course 1'),
-      ]),
-      CoursesState(allCourses: const []),
+      CoursesState(
+        allCourses: [createCourse(id: 'c1')],
+        status: const CoursesStatusLoaded(),
+      ),
+      CoursesState(
+        allCourses: const [],
+        status: const CoursesStatusLoaded(),
+      ),
     ],
   );
 }

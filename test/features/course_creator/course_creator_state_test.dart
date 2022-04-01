@@ -1,7 +1,6 @@
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -14,7 +13,6 @@ void main() {
   test('initial state', () {
     expect(state.mode, const CourseCreatorCreateMode());
     expect(state.courseName, '');
-    expect(state.httpStatus, const HttpStatusInitial());
     expect(state.isButtonDisabled, true);
   });
 
@@ -35,16 +33,6 @@ void main() {
 
     expect(state1.courseName, 'cName');
     expect(state2.courseName, 'cName');
-  });
-
-  test('copy with http status', () {
-    final CourseCreatorState state1 = state.copyWith(
-      httpStatus: const HttpStatusSuccess(),
-    );
-    final CourseCreatorState state2 = state1.copyWith();
-
-    expect(state1.httpStatus, const HttpStatusSuccess());
-    expect(state2.httpStatus, const HttpStatusInitial());
   });
 
   test('is button disabled, create mode, not empty string', () {

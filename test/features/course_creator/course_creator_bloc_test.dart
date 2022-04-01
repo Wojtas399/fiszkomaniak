@@ -7,7 +7,6 @@ import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_event.d
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -139,16 +138,5 @@ void main() {
         )),
       ).called(1);
     },
-  );
-
-  blocTest(
-    'http status changed',
-    build: () => courseCreatorBloc,
-    act: (_) => courseCreatorBloc.add(CourseCreatorEventHttpStatusChanged(
-      httpStatus: const HttpStatusSuccess(),
-    )),
-    expect: () => [
-      const CourseCreatorState(httpStatus: HttpStatusSuccess()),
-    ],
   );
 }

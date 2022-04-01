@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
+import 'package:fiszkomaniak/core/courses/courses_status.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import '../../components/dialogs/dialogs.dart';
 import '../../core/appearance_settings/appearance_settings_bloc.dart';
 import '../../core/appearance_settings/appearance_settings_state.dart';
 import '../../core/groups/groups_status.dart';
-import '../../models/http_status_model.dart';
 import '../../providers/theme_provider.dart';
 
 class HomeListeners extends StatelessWidget {
@@ -39,17 +39,22 @@ class HomeListeners extends StatelessWidget {
         ),
         BlocListener<CoursesBloc, CoursesState>(
           listener: (BuildContext context, CoursesState state) {
-            HttpStatus status = state.httpStatus;
-            if (status is HttpStatusSubmitting) {
+            final CoursesStatus status = state.status;
+            if (status is CoursesStatusLoading) {
               dialogs.showLoadingDialog();
-            } else if (status is HttpStatusSuccess) {
+            } else if (status is CoursesStatusCourseAdded) {
               Navigator.of(context, rootNavigator: true).pop();
               Navigation.backHome();
-              final String? message = status.message;
-              if (message != null) {
-                dialogs.showSnackbarWithMessage(message);
-              }
-            } else if (status is HttpStatusFailure) {
+              dialogs.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
+              _animateToPage(2);
+            } else if (status is CoursesStatusCourseUpdated) {
+              Navigator.of(context, rootNavigator: true).pop();
+              Navigation.backHome();
+              dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano kurs');
+            } else if (status is CoursesStatusCourseRemoved) {
+              Navigator.of(context, rootNavigator: true).pop();
+              dialogs.showSnackbarWithMessage('Pomyślnie usunięto kurs');
+            } else if (status is CoursesStatusError) {
               Navigator.of(context, rootNavigator: true).pop();
               dialogs.showDialogWithMessage(
                 title: 'Wystąpił błąd...',
@@ -66,22 +71,18 @@ class HomeListeners extends StatelessWidget {
             } else if (status is GroupsStatusGroupAdded) {
               Navigator.of(context, rootNavigator: true).pop();
               Navigation.backHome();
-              dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
-              pageController.animateToPage(
-                0,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-              );
+              dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę');
+              _animateToPage(0);
             } else if (status is GroupsStatusGroupUpdated) {
               Navigator.of(context, rootNavigator: true).pop();
               Navigator.pop(context);
               dialogs.showSnackbarWithMessage(
-                'Pomyślnie zaktualizowano grupę.',
+                'Pomyślnie zaktualizowano grupę',
               );
             } else if (status is GroupsStatusGroupRemoved) {
               Navigator.of(context, rootNavigator: true).pop();
               Navigation.backHome();
-              dialogs.showSnackbarWithMessage('Pomyślnie usunięto grupę.');
+              dialogs.showSnackbarWithMessage('Pomyślnie usunięto grupę');
             } else if (status is GroupsStatusError) {
               Navigator.of(context, rootNavigator: true).pop();
               dialogs.showDialogWithMessage(
@@ -93,6 +94,14 @@ class HomeListeners extends StatelessWidget {
         )
       ],
       child: child,
+    );
+  }
+
+  void _animateToPage(int pageNumber) {
+    pageController.animateToPage(
+      pageNumber,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
     );
   }
 }

@@ -52,7 +52,6 @@ void main() {
     expect: () => [
       GroupCreatorState(
         mode: const GroupCreatorCreateMode(),
-        selectedCourse: allCourses[0],
         allCourses: allCourses,
       ),
     ],
