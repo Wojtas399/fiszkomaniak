@@ -18,6 +18,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HomeListeners(
+      pageController: _pageController,
       child: StreamBuilder(
         stream: _displayingPageNumber,
         builder: (_, AsyncSnapshot<int> snapshot) {

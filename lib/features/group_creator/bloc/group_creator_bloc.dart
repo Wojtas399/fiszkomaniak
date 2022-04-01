@@ -34,7 +34,6 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
     if (mode is GroupCreatorCreateMode) {
       emit(state.copyWith(
         mode: mode,
-        selectedCourse: allCourses[0],
         allCourses: allCourses,
       ));
     } else if (mode is GroupCreatorEditMode) {

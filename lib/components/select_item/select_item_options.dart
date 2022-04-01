@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
+import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -14,19 +15,21 @@ class SelectItemOptions extends StatelessWidget {
         label: 'Wybierz kurs',
         closeIcon: MdiIcons.arrowLeft,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: options.entries
-                .map((option) => _OptionItem(
-                      itemKey: option.key,
-                      value: option.value,
-                    ))
-                .toList(),
-          ),
-        ),
-      ),
+      body: options.isEmpty
+          ? const _NoOptionsInfo()
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: options.entries
+                      .map((option) => _OptionItem(
+                            itemKey: option.key,
+                            value: option.value,
+                          ))
+                      .toList(),
+                ),
+              ),
+            ),
     );
   }
 }
@@ -61,6 +64,18 @@ class _OptionItem extends StatelessWidget {
           });
         },
       ),
+    );
+  }
+}
+
+class _NoOptionsInfo extends StatelessWidget {
+  const _NoOptionsInfo({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      width: double.infinity,
+      child: EmptyContentInfo(subtitle: 'Brak opcji do wyboru'),
     );
   }
 }

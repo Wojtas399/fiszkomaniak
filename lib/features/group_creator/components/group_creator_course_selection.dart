@@ -4,7 +4,7 @@ import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_state.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../../components/select_item.dart';
+import '../../../components/select_item/select_item.dart';
 
 class GroupCreatorCourseSelection extends StatelessWidget {
   const GroupCreatorCourseSelection({Key? key}) : super(key: key);
@@ -16,7 +16,7 @@ class GroupCreatorCourseSelection extends StatelessWidget {
         return SelectItem(
           icon: MdiIcons.archiveOutline,
           label: 'Kurs',
-          value: state.selectedCourse?.name ?? '',
+          value: state.selectedCourse?.name ?? 'Nie wybrano',
           options: {
             for (final course in state.allCourses) course.id: course.name
           },

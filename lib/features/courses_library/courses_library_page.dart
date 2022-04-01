@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
+import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
@@ -8,6 +9,7 @@ import 'package:fiszkomaniak/features/courses_library/components/courses_library
 import 'package:fiszkomaniak/features/courses_library/components/courses_library_course_popup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../models/course_model.dart';
 import 'bloc/courses_library_state.dart';
 
@@ -24,6 +26,9 @@ class CoursesLibraryPage extends StatelessWidget {
               BuildContext context,
               CoursesLibraryState coursesLibraryState,
             ) {
+              if (coursesLibraryState.courses.isEmpty) {
+                return const _NoCoursesInfo();
+              }
               return SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -96,6 +101,25 @@ class _CoursesLibraryBlocProvider extends StatelessWidget {
         dialogs: Dialogs(),
       )..add(CoursesLibraryEventInitialize()),
       child: child,
+    );
+  }
+}
+
+class _NoCoursesInfo extends StatelessWidget {
+  const _NoCoursesInfo({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: EmptyContentInfo(
+          icon: MdiIcons.library,
+          title: 'Brak utworzonych kursów',
+          subtitle:
+              'Naciśnij fioletowy przycisk znajdujący się na dolnym pasku aby dodać nowy kurs',
+        ),
+      ),
     );
   }
 }

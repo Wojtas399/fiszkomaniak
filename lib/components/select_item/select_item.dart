@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/components/select_item_options.dart';
+import 'package:fiszkomaniak/components/select_item/select_item_options.dart';
 import 'package:fiszkomaniak/config/slide_left_route_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

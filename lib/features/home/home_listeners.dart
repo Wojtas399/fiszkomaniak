@@ -14,8 +14,13 @@ import '../../providers/theme_provider.dart';
 
 class HomeListeners extends StatelessWidget {
   final Widget child;
+  final PageController pageController;
 
-  const HomeListeners({Key? key, required this.child}) : super(key: key);
+  const HomeListeners({
+    Key? key,
+    required this.child,
+    required this.pageController,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +67,11 @@ class HomeListeners extends StatelessWidget {
               Navigator.of(context, rootNavigator: true).pop();
               Navigation.backHome();
               dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
+              pageController.animateToPage(
+                0,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+              );
             } else if (status is GroupsStatusGroupUpdated) {
               Navigator.of(context, rootNavigator: true).pop();
               Navigator.pop(context);
