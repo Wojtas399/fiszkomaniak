@@ -1,6 +1,5 @@
 import 'package:fiszkomaniak/components/textfields/textfield_background.dart';
 import 'package:fiszkomaniak/config/theme/text_field_theme.dart';
-import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -23,9 +22,9 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (controller != null) {
-      Utils.setCursorAtTheEndOfValueInsideTextField(controller!);
-    }
+    // if (controller != null) {
+    //   Utils.setCursorAtTheEndOfValueInsideTextField(controller!);
+    // }
     return Stack(
       children: [
         const TextFieldBackground(),
