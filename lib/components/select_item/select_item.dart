@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/components/select_item/select_item_options.dart';
+import 'package:fiszkomaniak/components/select_item/options_of_select_item.dart';
 import 'package:fiszkomaniak/config/slide_left_route_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -61,9 +61,7 @@ class SelectItem extends StatelessWidget {
 
   Future<void> _onTap(BuildContext context) async {
     final selectedOption = await Navigator.of(context).push(
-      SlideLeftRouteAnimation(
-        page: SelectItemOptions(options: options),
-      ),
+      SlideLeftRouteAnimation(page: OptionsOfSelectItem(options: options)),
     );
     if (selectedOption != null) {
       String? key = selectedOption['key'];

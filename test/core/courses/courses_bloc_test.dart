@@ -23,12 +23,6 @@ void main() {
     reset(coursesInterface);
   });
 
-  test('initial state', () {
-    final CoursesState state = coursesBloc.state;
-    expect(state.allCourses, []);
-    expect(state.status, const CoursesStatusInitial());
-  });
-
   blocTest(
     'initialize',
     build: () => coursesBloc,

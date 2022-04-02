@@ -3,10 +3,13 @@ import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class SelectItemOptions extends StatelessWidget {
+class OptionsOfSelectItem extends StatelessWidget {
   final Map<String, String> options;
 
-  const SelectItemOptions({Key? key, required this.options}) : super(key: key);
+  const OptionsOfSelectItem({
+    Key? key,
+    required this.options,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +20,18 @@ class SelectItemOptions extends StatelessWidget {
       ),
       body: options.isEmpty
           ? const _NoOptionsInfo()
-          : SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: options.entries
-                      .map((option) => _OptionItem(
-                            itemKey: option.key,
-                            value: option.value,
-                          ))
-                      .toList(),
+          : SingleChildScrollView(
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: options.entries
+                        .map((option) => _OptionItem(
+                              itemKey: option.key,
+                              value: option.value,
+                            ))
+                        .toList(),
+                  ),
                 ),
               ),
             ),

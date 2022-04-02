@@ -29,19 +29,26 @@ class CoursesLibraryPage extends StatelessWidget {
               if (coursesLibraryState.courses.isEmpty) {
                 return const _NoCoursesInfo();
               }
-              return SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: coursesLibraryState.courses
-                        .map(
-                          (course) => _generateCourseItem(
-                            context,
-                            course,
-                            groupsState.getGroupsByCourseId(course.id).length,
-                          ),
-                        )
-                        .toList(),
+              return SingleChildScrollView(
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 16,
+                      right: 16,
+                      bottom: 32,
+                      left: 16,
+                    ),
+                    child: Column(
+                      children: coursesLibraryState.courses
+                          .map(
+                            (course) => _generateCourseItem(
+                              context,
+                              course,
+                              groupsState.getGroupsByCourseId(course.id).length,
+                            ),
+                          )
+                          .toList(),
+                    ),
                   ),
                 ),
               );

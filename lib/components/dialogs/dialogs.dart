@@ -33,7 +33,6 @@ class Dialogs {
     if (mainContext != null) {
       await showDialog(
         context: mainContext,
-        barrierDismissible: false,
         builder: (_) => MessageDialog(title: title, message: message),
       );
     }
@@ -49,6 +48,7 @@ class Dialogs {
     if (context != null) {
       return await showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (_) => ConfirmationDialog(
           title: title,
           text: text,
