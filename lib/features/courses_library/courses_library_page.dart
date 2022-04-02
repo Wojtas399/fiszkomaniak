@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/components/empty_content_info.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
@@ -67,6 +68,9 @@ class CoursesLibraryPage extends StatelessWidget {
     return CoursesLibraryCourseItem(
       title: course.name,
       amountOfGroups: amountOfGroups,
+      onTap: () {
+        Navigation.navigateToCourseGroupsPreview(course.id);
+      },
       onActionSelected: (CoursePopupAction action) {
         _manageCourseAction(context, action, course);
       },

@@ -54,6 +54,13 @@ class Navigation {
     );
   }
 
+  static void navigateToCourseGroupsPreview(String courseId) {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.courseGroupsPreview,
+      arguments: courseId,
+    );
+  }
+
   static void navigateToGroupPreview(String groupId) {
     HomeRouter.navigatorKey.currentState?.pushNamed(
       HomeRouter.groupPreview,
