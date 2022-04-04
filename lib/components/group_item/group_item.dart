@@ -1,17 +1,17 @@
 import 'package:fiszkomaniak/components/flashcards_progress_bar.dart';
-import 'package:fiszkomaniak/features/study/components/study_group_item_info.dart';
+import 'package:fiszkomaniak/components/group_item/group_item_info.dart';
 import 'package:flutter/material.dart';
 
-class StudyGroupItem extends StatelessWidget {
-  final String courseName;
+class GroupItem extends StatelessWidget {
+  final String? courseName;
   final String groupName;
   final int amountOfLearnedFlashcards;
   final int amountOfAllFlashcards;
   final VoidCallback? onTap;
 
-  const StudyGroupItem({
+  const GroupItem({
     Key? key,
-    required this.courseName,
+    this.courseName,
     required this.groupName,
     required this.amountOfLearnedFlashcards,
     required this.amountOfAllFlashcards,
@@ -34,7 +34,7 @@ class StudyGroupItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                StudyGroupItemInfo(
+                GroupItemInfo(
                   courseName: courseName,
                   groupName: groupName,
                 ),

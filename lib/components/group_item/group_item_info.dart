@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class StudyGroupItemInfo extends StatelessWidget {
-  final String courseName;
+class GroupItemInfo extends StatelessWidget {
+  final String? courseName;
   final String groupName;
 
-  const StudyGroupItemInfo({
+  const GroupItemInfo({
     Key? key,
     required this.courseName,
     required this.groupName,
@@ -15,8 +15,13 @@ class StudyGroupItemInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(courseName, style: Theme.of(context).textTheme.caption),
-        const SizedBox(height: 4),
+        courseName != null
+            ? Text(
+                courseName ?? '',
+                style: Theme.of(context).textTheme.caption,
+              )
+            : const SizedBox(),
+        SizedBox(height: courseName != null ? 4 : 0),
         Text(groupName, style: Theme.of(context).textTheme.subtitle1),
       ],
     );

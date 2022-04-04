@@ -41,6 +41,22 @@ void main() {
     expect(state3.status, const CoursesStatusLoaded());
   });
 
+  test('get course by id, course exists', () {
+    final CoursesState updatedState = state.copyWith(allCourses: allCourses);
+
+    final Course? course = updatedState.getCourseById('c1');
+
+    expect(course, allCourses[1]);
+  });
+
+  test('get course by id, course does not exist', () {
+    final CoursesState updatedState = state.copyWith(allCourses: allCourses);
+
+    final Course? course = updatedState.getCourseById('c4');
+
+    expect(course, null);
+  });
+
   test('get course name by id, course exists', () {
     final CoursesState updatedState = state.copyWith(allCourses: allCourses);
 

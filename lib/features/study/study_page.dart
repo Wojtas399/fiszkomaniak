@@ -3,7 +3,7 @@ import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
-import 'package:fiszkomaniak/features/study/components/study_group_item.dart';
+import 'package:fiszkomaniak/components/group_item/group_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -33,7 +33,7 @@ class StudyPage extends StatelessWidget {
                   child: Column(
                     children: groupsState.allGroups
                         .map(
-                          (group) => StudyGroupItem(
+                          (group) => GroupItem(
                             courseName: coursesState.getCourseNameById(
                                   group.courseId,
                                 ) ??

@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
-import 'package:fiszkomaniak/features/course_group_preview/course_groups_preview.dart';
+import 'package:fiszkomaniak/features/course_groups_preview/course_groups_preview.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/group_creator/group_creator_page.dart';
 import 'package:fiszkomaniak/features/group_preview/group_preview_page.dart';
@@ -59,7 +59,9 @@ class HomeRouter extends StatelessWidget {
         );
       case courseGroupsPreview:
         return SlideUpRouteAnimation(
-          page: const CourseGroupsPreview(),
+          page: CourseGroupsPreview(
+            courseId: routeSettings.arguments as String,
+          ),
         );
       case groupPreview:
         return SlideUpRouteAnimation(
