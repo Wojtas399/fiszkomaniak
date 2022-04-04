@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -21,16 +22,11 @@ class AppBarWithCloseButton extends StatelessWidget
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(label),
-      leading: ClipRRect(
-        borderRadius: BorderRadius.circular(100),
-        child: Material(
-          child: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(closeIcon),
-          ),
-        ),
+      leading: CustomIconButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        icon: closeIcon,
       ),
       actions: actions,
     );

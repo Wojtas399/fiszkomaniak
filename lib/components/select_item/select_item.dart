@@ -2,25 +2,34 @@ import 'package:fiszkomaniak/components/select_item/options_of_select_item.dart'
 import 'package:fiszkomaniak/config/slide_left_route_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:rxdart/rxdart.dart';
 
-class SelectItem extends StatelessWidget {
+class SelectItem extends StatefulWidget {
   final IconData icon;
   final String label;
   final String value;
   final Map<String, String> options;
   final Function(String key, String value) onOptionSelected;
-  final BehaviorSubject<String> value$ = BehaviorSubject<String>.seeded('');
 
-  SelectItem({
+  const SelectItem({
     Key? key,
     required this.icon,
     required this.label,
     required this.value,
     required this.options,
     required this.onOptionSelected,
-  }) : super(key: key) {
-    value$.add(value);
+  }) : super(key: key);
+
+  @override
+  _SelectItemState createState() => _SelectItemState();
+}
+
+class _SelectItemState extends State<SelectItem> {
+  late String value;
+
+  @override
+  void initState() {
+    value = widget.value;
+    super.initState();
   }
 
   @override
@@ -32,22 +41,20 @@ class SelectItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         child: Row(
           children: [
-            Icon(icon),
+            Icon(widget.icon),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: Theme.of(context).textTheme.caption),
+                  Text(
+                    widget.label,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
                   const SizedBox(height: 4),
-                  StreamBuilder(
-                    stream: value$,
-                    builder: (_, AsyncSnapshot<String> snapshot) {
-                      return Text(
-                        snapshot.data ?? '',
-                        style: Theme.of(context).textTheme.subtitle1,
-                      );
-                    },
+                  Text(
+                    value,
+                    style: Theme.of(context).textTheme.subtitle1,
                   ),
                 ],
               ),
@@ -61,14 +68,18 @@ class SelectItem extends StatelessWidget {
 
   Future<void> _onTap(BuildContext context) async {
     final selectedOption = await Navigator.of(context).push(
-      SlideLeftRouteAnimation(page: OptionsOfSelectItem(options: options)),
+      SlideLeftRouteAnimation(
+        page: OptionsOfSelectItem(options: widget.options),
+      ),
     );
     if (selectedOption != null) {
       String? key = selectedOption['key'];
       String? value = selectedOption['value'];
       if (key != null && value != null) {
-        value$.add(value);
-        onOptionSelected(key, value);
+        setState(() {
+          this.value = value;
+        });
+        widget.onOptionSelected(key, value);
       }
     }
   }

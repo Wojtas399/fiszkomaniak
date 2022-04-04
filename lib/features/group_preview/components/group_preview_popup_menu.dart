@@ -11,10 +11,12 @@ class GroupPreviewPopupMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
     return ClipRRect(
       borderRadius: BorderRadius.circular(100),
       child: Material(
-        color: Colors.transparent,
         child: PopupMenuButton(
           padding: const EdgeInsets.all(16),
           tooltip: '',
@@ -22,10 +24,10 @@ class GroupPreviewPopupMenu extends StatelessWidget {
           itemBuilder: (_) => [
             PopupMenuItem(
               child: Row(
-                children: const [
-                  Icon(MdiIcons.squareEditOutline),
-                  SizedBox(width: 16),
-                  Text('Edytuj'),
+                children: [
+                  Icon(MdiIcons.squareEditOutline, color: iconColor),
+                  const SizedBox(width: 16),
+                  const Text('Edytuj'),
                 ],
               ),
               onTap: () {
@@ -34,10 +36,10 @@ class GroupPreviewPopupMenu extends StatelessWidget {
             ),
             PopupMenuItem(
               child: Row(
-                children: const [
-                  Icon(MdiIcons.plus),
-                  SizedBox(width: 16),
-                  Text('Dodaj fiszki'),
+                children: [
+                  Icon(MdiIcons.plus, color: iconColor),
+                  const SizedBox(width: 16),
+                  const Text('Dodaj fiszki'),
                 ],
               ),
               onTap: () {
@@ -46,10 +48,10 @@ class GroupPreviewPopupMenu extends StatelessWidget {
             ),
             PopupMenuItem(
               child: Row(
-                children: const [
-                  Icon(MdiIcons.deleteOutline),
-                  SizedBox(width: 16),
-                  Text('Usuń'),
+                children: [
+                  Icon(MdiIcons.deleteOutline, color: iconColor),
+                  const SizedBox(width: 16),
+                  const Text('Usuń'),
                 ],
               ),
               onTap: () {
