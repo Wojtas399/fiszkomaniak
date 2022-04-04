@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/components/textfields/textfield_background.dart';
-import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../config/theme/text_field_theme.dart';
@@ -27,9 +26,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.controller != null) {
-      Utils.setCursorAtTheEndOfValueInsideTextField(widget.controller!);
-    }
+    // if (widget.controller != null) {
+    //   Utils.setCursorAtTheEndOfValueInsideTextField(widget.controller!);
+    // }
     return Stack(
       children: [
         const TextFieldBackground(),

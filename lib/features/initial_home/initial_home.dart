@@ -1,8 +1,8 @@
+import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/features/initial_home/components/animated_form_card.dart';
 import 'package:fiszkomaniak/features/initial_home/components/animated_forms.dart';
 import 'package:fiszkomaniak/providers/initial_home_mode_provider.dart';
 import 'package:fiszkomaniak/providers/theme_provider.dart';
-import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -13,10 +13,7 @@ class InitialHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Utils.unfocusElements();
-      },
+    return OnTapFocusLoseArea(
       child: Scaffold(
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,

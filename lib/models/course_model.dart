@@ -12,3 +12,7 @@ class Course extends Equatable {
   @override
   List<Object> get props => [id, name];
 }
+
+Course createCourse({String id = '', String name = ''}) {
+  return Course(id: id, name: name);
+}

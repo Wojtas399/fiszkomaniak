@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/features/account/account_page.dart';
-import 'package:fiszkomaniak/features/courses/courses_page.dart';
+import 'package:fiszkomaniak/features/courses_library/courses_library_page.dart';
 import 'package:fiszkomaniak/features/home/components/home_app_bar.dart';
 import 'package:fiszkomaniak/features/home/components/home_bottom_navigation_bar.dart';
 import 'package:fiszkomaniak/features/home/home_listeners.dart';
@@ -18,11 +18,13 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HomeListeners(
+      pageController: _pageController,
       child: StreamBuilder(
         stream: _displayingPageNumber,
         builder: (_, AsyncSnapshot<int> snapshot) {
           int displayingPageNumber = snapshot.data ?? 0;
           return Scaffold(
+            extendBody: true,
             appBar: HomeAppBar(displayingPageNumber: displayingPageNumber),
             body: PageView(
               controller: _pageController,
@@ -32,7 +34,7 @@ class HomeView extends StatelessWidget {
               children: const [
                 StudyPage(),
                 SessionsPage(),
-                CoursesPage(),
+                CoursesLibraryPage(),
                 AccountPage(),
               ],
             ),

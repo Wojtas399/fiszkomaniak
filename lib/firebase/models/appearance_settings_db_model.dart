@@ -19,12 +19,11 @@ class AppearanceSettingsDbModel {
         );
 
   Map<String, bool?> toJson() {
-    Map<String, bool?> params = {
+    return {
       'isDarkModeOn': isDarkModeOn,
       'isDarkModeCompatibilityWithSystemOn':
           isDarkModeCompatibilityWithSystemOn,
       'isSessionTimerInvisibilityOn': isSessionTimerInvisibilityOn,
     }..removeWhere((key, value) => value == null);
-    return params;
   }
 }

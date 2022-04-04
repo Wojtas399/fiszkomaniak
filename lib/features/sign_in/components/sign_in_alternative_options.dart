@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/reset_password/reset_password_page.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
 import 'package:fiszkomaniak/providers/initial_home_mode_provider.dart';
 import 'package:fiszkomaniak/utils/utils.dart';
@@ -69,7 +68,7 @@ class _PasswordRecoveryOption extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigation.navigateToPageWithSlideUpAnim(const ResetPasswordPage());
+        Navigation.navigateToResetPassword();
       },
       child: Text('Zapomniałeś hasła?', style: textStyle),
     );
