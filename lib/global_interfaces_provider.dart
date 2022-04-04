@@ -1,12 +1,12 @@
-import 'package:fiszkomaniak/providers/auth_bloc_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'injections/firebase_provider.dart';
 
-class GlobalProviders extends StatelessWidget {
+class GlobalInterfacesProvider extends StatelessWidget {
   final Widget child;
 
-  const GlobalProviders({Key? key, required this.child}) : super(key: key);
+  const GlobalInterfacesProvider({Key? key, required this.child})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +19,7 @@ class GlobalProviders extends StatelessWidget {
           create: (_) => FirebaseProvider.provideSettingsInterface(),
         ),
       ],
-      child: AuthBlocProvider(
-        child: child,
-      ),
+      child: child,
     );
   }
 }
