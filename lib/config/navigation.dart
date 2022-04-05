@@ -53,6 +53,12 @@ class Navigation {
     );
   }
 
+  static void navigateToFlashcardsCreator() {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.flashcardsCreator,
+    );
+  }
+
   static void navigateToCourseGroupsPreview(String courseId) {
     HomeRouter.navigatorKey.currentState?.pushNamed(
       HomeRouter.courseGroupsPreview,
