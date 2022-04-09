@@ -3,36 +3,25 @@ import 'package:fiszkomaniak/config/slide_left_route_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class SelectItem extends StatefulWidget {
+class SelectItem extends StatelessWidget {
   final IconData icon;
+  final String? value;
   final String label;
-  final String value;
   final String optionsListTitle;
   final Map<String, String> options;
   final Function(String key, String value) onOptionSelected;
+  final String noOptionsMessage;
 
   const SelectItem({
     Key? key,
     required this.icon,
-    required this.label,
     required this.value,
+    required this.label,
     required this.optionsListTitle,
     required this.options,
     required this.onOptionSelected,
+    this.noOptionsMessage = 'Brak opcji do wyboru',
   }) : super(key: key);
-
-  @override
-  _SelectItemState createState() => _SelectItemState();
-}
-
-class _SelectItemState extends State<SelectItem> {
-  late String value;
-
-  @override
-  void initState() {
-    value = widget.value;
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,19 +32,19 @@ class _SelectItemState extends State<SelectItem> {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         child: Row(
           children: [
-            Icon(widget.icon),
+            Icon(icon),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.label,
+                    label,
                     style: Theme.of(context).textTheme.caption,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    value,
+                    value ?? '--',
                     style: Theme.of(context).textTheme.subtitle1,
                   ),
                 ],
@@ -72,8 +61,9 @@ class _SelectItemState extends State<SelectItem> {
     final selectedOption = await Navigator.of(context).push(
       SlideLeftRouteAnimation(
         page: OptionsOfSelectItem(
-          options: widget.options,
-          title: widget.optionsListTitle,
+          options: options,
+          title: optionsListTitle,
+          noOptionsMessage: noOptionsMessage,
         ),
       ),
     );
@@ -81,10 +71,7 @@ class _SelectItemState extends State<SelectItem> {
       String? key = selectedOption['key'];
       String? value = selectedOption['value'];
       if (key != null && value != null) {
-        setState(() {
-          this.value = value;
-        });
-        widget.onOptionSelected(key, value);
+        onOptionSelected(key, value);
       }
     }
   }

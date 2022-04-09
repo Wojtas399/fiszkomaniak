@@ -15,8 +15,8 @@ class GroupCreatorCourseSelection extends StatelessWidget {
       builder: (BuildContext context, GroupCreatorState state) {
         return SelectItem(
           icon: MdiIcons.archiveOutline,
+          value: state.selectedCourse?.name,
           label: 'Kurs',
-          value: state.selectedCourse?.name ?? 'Nie wybrano',
           optionsListTitle: 'Wybierz kurs',
           options: {
             for (final course in state.allCourses) course.id: course.name

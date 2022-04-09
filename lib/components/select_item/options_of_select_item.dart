@@ -6,11 +6,13 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 class OptionsOfSelectItem extends StatelessWidget {
   final String title;
   final Map<String, String> options;
+  final String noOptionsMessage;
 
   const OptionsOfSelectItem({
     Key? key,
     required this.title,
     required this.options,
+    required this.noOptionsMessage,
   }) : super(key: key);
 
   @override
@@ -21,7 +23,7 @@ class OptionsOfSelectItem extends StatelessWidget {
         closeIcon: MdiIcons.arrowLeft,
       ),
       body: options.isEmpty
-          ? const _NoOptionsInfo()
+          ? _NoOptionsInfo(noOptionsMessage: noOptionsMessage)
           : SingleChildScrollView(
               child: SafeArea(
                 child: Padding(
@@ -76,13 +78,19 @@ class _OptionItem extends StatelessWidget {
 }
 
 class _NoOptionsInfo extends StatelessWidget {
-  const _NoOptionsInfo({Key? key}) : super(key: key);
+  final String noOptionsMessage;
+
+  const _NoOptionsInfo({Key? key, required this.noOptionsMessage})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       width: double.infinity,
-      child: EmptyContentInfo(subtitle: 'Brak opcji do wyboru'),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: EmptyContentInfo(subtitle: noOptionsMessage),
+      ),
     );
   }
 }
