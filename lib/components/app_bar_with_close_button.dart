@@ -21,6 +21,7 @@ class AppBarWithCloseButton extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      centerTitle: true,
       title: Text(label),
       leading: CustomIconButton(
         onPressed: () {

@@ -17,6 +17,7 @@ class GroupCreatorCourseSelection extends StatelessWidget {
           icon: MdiIcons.archiveOutline,
           label: 'Kurs',
           value: state.selectedCourse?.name ?? 'Nie wybrano',
+          optionsListTitle: 'Wybierz kurs',
           options: {
             for (final course in state.allCourses) course.id: course.name
           },

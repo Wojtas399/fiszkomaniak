@@ -80,6 +80,9 @@ class _ProgressBar extends StatelessWidget {
   }
 
   double _countXTranslation(double containerWidth) {
+    if (amountOfLearnedFlashcards == 0 && amountOfAllFlashcards == 0) {
+      return containerWidth;
+    }
     double percentages = amountOfLearnedFlashcards / amountOfAllFlashcards;
     return containerWidth - (containerWidth * percentages);
   }

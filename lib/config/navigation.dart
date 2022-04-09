@@ -53,9 +53,9 @@ class Navigation {
     );
   }
 
-  static void navigateToFlashcardsCreator() {
+  static void navigateToGroupSelection() {
     HomeRouter.navigatorKey.currentState?.pushNamed(
-      HomeRouter.flashcardsCreator,
+      HomeRouter.groupSelection,
     );
   }
 

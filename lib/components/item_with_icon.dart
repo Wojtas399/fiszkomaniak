@@ -5,6 +5,10 @@ class ItemWithIcon extends StatelessWidget {
   final String text;
   final String? label;
   final Widget? trailing;
+  final double paddingLeft;
+  final double paddingRight;
+  final double paddingTop;
+  final double paddingBottom;
 
   const ItemWithIcon({
     Key? key,
@@ -12,12 +16,21 @@ class ItemWithIcon extends StatelessWidget {
     required this.text,
     this.label,
     this.trailing,
+    this.paddingLeft = 16.0,
+    this.paddingRight = 16.0,
+    this.paddingTop = 16.0,
+    this.paddingBottom = 16.0,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
+      padding: EdgeInsets.only(
+        left: paddingLeft,
+        right: paddingRight,
+        top: paddingTop,
+        bottom: paddingBottom,
+      ),
       width: double.infinity,
       child: Row(
         children: [

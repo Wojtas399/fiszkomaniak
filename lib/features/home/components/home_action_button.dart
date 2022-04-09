@@ -36,7 +36,7 @@ class HomeActionButton extends StatelessWidget {
           child: const Icon(MdiIcons.cards),
           label: 'Fiszki',
           onTap: () {
-            Navigation.navigateToFlashcardsCreator();
+            Navigation.navigateToGroupSelection();
           },
         ),
       ],

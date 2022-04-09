@@ -7,6 +7,7 @@ class SelectItem extends StatefulWidget {
   final IconData icon;
   final String label;
   final String value;
+  final String optionsListTitle;
   final Map<String, String> options;
   final Function(String key, String value) onOptionSelected;
 
@@ -15,6 +16,7 @@ class SelectItem extends StatefulWidget {
     required this.icon,
     required this.label,
     required this.value,
+    required this.optionsListTitle,
     required this.options,
     required this.onOptionSelected,
   }) : super(key: key);
@@ -69,7 +71,10 @@ class _SelectItemState extends State<SelectItem> {
   Future<void> _onTap(BuildContext context) async {
     final selectedOption = await Navigator.of(context).push(
       SlideLeftRouteAnimation(
-        page: OptionsOfSelectItem(options: widget.options),
+        page: OptionsOfSelectItem(
+          options: widget.options,
+          title: widget.optionsListTitle,
+        ),
       ),
     );
     if (selectedOption != null) {

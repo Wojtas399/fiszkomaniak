@@ -4,18 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class OptionsOfSelectItem extends StatelessWidget {
+  final String title;
   final Map<String, String> options;
 
   const OptionsOfSelectItem({
     Key? key,
+    required this.title,
     required this.options,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarWithCloseButton(
-        label: 'Wybierz kurs',
+      appBar: AppBarWithCloseButton(
+        label: title,
         closeIcon: MdiIcons.arrowLeft,
       ),
       body: options.isEmpty
