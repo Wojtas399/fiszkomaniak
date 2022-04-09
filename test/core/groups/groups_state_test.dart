@@ -39,14 +39,14 @@ void main() {
   });
 
   test('copy with all groups', () {
-    GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
+    final GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
 
     expect(updatedState.allGroups, allGroups);
     expect(updatedState.status, GroupsStatusLoaded());
   });
 
   test('copy with status', () {
-    GroupsState updatedState = groupsState.copyWith(
+    final GroupsState updatedState = groupsState.copyWith(
       status: GroupsStatusGroupRemoved(),
     );
 
@@ -55,7 +55,7 @@ void main() {
   });
 
   test('get group by id, group exists', () {
-    GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
+    final GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
 
     Group? group = updatedState.getGroupById('g2');
 
@@ -63,7 +63,7 @@ void main() {
   });
 
   test('get group by id, group does not exist', () {
-    GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
+    final GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
 
     Group? group = updatedState.getGroupById('g4');
 
@@ -71,10 +71,26 @@ void main() {
   });
 
   test('get groups by courseId', () {
-    GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
+    final GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
 
     List<Group> groupsFromCourse = updatedState.getGroupsByCourseId('c2');
 
     expect(groupsFromCourse, [allGroups[1], allGroups[2]]);
+  });
+
+  test('get name by id, group exists', () {
+    final GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
+
+    String? groupName = updatedState.getNameById('g1');
+
+    expect(groupName, allGroups[0].name);
+  });
+
+  test('get name by id, group does not exist', () {
+    final GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
+
+    String? groupName = updatedState.getNameById('g4');
+
+    expect(groupName, null);
   });
 }

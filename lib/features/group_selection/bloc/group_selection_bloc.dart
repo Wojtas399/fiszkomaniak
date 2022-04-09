@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_event.dart';
@@ -18,6 +19,7 @@ class GroupSelectionBloc
     on<GroupSelectionEventInitialize>(_initialize);
     on<GroupSelectionEventCourseSelected>(_courseSelected);
     on<GroupSelectionEventGroupSelected>(_groupSelected);
+    on<GroupSelectionEventButtonPressed>(_buttonPressed);
   }
 
   void _initialize(
@@ -46,5 +48,15 @@ class GroupSelectionBloc
     emit(state.copyWith(
       selectedGroup: _groupsBloc.state.getGroupById(event.groupId),
     ));
+  }
+
+  void _buttonPressed(
+    GroupSelectionEventButtonPressed event,
+    Emitter<GroupSelectionState> emit,
+  ) {
+    final String? selectedGroupId = state.selectedGroup?.id;
+    if (selectedGroupId != null) {
+      Navigation.navigateToFlashcardsEditor(selectedGroupId);
+    }
   }
 }
