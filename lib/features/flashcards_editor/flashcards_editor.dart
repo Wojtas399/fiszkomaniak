@@ -1,7 +1,9 @@
+import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/components/flashcards_editor_app_bar.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/components/flashcards_editor_flashcard_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,10 +19,24 @@ class FlashcardsEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return _FlashcardsEditorBlocProvider(
       groupId: groupId,
-      child: const Scaffold(
-        appBar: FlashcardsEditorAppBar(),
-        body: Center(
-          child: Text('Flashcards creator'),
+      child: Scaffold(
+        appBar: const FlashcardsEditorAppBar(),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: OnTapFocusLoseArea(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  children: const [
+                    FlashcardsEditorFlashcardItem(
+                      nameForQuestion: 'Angielski',
+                      nameForAnswer: 'Polski',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
