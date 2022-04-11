@@ -1,12 +1,15 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_bloc.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_event.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_state.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -15,9 +18,12 @@ class MockCoursesBloc extends Mock implements CoursesBloc {}
 
 class MockGroupsBloc extends Mock implements GroupsBloc {}
 
+class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
+
 void main() {
   final CoursesBloc coursesBloc = MockCoursesBloc();
   final GroupsBloc groupsBloc = MockGroupsBloc();
+  final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
   late GroupSelectionBloc bloc;
   final List<Course> courses = [
     createCourse(id: 'c1'),
@@ -30,17 +36,30 @@ void main() {
     createGroup(id: 'g3', courseId: 'c3'),
     createGroup(id: 'g4', courseId: 'c1'),
   ];
+  final List<Flashcard> flashcards = [
+    createFlashcard(
+      id: 'f1',
+      groupId: 'g1',
+      status: FlashcardStatus.remembered,
+    ),
+    createFlashcard(id: 'f2', groupId: 'g1'),
+    createFlashcard(id: 'f3', groupId: 'g1'),
+    createFlashcard(id: 'f4', groupId: 'g2'),
+    createFlashcard(id: 'f5', groupId: 'g4'),
+  ];
 
   setUp(() {
     bloc = GroupSelectionBloc(
       coursesBloc: coursesBloc,
       groupsBloc: groupsBloc,
+      flashcardsBloc: flashcardsBloc,
     );
   });
 
   tearDown(() {
     reset(coursesBloc);
     reset(groupsBloc);
+    reset(flashcardsBloc);
   });
 
   blocTest(
@@ -87,10 +106,17 @@ void main() {
       when(() => groupsBloc.state).thenReturn(
         GroupsState(allGroups: groups),
       );
+      when(() => flashcardsBloc.state).thenReturn(
+        FlashcardsState(allFlashcards: flashcards),
+      );
     },
-    act: (_) => bloc.add(GroupSelectionEventGroupSelected(groupId: 'g2')),
+    act: (_) => bloc.add(GroupSelectionEventGroupSelected(groupId: 'g1')),
     expect: () => [
-      GroupSelectionState(selectedGroup: groups[1]),
+      GroupSelectionState(
+        selectedGroup: groups[0],
+        amountOfAllFlashcardsFromGroup: 3,
+        amountOfRememberedFlashcardsFromGroup: 1,
+      ),
     ],
   );
 }

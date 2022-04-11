@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
 import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_bloc.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,13 +19,17 @@ class FlashcardsEditorAppBar extends StatelessWidget
     return BlocBuilder<FlashcardsEditorBloc, FlashcardsEditorState>(
       builder: (BuildContext context, FlashcardsEditorState state) {
         return AppBarWithCloseButton(
-          label: state.groupName,
+          label: state.group?.name ?? '',
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: CustomIconButton(
                 icon: MdiIcons.contentSave,
-                onPressed: () {},
+                onPressed: () {
+                  context
+                      .read<FlashcardsEditorBloc>()
+                      .add(FlashcardsEditorEventSave());
+                },
               ),
             ),
           ],

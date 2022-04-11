@@ -2,10 +2,13 @@ import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.d
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_event.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_event.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
+import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +31,9 @@ class HomeProviders extends StatelessWidget {
         RepositoryProvider(
           create: (_) => FirebaseProvider.provideGroupsInterface(),
         ),
+        RepositoryProvider(
+          create: (_) => FirebaseProvider.provideFlashcardsInterface(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -40,6 +46,11 @@ class HomeProviders extends StatelessWidget {
             create: (BuildContext context) => GroupsBloc(
               groupsInterface: context.read<GroupsInterface>(),
             )..add(GroupsEventInitialize()),
+          ),
+          BlocProvider<FlashcardsBloc>(
+            create: (BuildContext context) => FlashcardsBloc(
+              flashcardsInterface: context.read<FlashcardsInterface>(),
+            )..add(FlashcardsEventInitialize()),
           ),
           BlocProvider(
             create: (BuildContext context) => AppearanceSettingsBloc(

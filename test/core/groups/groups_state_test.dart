@@ -77,20 +77,4 @@ void main() {
 
     expect(groupsFromCourse, [allGroups[1], allGroups[2]]);
   });
-
-  test('get name by id, group exists', () {
-    final GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
-
-    String? groupName = updatedState.getNameById('g1');
-
-    expect(groupName, allGroups[0].name);
-  });
-
-  test('get name by id, group does not exist', () {
-    final GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
-
-    String? groupName = updatedState.getNameById('g4');
-
-    expect(groupName, null);
-  });
 }

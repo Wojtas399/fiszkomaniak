@@ -7,12 +7,16 @@ class GroupSelectionState extends Equatable {
   late final List<Group> _groupsFromCourse;
   final Course? selectedCourse;
   final Group? selectedGroup;
+  final int amountOfAllFlashcardsFromGroup;
+  final int amountOfRememberedFlashcardsFromGroup;
 
   GroupSelectionState({
     List<Course> allCourses = const [],
     List<Group> groupsFromCourse = const [],
     this.selectedCourse,
     this.selectedGroup,
+    this.amountOfAllFlashcardsFromGroup = 0,
+    this.amountOfRememberedFlashcardsFromGroup = 0,
   }) {
     _allCourses = allCourses;
     _groupsFromCourse = groupsFromCourse;
@@ -35,12 +39,19 @@ class GroupSelectionState extends Equatable {
     List<Group>? groupsFromCourse,
     Course? selectedCourse,
     Group? selectedGroup,
+    int? amountOfAllFlashcardsFromGroup,
+    int? amountOfRememberedFlashcardsFromGroup,
   }) {
     return GroupSelectionState(
       allCourses: allCourses ?? _allCourses,
       groupsFromCourse: groupsFromCourse ?? _groupsFromCourse,
       selectedCourse: selectedCourse ?? this.selectedCourse,
       selectedGroup: selectedGroup,
+      amountOfAllFlashcardsFromGroup:
+          amountOfAllFlashcardsFromGroup ?? this.amountOfAllFlashcardsFromGroup,
+      amountOfRememberedFlashcardsFromGroup:
+          amountOfRememberedFlashcardsFromGroup ??
+              this.amountOfRememberedFlashcardsFromGroup,
     );
   }
 
@@ -50,5 +61,7 @@ class GroupSelectionState extends Equatable {
         _groupsFromCourse,
         selectedCourse ?? createCourse(),
         selectedGroup ?? createGroup(),
+        amountOfAllFlashcardsFromGroup,
+        amountOfRememberedFlashcardsFromGroup,
       ];
 }

@@ -40,6 +40,8 @@ void main() {
     expect(state.nameForQuestions, null);
     expect(state.nameForAnswers, null);
     expect(state.isButtonDisabled, true);
+    expect(state.amountOfAllFlashcardsFromGroup, 0);
+    expect(state.amountOfRememberedFlashcardsFromGroup, 0);
   });
 
   test('copy with all courses', () {
@@ -80,6 +82,26 @@ void main() {
 
     expect(state2.selectedGroup, groups[0]);
     expect(state3.selectedGroup, null);
+  });
+
+  test('copy with amount of all flashcards from group', () {
+    final GroupSelectionState state2 = state.copyWith(
+      amountOfAllFlashcardsFromGroup: 120,
+    );
+    final GroupSelectionState state3 = state2.copyWith();
+
+    expect(state2.amountOfAllFlashcardsFromGroup, 120);
+    expect(state3.amountOfAllFlashcardsFromGroup, 120);
+  });
+
+  test('copy with amount of remembered flashcards', () {
+    final GroupSelectionState state2 = state.copyWith(
+      amountOfRememberedFlashcardsFromGroup: 20,
+    );
+    final GroupSelectionState state3 = state2.copyWith();
+
+    expect(state2.amountOfRememberedFlashcardsFromGroup, 20);
+    expect(state3.amountOfRememberedFlashcardsFromGroup, 20);
   });
 
   test('name for questions, group selected', () {
