@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class FlashcardsEditorItem extends StatelessWidget {
-  final TextEditingController questionController;
-  final TextEditingController answerController;
+class FlashcardsEditorItem extends StatefulWidget {
+  final String questionInitialValue;
+  final String answerInitialValue;
   final String nameForQuestion;
   final String nameForAnswer;
   final Function(String value)? onQuestionChanged;
@@ -11,13 +11,30 @@ class FlashcardsEditorItem extends StatelessWidget {
 
   const FlashcardsEditorItem({
     Key? key,
-    required this.questionController,
-    required this.answerController,
+    required this.questionInitialValue,
+    required this.answerInitialValue,
     required this.nameForQuestion,
     required this.nameForAnswer,
     this.onQuestionChanged,
     this.onAnswerChanged,
   }) : super(key: key);
+
+  @override
+  _FlashcardsEditorItemState createState() => _FlashcardsEditorItemState();
+}
+
+class _FlashcardsEditorItemState extends State<FlashcardsEditorItem> {
+  late final TextEditingController questionController;
+  late final TextEditingController answerController;
+
+  @override
+  void initState() {
+    questionController = TextEditingController(
+      text: widget.questionInitialValue,
+    );
+    answerController = TextEditingController(text: widget.answerInitialValue);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +53,14 @@ class FlashcardsEditorItem extends StatelessWidget {
                 children: [
                   _MultiLinesTextField(
                     controller: questionController,
-                    hintText: 'Pytanie ($nameForQuestion)',
-                    onChanged: onQuestionChanged,
+                    hintText: 'Pytanie (${widget.nameForQuestion})',
+                    onChanged: widget.onQuestionChanged,
                   ),
                   const Divider(thickness: 1),
                   _MultiLinesTextField(
                     controller: answerController,
-                    hintText: 'Odpowiedź ($nameForAnswer)',
-                    onChanged: onAnswerChanged,
+                    hintText: 'Odpowiedź (${widget.nameForAnswer})',
+                    onChanged: widget.onAnswerChanged,
                   ),
                 ],
               ),

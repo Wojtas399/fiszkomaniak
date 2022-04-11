@@ -24,12 +24,8 @@ class FlashcardsEditorFlashcardsList extends StatelessWidget {
             final int index = entry.key;
             final FlashcardsEditorItemParams params = entry.value;
             return FlashcardsEditorItem(
-              questionController: TextEditingController(
-                text: params.doc.question,
-              ),
-              answerController: TextEditingController(
-                text: params.doc.answer,
-              ),
+              questionInitialValue: params.doc.question,
+              answerInitialValue: params.doc.answer,
               nameForQuestion: group.nameForQuestions,
               nameForAnswer: group.nameForAnswers,
               onQuestionChanged: (String value) {
