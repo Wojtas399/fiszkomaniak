@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiszkomaniak/firebase/models/fire_doc_model.dart';
 import 'package:fiszkomaniak/firebase/models/flashcard_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_flashcards_service.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
@@ -37,6 +39,25 @@ class FlashcardsRepository implements FlashcardsInterface {
     await _fireFlashcardsService.addFlashcards(
       flashcards.map(_convertFlashcardToDbModel).toList(),
     );
+  }
+
+  @override
+  Future<void> updateFlashcards(List<Flashcard> flashcards) async {
+    await _fireFlashcardsService.updateFlashcards(
+      flashcards
+          .map(
+            (flashcard) => FireDoc(
+              id: flashcard.id,
+              doc: _convertFlashcardToDbModel(flashcard),
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  @override
+  Future<void> removeFlashcards(List<String> idsOfFlashcards) async {
+    await _fireFlashcardsService.removeFlashcards(idsOfFlashcards);
   }
 
   ChangedDocument<Flashcard>? _convertFireDocumentToChangedDocumentModel(

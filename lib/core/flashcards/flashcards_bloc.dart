@@ -19,7 +19,7 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
     on<FlashcardsEventFlashcardAdded>(_flashcardAdded);
     on<FlashcardsEventFlashcardUpdated>(_flashcardUpdated);
     on<FlashcardsEventFlashcardRemoved>(_flashcardRemoved);
-    on<FlashcardsEventAddFlashcards>(_addFlashcards);
+    on<FlashcardsEventSave>(_save);
   }
 
   void _initialize(
@@ -74,14 +74,30 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
     emit(state.copyWith(allFlashcards: allFlashcards));
   }
 
-  Future<void> _addFlashcards(
-    FlashcardsEventAddFlashcards event,
+  Future<void> _save(
+    FlashcardsEventSave event,
     Emitter<FlashcardsState> emit,
   ) async {
     try {
       emit(state.copyWith(status: FlashcardsStatusLoading()));
-      await _flashcardsInterface.addFlashcards(event.flashcards);
-      emit(state.copyWith(status: FlashcardsStatusFlashcardsAdded()));
+      if (event.flashcardsToUpdate.isNotEmpty) {
+        await _flashcardsInterface.updateFlashcards(event.flashcardsToUpdate);
+      }
+      if (event.flashcardsToAdd.isNotEmpty) {
+        await _flashcardsInterface.addFlashcards(event.flashcardsToAdd);
+      }
+      if (event.idsOfFlashcardsToRemove.isNotEmpty) {
+        await _flashcardsInterface.removeFlashcards(
+          event.idsOfFlashcardsToRemove,
+        );
+      }
+      if (event.flashcardsToAdd.isNotEmpty &&
+          event.flashcardsToUpdate.isEmpty &&
+          event.idsOfFlashcardsToRemove.isEmpty) {
+        emit(state.copyWith(status: FlashcardsStatusFlashcardsAdded()));
+      } else {
+        emit(state.copyWith(status: FlashcardsStatusFlashcardsSaved()));
+      }
     } catch (error) {
       emit(state.copyWith(
         status: FlashcardsStatusError(message: error.toString()),

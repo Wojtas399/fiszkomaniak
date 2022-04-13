@@ -8,15 +8,17 @@ class FlashcardsEditorItem extends StatefulWidget {
   final String nameForAnswer;
   final Function(String value)? onQuestionChanged;
   final Function(String value)? onAnswerChanged;
+  final VoidCallback? onTapDeleteButton;
 
   const FlashcardsEditorItem({
-    Key? key,
+    required Key key,
     required this.questionInitialValue,
     required this.answerInitialValue,
     required this.nameForQuestion,
     required this.nameForAnswer,
     this.onQuestionChanged,
     this.onAnswerChanged,
+    this.onTapDeleteButton,
   }) : super(key: key);
 
   @override
@@ -66,7 +68,7 @@ class _FlashcardsEditorItemState extends State<FlashcardsEditorItem> {
               ),
             ),
           ),
-          const _DeleteButton(),
+          _DeleteButton(onTap: widget.onTapDeleteButton),
         ],
       ),
     );
@@ -74,7 +76,9 @@ class _FlashcardsEditorItemState extends State<FlashcardsEditorItem> {
 }
 
 class _DeleteButton extends StatelessWidget {
-  const _DeleteButton({Key? key}) : super(key: key);
+  final VoidCallback? onTap;
+
+  const _DeleteButton({Key? key, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +86,7 @@ class _DeleteButton extends StatelessWidget {
       top: 4.0,
       right: 4.0,
       child: GestureDetector(
-        onTap: () {},
+        onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100.0),
@@ -119,8 +123,10 @@ class _MultiLinesTextField extends StatelessWidget {
       decoration: InputDecoration(
         border: InputBorder.none,
         hintText: hintText,
+        counter: const Offstage(),
       ),
       onChanged: onChanged,
+      maxLength: 100,
     );
   }
 }

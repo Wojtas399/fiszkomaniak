@@ -28,35 +28,49 @@ void main() {
     createFlashcard(
       id: 'f1',
       groupId: 'g1',
-      question: 'question',
-      answer: 'answer',
+      question: 'q1',
+      answer: 'a1',
     ),
-    createFlashcard(id: 'f2', groupId: 'g2'),
+    createFlashcard(
+      id: 'f2',
+      groupId: 'g1',
+      question: 'q2',
+      answer: 'a2',
+    ),
     createFlashcard(
       id: 'f3',
       groupId: 'g1',
-      question: 'WoW',
-      answer: 'HMMMM',
+      question: 'q3',
+      answer: 'a3',
+    ),
+    createFlashcard(
+      id: 'f4',
+      groupId: 'g2',
+      question: 'q4',
+      answer: 'a4',
     ),
   ];
   final FlashcardsEditorState stateAfterInitialization = FlashcardsEditorState(
     group: groups[0],
     flashcards: [
-      createFlashcardsEditorItemParams(
-        index: 0,
-        isNew: false,
+      EditorFlashcard(
+        key: 'flashcard0',
         doc: flashcards[0],
       ),
-      createFlashcardsEditorItemParams(
-        index: 1,
-        isNew: false,
+      EditorFlashcard(
+        key: 'flashcard1',
+        doc: flashcards[1],
+      ),
+      EditorFlashcard(
+        key: 'flashcard2',
         doc: flashcards[2],
       ),
-      createFlashcardsEditorItemParams(
-        index: 2,
+      EditorFlashcard(
+        key: 'flashcard3',
         doc: createFlashcard(groupId: 'g1'),
       ),
     ],
+    keyCounter: 3,
   );
 
   setUp(() {
@@ -74,6 +88,7 @@ void main() {
 
   tearDown(() {
     reset(groupsBloc);
+    reset(flashcardsBloc);
   });
 
   blocTest(
@@ -95,9 +110,8 @@ void main() {
       bloc.state.copyWith(
         flashcards: [
           ...stateAfterInitialization.flashcards,
-          FlashcardsEditorItemParams(
-            index: 3,
-            isNew: true,
+          EditorFlashcard(
+            key: 'flashcard4',
             doc: createFlashcard(groupId: 'g1'),
           ),
         ],
@@ -125,6 +139,7 @@ void main() {
         flashcards: [
           stateAfterInitialization.flashcards[0],
           stateAfterInitialization.flashcards[2],
+          stateAfterInitialization.flashcards[3],
         ],
       ),
     ],
@@ -136,38 +151,36 @@ void main() {
     act: (_) {
       bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
       bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 2,
+        indexOfFlashcard: 3,
         question: 'NEW question',
       ));
     },
     expect: () => [
       stateAfterInitialization,
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1],
-          stateAfterInitialization.flashcards[2].copyWith(
-            doc: stateAfterInitialization.flashcards[2].doc.copyWith(
-              question: 'NEW question',
-            ),
+      bloc.state.copyWith(flashcards: [
+        stateAfterInitialization.flashcards[0],
+        stateAfterInitialization.flashcards[1],
+        stateAfterInitialization.flashcards[2],
+        stateAfterInitialization.flashcards[3].copyWith(
+          doc: stateAfterInitialization.flashcards[3].doc.copyWith(
+            question: 'NEW question',
           ),
-        ],
-      ),
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1],
-          stateAfterInitialization.flashcards[2].copyWith(
-            doc: stateAfterInitialization.flashcards[2].doc.copyWith(
-              question: 'NEW question',
-            ),
+        ),
+      ], keyCounter: 3),
+      bloc.state.copyWith(flashcards: [
+        stateAfterInitialization.flashcards[0],
+        stateAfterInitialization.flashcards[1],
+        stateAfterInitialization.flashcards[2],
+        stateAfterInitialization.flashcards[3].copyWith(
+          doc: stateAfterInitialization.flashcards[3].doc.copyWith(
+            question: 'NEW question',
           ),
-          createFlashcardsEditorItemParams(
-            index: 3,
-            doc: createFlashcard(groupId: 'g1'),
-          ),
-        ],
-      ),
+        ),
+        EditorFlashcard(
+          key: 'flashcard4',
+          doc: createFlashcard(groupId: 'g1'),
+        ),
+      ], keyCounter: 4),
     ],
   );
 
@@ -177,23 +190,22 @@ void main() {
     act: (_) {
       bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
       bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 1,
+        indexOfFlashcard: 2,
         question: 'NEW question',
       ));
     },
     expect: () => [
       stateAfterInitialization,
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1].copyWith(
-            doc: stateAfterInitialization.flashcards[1].doc.copyWith(
-              question: 'NEW question',
-            ),
+      bloc.state.copyWith(flashcards: [
+        stateAfterInitialization.flashcards[0],
+        stateAfterInitialization.flashcards[1],
+        stateAfterInitialization.flashcards[2].copyWith(
+          doc: stateAfterInitialization.flashcards[2].doc.copyWith(
+            question: 'NEW question',
           ),
-          stateAfterInitialization.flashcards[2]
-        ],
-      ),
+        ),
+        stateAfterInitialization.flashcards[3],
+      ], keyCounter: 3),
     ],
   );
 
@@ -203,11 +215,11 @@ void main() {
     act: (_) {
       bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
       bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 1,
+        indexOfFlashcard: 2,
         answer: '',
       ));
       bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 1,
+        indexOfFlashcard: 2,
         question: '',
       ));
     },
@@ -216,36 +228,29 @@ void main() {
       bloc.state.copyWith(
         flashcards: [
           stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1].copyWith(
-            doc: stateAfterInitialization.flashcards[1].doc.copyWith(
+          stateAfterInitialization.flashcards[1],
+          stateAfterInitialization.flashcards[2].copyWith(
+            doc: stateAfterInitialization.flashcards[2].doc.copyWith(
               answer: '',
             ),
           ),
-          stateAfterInitialization.flashcards[2]
+          stateAfterInitialization.flashcards[3],
         ],
+        keyCounter: 3,
       ),
       bloc.state.copyWith(
         flashcards: [
           stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1].copyWith(
-            doc: stateAfterInitialization.flashcards[1].doc.copyWith(
+          stateAfterInitialization.flashcards[1],
+          stateAfterInitialization.flashcards[2].copyWith(
+            doc: stateAfterInitialization.flashcards[2].doc.copyWith(
               answer: '',
               question: '',
             ),
           ),
-          stateAfterInitialization.flashcards[2]
+          stateAfterInitialization.flashcards[3],
         ],
-      ),
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1].copyWith(
-            doc: stateAfterInitialization.flashcards[1].doc.copyWith(
-              answer: '',
-              question: '',
-            ),
-          ),
-        ],
+        keyCounter: 3,
       ),
     ],
   );
@@ -262,22 +267,60 @@ void main() {
     },
     expect: () => [
       stateAfterInitialization,
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0].copyWith(
-            doc: stateAfterInitialization.flashcards[0].doc.copyWith(
-              question: 'NEW question',
-            ),
+      bloc.state.copyWith(flashcards: [
+        stateAfterInitialization.flashcards[0].copyWith(
+          doc: stateAfterInitialization.flashcards[0].doc.copyWith(
+            question: 'NEW question',
           ),
-          stateAfterInitialization.flashcards[1],
-          stateAfterInitialization.flashcards[2]
-        ],
-      ),
+        ),
+        stateAfterInitialization.flashcards[1],
+        stateAfterInitialization.flashcards[2],
+        stateAfterInitialization.flashcards[3]
+      ], keyCounter: 3),
     ],
   );
 
   blocTest(
     'answer changed, last item',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+      bloc.add(FlashcardsEditorEventAnswerChanged(
+        indexOfFlashcard: 3,
+        answer: 'NEW answer',
+      ));
+    },
+    expect: () => [
+      stateAfterInitialization,
+      bloc.state.copyWith(flashcards: [
+        stateAfterInitialization.flashcards[0],
+        stateAfterInitialization.flashcards[1],
+        stateAfterInitialization.flashcards[2],
+        stateAfterInitialization.flashcards[3].copyWith(
+          doc: stateAfterInitialization.flashcards[3].doc.copyWith(
+            answer: 'NEW answer',
+          ),
+        ),
+      ], keyCounter: 3),
+      bloc.state.copyWith(flashcards: [
+        stateAfterInitialization.flashcards[0],
+        stateAfterInitialization.flashcards[1],
+        stateAfterInitialization.flashcards[2],
+        stateAfterInitialization.flashcards[3].copyWith(
+          doc: stateAfterInitialization.flashcards[3].doc.copyWith(
+            answer: 'NEW answer',
+          ),
+        ),
+        EditorFlashcard(
+          key: 'flashcard4',
+          doc: createFlashcard(groupId: 'g1'),
+        ),
+      ], keyCounter: 4),
+    ],
+  );
+
+  blocTest(
+    'answer changed, second to last item',
     build: () => bloc,
     act: (_) {
       bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
@@ -297,48 +340,9 @@ void main() {
               answer: 'NEW answer',
             ),
           ),
+          stateAfterInitialization.flashcards[3]
         ],
-      ),
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1],
-          stateAfterInitialization.flashcards[2].copyWith(
-            doc: stateAfterInitialization.flashcards[2].doc.copyWith(
-              answer: 'NEW answer',
-            ),
-          ),
-          createFlashcardsEditorItemParams(
-            index: 3,
-            doc: createFlashcard(groupId: 'g1'),
-          ),
-        ],
-      ),
-    ],
-  );
-
-  blocTest(
-    'answer changed, second to last item',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 1,
-        answer: 'NEW answer',
-      ));
-    },
-    expect: () => [
-      stateAfterInitialization,
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1].copyWith(
-            doc: stateAfterInitialization.flashcards[1].doc.copyWith(
-              answer: 'NEW answer',
-            ),
-          ),
-          stateAfterInitialization.flashcards[2]
-        ],
+        keyCounter: 3,
       ),
     ],
   );
@@ -349,49 +353,39 @@ void main() {
     act: (_) {
       bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
       bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 1,
+        indexOfFlashcard: 2,
         question: '',
       ));
       bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 1,
+        indexOfFlashcard: 2,
         answer: '',
       ));
     },
     expect: () => [
       stateAfterInitialization,
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1].copyWith(
-            doc: stateAfterInitialization.flashcards[1].doc.copyWith(
-              question: '',
-            ),
+      bloc.state.copyWith(flashcards: [
+        stateAfterInitialization.flashcards[0],
+        stateAfterInitialization.flashcards[1],
+        stateAfterInitialization.flashcards[2].copyWith(
+          doc: stateAfterInitialization.flashcards[2].doc.copyWith(
+            question: '',
           ),
-          stateAfterInitialization.flashcards[2]
-        ],
-      ),
+        ),
+        stateAfterInitialization.flashcards[3]
+      ], keyCounter: 3),
       bloc.state.copyWith(
         flashcards: [
           stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1].copyWith(
-            doc: stateAfterInitialization.flashcards[1].doc.copyWith(
-              question: '',
-              answer: '',
-            ),
-          ),
-          stateAfterInitialization.flashcards[2]
-        ],
-      ),
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1].copyWith(
-            doc: stateAfterInitialization.flashcards[1].doc.copyWith(
+          stateAfterInitialization.flashcards[1],
+          stateAfterInitialization.flashcards[2].copyWith(
+            doc: stateAfterInitialization.flashcards[2].doc.copyWith(
               question: '',
               answer: '',
             ),
           ),
+          stateAfterInitialization.flashcards[3]
         ],
+        keyCounter: 3,
       ),
     ],
   );
@@ -416,41 +410,146 @@ void main() {
             ),
           ),
           stateAfterInitialization.flashcards[1],
-          stateAfterInitialization.flashcards[2]
+          stateAfterInitialization.flashcards[2],
+          stateAfterInitialization.flashcards[3],
         ],
+        keyCounter: 3,
       ),
     ],
   );
 
   blocTest(
-    'save',
+    'save, flashcard edited',
     build: () => bloc,
     act: (_) {
       bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
       bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 2,
+        indexOfFlashcard: 0,
         question: 'question',
       ));
       bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 2,
+        indexOfFlashcard: 0,
         answer: 'answer',
       ));
       bloc.add(FlashcardsEditorEventSave());
     },
     verify: (_) {
       verify(
+        () => flashcardsBloc.add(FlashcardsEventSave(
+          flashcardsToUpdate: [
+            createFlashcard(
+              id: 'f1',
+              question: 'question',
+              answer: 'answer',
+              groupId: 'g1',
+            ),
+          ],
+          flashcardsToAdd: const [],
+          idsOfFlashcardsToRemove: const [],
+        )),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'save, flashcard added',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+      bloc.add(FlashcardsEditorEventQuestionChanged(
+        indexOfFlashcard: 3,
+        question: 'question',
+      ));
+      bloc.add(FlashcardsEditorEventAnswerChanged(
+        indexOfFlashcard: 3,
+        answer: 'answer',
+      ));
+      bloc.add(FlashcardsEditorEventSave());
+    },
+    verify: (_) {
+      verify(
+        () => flashcardsBloc.add(FlashcardsEventSave(
+          flashcardsToUpdate: const [],
+          flashcardsToAdd: [
+            createFlashcard(
+              id: '',
+              question: 'question',
+              answer: 'answer',
+              groupId: 'g1',
+            ),
+          ],
+          idsOfFlashcardsToRemove: const [],
+        )),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'save, flashcard removed',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+      bloc.add(FlashcardsEditorEventQuestionChanged(
+        indexOfFlashcard: 0,
+        question: '',
+      ));
+      bloc.add(FlashcardsEditorEventAnswerChanged(
+        indexOfFlashcard: 0,
+        answer: '',
+      ));
+      bloc.add(FlashcardsEditorEventSave());
+    },
+    verify: (_) {
+      verify(
         () => flashcardsBloc.add(
-          FlashcardsEventAddFlashcards(
-            flashcards: [
-              stateAfterInitialization.flashcards[2]
-                  .copyWith(
-                    doc: stateAfterInitialization.flashcards[2].doc.copyWith(
-                      question: 'question',
-                      answer: 'answer',
-                    ),
-                  )
-                  .doc,
-            ],
+          FlashcardsEventSave(
+            flashcardsToUpdate: const [],
+            flashcardsToAdd: const [],
+            idsOfFlashcardsToRemove: const ['f1'],
+          ),
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'save, empty flashcards should be ignored or removed',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+      bloc.add(FlashcardsEditorEventQuestionChanged(
+        indexOfFlashcard: 0,
+        question: '',
+      ));
+      bloc.add(FlashcardsEditorEventAnswerChanged(
+        indexOfFlashcard: 0,
+        answer: '',
+      ));
+      bloc.add(FlashcardsEditorEventQuestionChanged(
+        indexOfFlashcard: 3,
+        question: 'question',
+      ));
+      bloc.add(FlashcardsEditorEventAnswerChanged(
+        indexOfFlashcard: 3,
+        answer: 'answer',
+      ));
+      bloc.add(FlashcardsEditorEventQuestionChanged(
+        indexOfFlashcard: 3,
+        question: '',
+      ));
+      bloc.add(FlashcardsEditorEventAnswerChanged(
+        indexOfFlashcard: 3,
+        answer: '',
+      ));
+      bloc.add(FlashcardsEditorEventSave());
+    },
+    verify: (_) {
+      verify(
+        () => flashcardsBloc.add(
+          FlashcardsEventSave(
+            flashcardsToUpdate: const [],
+            flashcardsToAdd: const [],
+            idsOfFlashcardsToRemove: const ['f1'],
           ),
         ),
       ).called(1);

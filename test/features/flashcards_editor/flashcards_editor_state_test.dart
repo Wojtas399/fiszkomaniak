@@ -5,20 +5,17 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late FlashcardsEditorState state;
-  final List<FlashcardsEditorItemParams> flashcards = [
+  final List<EditorFlashcard> flashcards = [
     createFlashcardsEditorItemParams(
-      index: 0,
-      isNew: true,
+      key: 'f1',
       doc: createFlashcard(question: 'question', answer: 'answer'),
     ),
     createFlashcardsEditorItemParams(
-      index: 1,
-      isNew: false,
+      key: 'f2',
       doc: createFlashcard(id: 'f1'),
     ),
     createFlashcardsEditorItemParams(
-      index: 2,
-      isNew: true,
+      key: 'f3',
       doc: createFlashcard(),
     ),
   ];
@@ -47,13 +44,5 @@ void main() {
 
     expect(state2.flashcards, flashcards);
     expect(state3.flashcards, flashcards);
-  });
-
-  test('new flashcards', () {
-    final FlashcardsEditorState updatedState = state.copyWith(
-      flashcards: flashcards,
-    );
-
-    expect(updatedState.newFlashcards, [flashcards[0]]);
   });
 }

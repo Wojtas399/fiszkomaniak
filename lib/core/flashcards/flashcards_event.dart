@@ -35,11 +35,21 @@ class FlashcardsEventFlashcardRemoved extends FlashcardsEvent {
   List<Object> get props => [flashcardId];
 }
 
-class FlashcardsEventAddFlashcards extends FlashcardsEvent {
-  final List<Flashcard> flashcards;
+class FlashcardsEventSave extends FlashcardsEvent {
+  final List<Flashcard> flashcardsToUpdate;
+  final List<Flashcard> flashcardsToAdd;
+  final List<String> idsOfFlashcardsToRemove;
 
-  FlashcardsEventAddFlashcards({required this.flashcards});
+  FlashcardsEventSave({
+    required this.flashcardsToUpdate,
+    required this.flashcardsToAdd,
+    required this.idsOfFlashcardsToRemove,
+  });
 
   @override
-  List<Object> get props => [flashcards];
+  List<Object> get props => [
+        flashcardsToUpdate,
+        flashcardsToAdd,
+        idsOfFlashcardsToRemove,
+      ];
 }

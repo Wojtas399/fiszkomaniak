@@ -12,6 +12,8 @@ class Flashcard extends Equatable {
   final String answer;
   final FlashcardStatus status;
 
+  bool get isEmpty => question.isEmpty && answer.isEmpty;
+
   const Flashcard({
     required this.id,
     required this.groupId,
@@ -43,6 +45,7 @@ class Flashcard extends Equatable {
         answer,
         status,
         groupId,
+        isEmpty,
       ];
 }
 

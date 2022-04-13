@@ -4,29 +4,24 @@ import 'package:fiszkomaniak/models/group_model.dart';
 
 class FlashcardsEditorState extends Equatable {
   final Group? group;
-  final List<FlashcardsEditorItemParams> flashcards;
-
-  List<FlashcardsEditorItemParams> get newFlashcards => flashcards
-      .where(
-        (flashcard) =>
-            flashcard.isNew &&
-            flashcard.doc.question.isNotEmpty &&
-            flashcard.doc.answer.isNotEmpty,
-      )
-      .toList();
+  final List<EditorFlashcard> flashcards;
+  final int keyCounter;
 
   const FlashcardsEditorState({
     this.group,
     this.flashcards = const [],
+    this.keyCounter = 0,
   });
 
   FlashcardsEditorState copyWith({
     Group? group,
-    List<FlashcardsEditorItemParams>? flashcards,
+    List<EditorFlashcard>? flashcards,
+    int? keyCounter,
   }) {
     return FlashcardsEditorState(
       group: group ?? this.group,
       flashcards: flashcards ?? this.flashcards,
+      keyCounter: keyCounter ?? this.keyCounter,
     );
   }
 
@@ -34,43 +29,39 @@ class FlashcardsEditorState extends Equatable {
   List<Object> get props => [
         group ?? createGroup(),
         flashcards,
+        keyCounter,
       ];
 }
 
-class FlashcardsEditorItemParams extends Equatable {
-  final int index;
-  final bool isNew;
+class EditorFlashcard extends Equatable {
+  final String key;
   final Flashcard doc;
 
-  const FlashcardsEditorItemParams({
-    required this.index,
-    required this.isNew,
+  const EditorFlashcard({
+    required this.key,
     required this.doc,
   });
 
-  FlashcardsEditorItemParams copyWith({
+  EditorFlashcard copyWith({
     int? index,
-    bool? isNew,
+    String? key,
     Flashcard? doc,
   }) {
-    return FlashcardsEditorItemParams(
-      index: index ?? this.index,
-      isNew: isNew ?? this.isNew,
+    return EditorFlashcard(
+      key: key ?? this.key,
       doc: doc ?? this.doc,
     );
   }
 
   @override
   List<Object> get props => [
-        index,
-        isNew,
+        key,
         doc,
       ];
 }
 
-FlashcardsEditorItemParams createFlashcardsEditorItemParams({
-  int index = 0,
-  bool isNew = true,
+EditorFlashcard createFlashcardsEditorItemParams({
+  String key = '',
   Flashcard doc = const Flashcard(
     id: '',
     groupId: '',
@@ -79,9 +70,8 @@ FlashcardsEditorItemParams createFlashcardsEditorItemParams({
     status: FlashcardStatus.notRemembered,
   ),
 }) {
-  return FlashcardsEditorItemParams(
-    index: index,
-    isNew: isNew,
+  return EditorFlashcard(
+    key: key,
     doc: doc,
   );
 }

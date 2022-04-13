@@ -21,7 +21,7 @@ class FlashcardsState extends Equatable {
     );
   }
 
-  List<Flashcard> getFlashcardsFromGroup(String groupId) {
+  List<Flashcard> getFlashcardsFromGroup(String? groupId) {
     return allFlashcards
         .where((flashcard) => flashcard.groupId == groupId)
         .toList();

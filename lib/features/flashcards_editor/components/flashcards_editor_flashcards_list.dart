@@ -22,8 +22,9 @@ class FlashcardsEditorFlashcardsList extends StatelessWidget {
         return Column(
           children: state.flashcards.asMap().entries.map((entry) {
             final int index = entry.key;
-            final FlashcardsEditorItemParams params = entry.value;
+            final EditorFlashcard params = entry.value;
             return FlashcardsEditorItem(
+              key: Key(params.key),
               questionInitialValue: params.doc.question,
               answerInitialValue: params.doc.answer,
               nameForQuestion: group.nameForQuestions,
@@ -42,6 +43,13 @@ class FlashcardsEditorFlashcardsList extends StatelessWidget {
                     .add(FlashcardsEditorEventAnswerChanged(
                       indexOfFlashcard: index,
                       answer: value,
+                    ));
+              },
+              onTapDeleteButton: () {
+                context
+                    .read<FlashcardsEditorBloc>()
+                    .add(FlashcardsEditorEventRemoveFlashcard(
+                      indexOfFlashcard: index,
                     ));
               },
             );

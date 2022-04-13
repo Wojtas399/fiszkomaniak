@@ -17,6 +17,8 @@ class FlashcardsStatusLoading extends FlashcardsStatus {}
 
 class FlashcardsStatusFlashcardsAdded extends FlashcardsStatus {}
 
+class FlashcardsStatusFlashcardsSaved extends FlashcardsStatus {}
+
 class FlashcardsStatusError extends FlashcardsStatus {
   final String message;
 
