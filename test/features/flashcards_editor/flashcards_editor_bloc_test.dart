@@ -5,8 +5,10 @@ import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_bloc.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_dialogs.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,9 +18,18 @@ class MockGroupsBloc extends Mock implements GroupsBloc {}
 
 class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
 
+class MockFlashcardsEditorDialogs extends Mock
+    implements FlashcardsEditorDialogs {}
+
+class MockFlashcardsEditorUtils extends Mock implements FlashcardsEditorUtils {}
+
 void main() {
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
+  final FlashcardsEditorDialogs flashcardsEditorDialogs =
+      MockFlashcardsEditorDialogs();
+  final FlashcardsEditorUtils flashcardsEditorUtils =
+      MockFlashcardsEditorUtils();
   late FlashcardsEditorBloc bloc;
   final List<Group> groups = [
     createGroup(id: 'g1', name: 'group 1'),
@@ -77,6 +88,8 @@ void main() {
     bloc = FlashcardsEditorBloc(
       groupsBloc: groupsBloc,
       flashcardsBloc: flashcardsBloc,
+      flashcardsEditorDialogs: flashcardsEditorDialogs,
+      flashcardsEditorUtils: flashcardsEditorUtils,
     );
     when(() => groupsBloc.state).thenReturn(
       GroupsState(allGroups: groups),
@@ -89,6 +102,8 @@ void main() {
   tearDown(() {
     reset(groupsBloc);
     reset(flashcardsBloc);
+    reset(flashcardsEditorDialogs);
+    reset(flashcardsEditorUtils);
   });
 
   blocTest(
@@ -127,8 +142,12 @@ void main() {
   );
 
   blocTest(
-    'remove flashcard',
+    'remove flashcard, confirmed',
     build: () => bloc,
+    setUp: () {
+      when(() => flashcardsEditorDialogs.askForDeleteConfirmation())
+          .thenAnswer((_) async => true);
+    },
     act: (_) {
       bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
       bloc.add(FlashcardsEditorEventRemoveFlashcard(indexOfFlashcard: 1));
@@ -146,413 +165,346 @@ void main() {
   );
 
   blocTest(
-    'question changed, last item',
+    'save, no changes',
     build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 3,
-        question: 'NEW question',
+    setUp: () {
+      when(() => flashcardsEditorDialogs.displayInfoAboutNoChanges())
+          .thenAnswer((_) async => '');
+      when(
+        () => flashcardsEditorUtils.groupFlashcardsIntoAppropriateGroups(
+          flashcards.getRange(0, 3).toList(),
+          flashcards.getRange(0, 3).toList(),
+        ),
+      ).thenReturn(const FlashcardsEditorGroups(
+        edited: [],
+        added: [],
+        removed: [],
       ));
     },
-    expect: () => [
-      stateAfterInitialization,
-      bloc.state.copyWith(flashcards: [
-        stateAfterInitialization.flashcards[0],
-        stateAfterInitialization.flashcards[1],
-        stateAfterInitialization.flashcards[2],
-        stateAfterInitialization.flashcards[3].copyWith(
-          doc: stateAfterInitialization.flashcards[3].doc.copyWith(
-            question: 'NEW question',
-          ),
-        ),
-      ], keyCounter: 3),
-      bloc.state.copyWith(flashcards: [
-        stateAfterInitialization.flashcards[0],
-        stateAfterInitialization.flashcards[1],
-        stateAfterInitialization.flashcards[2],
-        stateAfterInitialization.flashcards[3].copyWith(
-          doc: stateAfterInitialization.flashcards[3].doc.copyWith(
-            question: 'NEW question',
-          ),
-        ),
-        EditorFlashcard(
-          key: 'flashcard4',
-          doc: createFlashcard(groupId: 'g1'),
-        ),
-      ], keyCounter: 4),
-    ],
-  );
-
-  blocTest(
-    'question changed, second to last item',
-    build: () => bloc,
     act: (_) {
       bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 2,
-        question: 'NEW question',
-      ));
-    },
-    expect: () => [
-      stateAfterInitialization,
-      bloc.state.copyWith(flashcards: [
-        stateAfterInitialization.flashcards[0],
-        stateAfterInitialization.flashcards[1],
-        stateAfterInitialization.flashcards[2].copyWith(
-          doc: stateAfterInitialization.flashcards[2].doc.copyWith(
-            question: 'NEW question',
-          ),
-        ),
-        stateAfterInitialization.flashcards[3],
-      ], keyCounter: 3),
-    ],
-  );
-
-  blocTest(
-    'question changed, second to last item, question and answer empty',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 2,
-        answer: '',
-      ));
-      bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 2,
-        question: '',
-      ));
-    },
-    expect: () => [
-      stateAfterInitialization,
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1],
-          stateAfterInitialization.flashcards[2].copyWith(
-            doc: stateAfterInitialization.flashcards[2].doc.copyWith(
-              answer: '',
-            ),
-          ),
-          stateAfterInitialization.flashcards[3],
-        ],
-        keyCounter: 3,
-      ),
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1],
-          stateAfterInitialization.flashcards[2].copyWith(
-            doc: stateAfterInitialization.flashcards[2].doc.copyWith(
-              answer: '',
-              question: '',
-            ),
-          ),
-          stateAfterInitialization.flashcards[3],
-        ],
-        keyCounter: 3,
-      ),
-    ],
-  );
-
-  blocTest(
-    'question changed',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 0,
-        question: 'NEW question',
-      ));
-    },
-    expect: () => [
-      stateAfterInitialization,
-      bloc.state.copyWith(flashcards: [
-        stateAfterInitialization.flashcards[0].copyWith(
-          doc: stateAfterInitialization.flashcards[0].doc.copyWith(
-            question: 'NEW question',
-          ),
-        ),
-        stateAfterInitialization.flashcards[1],
-        stateAfterInitialization.flashcards[2],
-        stateAfterInitialization.flashcards[3]
-      ], keyCounter: 3),
-    ],
-  );
-
-  blocTest(
-    'answer changed, last item',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 3,
-        answer: 'NEW answer',
-      ));
-    },
-    expect: () => [
-      stateAfterInitialization,
-      bloc.state.copyWith(flashcards: [
-        stateAfterInitialization.flashcards[0],
-        stateAfterInitialization.flashcards[1],
-        stateAfterInitialization.flashcards[2],
-        stateAfterInitialization.flashcards[3].copyWith(
-          doc: stateAfterInitialization.flashcards[3].doc.copyWith(
-            answer: 'NEW answer',
-          ),
-        ),
-      ], keyCounter: 3),
-      bloc.state.copyWith(flashcards: [
-        stateAfterInitialization.flashcards[0],
-        stateAfterInitialization.flashcards[1],
-        stateAfterInitialization.flashcards[2],
-        stateAfterInitialization.flashcards[3].copyWith(
-          doc: stateAfterInitialization.flashcards[3].doc.copyWith(
-            answer: 'NEW answer',
-          ),
-        ),
-        EditorFlashcard(
-          key: 'flashcard4',
-          doc: createFlashcard(groupId: 'g1'),
-        ),
-      ], keyCounter: 4),
-    ],
-  );
-
-  blocTest(
-    'answer changed, second to last item',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 2,
-        answer: 'NEW answer',
-      ));
-    },
-    expect: () => [
-      stateAfterInitialization,
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1],
-          stateAfterInitialization.flashcards[2].copyWith(
-            doc: stateAfterInitialization.flashcards[2].doc.copyWith(
-              answer: 'NEW answer',
-            ),
-          ),
-          stateAfterInitialization.flashcards[3]
-        ],
-        keyCounter: 3,
-      ),
-    ],
-  );
-
-  blocTest(
-    'answer changed, second to last item, question and answer empty',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 2,
-        question: '',
-      ));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 2,
-        answer: '',
-      ));
-    },
-    expect: () => [
-      stateAfterInitialization,
-      bloc.state.copyWith(flashcards: [
-        stateAfterInitialization.flashcards[0],
-        stateAfterInitialization.flashcards[1],
-        stateAfterInitialization.flashcards[2].copyWith(
-          doc: stateAfterInitialization.flashcards[2].doc.copyWith(
-            question: '',
-          ),
-        ),
-        stateAfterInitialization.flashcards[3]
-      ], keyCounter: 3),
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0],
-          stateAfterInitialization.flashcards[1],
-          stateAfterInitialization.flashcards[2].copyWith(
-            doc: stateAfterInitialization.flashcards[2].doc.copyWith(
-              question: '',
-              answer: '',
-            ),
-          ),
-          stateAfterInitialization.flashcards[3]
-        ],
-        keyCounter: 3,
-      ),
-    ],
-  );
-
-  blocTest(
-    'answer changed',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 0,
-        answer: 'NEW answer',
-      ));
-    },
-    expect: () => [
-      stateAfterInitialization,
-      bloc.state.copyWith(
-        flashcards: [
-          stateAfterInitialization.flashcards[0].copyWith(
-            doc: stateAfterInitialization.flashcards[0].doc.copyWith(
-              answer: 'NEW answer',
-            ),
-          ),
-          stateAfterInitialization.flashcards[1],
-          stateAfterInitialization.flashcards[2],
-          stateAfterInitialization.flashcards[3],
-        ],
-        keyCounter: 3,
-      ),
-    ],
-  );
-
-  blocTest(
-    'save, flashcard edited',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 0,
-        question: 'question',
-      ));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 0,
-        answer: 'answer',
-      ));
       bloc.add(FlashcardsEditorEventSave());
     },
     verify: (_) {
-      verify(
+      verify(() => flashcardsEditorDialogs.displayInfoAboutNoChanges())
+          .called(1);
+      verifyNever(
         () => flashcardsBloc.add(FlashcardsEventSave(
-          flashcardsToUpdate: [
-            createFlashcard(
-              id: 'f1',
-              question: 'question',
-              answer: 'answer',
-              groupId: 'g1',
-            ),
-          ],
+          flashcardsToUpdate: const [],
           flashcardsToAdd: const [],
           idsOfFlashcardsToRemove: const [],
         )),
-      ).called(1);
+      );
     },
   );
 
-  blocTest(
-    'save, flashcard added',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 3,
-        question: 'question',
-      ));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 3,
-        answer: 'answer',
-      ));
-      bloc.add(FlashcardsEditorEventSave());
-    },
-    verify: (_) {
-      verify(
-        () => flashcardsBloc.add(FlashcardsEventSave(
-          flashcardsToUpdate: const [],
-          flashcardsToAdd: [
-            createFlashcard(
-              id: '',
-              question: 'question',
-              answer: 'answer',
-              groupId: 'g1',
-            ),
-          ],
-          idsOfFlashcardsToRemove: const [],
-        )),
-      ).called(1);
-    },
-  );
+  group('save edited and incorrectly completed flashcards', () {
+    final List<Flashcard> editedFlashcards = [
+      flashcards[0].copyWith(question: 'new question', answer: ''),
+      flashcards[1].copyWith(question: 'new question', answer: 'new answer'),
+    ];
 
-  blocTest(
-    'save, flashcard removed',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 0,
-        question: '',
+    blocTest(
+      'should not call save method',
+      build: () => bloc,
+      setUp: () {
+        when(
+          () => flashcardsEditorUtils.groupFlashcardsIntoAppropriateGroups(
+            flashcards.getRange(0, 3).toList(),
+            flashcards.getRange(0, 3).toList(),
+          ),
+        ).thenReturn(FlashcardsEditorGroups(
+          edited: editedFlashcards,
+          added: const [],
+          removed: const [],
+        ));
+        when(
+          () => flashcardsEditorUtils.areFlashcardsCompletedCorrectly(
+            editedFlashcards,
+          ),
+        ).thenReturn(false);
+        when(
+          () => flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards(),
+        ).thenAnswer((_) async => '');
+      },
+      act: (_) {
+        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventSave());
+      },
+      verify: (_) {
+        verify(
+          () => flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards(),
+        ).called(1);
+        verifyNever(
+          () => flashcardsBloc.add(FlashcardsEventSave(
+            flashcardsToUpdate: editedFlashcards,
+            flashcardsToAdd: const [],
+            idsOfFlashcardsToRemove: const [],
+          )),
+        );
+      },
+    );
+  });
+
+  group('save added and incorrectly completed flashcards', () {
+    final List<Flashcard> addedFlashcards = [
+      createFlashcard(question: 'question', answer: 'answer'),
+      createFlashcard(question: '', answer: 'answer 2'),
+    ];
+
+    blocTest(
+      'should not call save method',
+      build: () => bloc,
+      setUp: () {
+        when(
+          () => flashcardsEditorUtils.groupFlashcardsIntoAppropriateGroups(
+            flashcards.getRange(0, 3).toList(),
+            flashcards.getRange(0, 3).toList(),
+          ),
+        ).thenReturn(FlashcardsEditorGroups(
+          edited: const [],
+          added: addedFlashcards,
+          removed: const [],
+        ));
+        when(
+          () => flashcardsEditorUtils.areFlashcardsCompletedCorrectly(
+            addedFlashcards,
+          ),
+        ).thenReturn(false);
+        when(
+          () => flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards(),
+        ).thenAnswer((_) async => '');
+      },
+      act: (_) {
+        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventSave());
+      },
+      verify: (_) {
+        verify(
+          () => flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards(),
+        ).called(1);
+        verifyNever(
+          () => flashcardsBloc.add(FlashcardsEventSave(
+            flashcardsToUpdate: const [],
+            flashcardsToAdd: addedFlashcards,
+            idsOfFlashcardsToRemove: const [],
+          )),
+        );
+      },
+    );
+  });
+
+  group('save correctly edited flashcards', () {
+    final List<Flashcard> editedFlashcards = [
+      flashcards[0].copyWith(question: 'question1', answer: 'answer1'),
+      flashcards[1].copyWith(question: 'question2', answer: 'answer2'),
+    ];
+
+    setUp(() {
+      when(
+        () => flashcardsEditorUtils.groupFlashcardsIntoAppropriateGroups(
+          flashcards.getRange(0, 3).toList(),
+          flashcards.getRange(0, 3).toList(),
+        ),
+      ).thenReturn(FlashcardsEditorGroups(
+        edited: editedFlashcards,
+        added: const [],
+        removed: const [],
       ));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 0,
-        answer: '',
+      when(
+        () => flashcardsEditorUtils.areFlashcardsCompletedCorrectly(
+          editedFlashcards,
+        ),
+      ).thenReturn(true);
+    });
+
+    blocTest(
+      'operation cancelled',
+      build: () => bloc,
+      setUp: () {
+        when(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .thenAnswer((_) async => false);
+      },
+      act: (_) {
+        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventSave());
+      },
+      verify: (_) {
+        verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .called(1);
+        verifyNever(
+          () => flashcardsBloc.add(FlashcardsEventSave(
+            flashcardsToUpdate: editedFlashcards,
+            flashcardsToAdd: const [],
+            idsOfFlashcardsToRemove: const [],
+          )),
+        );
+      },
+    );
+
+    blocTest(
+      'operation confirmed',
+      build: () => bloc,
+      setUp: () {
+        when(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .thenAnswer((_) async => true);
+      },
+      act: (_) {
+        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventSave());
+      },
+      verify: (_) {
+        verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .called(1);
+        verify(
+          () => flashcardsBloc.add(FlashcardsEventSave(
+            flashcardsToUpdate: editedFlashcards,
+            flashcardsToAdd: const [],
+            idsOfFlashcardsToRemove: const [],
+          )),
+        ).called(1);
+      },
+    );
+  });
+
+  group('save correctly added flashcards', () {
+    final List<Flashcard> addedFlashcards = [
+      createFlashcard(question: 'question1', answer: 'answer1'),
+      createFlashcard(question: 'question2', answer: 'answer2'),
+    ];
+
+    setUp(() {
+      when(
+        () => flashcardsEditorUtils.groupFlashcardsIntoAppropriateGroups(
+          flashcards.getRange(0, 3).toList(),
+          flashcards.getRange(0, 3).toList(),
+        ),
+      ).thenReturn(FlashcardsEditorGroups(
+        edited: const [],
+        added: addedFlashcards,
+        removed: const [],
       ));
-      bloc.add(FlashcardsEditorEventSave());
-    },
-    verify: (_) {
-      verify(
-        () => flashcardsBloc.add(
-          FlashcardsEventSave(
+      when(
+        () => flashcardsEditorUtils.areFlashcardsCompletedCorrectly(
+          addedFlashcards,
+        ),
+      ).thenReturn(true);
+    });
+
+    blocTest(
+      'operation cancelled',
+      build: () => bloc,
+      setUp: () {
+        when(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .thenAnswer((_) async => false);
+      },
+      act: (_) {
+        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventSave());
+      },
+      verify: (_) {
+        verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .called(1);
+        verifyNever(
+          () => flashcardsBloc.add(FlashcardsEventSave(
+            flashcardsToUpdate: const [],
+            flashcardsToAdd: addedFlashcards,
+            idsOfFlashcardsToRemove: const [],
+          )),
+        );
+      },
+    );
+
+    blocTest(
+      'operation confirmed',
+      build: () => bloc,
+      setUp: () {
+        when(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .thenAnswer((_) async => true);
+      },
+      act: (_) {
+        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventSave());
+      },
+      verify: (_) {
+        verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .called(1);
+        verify(
+          () => flashcardsBloc.add(FlashcardsEventSave(
+            flashcardsToUpdate: const [],
+            flashcardsToAdd: addedFlashcards,
+            idsOfFlashcardsToRemove: const [],
+          )),
+        ).called(1);
+      },
+    );
+  });
+
+  group('save removed flashcards', () {
+    final List<String> removedFlashcards = ['f1', 'f2'];
+
+    setUp(() {
+      when(
+        () => flashcardsEditorUtils.groupFlashcardsIntoAppropriateGroups(
+          flashcards.getRange(0, 3).toList(),
+          flashcards.getRange(0, 3).toList(),
+        ),
+      ).thenReturn(FlashcardsEditorGroups(
+        edited: const [],
+        added: const [],
+        removed: removedFlashcards,
+      ));
+      when(
+        () => flashcardsEditorUtils.areFlashcardsCompletedCorrectly([]),
+      ).thenReturn(true);
+    });
+
+    blocTest(
+      'operation cancelled',
+      build: () => bloc,
+      setUp: () {
+        when(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .thenAnswer((_) async => false);
+      },
+      act: (_) {
+        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventSave());
+      },
+      verify: (_) {
+        verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .called(1);
+        verifyNever(
+          () => flashcardsBloc.add(FlashcardsEventSave(
             flashcardsToUpdate: const [],
             flashcardsToAdd: const [],
-            idsOfFlashcardsToRemove: const ['f1'],
-          ),
-        ),
-      ).called(1);
-    },
-  );
+            idsOfFlashcardsToRemove: removedFlashcards,
+          )),
+        );
+      },
+    );
 
-  blocTest(
-    'save, empty flashcards should be ignored or removed',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 0,
-        question: '',
-      ));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 0,
-        answer: '',
-      ));
-      bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 3,
-        question: 'question',
-      ));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 3,
-        answer: 'answer',
-      ));
-      bloc.add(FlashcardsEditorEventQuestionChanged(
-        indexOfFlashcard: 3,
-        question: '',
-      ));
-      bloc.add(FlashcardsEditorEventAnswerChanged(
-        indexOfFlashcard: 3,
-        answer: '',
-      ));
-      bloc.add(FlashcardsEditorEventSave());
-    },
-    verify: (_) {
-      verify(
-        () => flashcardsBloc.add(
-          FlashcardsEventSave(
+    blocTest(
+      'operation confirmed',
+      build: () => bloc,
+      setUp: () {
+        when(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .thenAnswer((_) async => true);
+      },
+      act: (_) {
+        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventSave());
+      },
+      verify: (_) {
+        verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .called(1);
+        verify(
+          () => flashcardsBloc.add(FlashcardsEventSave(
             flashcardsToUpdate: const [],
             flashcardsToAdd: const [],
-            idsOfFlashcardsToRemove: const ['f1'],
-          ),
-        ),
-      ).called(1);
-    },
-  );
+            idsOfFlashcardsToRemove: removedFlashcards,
+          )),
+        ).called(1);
+      },
+    );
+  });
 }

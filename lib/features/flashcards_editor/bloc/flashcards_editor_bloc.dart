@@ -1,7 +1,10 @@
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_dialogs.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,13 +14,19 @@ class FlashcardsEditorBloc
     extends Bloc<FlashcardsEditorEvent, FlashcardsEditorState> {
   late final GroupsBloc _groupsBloc;
   late final FlashcardsBloc _flashcardsBloc;
+  late final FlashcardsEditorDialogs _flashcardsEditorDialogs;
+  late final FlashcardsEditorUtils _flashcardsEditorUtils;
 
   FlashcardsEditorBloc({
     required GroupsBloc groupsBloc,
     required FlashcardsBloc flashcardsBloc,
+    required FlashcardsEditorDialogs flashcardsEditorDialogs,
+    required FlashcardsEditorUtils flashcardsEditorUtils,
   }) : super(const FlashcardsEditorState()) {
     _groupsBloc = groupsBloc;
     _flashcardsBloc = flashcardsBloc;
+    _flashcardsEditorDialogs = flashcardsEditorDialogs;
+    _flashcardsEditorUtils = flashcardsEditorUtils;
     on<FlashcardsEditorEventInitialize>(_initialize);
     on<FlashcardsEditorEventAddFlashcard>(_addFlashcard);
     on<FlashcardsEditorEventRemoveFlashcard>(_removeFlashcard);
@@ -69,13 +78,17 @@ class FlashcardsEditorBloc
     }
   }
 
-  void _removeFlashcard(
+  Future<void> _removeFlashcard(
     FlashcardsEditorEventRemoveFlashcard event,
     Emitter<FlashcardsEditorState> emit,
-  ) {
-    final List<EditorFlashcard> flashcards = [...state.flashcards];
-    flashcards.removeAt(event.indexOfFlashcard);
-    emit(state.copyWith(flashcards: flashcards));
+  ) async {
+    final bool? confirmation =
+        await _flashcardsEditorDialogs.askForDeleteConfirmation();
+    if (confirmation == true) {
+      final List<EditorFlashcard> flashcards = [...state.flashcards];
+      flashcards.removeAt(event.indexOfFlashcard);
+      emit(state.copyWith(flashcards: flashcards));
+    }
   }
 
   void _questionChanged(
@@ -89,7 +102,7 @@ class FlashcardsEditorBloc
     );
     emit(state.copyWith(flashcards: flashcards));
     _addFlashcardAsNeeded(event.indexOfFlashcard);
-    _removeEmptyFlashcards(event.indexOfFlashcard);
+    _removeEmptyFlashcards(event.indexOfFlashcard, emit);
   }
 
   void _answerChanged(
@@ -103,21 +116,36 @@ class FlashcardsEditorBloc
     );
     emit(state.copyWith(flashcards: flashcards));
     _addFlashcardAsNeeded(event.indexOfFlashcard);
-    _removeEmptyFlashcards(event.indexOfFlashcard);
+    _removeEmptyFlashcards(event.indexOfFlashcard, emit);
   }
 
-  void _save(
+  Future<void> _save(
     FlashcardsEditorEventSave event,
     Emitter<FlashcardsEditorState> emit,
-  ) {
-    final String? groupId = state.group?.id;
-    if (groupId != null) {
-      final FlashcardsEditorGroups flashcardsGroups = _getFlashcardsGroups();
-      _flashcardsBloc.add(FlashcardsEventSave(
-        flashcardsToUpdate: flashcardsGroups.edited,
-        flashcardsToAdd: flashcardsGroups.added,
-        idsOfFlashcardsToRemove: flashcardsGroups.removed,
-      ));
+  ) async {
+    final FlashcardsEditorGroups flashcardsGroups = _getSegregatedFlashcards();
+    if (flashcardsGroups.added.isEmpty &&
+        flashcardsGroups.edited.isEmpty &&
+        flashcardsGroups.removed.isEmpty) {
+      await _flashcardsEditorDialogs.displayInfoAboutNoChanges();
+    } else {
+      List<Flashcard> flashcardsToCheck = [
+        ...flashcardsGroups.added,
+        ...flashcardsGroups.edited,
+      ];
+      if (_areThereIncorrectlyCompletedFlashcards(flashcardsToCheck)) {
+        await _flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards();
+      } else {
+        final bool? confirmation =
+            await _flashcardsEditorDialogs.askForSaveConfirmation();
+        if (confirmation == true) {
+          _flashcardsBloc.add(FlashcardsEventSave(
+            flashcardsToUpdate: flashcardsGroups.edited,
+            flashcardsToAdd: flashcardsGroups.added,
+            idsOfFlashcardsToRemove: flashcardsGroups.removed,
+          ));
+        }
+      }
     }
   }
 
@@ -142,65 +170,59 @@ class FlashcardsEditorBloc
     }
   }
 
-  void _removeEmptyFlashcards(int currentFlashcardIndex) {
-    for (int i=0; i<state.flashcards.length-1; i++) {
-      if (state.flashcards[i].doc.isEmpty && currentFlashcardIndex != i) {
-        add(FlashcardsEditorEventRemoveFlashcard(indexOfFlashcard: i));
+  void _removeEmptyFlashcards(
+    int currentFlashcardIndex,
+    Emitter<FlashcardsEditorState> emit,
+  ) {
+    final List<EditorFlashcard> allFlashcards = [...state.flashcards];
+    for (int i = 0; i < state.flashcards.length - 1; i++) {
+      if (!_flashcardsEditorUtils.areFlashcardBothFieldsCompleted(
+            state.flashcards[i].doc,
+          ) &&
+          currentFlashcardIndex != i) {
+        print('remove: $i');
+        allFlashcards.removeAt(i);
       }
     }
+    emit(state.copyWith(flashcards: allFlashcards));
   }
 
-  FlashcardsEditorGroups _getFlashcardsGroups() {
-    final List<Flashcard> edited = [];
-    final List<Flashcard> added = [];
-    final List<String> removed = [];
-    final List<Flashcard> editedFlashcards =
-        [...state.flashcards].map((flashcard) => flashcard.doc).toList();
-    final List<String> editedFlashcardsIds =
-        editedFlashcards.map((flashcard) => flashcard.id).toList();
-    final List<Flashcard> initialFlashcards =
-        _getFlashcardsFromCore(state.group?.id);
-    final List<String> initialFlashcardsIds =
-        initialFlashcards.map((flashcard) => flashcard.id).toList();
-    for (final flashcard in editedFlashcards) {
-      if (!flashcard.isEmpty) {
-        if (initialFlashcardsIds.contains(flashcard.id)) {
-          final Flashcard correspondingInitialFlashcard = initialFlashcards
-              .firstWhere((element) => element.id == flashcard.id);
-          if (flashcard.answer != correspondingInitialFlashcard.answer ||
-              flashcard.question != correspondingInitialFlashcard.question) {
-            edited.add(flashcard);
-          }
-        } else {
-          added.add(flashcard);
-        }
-      } else if (initialFlashcardsIds.contains(flashcard.id)) {
-        removed.add(flashcard.id);
-      }
-    }
-    for (final initialFlashcard in initialFlashcards) {
-      if (!editedFlashcardsIds.contains(initialFlashcard.id) &&
-          !edited.contains(initialFlashcard) &&
-          !removed.contains(initialFlashcard.id)) {
-        removed.add(initialFlashcard.id);
-      }
-    }
-    return FlashcardsEditorGroups(
-      edited: edited,
-      added: added,
-      removed: removed,
+  bool _areThereIncorrectlyCompletedFlashcards(
+    List<Flashcard> flashcardsToCheck,
+  ) {
+    return !_flashcardsEditorUtils.areFlashcardsCompletedCorrectly(
+      flashcardsToCheck,
     );
+  }
+
+  FlashcardsEditorGroups _getSegregatedFlashcards() {
+    final String? groupId = state.group?.id;
+    if (groupId != null) {
+      final List<Flashcard> editedFlashcards = state.flashcards
+          .getRange(0, state.flashcards.length - 1)
+          .map((flashcard) => flashcard.doc)
+          .toList();
+      final List<Flashcard> initialFlashcards = _getFlashcardsFromCore(groupId);
+      return _flashcardsEditorUtils.groupFlashcardsIntoAppropriateGroups(
+        editedFlashcards,
+        initialFlashcards,
+      );
+    }
+    return const FlashcardsEditorGroups(edited: [], added: [], removed: []);
   }
 }
 
-class FlashcardsEditorGroups {
+class FlashcardsEditorGroups extends Equatable {
   final List<Flashcard> edited;
   final List<Flashcard> added;
   final List<String> removed;
 
-  FlashcardsEditorGroups({
+  const FlashcardsEditorGroups({
     required this.edited,
     required this.added,
     required this.removed,
   });
+
+  @override
+  List<Object> get props => [edited, added, removed];
 }
