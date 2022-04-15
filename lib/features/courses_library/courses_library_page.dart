@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
@@ -30,7 +31,7 @@ class CoursesLibraryPage extends StatelessWidget {
               if (coursesLibraryState.courses.isEmpty) {
                 return const _NoCoursesInfo();
               }
-              return SingleChildScrollView(
+              return BouncingScroll(
                 child: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.only(

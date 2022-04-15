@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
@@ -24,8 +25,7 @@ class FlashcardsEditor extends StatelessWidget {
       groupId: groupId,
       child: const Scaffold(
         appBar: FlashcardsEditorAppBar(),
-        body: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+        body: BouncingScroll(
           child: SafeArea(
             child: OnTapFocusLoseArea(
               child: Padding(

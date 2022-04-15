@@ -3,7 +3,7 @@ import 'package:fiszkomaniak/features/course_creator/course_creator.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/course_groups_preview.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor.dart';
-import 'package:fiszkomaniak/features/group_flashcards_preview/flashcards_preview.dart';
+import 'package:fiszkomaniak/features/group_flashcards_preview/group_flashcards_preview.dart';
 import 'package:fiszkomaniak/features/group_selection/group_selection.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/group_creator/group_creator_page.dart';
@@ -88,7 +88,8 @@ class HomeRouter extends StatelessWidget {
         );
       case flashcardsPreview:
         return SlideUpRouteAnimation(
-          page: GroupFlashcardsPreview(groupId: routeSettings.arguments as String),
+          page: GroupFlashcardsPreview(
+              groupId: routeSettings.arguments as String),
         );
       default:
         return MaterialPageRoute(

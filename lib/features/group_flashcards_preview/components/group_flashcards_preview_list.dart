@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_bloc.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_state.dart';
@@ -17,8 +18,7 @@ class GroupFlashcardsPreviewList extends StatelessWidget {
         if (state.flashcardsFromGroup.isEmpty) {
           return const _NoFlashcardsInfo();
         }
-        return SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+        return BouncingScroll(
           child: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
