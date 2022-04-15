@@ -73,6 +73,13 @@ class Navigation {
     );
   }
 
+  static void navigateToGroupFlashcardsPreview(String groupId) {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.groupFlashcardsPreview,
+      arguments: groupId,
+    );
+  }
+
   static void navigateToGroupPreview(String groupId) {
     HomeRouter.navigatorKey.currentState?.pushNamed(
       HomeRouter.groupPreview,
@@ -80,12 +87,10 @@ class Navigation {
     );
   }
 
-  static void navigateToFlashcardsPreview(String groupId) {
+  static void navigateToFlashcardPreview(String flashcardId) {
     HomeRouter.navigatorKey.currentState?.pushNamed(
-      HomeRouter.flashcardsPreview,
-      arguments: groupId,
+      HomeRouter.flashcardPreview,
+      arguments: flashcardId,
     );
   }
 }
-
-

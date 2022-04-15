@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/empty_content_info.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_bloc.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_state.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/components/group_flashcards_preview_item.dart';
@@ -36,7 +37,7 @@ class GroupFlashcardsPreviewList extends StatelessWidget {
     return GroupFlashcardsPreviewItem(
       flashcard: flashcard,
       onTap: () {
-        //TODO connect with method navigating to flashcard preview
+        Navigation.navigateToFlashcardPreview(flashcard.id);
       },
     );
   }

@@ -34,7 +34,7 @@ class GroupPreviewContent extends StatelessWidget {
         Button(
           label: 'przeglądaj fiszki',
           onPressed: () {
-            Navigation.navigateToFlashcardsPreview(group.id);
+            Navigation.navigateToGroupFlashcardsPreview(group.id);
           },
         ),
       ],
