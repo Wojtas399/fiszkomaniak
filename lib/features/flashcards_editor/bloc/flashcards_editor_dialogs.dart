@@ -31,4 +31,11 @@ class FlashcardsEditorDialogs {
       message: 'Wprowadź dowolne zmiany w fiszkach aby móc wykonać tę operację',
     );
   }
+
+  Future<void> displayInfoAboutDuplicates() async {
+    await dialogs.showDialogWithMessage(
+      title: 'Powtarzające się fiszki',
+      message: 'Wygląda na to, że niektóre fiszki występują podwójnie! Zmień je aby móc zapisać zmiany',
+    );
+  }
 }

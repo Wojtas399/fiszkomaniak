@@ -64,19 +64,19 @@ void main() {
   final FlashcardsEditorState stateAfterInitialization = FlashcardsEditorState(
     group: groups[0],
     flashcards: [
-      EditorFlashcard(
+      createEditorFlashcard(
         key: 'flashcard0',
         doc: flashcards[0],
       ),
-      EditorFlashcard(
+      createEditorFlashcard(
         key: 'flashcard1',
         doc: flashcards[1],
       ),
-      EditorFlashcard(
+      createEditorFlashcard(
         key: 'flashcard2',
         doc: flashcards[2],
       ),
-      EditorFlashcard(
+      createEditorFlashcard(
         key: 'flashcard3',
         doc: createFlashcard(groupId: 'g1'),
       ),
@@ -114,34 +114,6 @@ void main() {
   );
 
   blocTest(
-    'add flashcard, group exists',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
-      bloc.add(FlashcardsEditorEventAddFlashcard());
-    },
-    expect: () => [
-      stateAfterInitialization,
-      bloc.state.copyWith(
-        flashcards: [
-          ...stateAfterInitialization.flashcards,
-          EditorFlashcard(
-            key: 'flashcard4',
-            doc: createFlashcard(groupId: 'g1'),
-          ),
-        ],
-      ),
-    ],
-  );
-
-  blocTest(
-    'add flashcard, group does not exist',
-    build: () => bloc,
-    act: (_) => bloc.add(FlashcardsEditorEventAddFlashcard()),
-    expect: () => [],
-  );
-
-  blocTest(
     'remove flashcard, confirmed',
     build: () => bloc,
     setUp: () {
@@ -154,7 +126,7 @@ void main() {
     },
     expect: () => [
       stateAfterInitialization,
-      bloc.state.copyWith(
+      stateAfterInitialization.copyWith(
         flashcards: [
           stateAfterInitialization.flashcards[0],
           stateAfterInitialization.flashcards[2],
@@ -163,6 +135,22 @@ void main() {
       ),
     ],
   );
+
+  blocTest(
+    'remove flashcard, cancelled',
+    build: () => bloc,
+    setUp: () {
+      when(() => flashcardsEditorDialogs.askForDeleteConfirmation())
+          .thenAnswer((_) async => false);
+    },
+    act: (_) {
+      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+      bloc.add(FlashcardsEditorEventRemoveFlashcard(indexOfFlashcard: 1));
+    },
+    expect: () => [stateAfterInitialization],
+  );
+
+
 
   blocTest(
     'save, no changes',
@@ -180,6 +168,10 @@ void main() {
         added: [],
         removed: [],
       ));
+      when(() => flashcardsEditorUtils.lookForIncorrectlyCompletedFlashcards(
+          stateAfterInitialization.flashcardsWithoutLastOne)).thenReturn([]);
+      when(() => flashcardsEditorUtils.lookForDuplicates(
+          stateAfterInitialization.flashcardsWithoutLastOne)).thenReturn([]);
     },
     act: (_) {
       bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
@@ -219,10 +211,10 @@ void main() {
           removed: const [],
         ));
         when(
-          () => flashcardsEditorUtils.areFlashcardsCompletedCorrectly(
-            editedFlashcards,
+          () => flashcardsEditorUtils.lookForIncorrectlyCompletedFlashcards(
+            stateAfterInitialization.flashcardsWithoutLastOne,
           ),
-        ).thenReturn(false);
+        ).thenReturn([editedFlashcards[0]]);
         when(
           () => flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards(),
         ).thenAnswer((_) async => '');
@@ -234,6 +226,59 @@ void main() {
       verify: (_) {
         verify(
           () => flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards(),
+        ).called(1);
+        verifyNever(
+          () => flashcardsBloc.add(FlashcardsEventSave(
+            flashcardsToUpdate: editedFlashcards,
+            flashcardsToAdd: const [],
+            idsOfFlashcardsToRemove: const [],
+          )),
+        );
+      },
+    );
+  });
+
+  group('save edited flashcards with duplicates', () {
+    final List<Flashcard> editedFlashcards = [
+      flashcards[0].copyWith(question: 'new question', answer: 'new answer'),
+      flashcards[1].copyWith(question: 'new question', answer: 'new answer'),
+    ];
+
+    blocTest(
+      'should not call save method',
+      build: () => bloc,
+      setUp: () {
+        when(
+          () => flashcardsEditorUtils.groupFlashcardsIntoAppropriateGroups(
+            flashcards.getRange(0, 3).toList(),
+            flashcards.getRange(0, 3).toList(),
+          ),
+        ).thenReturn(FlashcardsEditorGroups(
+          edited: editedFlashcards,
+          added: const [],
+          removed: const [],
+        ));
+        when(
+          () => flashcardsEditorUtils.lookForIncorrectlyCompletedFlashcards(
+            stateAfterInitialization.flashcardsWithoutLastOne,
+          ),
+        ).thenReturn([]);
+        when(
+          () => flashcardsEditorUtils.lookForDuplicates(
+            stateAfterInitialization.flashcardsWithoutLastOne,
+          ),
+        ).thenReturn(editedFlashcards);
+        when(
+          () => flashcardsEditorDialogs.displayInfoAboutDuplicates(),
+        ).thenAnswer((_) async => '');
+      },
+      act: (_) {
+        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventSave());
+      },
+      verify: (_) {
+        verify(
+          () => flashcardsEditorDialogs.displayInfoAboutDuplicates(),
         ).called(1);
         verifyNever(
           () => flashcardsBloc.add(FlashcardsEventSave(
@@ -267,10 +312,10 @@ void main() {
           removed: const [],
         ));
         when(
-          () => flashcardsEditorUtils.areFlashcardsCompletedCorrectly(
-            addedFlashcards,
+          () => flashcardsEditorUtils.lookForIncorrectlyCompletedFlashcards(
+            stateAfterInitialization.flashcardsWithoutLastOne,
           ),
-        ).thenReturn(false);
+        ).thenReturn([addedFlashcards[1]]);
         when(
           () => flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards(),
         ).thenAnswer((_) async => '');
@@ -282,6 +327,59 @@ void main() {
       verify: (_) {
         verify(
           () => flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards(),
+        ).called(1);
+        verifyNever(
+          () => flashcardsBloc.add(FlashcardsEventSave(
+            flashcardsToUpdate: const [],
+            flashcardsToAdd: addedFlashcards,
+            idsOfFlashcardsToRemove: const [],
+          )),
+        );
+      },
+    );
+  });
+
+  group('save added flashcards with duplicates', () {
+    final List<Flashcard> addedFlashcards = [
+      createFlashcard(question: 'question', answer: 'answer'),
+      createFlashcard(question: 'question', answer: 'answer'),
+    ];
+
+    blocTest(
+      'should not call save method',
+      build: () => bloc,
+      setUp: () {
+        when(
+          () => flashcardsEditorUtils.groupFlashcardsIntoAppropriateGroups(
+            flashcards.getRange(0, 3).toList(),
+            flashcards.getRange(0, 3).toList(),
+          ),
+        ).thenReturn(FlashcardsEditorGroups(
+          edited: const [],
+          added: addedFlashcards,
+          removed: const [],
+        ));
+        when(
+          () => flashcardsEditorUtils.lookForIncorrectlyCompletedFlashcards(
+            stateAfterInitialization.flashcardsWithoutLastOne,
+          ),
+        ).thenReturn([]);
+        when(
+          () => flashcardsEditorUtils.lookForDuplicates(
+            stateAfterInitialization.flashcardsWithoutLastOne,
+          ),
+        ).thenReturn(addedFlashcards);
+        when(
+          () => flashcardsEditorDialogs.displayInfoAboutDuplicates(),
+        ).thenAnswer((_) async => '');
+      },
+      act: (_) {
+        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventSave());
+      },
+      verify: (_) {
+        verify(
+          () => flashcardsEditorDialogs.displayInfoAboutDuplicates(),
         ).called(1);
         verifyNever(
           () => flashcardsBloc.add(FlashcardsEventSave(
@@ -312,10 +410,15 @@ void main() {
         removed: const [],
       ));
       when(
-        () => flashcardsEditorUtils.areFlashcardsCompletedCorrectly(
-          editedFlashcards,
+        () => flashcardsEditorUtils.lookForIncorrectlyCompletedFlashcards(
+          stateAfterInitialization.flashcardsWithoutLastOne,
         ),
-      ).thenReturn(true);
+      ).thenReturn([]);
+      when(
+        () => flashcardsEditorUtils.lookForDuplicates(
+          stateAfterInitialization.flashcardsWithoutLastOne,
+        ),
+      ).thenReturn([]);
     });
 
     blocTest(
@@ -385,10 +488,15 @@ void main() {
         removed: const [],
       ));
       when(
-        () => flashcardsEditorUtils.areFlashcardsCompletedCorrectly(
-          addedFlashcards,
+        () => flashcardsEditorUtils.lookForIncorrectlyCompletedFlashcards(
+          stateAfterInitialization.flashcardsWithoutLastOne,
         ),
-      ).thenReturn(true);
+      ).thenReturn([]);
+      when(
+        () => flashcardsEditorUtils.lookForDuplicates(
+          stateAfterInitialization.flashcardsWithoutLastOne,
+        ),
+      ).thenReturn([]);
     });
 
     blocTest(
@@ -455,8 +563,15 @@ void main() {
         removed: removedFlashcards,
       ));
       when(
-        () => flashcardsEditorUtils.areFlashcardsCompletedCorrectly([]),
-      ).thenReturn(true);
+        () => flashcardsEditorUtils.lookForIncorrectlyCompletedFlashcards(
+          stateAfterInitialization.flashcardsWithoutLastOne,
+        ),
+      ).thenReturn([]);
+      when(
+        () => flashcardsEditorUtils.lookForDuplicates(
+          stateAfterInitialization.flashcardsWithoutLastOne,
+        ),
+      ).thenReturn([]);
     });
 
     blocTest(

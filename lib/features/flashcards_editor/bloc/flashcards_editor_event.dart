@@ -6,31 +6,21 @@ class FlashcardsEditorEventInitialize extends FlashcardsEditorEvent {
   FlashcardsEditorEventInitialize({required this.groupId});
 }
 
-class FlashcardsEditorEventAddFlashcard extends FlashcardsEditorEvent {}
-
 class FlashcardsEditorEventRemoveFlashcard extends FlashcardsEditorEvent {
   final int indexOfFlashcard;
 
   FlashcardsEditorEventRemoveFlashcard({required this.indexOfFlashcard});
 }
 
-class FlashcardsEditorEventQuestionChanged extends FlashcardsEditorEvent {
+class FlashcardsEditorEventValueChanged extends FlashcardsEditorEvent {
   final int indexOfFlashcard;
-  final String question;
+  final String? question;
+  final String? answer;
 
-  FlashcardsEditorEventQuestionChanged({
+  FlashcardsEditorEventValueChanged({
     required this.indexOfFlashcard,
-    required this.question,
-  });
-}
-
-class FlashcardsEditorEventAnswerChanged extends FlashcardsEditorEvent {
-  final int indexOfFlashcard;
-  final String answer;
-
-  FlashcardsEditorEventAnswerChanged({
-    required this.indexOfFlashcard,
-    required this.answer,
+    this.question,
+    this.answer,
   });
 }
 

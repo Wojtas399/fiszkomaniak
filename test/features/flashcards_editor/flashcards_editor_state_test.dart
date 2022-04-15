@@ -6,15 +6,15 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   late FlashcardsEditorState state;
   final List<EditorFlashcard> flashcards = [
-    createFlashcardsEditorItemParams(
+    createEditorFlashcard(
       key: 'f1',
       doc: createFlashcard(question: 'question', answer: 'answer'),
     ),
-    createFlashcardsEditorItemParams(
+    createEditorFlashcard(
       key: 'f2',
       doc: createFlashcard(id: 'f1'),
     ),
-    createFlashcardsEditorItemParams(
+    createEditorFlashcard(
       key: 'f3',
       doc: createFlashcard(),
     ),
@@ -44,5 +44,31 @@ void main() {
 
     expect(state2.flashcards, flashcards);
     expect(state3.flashcards, flashcards);
+  });
+
+  test('get flashcards without last one', () {
+    final List<Flashcard> expectedFlashcards = flashcards
+        .getRange(0, flashcards.length - 1)
+        .map((flashcard) => flashcard.doc)
+        .toList();
+
+    final FlashcardsEditorState updatedState = state.copyWith(
+      flashcards: flashcards,
+    );
+
+    expect(updatedState.flashcardsWithoutLastOne, expectedFlashcards);
+  });
+
+  test('are incorrect flashcards', () {
+    final List<EditorFlashcard> editedFlashcards = [
+      ...flashcards,
+      createEditorFlashcard(isCorrect: false),
+    ];
+
+    final FlashcardsEditorState updatedState = state.copyWith(
+      flashcards: editedFlashcards,
+    );
+
+    expect(updatedState.areIncorrectFlashcards, true);
   });
 }

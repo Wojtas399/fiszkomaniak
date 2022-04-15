@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_bloc.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,51 +11,75 @@ void main() {
     createFlashcard(id: 'f3', question: 'question 3', answer: 'answer 3'),
   ];
 
-  test('are flashcards completed correctly, true', () {
-    final List<Flashcard> flashcards = [
-      createFlashcard(id: 'f1', question: 'q1', answer: 'a1'),
-      createFlashcard(id: 'f2', question: 'q2', answer: 'a2'),
-      createFlashcard(id: 'f3', question: 'q3', answer: 'a3'),
-    ];
+  group('remove unused flashcards without the last one', () {
+    test('some flashcards are empty', () {
+      final List<EditorFlashcard> editedFlashcards = [
+        createEditorFlashcard(doc: initialFlashcards[0]),
+        createEditorFlashcard(
+          doc: initialFlashcards[1].copyWith(question: '', answer: ''),
+        ),
+        createEditorFlashcard(
+          doc: initialFlashcards[2].copyWith(question: '', answer: ''),
+        ),
+        createEditorFlashcard(doc: createFlashcard()),
+        createEditorFlashcard(doc: createFlashcard()),
+      ];
 
-    final bool answer = utils.areFlashcardsCompletedCorrectly(flashcards);
+      final List<EditorFlashcard> updatedFlashcards =
+          utils.removeEmptyFlashcardsWithoutLastOneAndChangedFlashcard(
+        editedFlashcards,
+        1,
+      );
 
-    expect(answer, true);
+      expect(updatedFlashcards, [
+        editedFlashcards[0],
+        editedFlashcards[1],
+        editedFlashcards[4],
+      ]);
+    });
+
+    test('all flashcards are completed', () {
+      final List<EditorFlashcard> editedFlashcards = [
+        createEditorFlashcard(doc: initialFlashcards[0]),
+        createEditorFlashcard(doc: initialFlashcards[1]),
+        createEditorFlashcard(doc: initialFlashcards[2]),
+      ];
+
+      final List<EditorFlashcard> updatedFlashcards =
+          utils.removeEmptyFlashcardsWithoutLastOneAndChangedFlashcard(
+        editedFlashcards,
+        1,
+      );
+
+      expect(updatedFlashcards, editedFlashcards);
+    });
   });
 
-  test(
-    'are flashcards completed correctly, one flashcard has empty field',
-    () {
-      final List<Flashcard> flashcards = [
-        createFlashcard(id: 'f1', question: 'q1', answer: 'a1'),
-        createFlashcard(id: 'f2', question: '', answer: 'a2'),
-        createFlashcard(id: 'f3', question: 'q3', answer: 'a3'),
-      ];
+  test('set flashcards as correct if it is possible', () {
+    final List<EditorFlashcard> editedFlashcards = [
+      createEditorFlashcard(isCorrect: false, doc: initialFlashcards[0]),
+      createEditorFlashcard(isCorrect: true, doc: initialFlashcards[1]),
+      createEditorFlashcard(
+        isCorrect: false,
+        doc: initialFlashcards[2].copyWith(answer: ''),
+      ),
+    ];
 
-      final bool answer = utils.areFlashcardsCompletedCorrectly(flashcards);
+    final List<EditorFlashcard> updatedFlashcards =
+        utils.setFlashcardsAsCorrectIfItIsPossible(editedFlashcards);
 
-      expect(answer, false);
-    },
-  );
+    expect(updatedFlashcards, [
+      createEditorFlashcard(isCorrect: true, doc: initialFlashcards[0]),
+      createEditorFlashcard(isCorrect: true, doc: initialFlashcards[1]),
+      createEditorFlashcard(
+        isCorrect: false,
+        doc: initialFlashcards[2].copyWith(answer: ''),
+      ),
+    ]);
+  });
 
-  test(
-    'are flashcards completed correctly, some flashcards have empty fields',
-    () {
-      final List<Flashcard> flashcards = [
-        createFlashcard(id: 'f1', question: 'q1', answer: ''),
-        createFlashcard(id: 'f2', question: '', answer: 'a2'),
-        createFlashcard(id: 'f3', question: 'q3', answer: 'a3'),
-      ];
-
-      final bool answer = utils.areFlashcardsCompletedCorrectly(flashcards);
-
-      expect(answer, false);
-    },
-  );
-
-  test(
-    'group flashcards, new flashcard',
-    () {
+  group('group flashcards into appropriate groups', () {
+    test('new flashcard', () {
       final Flashcard newFlashcard = createFlashcard(
         question: 'q4',
         answer: 'a4',
@@ -74,12 +98,9 @@ void main() {
       expect(groups.added, [newFlashcard]);
       expect(groups.edited, []);
       expect(groups.removed, []);
-    },
-  );
+    });
 
-  test(
-    'group flashcards, new empty flashcard',
-    () {
+    test('new empty flashcard', () {
       final List<Flashcard> editedFlashcards = [
         ...initialFlashcards,
         createFlashcard(),
@@ -94,12 +115,9 @@ void main() {
       expect(groups.added, []);
       expect(groups.edited, []);
       expect(groups.removed, []);
-    },
-  );
+    });
 
-  test(
-    'group flashcards, edited flashcard',
-    () {
+    test('edited flashcard', () {
       final Flashcard editedFlashcard = initialFlashcards[1].copyWith(
         answer: 'a2',
       );
@@ -118,12 +136,9 @@ void main() {
       expect(groups.added, []);
       expect(groups.edited, [editedFlashcard]);
       expect(groups.removed, []);
-    },
-  );
+    });
 
-  test(
-    'group flashcards, edited flashcard, isEmpty',
-    () {
+    test('edited empty flashcard', () {
       final Flashcard editedFlashcard = initialFlashcards[1].copyWith(
         answer: '',
         question: '',
@@ -143,12 +158,9 @@ void main() {
       expect(groups.added, []);
       expect(groups.edited, []);
       expect(groups.removed, [editedFlashcard.id]);
-    },
-  );
+    });
 
-  test(
-    'group flashcards, removed flashcard',
-    () {
+    test('removed flashcard', () {
       final List<Flashcard> editedFlashcards = [
         initialFlashcards[0],
         initialFlashcards[2],
@@ -163,22 +175,60 @@ void main() {
       expect(groups.added, []);
       expect(groups.edited, []);
       expect(groups.removed, [initialFlashcards[1].id]);
-    },
-  );
-
-  test("are flashcard's both fields completed, true", () {
-    final bool answer = utils.areFlashcardBothFieldsCompleted(
-      initialFlashcards[0],
-    );
-
-    expect(answer, true);
+    });
   });
 
-  test("are flashcard's both fields completed, false", () {
-    final Flashcard editedFlashcard = initialFlashcards[0].copyWith(answer: '');
+  group('look for incorrectly completed flashcards', () {
+    test('some flashcards are not fully completed', () {
+      final List<Flashcard> editedFlashcards = [
+        initialFlashcards[0],
+        initialFlashcards[1].copyWith(question: ''),
+        initialFlashcards[2].copyWith(answer: ''),
+      ];
 
-    final bool answer = utils.areFlashcardBothFieldsCompleted(editedFlashcard);
+      final List<Flashcard> incorrectFlashcards =
+          utils.lookForIncorrectlyCompletedFlashcards(editedFlashcards);
 
-    expect(answer, false);
+      expect(incorrectFlashcards, [
+        editedFlashcards[1],
+        editedFlashcards[2],
+      ]);
+    });
+
+    test('all flashcards are fully completed', () {
+      final List<Flashcard> incorrectFlashcards =
+          utils.lookForIncorrectlyCompletedFlashcards(initialFlashcards);
+
+      expect(incorrectFlashcards, []);
+    });
+  });
+
+  group('look for duplicates', () {
+    test('there is some duplicates', () {
+      final List<Flashcard> editedFlashcards = [
+        ...initialFlashcards,
+        initialFlashcards[0].copyWith(id: 'f4'),
+        initialFlashcards[1].copyWith(id: 'f5'),
+      ];
+
+      final List<Flashcard> duplicates = utils.lookForDuplicates(
+        editedFlashcards,
+      );
+
+      expect(duplicates, [
+        initialFlashcards[0],
+        initialFlashcards[0].copyWith(id: 'f4'),
+        initialFlashcards[1],
+        initialFlashcards[1].copyWith(id: 'f5'),
+      ]);
+    });
+
+    test('there is no duplicates', () {
+      final List<Flashcard> duplicates = utils.lookForDuplicates(
+        initialFlashcards,
+      );
+
+      expect(duplicates, []);
+    });
   });
 }

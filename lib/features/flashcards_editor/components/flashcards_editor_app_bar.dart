@@ -21,16 +21,13 @@ class FlashcardsEditorAppBar extends StatelessWidget
         return AppBarWithCloseButton(
           label: state.group?.name ?? '',
           actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: CustomIconButton(
-                icon: MdiIcons.contentSave,
-                onPressed: () {
-                  context
-                      .read<FlashcardsEditorBloc>()
-                      .add(FlashcardsEditorEventSave());
-                },
-              ),
+            CustomIconButton(
+              icon: MdiIcons.contentSave,
+              onPressed: () {
+                context
+                    .read<FlashcardsEditorBloc>()
+                    .add(FlashcardsEditorEventSave());
+              },
             ),
           ],
         );

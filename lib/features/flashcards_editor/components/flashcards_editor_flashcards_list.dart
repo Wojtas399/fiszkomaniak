@@ -24,25 +24,26 @@ class FlashcardsEditorFlashcardsList extends StatelessWidget {
             final int index = entry.key;
             final EditorFlashcard params = entry.value;
             return FlashcardsEditorItem(
-              key: Key(params.key),
+              key: ValueKey(params.key),
               questionInitialValue: params.doc.question,
               answerInitialValue: params.doc.answer,
               nameForQuestion: group.nameForQuestions,
               nameForAnswer: group.nameForAnswers,
+              displayRedBorder: !params.isCorrect,
               onQuestionChanged: (String value) {
                 context
                     .read<FlashcardsEditorBloc>()
-                    .add(FlashcardsEditorEventQuestionChanged(
+                    .add(FlashcardsEditorEventValueChanged(
                       indexOfFlashcard: index,
-                      question: value,
+                      question: value.trim(),
                     ));
               },
               onAnswerChanged: (String value) {
                 context
                     .read<FlashcardsEditorBloc>()
-                    .add(FlashcardsEditorEventAnswerChanged(
+                    .add(FlashcardsEditorEventValueChanged(
                       indexOfFlashcard: index,
-                      answer: value,
+                      answer: value.trim(),
                     ));
               },
               onTapDeleteButton: () {

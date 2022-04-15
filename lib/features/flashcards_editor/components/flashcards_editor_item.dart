@@ -6,6 +6,7 @@ class FlashcardsEditorItem extends StatefulWidget {
   final String answerInitialValue;
   final String nameForQuestion;
   final String nameForAnswer;
+  final bool displayRedBorder;
   final Function(String value)? onQuestionChanged;
   final Function(String value)? onAnswerChanged;
   final VoidCallback? onTapDeleteButton;
@@ -16,6 +17,7 @@ class FlashcardsEditorItem extends StatefulWidget {
     required this.answerInitialValue,
     required this.nameForQuestion,
     required this.nameForAnswer,
+    this.displayRedBorder = false,
     this.onQuestionChanged,
     this.onAnswerChanged,
     this.onTapDeleteButton,
@@ -40,12 +42,22 @@ class _FlashcardsEditorItemState extends State<FlashcardsEditorItem> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 24.0),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: widget.displayRedBorder
+              ? Colors.red
+              : Theme.of(context).scaffoldBackgroundColor,
+          width: 1.2,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+      ),
       child: Stack(
         children: [
           Card(
-            margin: const EdgeInsets.only(bottom: 24.0),
+            margin: const EdgeInsets.all(0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
@@ -83,8 +95,8 @@ class _DeleteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 4.0,
-      right: 4.0,
+      top: 6.0,
+      right: 6.0,
       child: GestureDetector(
         onTap: onTap,
         child: Container(
