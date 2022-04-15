@@ -41,6 +41,10 @@ class GroupsState extends Equatable {
     return allGroups.where((group) => group.courseId == courseId).toList();
   }
 
+  String? getGroupNameById(String groupId) {
+    return getGroupById(groupId)?.name;
+  }
+
   @override
   List<Object> get props => [
         allGroups,

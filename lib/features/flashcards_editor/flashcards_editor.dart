@@ -25,10 +25,13 @@ class FlashcardsEditor extends StatelessWidget {
       child: const Scaffold(
         appBar: FlashcardsEditorAppBar(),
         body: SingleChildScrollView(
-          child: OnTapFocusLoseArea(
-            child: Padding(
-              padding: EdgeInsets.all(24.0),
-              child: FlashcardsEditorFlashcardsList(),
+          physics: BouncingScrollPhysics(),
+          child: SafeArea(
+            child: OnTapFocusLoseArea(
+              child: Padding(
+                padding: EdgeInsets.all(24.0),
+                child: FlashcardsEditorFlashcardsList(),
+              ),
             ),
           ),
         ),
