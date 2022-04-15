@@ -17,7 +17,7 @@ class GroupFlashcardsPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlashcardsPreviewBlocProvider(
+    return _GroupFlashcardsPreviewBlocProvider(
       groupId: groupId,
       child: const Scaffold(
         appBar: GroupFlashcardsPreviewAppBar(),
@@ -27,11 +27,11 @@ class GroupFlashcardsPreview extends StatelessWidget {
   }
 }
 
-class FlashcardsPreviewBlocProvider extends StatelessWidget {
+class _GroupFlashcardsPreviewBlocProvider extends StatelessWidget {
   final String groupId;
   final Widget child;
 
-  const FlashcardsPreviewBlocProvider({
+  const _GroupFlashcardsPreviewBlocProvider({
     Key? key,
     required this.groupId,
     required this.child,

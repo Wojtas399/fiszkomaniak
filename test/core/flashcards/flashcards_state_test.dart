@@ -54,4 +54,24 @@ void main() {
 
     expect(flashcardsFromGroup, expectedFlashcards);
   });
+
+  test('get flashcard by id, flashcard exists', () {
+    final FlashcardsState updatedState = state.copyWith(
+      allFlashcards: flashcards,
+    );
+
+    final Flashcard? flashcard = updatedState.getFlashcardById('f1');
+
+    expect(flashcard, flashcards[0]);
+  });
+
+  test('get flashcard by id, flashcard does not exist', () {
+    final FlashcardsState updatedState = state.copyWith(
+      allFlashcards: flashcards,
+    );
+
+    final Flashcard? flashcard = updatedState.getFlashcardById('f5');
+
+    expect(flashcard, null);
+  });
 }
