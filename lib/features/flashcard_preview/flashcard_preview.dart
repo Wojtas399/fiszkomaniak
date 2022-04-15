@@ -1,7 +1,9 @@
-import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
+import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_event.dart';
+import 'package:fiszkomaniak/features/flashcard_preview/components/flashcard_preview_app_bar.dart';
+import 'package:fiszkomaniak/features/flashcard_preview/components/flashcard_preview_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,9 +20,19 @@ class FlashcardPreview extends StatelessWidget {
     return _FlashcardPreviewBlocProvider(
       flashcardId: flashcardId,
       child: const Scaffold(
-        appBar: AppBarWithCloseButton(label: 'Fiszka'),
-        body: Center(
-          child: Text('flashcard preview'),
+        appBar: FlashcardPreviewAppBar(),
+        body: BouncingScroll(
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: 16.0,
+                right: 16.0,
+                top: 8.0,
+                bottom: 24.0,
+              ),
+              child: FlashcardPreviewContent(),
+            ),
+          ),
         ),
       ),
     );
