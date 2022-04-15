@@ -2,6 +2,9 @@ import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/courses/courses_status.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_status.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +87,28 @@ class HomeListeners extends StatelessWidget {
               Navigation.backHome();
               dialogs.showSnackbarWithMessage('Pomyślnie usunięto grupę');
             } else if (status is GroupsStatusError) {
+              Navigator.of(context, rootNavigator: true).pop();
+              dialogs.showDialogWithMessage(
+                title: 'Wystąpił błąd...',
+                message: status.message,
+              );
+            }
+          },
+        ),
+        BlocListener<FlashcardsBloc, FlashcardsState>(
+          listener: (BuildContext context, FlashcardsState state) {
+            final FlashcardsStatus status = state.status;
+            if (status is FlashcardsStatusLoading) {
+              dialogs.showLoadingDialog();
+            } else if (status is FlashcardsStatusFlashcardsAdded) {
+              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.of(context).pop();
+              dialogs.showSnackbarWithMessage('Pomyślnie dodano nowe fiszki');
+            } else if (status is FlashcardsStatusFlashcardsSaved) {
+              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.of(context).pop();
+              dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
+            } else if (status is FlashcardsStatusError) {
               Navigator.of(context, rootNavigator: true).pop();
               dialogs.showDialogWithMessage(
                 title: 'Wystąpił błąd...',
