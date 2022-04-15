@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter/material.dart';
 import '../../../components/button.dart';
@@ -32,7 +33,9 @@ class GroupPreviewContent extends StatelessWidget {
         ),
         Button(
           label: 'przeglądaj fiszki',
-          onPressed: () {},
+          onPressed: () {
+            Navigation.navigateToFlashcardsPreview(group.id);
+          },
         ),
       ],
     );

@@ -79,4 +79,13 @@ class Navigation {
       arguments: groupId,
     );
   }
+
+  static void navigateToFlashcardsPreview(String groupId) {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.flashcardsPreview,
+      arguments: groupId,
+    );
+  }
 }
+
+
