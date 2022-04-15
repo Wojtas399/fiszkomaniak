@@ -29,7 +29,9 @@ class AppBarWithSearchTextField extends StatelessWidget
             children: [
               const _CloseButton(),
               _Title(label: label),
-              _SearchTextField(onChanged: onChanged),
+              _SearchTextField(onChanged: (String value) {
+                onChanged!(value.trim());
+              }),
             ],
           ),
         ),

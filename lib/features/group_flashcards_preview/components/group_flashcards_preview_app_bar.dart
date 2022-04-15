@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/components/app_bar_with_search_text_field.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_bloc.dart';
+import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_event.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +18,13 @@ class GroupFlashcardsPreviewAppBar extends StatelessWidget
       builder: (BuildContext context, GroupFlashcardsPreviewState state) {
         return AppBarWithSearchTextField(
           label: state.groupName ?? '',
-          onChanged: (String value) {},
+          onChanged: (String value) {
+            context.read<GroupFlashcardsPreviewBloc>().add(
+                  GroupFlashcardsPreviewEventSearchValueChanged(
+                    searchValue: value,
+                  ),
+                );
+          },
         );
       },
     );

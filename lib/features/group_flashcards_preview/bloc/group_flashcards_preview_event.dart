@@ -6,3 +6,10 @@ class GroupFlashcardsPreviewEventInitialize
 
   GroupFlashcardsPreviewEventInitialize({required this.groupId});
 }
+
+class GroupFlashcardsPreviewEventSearchValueChanged
+    extends GroupFlashcardsPreviewEvent {
+  final String searchValue;
+
+  GroupFlashcardsPreviewEventSearchValueChanged({required this.searchValue});
+}

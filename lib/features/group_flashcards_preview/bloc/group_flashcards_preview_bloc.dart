@@ -17,6 +17,7 @@ class GroupFlashcardsPreviewBloc
     _groupsBloc = groupsBloc;
     _flashcardsBloc = flashcardsBloc;
     on<GroupFlashcardsPreviewEventInitialize>(_initialize);
+    on<GroupFlashcardsPreviewEventSearchValueChanged>(_searchValueChanged);
   }
 
   void _initialize(
@@ -33,5 +34,12 @@ class GroupFlashcardsPreviewBloc
         flashcardsFromGroup: flashcardsFromGroup,
       ));
     }
+  }
+
+  void _searchValueChanged(
+    GroupFlashcardsPreviewEventSearchValueChanged event,
+    Emitter<GroupFlashcardsPreviewState> emit,
+  ) {
+    emit(state.copyWith(searchValue: event.searchValue));
   }
 }

@@ -13,7 +13,7 @@ class CourseGroupsPreviewGroupsList extends StatelessWidget {
     return BlocBuilder<CourseGroupsPreviewBloc, CourseGroupsPreviewState>(
       builder: (BuildContext context, CourseGroupsPreviewState state) {
         return Column(
-          children: state.matchedGroups
+          children: state.matchingGroups
               .map(
                 (group) => GroupItem(
                   groupName: group.name,

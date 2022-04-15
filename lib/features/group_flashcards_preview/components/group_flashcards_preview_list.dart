@@ -23,7 +23,7 @@ class GroupFlashcardsPreviewList extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
-                children: state.flashcardsFromGroup.map(_generateItem).toList(),
+                children: state.matchingFlashcards.map(_generateItem).toList(),
               ),
             ),
           ),
