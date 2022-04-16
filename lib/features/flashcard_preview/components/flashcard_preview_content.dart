@@ -11,6 +11,8 @@ import 'flashcard_preview_question_answer.dart';
 class FlashcardPreviewContent extends StatelessWidget {
   final TextEditingController _questionController = TextEditingController();
   final TextEditingController _answerController = TextEditingController();
+  final FocusNode _questionFocusNode = FocusNode();
+  final FocusNode _answerFocusNode = FocusNode();
 
   FlashcardPreviewContent({Key? key}) : super(key: key);
 
@@ -38,6 +40,8 @@ class FlashcardPreviewContent extends StatelessWidget {
               nameForAnswer: state.group?.nameForAnswers ?? '',
               questionController: _questionController,
               answerController: _answerController,
+              questionFocusNode: _questionFocusNode,
+              answerFocusNode: _answerFocusNode,
               onQuestionChanged: (String value) {
                 context
                     .read<FlashcardPreviewBloc>()

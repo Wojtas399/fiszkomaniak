@@ -13,3 +13,6 @@ class GroupFlashcardsPreviewEventSearchValueChanged
 
   GroupFlashcardsPreviewEventSearchValueChanged({required this.searchValue});
 }
+
+class GroupFlashcardsPreviewEventFlashcardsStateUpdated
+    extends GroupFlashcardsPreviewEvent {}

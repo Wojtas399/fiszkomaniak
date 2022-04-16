@@ -150,8 +150,6 @@ void main() {
     expect: () => [stateAfterInitialization],
   );
 
-
-
   blocTest(
     'save, no changes',
     build: () => bloc,
@@ -181,7 +179,7 @@ void main() {
       verify(() => flashcardsEditorDialogs.displayInfoAboutNoChanges())
           .called(1);
       verifyNever(
-        () => flashcardsBloc.add(FlashcardsEventSave(
+        () => flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
           flashcardsToUpdate: const [],
           flashcardsToAdd: const [],
           idsOfFlashcardsToRemove: const [],
@@ -228,7 +226,7 @@ void main() {
           () => flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards(),
         ).called(1);
         verifyNever(
-          () => flashcardsBloc.add(FlashcardsEventSave(
+          () => flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
             flashcardsToUpdate: editedFlashcards,
             flashcardsToAdd: const [],
             idsOfFlashcardsToRemove: const [],
@@ -281,7 +279,7 @@ void main() {
           () => flashcardsEditorDialogs.displayInfoAboutDuplicates(),
         ).called(1);
         verifyNever(
-          () => flashcardsBloc.add(FlashcardsEventSave(
+          () => flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
             flashcardsToUpdate: editedFlashcards,
             flashcardsToAdd: const [],
             idsOfFlashcardsToRemove: const [],
@@ -329,7 +327,7 @@ void main() {
           () => flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards(),
         ).called(1);
         verifyNever(
-          () => flashcardsBloc.add(FlashcardsEventSave(
+          () => flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
             flashcardsToUpdate: const [],
             flashcardsToAdd: addedFlashcards,
             idsOfFlashcardsToRemove: const [],
@@ -382,7 +380,7 @@ void main() {
           () => flashcardsEditorDialogs.displayInfoAboutDuplicates(),
         ).called(1);
         verifyNever(
-          () => flashcardsBloc.add(FlashcardsEventSave(
+          () => flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
             flashcardsToUpdate: const [],
             flashcardsToAdd: addedFlashcards,
             idsOfFlashcardsToRemove: const [],
@@ -436,7 +434,7 @@ void main() {
         verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
             .called(1);
         verifyNever(
-          () => flashcardsBloc.add(FlashcardsEventSave(
+          () => flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
             flashcardsToUpdate: editedFlashcards,
             flashcardsToAdd: const [],
             idsOfFlashcardsToRemove: const [],
@@ -460,7 +458,7 @@ void main() {
         verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
             .called(1);
         verify(
-          () => flashcardsBloc.add(FlashcardsEventSave(
+          () => flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
             flashcardsToUpdate: editedFlashcards,
             flashcardsToAdd: const [],
             idsOfFlashcardsToRemove: const [],
@@ -514,7 +512,7 @@ void main() {
         verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
             .called(1);
         verifyNever(
-          () => flashcardsBloc.add(FlashcardsEventSave(
+          () => flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
             flashcardsToUpdate: const [],
             flashcardsToAdd: addedFlashcards,
             idsOfFlashcardsToRemove: const [],
@@ -538,7 +536,7 @@ void main() {
         verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
             .called(1);
         verify(
-          () => flashcardsBloc.add(FlashcardsEventSave(
+          () => flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
             flashcardsToUpdate: const [],
             flashcardsToAdd: addedFlashcards,
             idsOfFlashcardsToRemove: const [],
@@ -589,7 +587,7 @@ void main() {
         verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
             .called(1);
         verifyNever(
-          () => flashcardsBloc.add(FlashcardsEventSave(
+          () => flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
             flashcardsToUpdate: const [],
             flashcardsToAdd: const [],
             idsOfFlashcardsToRemove: removedFlashcards,
@@ -613,7 +611,7 @@ void main() {
         verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
             .called(1);
         verify(
-          () => flashcardsBloc.add(FlashcardsEventSave(
+          () => flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
             flashcardsToUpdate: const [],
             flashcardsToAdd: const [],
             idsOfFlashcardsToRemove: removedFlashcards,

@@ -105,7 +105,7 @@ class FlashcardsEditorBloc
   ) async {
     final FlashcardsEditorGroups flashcardsGroups = _getSegregatedFlashcards();
     if (await _canSave(flashcardsGroups, emit)) {
-      _flashcardsBloc.add(FlashcardsEventSave(
+      _flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
         flashcardsToUpdate: flashcardsGroups.edited,
         flashcardsToAdd: flashcardsGroups.added,
         idsOfFlashcardsToRemove: flashcardsGroups.removed,

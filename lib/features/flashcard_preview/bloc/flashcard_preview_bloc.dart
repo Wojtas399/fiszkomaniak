@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_event.dart';
@@ -15,6 +17,7 @@ class FlashcardPreviewBloc
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
   late final FlashcardPreviewDialogs _flashcardPreviewDialogs;
+  StreamSubscription? _flashcardsStateSubscription;
 
   FlashcardPreviewBloc({
     required FlashcardsBloc flashcardsBloc,
@@ -32,6 +35,7 @@ class FlashcardPreviewBloc
     on<FlashcardPreviewEventResetChanges>(_resetChanges);
     on<FlashcardPreviewEventSaveChanges>(_saveChanges);
     on<FlashcardPreviewEventRemoveFlashcard>(_removeFlashcard);
+    on<FlashcardPreviewEventFlashcardsStateUpdated>(_flashcardsStateUpdated);
   }
 
   void _initialize(
@@ -56,6 +60,7 @@ class FlashcardPreviewBloc
         }
       }
     }
+    _setFlashcardsStateListener(event.flashcardId);
   }
 
   void _questionChanged(
@@ -95,10 +100,14 @@ class FlashcardPreviewBloc
   ) async {
     final bool confirmation =
         await _flashcardPreviewDialogs.askForSaveConfirmation();
-    if (confirmation) {
-      print('SAVE CHANGES');
-      print('question: ${state.newQuestion}');
-      print('answer: ${state.newAnswer}');
+    final Flashcard? flashcard = state.flashcard;
+    if (confirmation && flashcard != null) {
+      _flashcardsBloc.add(FlashcardsEventUpdateFlashcard(
+        flashcard: flashcard.copyWith(
+          question: state.newQuestion,
+          answer: state.newAnswer,
+        ),
+      ));
     }
   }
 
@@ -108,8 +117,35 @@ class FlashcardPreviewBloc
   ) async {
     final bool confirmation =
         await _flashcardPreviewDialogs.askForDeleteConfirmation();
-    if (confirmation) {
-      print('DELETE FLASHCARD');
+    final String? flashcardId = state.flashcard?.id;
+    if (confirmation && flashcardId != null) {
+      _flashcardsBloc.add(
+        FlashcardsEventRemoveFlashcard(flashcardId: flashcardId),
+      );
     }
+  }
+
+  void _flashcardsStateUpdated(
+    FlashcardPreviewEventFlashcardsStateUpdated event,
+    Emitter<FlashcardPreviewState> emit,
+  ) {
+    final Flashcard? flashcard = _flashcardsBloc.state.getFlashcardById(
+      state.flashcard?.id,
+    );
+    if (flashcard != null) {
+      emit(state.copyWith(flashcard: flashcard));
+    }
+  }
+
+  void _setFlashcardsStateListener(String flashcardId) {
+    _flashcardsStateSubscription = _flashcardsBloc.stream.listen((_) {
+      add(FlashcardPreviewEventFlashcardsStateUpdated());
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _flashcardsStateSubscription?.cancel();
+    return super.close();
   }
 }

@@ -52,6 +52,7 @@ void main() {
     setUp: () {
       when(() => groupsBloc.state).thenReturn(groupsState);
       when(() => flashcardsBloc.state).thenReturn(flashcardsState);
+      when(() => flashcardsBloc.stream).thenAnswer((_) => const Stream.empty());
     },
     act: (_) => bloc.add(GroupFlashcardsPreviewEventInitialize(groupId: 'g1')),
     expect: () => [

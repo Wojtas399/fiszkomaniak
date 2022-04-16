@@ -8,6 +8,8 @@ class FlashcardPreviewQuestionAnswer extends StatelessWidget {
   final TextEditingController answerController;
   final Function(String value)? onQuestionChanged;
   final Function(String value)? onAnswerChanged;
+  final FocusNode? questionFocusNode;
+  final FocusNode? answerFocusNode;
 
   const FlashcardPreviewQuestionAnswer({
     Key? key,
@@ -17,6 +19,8 @@ class FlashcardPreviewQuestionAnswer extends StatelessWidget {
     required this.answerController,
     required this.onQuestionChanged,
     required this.onAnswerChanged,
+    this.questionFocusNode,
+    this.answerFocusNode,
   }) : super(key: key);
 
   @override
@@ -31,6 +35,10 @@ class FlashcardPreviewQuestionAnswer extends StatelessWidget {
             subtitle: nameForQuestion,
             controller: questionController,
             onChanged: onQuestionChanged,
+            focusNode: questionFocusNode,
+            onTap: () {
+              questionFocusNode?.requestFocus();
+            },
           ),
           const SizedBox(height: 16),
           _FlashcardToDisplay(
@@ -38,6 +46,10 @@ class FlashcardPreviewQuestionAnswer extends StatelessWidget {
             subtitle: nameForAnswer,
             controller: answerController,
             onChanged: onAnswerChanged,
+            focusNode: answerFocusNode,
+            onTap: () {
+              answerFocusNode?.requestFocus();
+            },
           ),
         ],
       ),
@@ -50,6 +62,8 @@ class _FlashcardToDisplay extends StatelessWidget {
   final String subtitle;
   final TextEditingController controller;
   final Function(String value)? onChanged;
+  final FocusNode? focusNode;
+  final VoidCallback? onTap;
 
   const _FlashcardToDisplay({
     Key? key,
@@ -57,6 +71,8 @@ class _FlashcardToDisplay extends StatelessWidget {
     required this.subtitle,
     required this.controller,
     this.onChanged,
+    this.focusNode,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -66,7 +82,12 @@ class _FlashcardToDisplay extends StatelessWidget {
       children: [
         _FlashcardTitle(title: title, subtitle: subtitle),
         const SizedBox(height: 8),
-        _Flashcard(controller: controller, onChanged: onChanged),
+        _Flashcard(
+          controller: controller,
+          onChanged: onChanged,
+          focusNode: focusNode,
+          onTap: onTap,
+        ),
       ],
     );
   }
@@ -97,20 +118,21 @@ class _FlashcardTitle extends StatelessWidget {
 class _Flashcard extends StatelessWidget {
   final TextEditingController controller;
   final Function(String value)? onChanged;
-  final FocusNode focusNode = FocusNode();
+  final VoidCallback? onTap;
+  final FocusNode? focusNode;
 
-  _Flashcard({
-    Key? key,
-    required this.controller,
-    required this.onChanged,
-  }) : super(key: key);
+  const _Flashcard(
+      {Key? key,
+      required this.controller,
+      required this.onChanged,
+      this.onTap,
+      this.focusNode})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        focusNode.requestFocus();
-      },
+      onTap: onTap,
       child: SizedBox(
         width: double.infinity,
         height: 180,

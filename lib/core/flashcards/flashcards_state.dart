@@ -27,7 +27,7 @@ class FlashcardsState extends Equatable {
         .toList();
   }
 
-  Flashcard? getFlashcardById(String flashcardId) {
+  Flashcard? getFlashcardById(String? flashcardId) {
     final List<Flashcard?> flashcards = [...allFlashcards];
     return flashcards.firstWhere(
       (flashcard) => flashcard?.id == flashcardId,

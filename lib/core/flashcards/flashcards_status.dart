@@ -19,6 +19,10 @@ class FlashcardsStatusFlashcardsAdded extends FlashcardsStatus {}
 
 class FlashcardsStatusFlashcardsSaved extends FlashcardsStatus {}
 
+class FlashcardsStatusFlashcardUpdated extends FlashcardsStatus {}
+
+class FlashcardsStatusFlashcardRemoved extends FlashcardsStatus {}
+
 class FlashcardsStatusError extends FlashcardsStatus {
   final String message;
 

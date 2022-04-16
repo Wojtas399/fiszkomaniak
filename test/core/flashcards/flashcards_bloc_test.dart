@@ -147,13 +147,13 @@ void main() {
   );
 
   blocTest(
-    'save, only flashcards to add, success',
+    'save multiple actions, only flashcards to add, success',
     build: () => bloc,
     setUp: () {
       when(() => flashcardsInterface.addFlashcards([snapshots[0].doc]))
           .thenAnswer((_) async => '');
     },
-    act: (_) => bloc.add(FlashcardsEventSave(
+    act: (_) => bloc.add(FlashcardsEventSaveMultipleActions(
       flashcardsToUpdate: const [],
       flashcardsToAdd: [snapshots[0].doc],
       idsOfFlashcardsToRemove: const [],
@@ -171,13 +171,13 @@ void main() {
   );
 
   blocTest(
-    'save, only flashcards to update, success',
+    'save multiple actions, only flashcards to update, success',
     build: () => bloc,
     setUp: () {
       when(() => flashcardsInterface.updateFlashcards([snapshots[0].doc]))
           .thenAnswer((_) async => '');
     },
-    act: (_) => bloc.add(FlashcardsEventSave(
+    act: (_) => bloc.add(FlashcardsEventSaveMultipleActions(
       flashcardsToUpdate: [snapshots[0].doc],
       flashcardsToAdd: const [],
       idsOfFlashcardsToRemove: const [],
@@ -195,13 +195,13 @@ void main() {
   );
 
   blocTest(
-    'save, only flashcards to remove, success',
+    'save multiple actions, only flashcards to remove, success',
     build: () => bloc,
     setUp: () {
       when(() => flashcardsInterface.removeFlashcards(['f1']))
           .thenAnswer((_) async => '');
     },
-    act: (_) => bloc.add(FlashcardsEventSave(
+    act: (_) => bloc.add(FlashcardsEventSaveMultipleActions(
       flashcardsToUpdate: const [],
       flashcardsToAdd: const [],
       idsOfFlashcardsToRemove: const ['f1'],
@@ -218,7 +218,7 @@ void main() {
   );
 
   blocTest(
-    'save, success',
+    'save multiple actions, success',
     build: () => bloc,
     setUp: () {
       when(() => flashcardsInterface.addFlashcards([snapshots[0].doc]))
@@ -228,7 +228,7 @@ void main() {
       when(() => flashcardsInterface.removeFlashcards(['f3']))
           .thenAnswer((_) async => '');
     },
-    act: (_) => bloc.add(FlashcardsEventSave(
+    act: (_) => bloc.add(FlashcardsEventSaveMultipleActions(
       flashcardsToUpdate: [snapshots[1].doc],
       flashcardsToAdd: [snapshots[0].doc],
       idsOfFlashcardsToRemove: const ['f3'],
@@ -247,7 +247,7 @@ void main() {
   );
 
   blocTest(
-    'save, failure',
+    'save multiple actions, failure',
     build: () => bloc,
     setUp: () {
       when(() => flashcardsInterface.updateFlashcards([snapshots[1].doc]))
@@ -255,7 +255,7 @@ void main() {
       when(() => flashcardsInterface.addFlashcards([snapshots[0].doc]))
           .thenThrow('Error...');
     },
-    act: (_) => bloc.add(FlashcardsEventSave(
+    act: (_) => bloc.add(FlashcardsEventSaveMultipleActions(
       flashcardsToUpdate: [snapshots[1].doc],
       flashcardsToAdd: [snapshots[0].doc],
       idsOfFlashcardsToRemove: const ['f3'],
@@ -270,6 +270,86 @@ void main() {
       verify(() => flashcardsInterface.updateFlashcards([snapshots[1].doc]))
           .called(1);
       verifyNever(() => flashcardsInterface.removeFlashcards(['f3']));
+    },
+  );
+
+  blocTest(
+    'update flashcard, success',
+    build: () => bloc,
+    setUp: () {
+      when(() => flashcardsInterface.updateFlashcards([snapshots[0].doc]))
+          .thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(
+      FlashcardsEventUpdateFlashcard(flashcard: snapshots[0].doc),
+    ),
+    expect: () => [
+      FlashcardsState(status: FlashcardsStatusLoading()),
+      FlashcardsState(status: FlashcardsStatusFlashcardUpdated()),
+    ],
+    verify: (_) {
+      verify(() => flashcardsInterface.updateFlashcards([snapshots[0].doc]))
+          .called(1);
+    },
+  );
+
+  blocTest(
+    'update flashcard, failure',
+    build: () => bloc,
+    setUp: () {
+      when(() => flashcardsInterface.updateFlashcards([snapshots[0].doc]))
+          .thenThrow('Error...');
+    },
+    act: (_) => bloc.add(
+      FlashcardsEventUpdateFlashcard(flashcard: snapshots[0].doc),
+    ),
+    expect: () => [
+      FlashcardsState(status: FlashcardsStatusLoading()),
+      const FlashcardsState(status: FlashcardsStatusError(message: 'Error...')),
+    ],
+    verify: (_) {
+      verify(() => flashcardsInterface.updateFlashcards([snapshots[0].doc]))
+          .called(1);
+    },
+  );
+
+  blocTest(
+    'remove flashcard, success',
+    build: () => bloc,
+    setUp: () {
+      when(() => flashcardsInterface.removeFlashcards([snapshots[0].doc.id]))
+          .thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(
+      FlashcardsEventRemoveFlashcard(flashcardId: snapshots[0].doc.id),
+    ),
+    expect: () => [
+      FlashcardsState(status: FlashcardsStatusLoading()),
+      FlashcardsState(status: FlashcardsStatusFlashcardRemoved()),
+    ],
+    verify: (_) {
+      verify(() => flashcardsInterface.removeFlashcards([snapshots[0].doc.id]))
+          .called(1);
+    },
+  );
+
+  blocTest(
+    'remove flashcard, failure',
+    build: () => bloc,
+    setUp: () {
+      when(() => flashcardsInterface.removeFlashcards([snapshots[0].doc.id]))
+          .thenThrow('Error...');
+    },
+    act: (_) => bloc.add(
+      FlashcardsEventRemoveFlashcard(flashcardId: snapshots[0].doc.id),
+    ),
+    expect: () => [
+      FlashcardsState(status: FlashcardsStatusLoading()),
+      const FlashcardsState(status: FlashcardsStatusError(message: 'Error...')),
+    ],
+    verify: (_) {
+      verify(() => flashcardsInterface.removeFlashcards([snapshots[0].doc.id]))
+          .called(1);
     },
   );
 }

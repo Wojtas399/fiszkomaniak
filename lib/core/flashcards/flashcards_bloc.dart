@@ -19,7 +19,9 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
     on<FlashcardsEventFlashcardAdded>(_flashcardAdded);
     on<FlashcardsEventFlashcardUpdated>(_flashcardUpdated);
     on<FlashcardsEventFlashcardRemoved>(_flashcardRemoved);
-    on<FlashcardsEventSave>(_save);
+    on<FlashcardsEventSaveMultipleActions>(_saveMultipleActions);
+    on<FlashcardsEventUpdateFlashcard>(_updateFlashcard);
+    on<FlashcardsEventRemoveFlashcard>(_removeFlashcard);
   }
 
   void _initialize(
@@ -74,8 +76,8 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
     emit(state.copyWith(allFlashcards: allFlashcards));
   }
 
-  Future<void> _save(
-    FlashcardsEventSave event,
+  Future<void> _saveMultipleActions(
+    FlashcardsEventSaveMultipleActions event,
     Emitter<FlashcardsState> emit,
   ) async {
     try {
@@ -98,6 +100,36 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
       } else {
         emit(state.copyWith(status: FlashcardsStatusFlashcardsSaved()));
       }
+    } catch (error) {
+      emit(state.copyWith(
+        status: FlashcardsStatusError(message: error.toString()),
+      ));
+    }
+  }
+
+  Future<void> _updateFlashcard(
+    FlashcardsEventUpdateFlashcard event,
+    Emitter<FlashcardsState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: FlashcardsStatusLoading()));
+      await _flashcardsInterface.updateFlashcards([event.flashcard]);
+      emit(state.copyWith(status: FlashcardsStatusFlashcardUpdated()));
+    } catch (error) {
+      emit(state.copyWith(
+        status: FlashcardsStatusError(message: error.toString()),
+      ));
+    }
+  }
+
+  Future<void> _removeFlashcard(
+    FlashcardsEventRemoveFlashcard event,
+    Emitter<FlashcardsState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: FlashcardsStatusLoading()));
+      await _flashcardsInterface.removeFlashcards([event.flashcardId]);
+      emit(state.copyWith(status: FlashcardsStatusFlashcardRemoved()));
     } catch (error) {
       emit(state.copyWith(
         status: FlashcardsStatusError(message: error.toString()),
