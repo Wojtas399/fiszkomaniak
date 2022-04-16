@@ -4,6 +4,7 @@ import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
+import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_event.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/components/flashcard_preview_app_bar.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/components/flashcard_preview_content.dart';
@@ -61,6 +62,7 @@ class _FlashcardPreviewBlocProvider extends StatelessWidget {
         flashcardsBloc: context.read<FlashcardsBloc>(),
         coursesBloc: context.read<CoursesBloc>(),
         groupsBloc: context.read<GroupsBloc>(),
+        flashcardPreviewDialogs: FlashcardPreviewDialogs(),
       )..add(FlashcardPreviewEventInitialize(flashcardId: flashcardId)),
       child: child,
     );

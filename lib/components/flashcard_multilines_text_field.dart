@@ -5,6 +5,7 @@ class FlashcardMultiLinesTextField extends StatelessWidget {
   final TextAlign? textAlign;
   final TextEditingController? controller;
   final Function(String value)? onChanged;
+  final FocusNode? focusNode;
 
   const FlashcardMultiLinesTextField({
     Key? key,
@@ -12,6 +13,7 @@ class FlashcardMultiLinesTextField extends StatelessWidget {
     this.textAlign,
     this.controller,
     this.onChanged,
+    this.focusNode,
   }) : super(key: key);
 
   @override
@@ -28,6 +30,7 @@ class FlashcardMultiLinesTextField extends StatelessWidget {
       ),
       onChanged: onChanged,
       maxLength: 100,
+      focusNode: focusNode,
     );
   }
 }

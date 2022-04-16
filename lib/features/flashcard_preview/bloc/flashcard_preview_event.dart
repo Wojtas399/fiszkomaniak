@@ -19,3 +19,7 @@ class FlashcardPreviewEventAnswerChanged extends FlashcardPreviewEvent {
 }
 
 class FlashcardPreviewEventResetChanges extends FlashcardPreviewEvent {}
+
+class FlashcardPreviewEventSaveChanges extends FlashcardPreviewEvent {}
+
+class FlashcardPreviewEventRemoveFlashcard extends FlashcardPreviewEvent {}

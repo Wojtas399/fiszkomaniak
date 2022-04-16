@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_event.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_state.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_status.dart';
@@ -13,19 +14,24 @@ class FlashcardPreviewBloc
   late final FlashcardsBloc _flashcardsBloc;
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
+  late final FlashcardPreviewDialogs _flashcardPreviewDialogs;
 
   FlashcardPreviewBloc({
     required FlashcardsBloc flashcardsBloc,
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
+    required FlashcardPreviewDialogs flashcardPreviewDialogs,
   }) : super(const FlashcardPreviewState()) {
     _flashcardsBloc = flashcardsBloc;
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
+    _flashcardPreviewDialogs = flashcardPreviewDialogs;
     on<FlashcardPreviewEventInitialize>(_initialize);
     on<FlashcardPreviewEventQuestionChanged>(_questionChanged);
     on<FlashcardPreviewEventAnswerChanged>(_answerChanged);
     on<FlashcardPreviewEventResetChanges>(_resetChanges);
+    on<FlashcardPreviewEventSaveChanges>(_saveChanges);
+    on<FlashcardPreviewEventRemoveFlashcard>(_removeFlashcard);
   }
 
   void _initialize(
@@ -81,5 +87,29 @@ class FlashcardPreviewBloc
       newAnswer: state.flashcard?.answer,
       status: FlashcardPreviewStatusReset(),
     ));
+  }
+
+  Future<void> _saveChanges(
+    FlashcardPreviewEventSaveChanges event,
+    Emitter<FlashcardPreviewState> emit,
+  ) async {
+    final bool confirmation =
+        await _flashcardPreviewDialogs.askForSaveConfirmation();
+    if (confirmation) {
+      print('SAVE CHANGES');
+      print('question: ${state.newQuestion}');
+      print('answer: ${state.newAnswer}');
+    }
+  }
+
+  Future<void> _removeFlashcard(
+    FlashcardPreviewEventRemoveFlashcard event,
+    Emitter<FlashcardPreviewState> emit,
+  ) async {
+    final bool confirmation =
+        await _flashcardPreviewDialogs.askForDeleteConfirmation();
+    if (confirmation) {
+      print('DELETE FLASHCARD');
+    }
   }
 }

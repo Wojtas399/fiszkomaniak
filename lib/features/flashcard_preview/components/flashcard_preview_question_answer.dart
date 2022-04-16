@@ -97,8 +97,9 @@ class _FlashcardTitle extends StatelessWidget {
 class _Flashcard extends StatelessWidget {
   final TextEditingController controller;
   final Function(String value)? onChanged;
+  final FocusNode focusNode = FocusNode();
 
-  const _Flashcard({
+  _Flashcard({
     Key? key,
     required this.controller,
     required this.onChanged,
@@ -106,20 +107,26 @@ class _Flashcard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 180,
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: FlashcardMultiLinesTextField(
-              textAlign: TextAlign.center,
-              controller: controller,
-              onChanged: onChanged,
+    return GestureDetector(
+      onTap: () {
+        focusNode.requestFocus();
+      },
+      child: SizedBox(
+        width: double.infinity,
+        height: 180,
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: FlashcardMultiLinesTextField(
+                textAlign: TextAlign.center,
+                controller: controller,
+                onChanged: onChanged,
+                focusNode: focusNode,
+              ),
             ),
           ),
         ),

@@ -42,7 +42,9 @@ class _DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
         CustomIconButton(
           icon: MdiIcons.delete,
           onPressed: () {
-            //TODO
+            context
+                .read<FlashcardPreviewBloc>()
+                .add(FlashcardPreviewEventRemoveFlashcard());
           },
         ),
       ],
@@ -76,7 +78,10 @@ class _ConfirmationAppBar extends StatelessWidget
         CustomIconButton(
           icon: MdiIcons.check,
           onPressed: () {
-            //TODO
+            Utils.unfocusElements();
+            context
+                .read<FlashcardPreviewBloc>()
+                .add(FlashcardPreviewEventSaveChanges());
           },
         ),
       ],
