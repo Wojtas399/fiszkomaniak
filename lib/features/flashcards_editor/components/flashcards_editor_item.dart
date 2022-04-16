@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/components/flashcard_multilines_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -65,13 +66,13 @@ class _FlashcardsEditorItemState extends State<FlashcardsEditorItem> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  _MultiLinesTextField(
+                  FlashcardMultiLinesTextField(
                     controller: questionController,
                     hintText: 'Pytanie (${widget.nameForQuestion})',
                     onChanged: widget.onQuestionChanged,
                   ),
                   const Divider(thickness: 1),
-                  _MultiLinesTextField(
+                  FlashcardMultiLinesTextField(
                     controller: answerController,
                     hintText: 'Odpowiedź (${widget.nameForAnswer})',
                     onChanged: widget.onAnswerChanged,
@@ -110,35 +111,6 @@ class _DeleteButton extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _MultiLinesTextField extends StatelessWidget {
-  final String hintText;
-  final TextEditingController controller;
-  final Function(String value)? onChanged;
-
-  const _MultiLinesTextField({
-    Key? key,
-    required this.hintText,
-    required this.controller,
-    required this.onChanged,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      keyboardType: TextInputType.multiline,
-      maxLines: null,
-      decoration: InputDecoration(
-        border: InputBorder.none,
-        hintText: hintText,
-        counter: const Offstage(),
-      ),
-      onChanged: onChanged,
-      maxLength: 100,
     );
   }
 }

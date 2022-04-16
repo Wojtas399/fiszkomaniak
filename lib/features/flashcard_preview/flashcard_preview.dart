@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
+import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
@@ -21,18 +22,20 @@ class FlashcardPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return _FlashcardPreviewBlocProvider(
       flashcardId: flashcardId,
-      child: const Scaffold(
-        appBar: FlashcardPreviewAppBar(),
+      child: Scaffold(
+        appBar: const FlashcardPreviewAppBar(),
         body: BouncingScroll(
           child: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 16.0,
-                right: 16.0,
-                top: 8.0,
-                bottom: 24.0,
+            child: OnTapFocusLoseArea(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 16.0,
+                  right: 16.0,
+                  top: 8.0,
+                  bottom: 24.0,
+                ),
+                child: FlashcardPreviewContent(),
               ),
-              child: FlashcardPreviewContent(),
             ),
           ),
         ),
