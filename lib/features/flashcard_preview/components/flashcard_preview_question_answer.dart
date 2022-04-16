@@ -17,13 +17,13 @@ class FlashcardPreviewQuestionAnswer extends StatelessWidget {
             children: [
               _FlashcardToDisplay(
                 title: 'Pytanie',
-                subtitle: 'Angielski',
+                subtitle: state.group?.nameForQuestions ?? '',
                 text: state.flashcard?.question ?? '',
               ),
               const SizedBox(height: 16),
               _FlashcardToDisplay(
                 title: 'Odpowiedź',
-                subtitle: 'Polski',
+                subtitle: state.group?.nameForAnswers ?? '',
                 text: state.flashcard?.answer ?? '',
               ),
             ],
@@ -67,7 +67,7 @@ class _FlashcardToDisplay extends StatelessWidget {
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Center(
                 child: Text(text),
               ),
