@@ -18,7 +18,8 @@ class GroupPreviewProgressBar extends StatelessWidget {
             children: [
               const SizedBox(height: 8),
               FlashcardsProgressBar(
-                amountOfLearnedFlashcards: state.amountOfRememberedFlashcards,
+                amountOfRememberedFlashcards:
+                    state.amountOfRememberedFlashcards,
                 amountOfAllFlashcards: state.amountOfAllFlashcards,
                 barHeight: 16,
               )

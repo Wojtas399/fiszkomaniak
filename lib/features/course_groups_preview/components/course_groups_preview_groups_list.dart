@@ -1,5 +1,7 @@
 import 'package:fiszkomaniak/components/group_item/group_item.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_state.dart';
 import 'package:flutter/material.dart';
@@ -11,22 +13,41 @@ class CourseGroupsPreviewGroupsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CourseGroupsPreviewBloc, CourseGroupsPreviewState>(
-      builder: (BuildContext context, CourseGroupsPreviewState state) {
-        return Column(
-          children: state.matchingGroups
-              .map(
-                (group) => GroupItem(
-                  groupName: group.name,
-                  amountOfLearnedFlashcards: 250,
-                  amountOfAllFlashcards: 500,
-                  onTap: () {
-                    Navigation.navigateToGroupPreview(group.id);
-                  },
-                ),
-              )
-              .toList(),
+      builder: (
+        BuildContext context,
+        CourseGroupsPreviewState courseGroupsPreviewState,
+      ) {
+        return BlocBuilder<FlashcardsBloc, FlashcardsState>(
+          builder: (BuildContext context, FlashcardsState flashcardsState) {
+            return Column(
+              children: _buildGroups(
+                courseGroupsPreviewState,
+                flashcardsState,
+              ),
+            );
+          },
         );
       },
     );
+  }
+
+  List<Widget> _buildGroups(
+    CourseGroupsPreviewState courseGroupsPreviewState,
+    FlashcardsState flashcardsState,
+  ) {
+    return courseGroupsPreviewState.matchingGroups
+        .map(
+          (group) => GroupItem(
+            groupName: group.name,
+            amountOfRememberedFlashcards: flashcardsState
+                .getAmountOfRememberedFlashcardsFromGroup(group.id),
+            amountOfAllFlashcards:
+                flashcardsState.getAmountOfAllFlashcardsFromGroup(group.id),
+            onTap: () {
+              Navigation.navigateToGroupPreview(group.id);
+            },
+          ),
+        )
+        .toList();
   }
 }

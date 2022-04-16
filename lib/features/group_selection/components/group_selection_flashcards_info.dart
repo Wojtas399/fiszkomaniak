@@ -32,7 +32,7 @@ class GroupSelectionFlashcardsInfo extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 24.0, left: 8.0, right: 8.0),
               child: FlashcardsProgressBar(
-                amountOfLearnedFlashcards:
+                amountOfRememberedFlashcards:
                     state.amountOfRememberedFlashcardsFromGroup,
                 amountOfAllFlashcards: state.amountOfAllFlashcardsFromGroup,
                 barHeight: 16,

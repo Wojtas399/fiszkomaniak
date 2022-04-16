@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class GroupItem extends StatelessWidget {
   final String? courseName;
   final String groupName;
-  final int amountOfLearnedFlashcards;
+  final int amountOfRememberedFlashcards;
   final int amountOfAllFlashcards;
   final VoidCallback? onTap;
 
@@ -13,7 +13,7 @@ class GroupItem extends StatelessWidget {
     Key? key,
     this.courseName,
     required this.groupName,
-    required this.amountOfLearnedFlashcards,
+    required this.amountOfRememberedFlashcards,
     required this.amountOfAllFlashcards,
     this.onTap,
   }) : super(key: key);
@@ -40,7 +40,7 @@ class GroupItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 FlashcardsProgressBar(
-                  amountOfLearnedFlashcards: amountOfLearnedFlashcards,
+                  amountOfRememberedFlashcards: amountOfRememberedFlashcards,
                   amountOfAllFlashcards: amountOfAllFlashcards,
                 ),
               ],
