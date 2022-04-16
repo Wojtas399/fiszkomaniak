@@ -1,9 +1,11 @@
 import 'dart:async';
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_event.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_event.dart';
+import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_dialogs.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_event.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,38 +16,32 @@ class CoursesLibraryBloc
     extends Bloc<CoursesLibraryEvent, CoursesLibraryState> {
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
-  late final Dialogs _dialogs;
+  late final FlashcardsBloc _flashcardsBloc;
+  late final CoursesLibraryDialogs _coursesLibraryDialogs;
   StreamSubscription? _coursesStateSubscription;
 
   CoursesLibraryBloc({
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
-    required Dialogs dialogs,
+    required FlashcardsBloc flashcardsBloc,
+    required CoursesLibraryDialogs coursesLibraryDialogs,
   }) : super(const CoursesLibraryState()) {
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
-    _dialogs = dialogs;
+    _flashcardsBloc = flashcardsBloc;
+    _coursesLibraryDialogs = coursesLibraryDialogs;
     on<CoursesLibraryEventInitialize>(_initialize);
-    on<CoursesLibraryEventUpdateCourses>(_updateCourses);
     on<CoursesLibraryEventEditCourse>(_editCourse);
     on<CoursesLibraryEventRemoveCourse>(_removeCourse);
+    on<CoursesLibraryEventCoursesStateUpdated>(_coursesStateUpdated);
   }
 
   void _initialize(
     CoursesLibraryEventInitialize event,
     Emitter<CoursesLibraryState> emit,
   ) {
-    add(CoursesLibraryEventUpdateCourses());
-    _coursesStateSubscription = _coursesBloc.stream.listen((state) {
-      add(CoursesLibraryEventUpdateCourses());
-    });
-  }
-
-  void _updateCourses(
-    CoursesLibraryEventUpdateCourses event,
-    Emitter<CoursesLibraryState> emit,
-  ) {
     emit(CoursesLibraryState(courses: _coursesBloc.state.allCourses));
+    _setCoursesStateListener();
   }
 
   void _editCourse(
@@ -61,18 +57,32 @@ class CoursesLibraryBloc
     CoursesLibraryEventRemoveCourse event,
     Emitter<CoursesLibraryState> emit,
   ) async {
-    final bool? confirmation = await _dialogs.askForConfirmation(
-      title: 'Czy na pewno chcesz usunąć ten kurs?',
-      text:
-          'Usunięcie kursu spowoduje również usunięcie wszystkich grup oraz fiszek należących do tego kursu.',
-      confirmButtonText: 'Usuń',
-    );
+    final bool? confirmation =
+        await _coursesLibraryDialogs.askForDeleteConfirmation();
     if (confirmation == true) {
+      final List<String> idsOfGroupsFromCourse =
+          _groupsBloc.state.getGroupsIdsByCourseId(event.courseId);
       _coursesBloc.add(CoursesEventRemoveCourse(courseId: event.courseId));
       _groupsBloc.add(
         GroupsEventRemoveGroupsFromCourse(courseId: event.courseId),
       );
+      _flashcardsBloc.add(FlashcardsEventRemoveFlashcardsFromGroups(
+        groupsIds: idsOfGroupsFromCourse,
+      ));
     }
+  }
+
+  void _coursesStateUpdated(
+    CoursesLibraryEventCoursesStateUpdated event,
+    Emitter<CoursesLibraryState> emit,
+  ) {
+    emit(CoursesLibraryState(courses: _coursesBloc.state.allCourses));
+  }
+
+  void _setCoursesStateListener() {
+    _coursesStateSubscription = _coursesBloc.stream.listen((_) {
+      add(CoursesLibraryEventCoursesStateUpdated());
+    });
   }
 
   @override

@@ -15,3 +15,5 @@ class GroupSelectionEventGroupSelected extends GroupSelectionEvent {
 }
 
 class GroupSelectionEventButtonPressed extends GroupSelectionEvent {}
+
+class GroupSelectionEventFlashcardsStateUpdated extends GroupSelectionEvent {}

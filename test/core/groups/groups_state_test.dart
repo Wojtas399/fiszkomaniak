@@ -70,12 +70,20 @@ void main() {
     expect(group, null);
   });
 
-  test('get groups by courseId', () {
+  test('get groups by course id', () {
     final GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
 
     List<Group> groupsFromCourse = updatedState.getGroupsByCourseId('c2');
 
     expect(groupsFromCourse, [allGroups[1], allGroups[2]]);
+  });
+
+  test('get groups ids by course id', () {
+    final GroupsState updatedState = groupsState.copyWith(allGroups: allGroups);
+
+    List<String> ids = updatedState.getGroupsIdsByCourseId('c2');
+
+    expect(ids, ['g2', 'g3']);
   });
 
   test('get group name by id, group exists', () {

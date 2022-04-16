@@ -6,14 +6,12 @@ class GroupPreviewEventInitialize extends GroupPreviewEvent {
   GroupPreviewEventInitialize({required this.groupId});
 }
 
-class GroupPreviewEventGroupUpdated extends GroupPreviewEvent {
-  final String groupId;
-
-  GroupPreviewEventGroupUpdated({required this.groupId});
-}
-
 class GroupPreviewEventEdit extends GroupPreviewEvent {}
 
 class GroupPreviewEventAddFlashcards extends GroupPreviewEvent {}
 
 class GroupPreviewEventRemove extends GroupPreviewEvent {}
+
+class GroupPreviewEventGroupsStateUpdated extends GroupPreviewEvent {}
+
+class GroupPreviewEventFlashcardsStateUpdated extends GroupPreviewEvent {}

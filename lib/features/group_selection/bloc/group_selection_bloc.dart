@@ -1,10 +1,10 @@
+import 'dart:async';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_event.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_state.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/group_model.dart';
 
@@ -13,6 +13,7 @@ class GroupSelectionBloc
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
   late final FlashcardsBloc _flashcardsBloc;
+  StreamSubscription? _flashcardsStateSubscription;
 
   GroupSelectionBloc({
     required CoursesBloc coursesBloc,
@@ -26,6 +27,7 @@ class GroupSelectionBloc
     on<GroupSelectionEventCourseSelected>(_courseSelected);
     on<GroupSelectionEventGroupSelected>(_groupSelected);
     on<GroupSelectionEventButtonPressed>(_buttonPressed);
+    on<GroupSelectionEventFlashcardsStateUpdated>(_flashcardsStateUpdated);
   }
 
   void _initialize(
@@ -35,6 +37,7 @@ class GroupSelectionBloc
     emit(state.copyWith(
       allCourses: _coursesBloc.state.allCourses,
     ));
+    _setFlashcardsStateSubscription();
   }
 
   void _courseSelected(
@@ -53,18 +56,12 @@ class GroupSelectionBloc
   ) {
     final Group? group = _groupsBloc.state.getGroupById(event.groupId);
     if (group != null) {
-      final List<Flashcard> flashcardsFromGroup =
-          _flashcardsBloc.state.getFlashcardsFromGroup(group.id);
-      int amountOfAllFlashcards = flashcardsFromGroup.length;
-      int amountOfRememberedFlashcards = flashcardsFromGroup
-          .where(
-            (flashcard) => flashcard.status == FlashcardStatus.remembered,
-          )
-          .length;
       emit(state.copyWith(
         selectedGroup: _groupsBloc.state.getGroupById(event.groupId),
-        amountOfAllFlashcardsFromGroup: amountOfAllFlashcards,
-        amountOfRememberedFlashcardsFromGroup: amountOfRememberedFlashcards,
+        amountOfAllFlashcardsFromGroup: _flashcardsBloc.state
+            .getAmountOfAllFlashcardsFromGroup(event.groupId),
+        amountOfRememberedFlashcardsFromGroup: _flashcardsBloc.state
+            .getAmountOfRememberedFlashcardsFromGroup(event.groupId),
       ));
     }
   }
@@ -77,5 +74,30 @@ class GroupSelectionBloc
     if (selectedGroupId != null) {
       Navigation.navigateToFlashcardsEditor(selectedGroupId);
     }
+  }
+
+  void _flashcardsStateUpdated(
+    GroupSelectionEventFlashcardsStateUpdated event,
+    Emitter<GroupSelectionState> emit,
+  ) {
+    emit(state.copyWith(
+      selectedGroup: state.selectedGroup,
+      amountOfAllFlashcardsFromGroup: _flashcardsBloc.state
+          .getAmountOfAllFlashcardsFromGroup(state.selectedGroup?.id),
+      amountOfRememberedFlashcardsFromGroup: _flashcardsBloc.state
+          .getAmountOfRememberedFlashcardsFromGroup(state.selectedGroup?.id),
+    ));
+  }
+
+  void _setFlashcardsStateSubscription() {
+    _flashcardsStateSubscription = _flashcardsBloc.stream.listen((_) {
+      add(GroupSelectionEventFlashcardsStateUpdated());
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _flashcardsStateSubscription?.cancel();
+    return super.close();
   }
 }

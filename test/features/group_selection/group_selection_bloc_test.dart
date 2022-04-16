@@ -54,6 +54,8 @@ void main() {
       groupsBloc: groupsBloc,
       flashcardsBloc: flashcardsBloc,
     );
+    when(() => coursesBloc.state).thenReturn(CoursesState(allCourses: courses));
+    when(() => flashcardsBloc.stream).thenAnswer((_) => const Stream.empty());
   });
 
   tearDown(() {
@@ -65,11 +67,6 @@ void main() {
   blocTest(
     'initialize',
     build: () => bloc,
-    setUp: () {
-      when(() => coursesBloc.state).thenReturn(
-        CoursesState(allCourses: courses),
-      );
-    },
     act: (_) => bloc.add(GroupSelectionEventInitialize()),
     expect: () => [
       GroupSelectionState(allCourses: courses),
@@ -80,9 +77,6 @@ void main() {
     'course selected',
     build: () => bloc,
     setUp: () {
-      when(() => coursesBloc.state).thenReturn(
-        CoursesState(allCourses: courses),
-      );
       when(() => groupsBloc.state).thenReturn(
         GroupsState(allGroups: groups),
       );

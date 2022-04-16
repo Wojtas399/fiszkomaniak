@@ -71,3 +71,12 @@ class FlashcardsEventRemoveFlashcard extends FlashcardsEvent {
   @override
   List<Object> get props => [flashcardId];
 }
+
+class FlashcardsEventRemoveFlashcardsFromGroups extends FlashcardsEvent {
+  final List<String> groupsIds;
+
+  FlashcardsEventRemoveFlashcardsFromGroups({required this.groupsIds});
+
+  @override
+  List<Object> get props => [groupsIds];
+}

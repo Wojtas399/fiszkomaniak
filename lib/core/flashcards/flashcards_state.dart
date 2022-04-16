@@ -27,6 +27,16 @@ class FlashcardsState extends Equatable {
         .toList();
   }
 
+  int getAmountOfAllFlashcardsFromGroup(String? groupId) {
+    return getFlashcardsFromGroup(groupId).length;
+  }
+
+  int getAmountOfRememberedFlashcardsFromGroup(String? groupId) {
+    return getFlashcardsFromGroup(groupId)
+        .where((flashcard) => flashcard.status == FlashcardStatus.remembered)
+        .length;
+  }
+
   Flashcard? getFlashcardById(String? flashcardId) {
     final List<Flashcard?> flashcards = [...allFlashcards];
     return flashcards.firstWhere(

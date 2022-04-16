@@ -1,27 +1,18 @@
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
+import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
+import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/item_with_icon.dart';
 import '../../../components/section.dart';
-import '../../../core/courses/courses_state.dart';
 
 class GroupPreviewInformation extends StatelessWidget {
-  final String courseId;
-  final String nameForQuestions;
-  final String nameForAnswers;
-
-  const GroupPreviewInformation({
-    Key? key,
-    required this.courseId,
-    required this.nameForQuestions,
-    required this.nameForAnswers,
-  }) : super(key: key);
+  const GroupPreviewInformation({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CoursesBloc, CoursesState>(
-      builder: (BuildContext context, CoursesState coursesState) {
+    return BlocBuilder<GroupPreviewBloc, GroupPreviewState>(
+      builder: (_, GroupPreviewState state) {
         return Section(
           title: 'Informacje',
           displayDividerAtTheBottom: true,
@@ -30,17 +21,17 @@ class GroupPreviewInformation extends StatelessWidget {
               ItemWithIcon(
                 icon: MdiIcons.archiveOutline,
                 label: 'Kurs',
-                text: coursesState.getCourseNameById(courseId) ?? '',
+                text: state.courseName,
               ),
               ItemWithIcon(
                 icon: MdiIcons.fileOutline,
                 label: 'Pytania',
-                text: nameForQuestions,
+                text: state.group?.nameForQuestions ?? '',
               ),
               ItemWithIcon(
                 icon: MdiIcons.fileReplaceOutline,
                 label: 'Odpowiedzi',
-                text: nameForAnswers,
+                text: state.group?.nameForAnswers ?? '',
               ),
             ],
           ),
