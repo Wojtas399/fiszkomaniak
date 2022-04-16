@@ -2,7 +2,6 @@ import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_bloc.dart';
@@ -111,7 +110,6 @@ class _CoursesLibraryBlocProvider extends StatelessWidget {
       create: (BuildContext context) => CoursesLibraryBloc(
         coursesBloc: context.read<CoursesBloc>(),
         groupsBloc: context.read<GroupsBloc>(),
-        flashcardsBloc: context.read<FlashcardsBloc>(),
         coursesLibraryDialogs: CoursesLibraryDialogs(),
       )..add(CoursesLibraryEventInitialize()),
       child: child,

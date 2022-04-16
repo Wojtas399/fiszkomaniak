@@ -4,6 +4,8 @@ import 'package:fiszkomaniak/core/courses/courses_event.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/courses/courses_status.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
+import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
+import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,16 +13,28 @@ import 'package:mocktail/mocktail.dart';
 
 class MockCoursesInterface extends Mock implements CoursesInterface {}
 
+class MockGroupsInterface extends Mock implements GroupsInterface {}
+
+class MockFlashcardsInterface extends Mock implements FlashcardsInterface {}
+
 void main() {
   final CoursesInterface coursesInterface = MockCoursesInterface();
+  final GroupsInterface groupsInterface = MockGroupsInterface();
+  final FlashcardsInterface flashcardsInterface = MockFlashcardsInterface();
   late CoursesBloc coursesBloc;
 
   setUp(() {
-    coursesBloc = CoursesBloc(coursesInterface: coursesInterface);
+    coursesBloc = CoursesBloc(
+      coursesInterface: coursesInterface,
+      groupsInterface: groupsInterface,
+      flashcardsInterface: flashcardsInterface,
+    );
   });
 
   tearDown(() {
     reset(coursesInterface);
+    reset(groupsInterface);
+    reset(flashcardsInterface);
   });
 
   blocTest(
@@ -191,17 +205,28 @@ void main() {
     'remove course, success',
     build: () => coursesBloc,
     setUp: () {
+      when(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1', 'g2']))
+          .thenAnswer((_) async => '');
+      when(() => groupsInterface.removeGroupsFromCourse('c1'))
+          .thenAnswer((_) async => '');
       when(() => coursesInterface.removeCourse('c1'))
           .thenAnswer((_) async => '');
     },
     act: (_) => coursesBloc.add(
-      CoursesEventRemoveCourse(courseId: 'c1'),
+      CoursesEventRemoveCourse(
+        courseId: 'c1',
+        idsOfGroupsFromCourse: const ['g1', 'g2'],
+      ),
     ),
     expect: () => [
       CoursesState(status: CoursesStatusLoading()),
       CoursesState(status: CoursesStatusCourseRemoved()),
     ],
     verify: (_) {
+      verify(
+        () => flashcardsInterface.removeFlashcardsByGroupsIds(['g1', 'g2']),
+      ).called(1);
+      verify(() => groupsInterface.removeGroupsFromCourse('c1')).called(1);
       verify(() => coursesInterface.removeCourse('c1')).called(1);
     },
   );
@@ -210,16 +235,27 @@ void main() {
     'remove course, failure',
     build: () => coursesBloc,
     setUp: () {
+      when(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1', 'g2']))
+          .thenAnswer((_) async => '');
+      when(() => groupsInterface.removeGroupsFromCourse('c1'))
+          .thenAnswer((_) async => '');
       when(() => coursesInterface.removeCourse('c1')).thenThrow('Error...');
     },
     act: (_) => coursesBloc.add(
-      CoursesEventRemoveCourse(courseId: 'c1'),
+      CoursesEventRemoveCourse(
+        courseId: 'c1',
+        idsOfGroupsFromCourse: const ['g1', 'g2'],
+      ),
     ),
     expect: () => [
       CoursesState(status: CoursesStatusLoading()),
       CoursesState(status: const CoursesStatusError(message: 'Error...')),
     ],
     verify: (_) {
+      verify(
+        () => flashcardsInterface.removeFlashcardsByGroupsIds(['g1', 'g2']),
+      ).called(1);
+      verify(() => groupsInterface.removeGroupsFromCourse('c1')).called(1);
       verify(() => coursesInterface.removeCourse('c1')).called(1);
     },
   );

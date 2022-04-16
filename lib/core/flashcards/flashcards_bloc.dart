@@ -22,7 +22,6 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
     on<FlashcardsEventSaveMultipleActions>(_saveMultipleActions);
     on<FlashcardsEventUpdateFlashcard>(_updateFlashcard);
     on<FlashcardsEventRemoveFlashcard>(_removeFlashcard);
-    on<FlashcardsEventRemoveFlashcardsFromGroups>(_removeFlashcardsFromGroups);
   }
 
   void _initialize(
@@ -136,13 +135,6 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
         status: FlashcardsStatusError(message: error.toString()),
       ));
     }
-  }
-
-  Future<void> _removeFlashcardsFromGroups(
-    FlashcardsEventRemoveFlashcardsFromGroups event,
-    Emitter<FlashcardsState> emit,
-  ) async {
-    //TODO
   }
 
   @override

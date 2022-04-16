@@ -2,7 +2,6 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_event.dart';
@@ -123,11 +122,6 @@ void main() {
       verify(
         () => groupsBloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
       ).called(1);
-      verify(
-        () => flashcardsBloc.add(
-          FlashcardsEventRemoveFlashcardsFromGroups(groupsIds: const ['g1']),
-        ),
-      ).called(1);
     },
   );
 
@@ -144,11 +138,6 @@ void main() {
     },
     verify: (_) {
       verifyNever(() => groupsBloc.add(GroupsEventRemoveGroup(groupId: 'g1')));
-      verifyNever(
-        () => flashcardsBloc.add(
-          FlashcardsEventRemoveFlashcardsFromGroups(groupsIds: const ['g1']),
-        ),
-      );
     },
   );
 
@@ -165,11 +154,6 @@ void main() {
     expect: () => [],
     verify: (_) {
       verifyNever(() => groupsBloc.add(GroupsEventRemoveGroup(groupId: 'g1')));
-      verifyNever(
-        () => flashcardsBloc.add(
-          FlashcardsEventRemoveFlashcardsFromGroups(groupsIds: const ['g1']),
-        ),
-      );
     },
   );
 }

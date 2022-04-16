@@ -2,10 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_event.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_bloc.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_dialogs.dart';
@@ -20,14 +17,11 @@ class MockCoursesBloc extends Mock implements CoursesBloc {}
 
 class MockGroupsBloc extends Mock implements GroupsBloc {}
 
-class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
-
 class MockCoursesLibraryDialogs extends Mock implements CoursesLibraryDialogs {}
 
 void main() {
   final CoursesBloc coursesBloc = MockCoursesBloc();
   final GroupsBloc groupsBloc = MockGroupsBloc();
-  final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
   final CoursesLibraryDialogs coursesLibraryDialogs =
       MockCoursesLibraryDialogs();
   late CoursesLibraryBloc bloc;
@@ -49,7 +43,6 @@ void main() {
     bloc = CoursesLibraryBloc(
       coursesBloc: coursesBloc,
       groupsBloc: groupsBloc,
-      flashcardsBloc: flashcardsBloc,
       coursesLibraryDialogs: coursesLibraryDialogs,
     );
     when(() => coursesBloc.state).thenReturn(coursesState);
@@ -60,7 +53,6 @@ void main() {
   tearDown(() {
     reset(coursesBloc);
     reset(groupsBloc);
-    reset(flashcardsBloc);
     reset(coursesLibraryDialogs);
   });
 
@@ -83,17 +75,10 @@ void main() {
     act: (_) => bloc.add(CoursesLibraryEventRemoveCourse(courseId: 'c1')),
     verify: (_) {
       verify(
-        () => coursesBloc.add(CoursesEventRemoveCourse(courseId: 'c1')),
-      ).called(1);
-      verify(
-        () => groupsBloc.add(GroupsEventRemoveGroupsFromCourse(courseId: 'c1')),
-      ).called(1);
-      verify(
-        () => flashcardsBloc.add(
-          FlashcardsEventRemoveFlashcardsFromGroups(
-            groupsIds: const ['g1', 'g3'],
-          ),
-        ),
+        () => coursesBloc.add(CoursesEventRemoveCourse(
+          courseId: 'c1',
+          idsOfGroupsFromCourse: const ['g1', 'g3'],
+        )),
       ).called(1);
     },
   );
@@ -108,17 +93,10 @@ void main() {
     act: (_) => bloc.add(CoursesLibraryEventRemoveCourse(courseId: 'c1')),
     verify: (_) {
       verifyNever(
-        () => coursesBloc.add(CoursesEventRemoveCourse(courseId: 'c1')),
-      );
-      verifyNever(
-        () => groupsBloc.add(GroupsEventRemoveGroupsFromCourse(courseId: 'c1')),
-      );
-      verifyNever(
-        () => flashcardsBloc.add(
-          FlashcardsEventRemoveFlashcardsFromGroups(
-            groupsIds: const ['g1', 'g3'],
-          ),
-        ),
+        () => coursesBloc.add(CoursesEventRemoveCourse(
+          courseId: 'c1',
+          idsOfGroupsFromCourse: const ['g1', 'g3'],
+        )),
       );
     },
   );

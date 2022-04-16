@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_event.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_event.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_dialogs.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_event.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_state.dart';
@@ -16,19 +13,16 @@ class CoursesLibraryBloc
     extends Bloc<CoursesLibraryEvent, CoursesLibraryState> {
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
-  late final FlashcardsBloc _flashcardsBloc;
   late final CoursesLibraryDialogs _coursesLibraryDialogs;
   StreamSubscription? _coursesStateSubscription;
 
   CoursesLibraryBloc({
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
-    required FlashcardsBloc flashcardsBloc,
     required CoursesLibraryDialogs coursesLibraryDialogs,
   }) : super(const CoursesLibraryState()) {
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
-    _flashcardsBloc = flashcardsBloc;
     _coursesLibraryDialogs = coursesLibraryDialogs;
     on<CoursesLibraryEventInitialize>(_initialize);
     on<CoursesLibraryEventEditCourse>(_editCourse);
@@ -62,12 +56,9 @@ class CoursesLibraryBloc
     if (confirmation == true) {
       final List<String> idsOfGroupsFromCourse =
           _groupsBloc.state.getGroupsIdsByCourseId(event.courseId);
-      _coursesBloc.add(CoursesEventRemoveCourse(courseId: event.courseId));
-      _groupsBloc.add(
-        GroupsEventRemoveGroupsFromCourse(courseId: event.courseId),
-      );
-      _flashcardsBloc.add(FlashcardsEventRemoveFlashcardsFromGroups(
-        groupsIds: idsOfGroupsFromCourse,
+      _coursesBloc.add(CoursesEventRemoveCourse(
+        courseId: event.courseId,
+        idsOfGroupsFromCourse: idsOfGroupsFromCourse,
       ));
     }
   }

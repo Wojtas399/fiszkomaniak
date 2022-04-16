@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_event.dart';
@@ -90,9 +89,6 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
           await _groupPreviewDialogs.askForDeleteConfirmation();
       if (confirmation == true) {
         _groupsBloc.add(GroupsEventRemoveGroup(groupId: groupId));
-        _flashcardsBloc.add(
-          FlashcardsEventRemoveFlashcardsFromGroups(groupsIds: [groupId]),
-        );
       }
     }
   }
