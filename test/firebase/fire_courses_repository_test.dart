@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/firebase/repositories/fire_courses_repository.dart';
+import 'package:fiszkomaniak/firebase/repositories/courses_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_courses_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -7,10 +7,10 @@ class MockFireCoursesService extends Mock implements FireCoursesService {}
 
 void main() {
   final FireCoursesService fireCoursesService = MockFireCoursesService();
-  late FireCoursesRepository fireCoursesRepository;
+  late CoursesRepository fireCoursesRepository;
 
   setUp(() {
-    fireCoursesRepository = FireCoursesRepository(
+    fireCoursesRepository = CoursesRepository(
       fireCoursesService: fireCoursesService,
     );
   });

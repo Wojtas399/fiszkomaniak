@@ -5,10 +5,10 @@ import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
 import 'package:fiszkomaniak/models/settings/notifications_settings_model.dart';
 
-class FireSettingsRepository implements SettingsInterface {
+class SettingsRepository implements SettingsInterface {
   late final FireSettingsService _fireSettingsService;
 
-  FireSettingsRepository({required FireSettingsService fireSettingsService}) {
+  SettingsRepository({required FireSettingsService fireSettingsService}) {
     _fireSettingsService = fireSettingsService;
   }
 

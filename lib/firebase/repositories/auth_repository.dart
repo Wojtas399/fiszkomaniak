@@ -4,10 +4,10 @@ import 'package:fiszkomaniak/models/sign_up_model.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 import '../services/fire_auth_service.dart';
 
-class FireAuthRepository implements AuthInterface {
+class AuthRepository implements AuthInterface {
   late final FireAuthService _fireAuthService;
 
-  FireAuthRepository({required FireAuthService fireAuthService}) {
+  AuthRepository({required FireAuthService fireAuthService}) {
     _fireAuthService = fireAuthService;
   }
 

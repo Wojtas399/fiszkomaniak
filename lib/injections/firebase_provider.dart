@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/firebase/repositories/fire_courses_repository.dart';
-import 'package:fiszkomaniak/firebase/repositories/fire_settings_repository.dart';
+import 'package:fiszkomaniak/firebase/repositories/courses_repository.dart';
+import 'package:fiszkomaniak/firebase/repositories/settings_repository.dart';
 import 'package:fiszkomaniak/firebase/repositories/flashcards_repository.dart';
 import 'package:fiszkomaniak/firebase/repositories/groups_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_auth_service.dart';
@@ -13,23 +13,23 @@ import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
-import '../firebase/repositories/fire_auth_repository.dart';
+import '../firebase/repositories/auth_repository.dart';
 
 class FirebaseProvider {
   static AuthInterface provideAuthInterface() {
-    return FireAuthRepository(
+    return AuthRepository(
       fireAuthService: FireAuthService(fireUserService: FireUserService()),
     );
   }
 
   static SettingsInterface provideSettingsInterface() {
-    return FireSettingsRepository(
+    return SettingsRepository(
       fireSettingsService: FireSettingsService(),
     );
   }
 
   static CoursesInterface provideCoursesInterface() {
-    return FireCoursesRepository(
+    return CoursesRepository(
       fireCoursesService: FireCoursesService(),
     );
   }
