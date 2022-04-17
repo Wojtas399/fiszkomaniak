@@ -19,15 +19,7 @@ class FlashcardsEditorList extends StatelessWidget {
             child: Text('No group selected'),
           );
         }
-        return ListView(
-          reverse: true,
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(
-            left: 24.0,
-            top: 24.0,
-            right: 24.0,
-            bottom: 48.0,
-          ),
+        return Column(
           children: _buildFlashcards(context, state, group),
         );
       },
@@ -39,48 +31,42 @@ class FlashcardsEditorList extends StatelessWidget {
     FlashcardsEditorState state,
     Group group,
   ) {
-    return state.flashcards
-        .asMap()
-        .entries
-        .map(
-          (entry) {
-            final int index = entry.key;
-            final EditorFlashcard params = entry.value;
-            return FlashcardsEditorItem(
-              key: ValueKey(params.key),
-              questionInitialValue: params.doc.question,
-              answerInitialValue: params.doc.answer,
-              nameForQuestion: group.nameForQuestions,
-              nameForAnswer: group.nameForAnswers,
-              displayRedBorder: !params.isCorrect,
-              onQuestionChanged: (String value) {
-                context
-                    .read<FlashcardsEditorBloc>()
-                    .add(FlashcardsEditorEventValueChanged(
-                      indexOfFlashcard: index,
-                      question: value.trim(),
-                    ));
-              },
-              onAnswerChanged: (String value) {
-                context
-                    .read<FlashcardsEditorBloc>()
-                    .add(FlashcardsEditorEventValueChanged(
-                      indexOfFlashcard: index,
-                      answer: value.trim(),
-                    ));
-              },
-              onTapDeleteButton: () {
-                context
-                    .read<FlashcardsEditorBloc>()
-                    .add(FlashcardsEditorEventRemoveFlashcard(
-                      indexOfFlashcard: index,
-                    ));
-              },
-            );
+    return state.flashcards.asMap().entries.map(
+      (entry) {
+        final int index = entry.key;
+        final EditorFlashcard params = entry.value;
+        return FlashcardsEditorItem(
+          key: ValueKey(params.key),
+          questionInitialValue: params.doc.question,
+          answerInitialValue: params.doc.answer,
+          nameForQuestion: group.nameForQuestions,
+          nameForAnswer: group.nameForAnswers,
+          displayRedBorder: !params.isCorrect,
+          onQuestionChanged: (String value) {
+            context
+                .read<FlashcardsEditorBloc>()
+                .add(FlashcardsEditorEventValueChanged(
+                  indexOfFlashcard: index,
+                  question: value.trim(),
+                ));
           },
-        )
-        .toList()
-        .reversed
-        .toList();
+          onAnswerChanged: (String value) {
+            context
+                .read<FlashcardsEditorBloc>()
+                .add(FlashcardsEditorEventValueChanged(
+                  indexOfFlashcard: index,
+                  answer: value.trim(),
+                ));
+          },
+          onTapDeleteButton: () {
+            context
+                .read<FlashcardsEditorBloc>()
+                .add(FlashcardsEditorEventRemoveFlashcard(
+                  indexOfFlashcard: index,
+                ));
+          },
+        );
+      },
+    ).toList();
   }
 }
