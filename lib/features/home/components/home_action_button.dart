@@ -39,6 +39,13 @@ class HomeActionButton extends StatelessWidget {
             Navigation.navigateToGroupSelection();
           },
         ),
+        SpeedDialChild(
+          child: const Icon(MdiIcons.calendar),
+          label: 'Sesja',
+          onTap: () {
+            Navigation.navigateToSessionCreator();
+          },
+        ),
       ],
     );
   }

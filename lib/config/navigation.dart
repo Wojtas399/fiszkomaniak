@@ -53,6 +53,12 @@ class Navigation {
     );
   }
 
+  static void navigateToSessionCreator() async {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.sessionCreator,
+    );
+  }
+
   static void navigateToGroupSelection() {
     HomeRouter.navigatorKey.currentState?.pushNamed(
       HomeRouter.groupSelection,

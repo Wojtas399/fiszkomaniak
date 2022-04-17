@@ -11,6 +11,7 @@ import 'package:fiszkomaniak/features/group_creator/group_creator_page.dart';
 import 'package:fiszkomaniak/features/group_preview/group_preview_page.dart';
 import 'package:fiszkomaniak/features/home/home.dart';
 import 'package:fiszkomaniak/features/home/home_view.dart';
+import 'package:fiszkomaniak/features/session_creator/session_creator.dart';
 import 'package:fiszkomaniak/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +25,8 @@ class HomeRouter extends StatelessWidget {
   static const String courseCreator = '/course-creator';
 
   static const String groupCreator = '/group-creator';
+
+  static const String sessionCreator = '/session-creator';
 
   static const String groupSelection = '/group-selection';
 
@@ -68,6 +71,10 @@ class HomeRouter extends StatelessWidget {
           page: GroupCreator(
             mode: routeSettings.arguments as GroupCreatorMode,
           ),
+        );
+      case sessionCreator:
+        return SlideUpRouteAnimation(
+          page: const SessionCreator(),
         );
       case groupSelection:
         return SlideUpRouteAnimation(
