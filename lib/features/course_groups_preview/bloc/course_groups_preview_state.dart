@@ -7,7 +7,7 @@ class CourseGroupsPreviewState extends Equatable {
   final List<Group> groupsFromCourse;
   final String searchValue;
 
-  List<Group> get matchedGroups {
+  List<Group> get matchingGroups {
     return groupsFromCourse
         .where(
           (group) => group.name.toLowerCase().contains(

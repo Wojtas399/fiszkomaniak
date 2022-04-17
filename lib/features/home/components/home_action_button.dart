@@ -35,6 +35,9 @@ class HomeActionButton extends StatelessWidget {
         SpeedDialChild(
           child: const Icon(MdiIcons.cards),
           label: 'Fiszki',
+          onTap: () {
+            Navigation.navigateToGroupSelection();
+          },
         ),
       ],
     );

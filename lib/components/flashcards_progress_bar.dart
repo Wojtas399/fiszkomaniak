@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class FlashcardsProgressBar extends StatelessWidget {
-  final int amountOfLearnedFlashcards;
+  final int amountOfRememberedFlashcards;
   final int amountOfAllFlashcards;
   final double barHeight;
 
   const FlashcardsProgressBar({
     Key? key,
-    required this.amountOfLearnedFlashcards,
+    required this.amountOfRememberedFlashcards,
     required this.amountOfAllFlashcards,
     this.barHeight = 10,
   }) : super(key: key);
@@ -18,12 +18,12 @@ class FlashcardsProgressBar extends StatelessWidget {
     return Column(
       children: [
         Text(
-          '$amountOfLearnedFlashcards/$amountOfAllFlashcards',
+          '$amountOfRememberedFlashcards/$amountOfAllFlashcards',
           style: Theme.of(context).textTheme.bodyText2,
         ),
         const SizedBox(height: 4),
         _ProgressBar(
-          amountOfLearnedFlashcards: amountOfLearnedFlashcards,
+          amountOfLearnedFlashcards: amountOfRememberedFlashcards,
           amountOfAllFlashcards: amountOfAllFlashcards,
           barHeight: barHeight,
         ),
@@ -80,6 +80,9 @@ class _ProgressBar extends StatelessWidget {
   }
 
   double _countXTranslation(double containerWidth) {
+    if (amountOfLearnedFlashcards == 0 && amountOfAllFlashcards == 0) {
+      return containerWidth;
+    }
     double percentages = amountOfLearnedFlashcards / amountOfAllFlashcards;
     return containerWidth - (containerWidth * percentages);
   }

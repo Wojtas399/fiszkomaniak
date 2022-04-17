@@ -66,7 +66,7 @@ void main() {
       searchValue: 'o',
     );
 
-    expect(updatedState.matchedGroups, [groups[0], groups[1]]);
+    expect(updatedState.matchingGroups, [groups[0], groups[1]]);
   });
 
   test('course name', () {

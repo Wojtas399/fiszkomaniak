@@ -59,9 +59,16 @@ class CoursesEventUpdateCourseName extends CoursesEvent {
 
 class CoursesEventRemoveCourse extends CoursesEvent {
   final String courseId;
+  final List<String> idsOfGroupsFromCourse;
 
-  CoursesEventRemoveCourse({required this.courseId});
+  CoursesEventRemoveCourse({
+    required this.courseId,
+    required this.idsOfGroupsFromCourse,
+  });
 
   @override
-  List<Object> get props => [courseId];
+  List<Object> get props => [
+        courseId,
+        idsOfGroupsFromCourse,
+      ];
 }

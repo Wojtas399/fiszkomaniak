@@ -1,6 +1,6 @@
 import 'package:fiszkomaniak/firebase/models/appearance_settings_db_model.dart';
 import 'package:fiszkomaniak/firebase/models/notifications_settings_db_model.dart';
-import 'package:fiszkomaniak/firebase/repositories/fire_settings_repository.dart';
+import 'package:fiszkomaniak/firebase/repositories/settings_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_settings_service.dart';
 import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
 import 'package:fiszkomaniak/models/settings/notifications_settings_model.dart';
@@ -11,10 +11,10 @@ class MockFireSettingsService extends Mock implements FireSettingsService {}
 
 void main() {
   final FireSettingsService fireSettingsService = MockFireSettingsService();
-  late FireSettingsRepository fireSettingsRepository;
+  late SettingsRepository fireSettingsRepository;
 
   setUp(() {
-    fireSettingsRepository = FireSettingsRepository(
+    fireSettingsRepository = SettingsRepository(
       fireSettingsService: fireSettingsService,
     );
   });

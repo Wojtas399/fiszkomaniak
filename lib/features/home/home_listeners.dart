@@ -2,6 +2,9 @@ import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/courses/courses_status.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_status.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:flutter/material.dart';
@@ -43,19 +46,19 @@ class HomeListeners extends StatelessWidget {
             if (status is CoursesStatusLoading) {
               dialogs.showLoadingDialog();
             } else if (status is CoursesStatusCourseAdded) {
-              Navigator.of(context, rootNavigator: true).pop();
+              _closeLoadingDialog(context);
               Navigation.backHome();
               dialogs.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
               _animateToPage(2);
             } else if (status is CoursesStatusCourseUpdated) {
-              Navigator.of(context, rootNavigator: true).pop();
+              _closeLoadingDialog(context);
               Navigation.backHome();
               dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano kurs');
             } else if (status is CoursesStatusCourseRemoved) {
-              Navigator.of(context, rootNavigator: true).pop();
+              _closeLoadingDialog(context);
               dialogs.showSnackbarWithMessage('Pomyślnie usunięto kurs');
             } else if (status is CoursesStatusError) {
-              Navigator.of(context, rootNavigator: true).pop();
+              _closeLoadingDialog(context);
               dialogs.showDialogWithMessage(
                 title: 'Wystąpił błąd...',
                 message: status.message,
@@ -69,22 +72,51 @@ class HomeListeners extends StatelessWidget {
             if (status is GroupsStatusLoading) {
               dialogs.showLoadingDialog();
             } else if (status is GroupsStatusGroupAdded) {
-              Navigator.of(context, rootNavigator: true).pop();
+              _closeLoadingDialog(context);
               Navigation.backHome();
               dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę');
               _animateToPage(0);
             } else if (status is GroupsStatusGroupUpdated) {
-              Navigator.of(context, rootNavigator: true).pop();
-              Navigator.pop(context);
+              _closeLoadingDialog(context);
+              _moveBack(context);
               dialogs.showSnackbarWithMessage(
                 'Pomyślnie zaktualizowano grupę',
               );
             } else if (status is GroupsStatusGroupRemoved) {
-              Navigator.of(context, rootNavigator: true).pop();
+              _closeLoadingDialog(context);
               Navigation.backHome();
               dialogs.showSnackbarWithMessage('Pomyślnie usunięto grupę');
             } else if (status is GroupsStatusError) {
-              Navigator.of(context, rootNavigator: true).pop();
+              _closeLoadingDialog(context);
+              dialogs.showDialogWithMessage(
+                title: 'Wystąpił błąd...',
+                message: status.message,
+              );
+            }
+          },
+        ),
+        BlocListener<FlashcardsBloc, FlashcardsState>(
+          listener: (BuildContext context, FlashcardsState state) {
+            final FlashcardsStatus status = state.status;
+            if (status is FlashcardsStatusLoading) {
+              dialogs.showLoadingDialog();
+            } else if (status is FlashcardsStatusFlashcardsAdded) {
+              _closeLoadingDialog(context);
+              _moveBack(context);
+              dialogs.showSnackbarWithMessage('Pomyślnie dodano nowe fiszki');
+            } else if (status is FlashcardsStatusFlashcardUpdated) {
+              _closeLoadingDialog(context);
+              dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
+            } else if (status is FlashcardsStatusFlashcardRemoved) {
+              _closeLoadingDialog(context);
+              _moveBack(context);
+              dialogs.showSnackbarWithMessage('Pomyślnie usunięto fiszkę');
+            } else if (status is FlashcardsStatusFlashcardsSaved) {
+              _closeLoadingDialog(context);
+              Navigator.of(context).pop();
+              dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
+            } else if (status is FlashcardsStatusError) {
+              _closeLoadingDialog(context);
               dialogs.showDialogWithMessage(
                 title: 'Wystąpił błąd...',
                 message: status.message,
@@ -103,5 +135,13 @@ class HomeListeners extends StatelessWidget {
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
     );
+  }
+
+  void _closeLoadingDialog(BuildContext context) {
+    Navigator.of(context, rootNavigator: true).pop();
+  }
+
+  void _moveBack(BuildContext context) {
+    Navigator.pop(context);
   }
 }

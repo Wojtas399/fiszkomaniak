@@ -1,6 +1,9 @@
+import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/components/group_item/group_item.dart';
@@ -21,40 +24,55 @@ class StudyPage extends StatelessWidget {
             if (groupsState.allGroups.isEmpty) {
               return const _NoGroupsInfo();
             }
-            return SingleChildScrollView(
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 16,
-                    right: 16,
-                    bottom: 32,
-                    left: 16,
+            return BlocBuilder<FlashcardsBloc, FlashcardsState>(
+              builder: (BuildContext context, FlashcardsState flashcardsState) {
+                return BouncingScroll(
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 16,
+                        right: 16,
+                        bottom: 32,
+                        left: 16,
+                      ),
+                      child: Column(
+                        children: _buildGroups(
+                          coursesState,
+                          groupsState,
+                          flashcardsState,
+                        ),
+                      ),
+                    ),
                   ),
-                  child: Column(
-                    children: groupsState.allGroups
-                        .map(
-                          (group) => GroupItem(
-                            courseName: coursesState.getCourseNameById(
-                                  group.courseId,
-                                ) ??
-                                '',
-                            groupName: group.name,
-                            amountOfLearnedFlashcards: 250,
-                            amountOfAllFlashcards: 500,
-                            onTap: () {
-                              Navigation.navigateToGroupPreview(group.id);
-                            },
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-              ),
+                );
+              },
             );
           },
         );
       },
     );
+  }
+
+  List<Widget> _buildGroups(
+    CoursesState coursesState,
+    GroupsState groupsState,
+    FlashcardsState flashcardsState,
+  ) {
+    return groupsState.allGroups
+        .map(
+          (group) => GroupItem(
+            courseName: coursesState.getCourseNameById(group.courseId) ?? '',
+            groupName: group.name,
+            amountOfRememberedFlashcards: flashcardsState
+                .getAmountOfRememberedFlashcardsFromGroup(group.id),
+            amountOfAllFlashcards:
+                flashcardsState.getAmountOfAllFlashcardsFromGroup(group.id),
+            onTap: () {
+              Navigation.navigateToGroupPreview(group.id);
+            },
+          ),
+        )
+        .toList();
   }
 }
 

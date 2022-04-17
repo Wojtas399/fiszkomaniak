@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
@@ -28,7 +29,7 @@ class CourseGroupsPreview extends StatelessWidget {
             body: OnTapFocusLoseArea(
               child: SizedBox(
                 height: double.infinity,
-                child: SingleChildScrollView(
+                child: BouncingScroll(
                   child: SafeArea(
                     child: Padding(
                       padding: EdgeInsets.all(16.0),

@@ -6,10 +6,10 @@ import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import '../models/course_db_model.dart';
 
-class FireCoursesRepository implements CoursesInterface {
+class CoursesRepository implements CoursesInterface {
   late final FireCoursesService _fireCoursesService;
 
-  FireCoursesRepository({required FireCoursesService fireCoursesService}) {
+  CoursesRepository({required FireCoursesService fireCoursesService}) {
     _fireCoursesService = fireCoursesService;
   }
 

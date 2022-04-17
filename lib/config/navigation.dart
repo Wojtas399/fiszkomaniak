@@ -3,19 +3,18 @@ import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/features/reset_password/reset_password_page.dart';
-import 'package:fiszkomaniak/main.dart';
 import 'package:flutter/material.dart';
 import '../features/home/home.dart';
 
 class Navigation {
-  static void pushReplacementToHome() {
-    MyApp.navigatorKey.currentState?.pushReplacement(
+  static void pushReplacementToHome(BuildContext context) {
+    Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const Home()),
     );
   }
 
-  static void navigateToResetPassword() {
-    MyApp.navigatorKey.currentState?.push(SlideUpRouteAnimation(
+  static void navigateToResetPassword(BuildContext context) {
+    Navigator.of(context).push(SlideUpRouteAnimation(
       page: const ResetPasswordPage(),
     ));
   }
@@ -54,6 +53,19 @@ class Navigation {
     );
   }
 
+  static void navigateToGroupSelection() {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.groupSelection,
+    );
+  }
+
+  static void navigateToFlashcardsEditor(String groupId) {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.flashcardsEditor,
+      arguments: groupId,
+    );
+  }
+
   static void navigateToCourseGroupsPreview(String courseId) {
     HomeRouter.navigatorKey.currentState?.pushNamed(
       HomeRouter.courseGroupsPreview,
@@ -61,10 +73,24 @@ class Navigation {
     );
   }
 
+  static void navigateToGroupFlashcardsPreview(String groupId) {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.groupFlashcardsPreview,
+      arguments: groupId,
+    );
+  }
+
   static void navigateToGroupPreview(String groupId) {
     HomeRouter.navigatorKey.currentState?.pushNamed(
       HomeRouter.groupPreview,
       arguments: groupId,
+    );
+  }
+
+  static void navigateToFlashcardPreview(String flashcardId) {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.flashcardPreview,
+      arguments: flashcardId,
     );
   }
 }

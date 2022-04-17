@@ -4,8 +4,6 @@ abstract class CoursesLibraryEvent {}
 
 class CoursesLibraryEventInitialize extends CoursesLibraryEvent {}
 
-class CoursesLibraryEventUpdateCourses extends CoursesLibraryEvent {}
-
 class CoursesLibraryEventEditCourse extends CoursesLibraryEvent {
   final Course course;
 
@@ -17,3 +15,5 @@ class CoursesLibraryEventRemoveCourse extends CoursesLibraryEvent {
 
   CoursesLibraryEventRemoveCourse({required this.courseId});
 }
+
+class CoursesLibraryEventCoursesStateUpdated extends CoursesLibraryEvent {}

@@ -1,27 +1,33 @@
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:fiszkomaniak/models/sign_in_model.dart';
 import 'package:fiszkomaniak/models/sign_up_model.dart';
-import 'package:fiszkomaniak/core/auth/auth_subscriber.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
+import 'package:flutter/cupertino.dart';
 
 class AuthBloc {
   late final AuthInterface _authInterface;
-  late final AuthSubscriber _authSubscriber;
   late final SettingsInterface _settingsInterface;
+  StreamSubscription<User?>? _subscription;
 
   AuthBloc({
     required AuthInterface authInterface,
-    required AuthSubscriber authSubscriber,
     required SettingsInterface settingsInterface,
   }) {
     _authInterface = authInterface;
-    _authSubscriber = authSubscriber;
     _settingsInterface = settingsInterface;
   }
 
-  void initialize() {
-    _authSubscriber.subscribe();
+  void initialize({
+    required VoidCallback onUserLogged,
+  }) {
+    _subscription = _authInterface.getUserChangesStream().listen((user) {
+      if (user != null) {
+        onUserLogged();
+      }
+    });
   }
 
   Future<HttpStatus> signIn(SignInModel data) async {
@@ -53,6 +59,6 @@ class AuthBloc {
   }
 
   void dispose() {
-    _authSubscriber.unsubscribe();
+    _subscription?.cancel();
   }
 }

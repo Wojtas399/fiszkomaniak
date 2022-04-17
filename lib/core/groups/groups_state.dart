@@ -29,7 +29,7 @@ class GroupsState extends Equatable {
     );
   }
 
-  Group? getGroupById(String groupId) {
+  Group? getGroupById(String? groupId) {
     final List<Group?> groups = [...allGroups];
     return groups.firstWhere(
       (group) => group?.id == groupId,
@@ -39,6 +39,14 @@ class GroupsState extends Equatable {
 
   List<Group> getGroupsByCourseId(String courseId) {
     return allGroups.where((group) => group.courseId == courseId).toList();
+  }
+
+  List<String> getGroupsIdsByCourseId(String courseId) {
+    return getGroupsByCourseId(courseId).map((group) => group.id).toList();
+  }
+
+  String? getGroupNameById(String groupId) {
+    return getGroupById(groupId)?.name;
   }
 
   @override
