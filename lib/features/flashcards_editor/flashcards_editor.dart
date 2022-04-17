@@ -1,4 +1,3 @@
-import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
@@ -7,7 +6,7 @@ import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_d
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/components/flashcards_editor_app_bar.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/components/flashcards_editor_flashcards_list.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/components/flashcards_editor_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,15 +24,8 @@ class FlashcardsEditor extends StatelessWidget {
       groupId: groupId,
       child: const Scaffold(
         appBar: FlashcardsEditorAppBar(),
-        body: BouncingScroll(
-          child: SafeArea(
-            child: OnTapFocusLoseArea(
-              child: Padding(
-                padding: EdgeInsets.all(24.0),
-                child: FlashcardsEditorFlashcardsList(),
-              ),
-            ),
-          ),
+        body: OnTapFocusLoseArea(
+          child: FlashcardsEditorList(),
         ),
       ),
     );

@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/group_model.dart';
 
-class FlashcardsEditorFlashcardsList extends StatelessWidget {
-  const FlashcardsEditorFlashcardsList({Key? key}) : super(key: key);
+class FlashcardsEditorList extends StatelessWidget {
+  const FlashcardsEditorList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +19,31 @@ class FlashcardsEditorFlashcardsList extends StatelessWidget {
             child: Text('No group selected'),
           );
         }
-        return Column(
-          children: state.flashcards.asMap().entries.map((entry) {
+        return ListView(
+          reverse: true,
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(
+            left: 24.0,
+            top: 24.0,
+            right: 24.0,
+            bottom: 48.0,
+          ),
+          children: _buildFlashcards(context, state, group),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildFlashcards(
+    BuildContext context,
+    FlashcardsEditorState state,
+    Group group,
+  ) {
+    return state.flashcards
+        .asMap()
+        .entries
+        .map(
+          (entry) {
             final int index = entry.key;
             final EditorFlashcard params = entry.value;
             return FlashcardsEditorItem(
@@ -54,9 +77,10 @@ class FlashcardsEditorFlashcardsList extends StatelessWidget {
                     ));
               },
             );
-          }).toList(),
-        );
-      },
-    );
+          },
+        )
+        .toList()
+        .reversed
+        .toList();
   }
 }
