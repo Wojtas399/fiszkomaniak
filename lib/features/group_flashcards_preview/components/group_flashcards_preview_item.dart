@@ -28,7 +28,7 @@ class GroupFlashcardsPreviewItem extends StatelessWidget {
             child: Row(
               children: [
                 _StatusColor(status: flashcard.status),
-                _QuestionAnsAnswer(
+                _QuestionAndAnswer(
                   question: flashcard.question,
                   answer: flashcard.answer,
                 ),
@@ -56,11 +56,11 @@ class _StatusColor extends StatelessWidget {
   }
 }
 
-class _QuestionAnsAnswer extends StatelessWidget {
+class _QuestionAndAnswer extends StatelessWidget {
   final String question;
   final String answer;
 
-  const _QuestionAnsAnswer({
+  const _QuestionAndAnswer({
     Key? key,
     required this.question,
     required this.answer,

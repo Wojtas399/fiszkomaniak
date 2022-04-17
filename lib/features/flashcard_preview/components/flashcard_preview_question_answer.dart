@@ -30,7 +30,7 @@ class FlashcardPreviewQuestionAnswer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _FlashcardToDisplay(
+          _FlashcardWithTitle(
             title: 'Pytanie',
             subtitle: nameForQuestion,
             controller: questionController,
@@ -41,7 +41,7 @@ class FlashcardPreviewQuestionAnswer extends StatelessWidget {
             },
           ),
           const SizedBox(height: 16),
-          _FlashcardToDisplay(
+          _FlashcardWithTitle(
             title: 'Odpowiedź',
             subtitle: nameForAnswer,
             controller: answerController,
@@ -57,7 +57,7 @@ class FlashcardPreviewQuestionAnswer extends StatelessWidget {
   }
 }
 
-class _FlashcardToDisplay extends StatelessWidget {
+class _FlashcardWithTitle extends StatelessWidget {
   final String title;
   final String subtitle;
   final TextEditingController controller;
@@ -65,7 +65,7 @@ class _FlashcardToDisplay extends StatelessWidget {
   final FocusNode? focusNode;
   final VoidCallback? onTap;
 
-  const _FlashcardToDisplay({
+  const _FlashcardWithTitle({
     Key? key,
     required this.title,
     required this.subtitle,

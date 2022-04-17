@@ -140,7 +140,7 @@ void main() {
         status: FlashcardsStatusLoaded(),
       ),
       FlashcardsState(
-        allFlashcards: [],
+        allFlashcards: const [],
         status: FlashcardsStatusLoaded(),
       ),
     ],
