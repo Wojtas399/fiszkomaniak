@@ -11,6 +11,7 @@ class ItemWithIcon extends StatelessWidget {
   final double paddingRight;
   final double paddingTop;
   final double paddingBottom;
+  final VoidCallback? onTap;
 
   const ItemWithIcon({
     Key? key,
@@ -24,37 +25,45 @@ class ItemWithIcon extends StatelessWidget {
     this.paddingRight = 16.0,
     this.paddingTop = 16.0,
     this.paddingBottom = 16.0,
+    this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(
-        left: paddingLeft,
-        right: paddingRight,
-        top: paddingTop,
-        bottom: paddingBottom,
-      ),
-      width: double.infinity,
-      child: Row(
-        children: [
-          Icon(icon, color: iconColor),
-          const SizedBox(width: 16),
-          Expanded(
-            flex: 10,
-            child: label != null
-                ? _TextWithLabel(
-                    label: label ?? '',
-                    text: text,
-                    textColor: textColor,
-                  )
-                : _OnlyText(text: text, textColor: textColor),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
+        child: Container(
+          padding: EdgeInsets.only(
+            left: paddingLeft,
+            right: paddingRight,
+            top: paddingTop,
+            bottom: paddingBottom,
           ),
-          Expanded(
-            flex: 2,
-            child: trailing ?? const SizedBox(),
+          width: double.infinity,
+          child: Row(
+            children: [
+              Icon(icon, color: iconColor),
+              const SizedBox(width: 16),
+              Expanded(
+                flex: 10,
+                child: label != null
+                    ? _TextWithLabel(
+                        label: label ?? '',
+                        text: text,
+                        textColor: textColor,
+                      )
+                    : _OnlyText(text: text, textColor: textColor),
+              ),
+              Expanded(
+                flex: 2,
+                child: trailing ?? const SizedBox(),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

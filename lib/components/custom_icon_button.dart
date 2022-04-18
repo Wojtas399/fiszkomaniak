@@ -15,6 +15,7 @@ class CustomIconButton extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(100),
       child: Material(
+        color: Colors.transparent,
         child: IconButton(
           padding: const EdgeInsets.all(16.0),
           onPressed: onPressed,

@@ -6,6 +6,7 @@ import 'package:fiszkomaniak/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +29,12 @@ class MyApp extends StatelessWidget {
             themeMode: themeProvider.themeMode,
             theme: GlobalTheme.lightTheme,
             darkTheme: GlobalTheme.darkTheme,
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('pl', 'PL')],
             home: const AuthBlocProvider(
               child: InitialHome(),
             ),
