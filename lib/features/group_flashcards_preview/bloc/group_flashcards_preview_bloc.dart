@@ -31,7 +31,7 @@ class GroupFlashcardsPreviewBloc
   ) {
     final String? groupName = _groupsBloc.state.getGroupNameById(event.groupId);
     final List<Flashcard> flashcardsFromGroup =
-        _flashcardsBloc.state.getFlashcardsFromGroup(event.groupId);
+        _flashcardsBloc.state.getFlashcardsByGroupId(event.groupId);
     if (groupName != null) {
       emit(state.copyWith(
         groupId: event.groupId,
@@ -54,7 +54,7 @@ class GroupFlashcardsPreviewBloc
     Emitter<GroupFlashcardsPreviewState> emit,
   ) {
     final List<Flashcard> flashcardsFromGroup =
-        _flashcardsBloc.state.getFlashcardsFromGroup(state.groupId);
+        _flashcardsBloc.state.getFlashcardsByGroupId(state.groupId);
     emit(state.copyWith(flashcardsFromGroup: flashcardsFromGroup));
   }
 

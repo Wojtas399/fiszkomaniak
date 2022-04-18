@@ -7,10 +7,10 @@ class ItemWithIcon extends StatelessWidget {
   final Color? iconColor;
   final Color? textColor;
   final Widget? trailing;
-  final double paddingLeft;
-  final double paddingRight;
-  final double paddingTop;
-  final double paddingBottom;
+  final double? paddingLeft;
+  final double? paddingRight;
+  final double? paddingTop;
+  final double? paddingBottom;
   final VoidCallback? onTap;
 
   const ItemWithIcon({
@@ -21,10 +21,10 @@ class ItemWithIcon extends StatelessWidget {
     this.iconColor,
     this.textColor,
     this.trailing,
-    this.paddingLeft = 16.0,
-    this.paddingRight = 16.0,
-    this.paddingTop = 16.0,
-    this.paddingBottom = 16.0,
+    this.paddingLeft,
+    this.paddingRight,
+    this.paddingTop,
+    this.paddingBottom,
     this.onTap,
   }) : super(key: key);
 
@@ -37,10 +37,10 @@ class ItemWithIcon extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(4)),
         child: Container(
           padding: EdgeInsets.only(
-            left: paddingLeft,
-            right: paddingRight,
-            top: paddingTop,
-            bottom: paddingBottom,
+            left: paddingLeft ?? 16.0,
+            right: paddingRight ?? 16.0,
+            top: paddingTop ?? 16.0,
+            bottom: paddingBottom ?? 16.0,
           ),
           width: double.infinity,
           child: Row(
