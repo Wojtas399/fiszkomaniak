@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/converters/date_converter.dart';
+import 'package:fiszkomaniak/converters/date_converters.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';

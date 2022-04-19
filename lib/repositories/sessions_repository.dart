@@ -74,16 +74,17 @@ class SessionsRepository implements SessionsInterface {
     final bool? areQuestionsAndAnswersSwapped =
         docData?.areQuestionsAndAnswersSwapped;
     final String? date = docData?.date;
-    final String? time = docData?.time;
-    final String? duration = docData?.duration;
-    final String? notificationTime = docData?.notificationTime;
+    final TimeOfDay? time = _convertStringToTimeOfDay(docData?.time);
+    final TimeOfDay? duration = _convertStringToTimeOfDay(docData?.duration);
+    final TimeOfDay? notificationTime = _convertStringToTimeOfDay(
+      docData?.notificationTime,
+    );
     if (groupId != null &&
         flashcardsType != null &&
         areQuestionsAndAnswersSwapped != null &&
         date != null &&
         time != null &&
-        duration != null &&
-        notificationTime != null) {
+        duration != null) {
       return ChangedDocument(
         changeType: FireUtils.convertChangeType(docChange.type),
         doc: Session(
@@ -92,9 +93,9 @@ class SessionsRepository implements SessionsInterface {
           flashcardsType: flashcardsType,
           areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
           date: _convertStringToDateTime(date),
-          time: _convertStringToTimeOfDay(time),
-          duration: _convertStringToTimeOfDay(duration),
-          notificationTime: _convertStringToTimeOfDay(notificationTime),
+          time: time,
+          duration: duration,
+          notificationTime: notificationTime,
         ),
       );
     }
@@ -148,7 +149,10 @@ class SessionsRepository implements SessionsInterface {
     return '$hours:$minutes';
   }
 
-  TimeOfDay _convertStringToTimeOfDay(String time) {
+  TimeOfDay? _convertStringToTimeOfDay(String? time) {
+    if (time == null) {
+      return null;
+    }
     final List<String> splitTime = time.split(':');
     final int hours = int.parse(splitTime[0]);
     final int minutes = int.parse(splitTime[1]);
