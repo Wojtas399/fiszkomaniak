@@ -137,7 +137,6 @@ class SessionCreatorBloc
     final DateTime? date = state.date;
     final TimeOfDay? time = state.time;
     final TimeOfDay? duration = state.duration;
-    final TimeOfDay? notificationTime = state.notificationTime;
     if (groupId != null && date != null && time != null && duration != null) {
       _sessionsBloc.add(
         SessionsEventAddSession(
@@ -149,7 +148,7 @@ class SessionCreatorBloc
             date: date,
             time: time,
             duration: duration,
-            notificationTime: notificationTime,
+            notificationTime: state.notificationTime,
           ),
         ),
       );

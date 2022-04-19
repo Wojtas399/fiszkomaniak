@@ -40,3 +40,25 @@ enum FlashcardsType {
   remembered,
   notRemembered,
 }
+
+Session createSession({
+  String? id,
+  String? groupId,
+  FlashcardsType? flashcardsType,
+  bool? areQuestionsAndAnswersSwapped,
+  DateTime? date,
+  TimeOfDay? time,
+  TimeOfDay? duration,
+  TimeOfDay? notificationTime,
+}) {
+  return Session(
+    id: id ?? '',
+    groupId: groupId ?? '',
+    flashcardsType: flashcardsType ?? FlashcardsType.all,
+    areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped ?? false,
+    date: date ?? DateTime(2022),
+    time: time ?? const TimeOfDay(hour: 12, minute: 0),
+    duration: duration ?? const TimeOfDay(hour: 0, minute: 30),
+    notificationTime: notificationTime,
+  );
+}

@@ -31,7 +31,7 @@ void main() {
     expect(state.selectedCourse, null);
     expect(state.selectedGroup, null);
     expect(state.flashcardsType, FlashcardsType.all);
-    expect(state.reversedQuestionsWithAnswers, false);
+    expect(state.areQuestionsAndAnswersSwapped, false);
     expect(state.date, null);
     expect(state.time, null);
     expect(state.duration, null);
@@ -91,12 +91,12 @@ void main() {
   test('copy with reversed questions with answers', () {
     const bool reversedQuestionsWithAnswers = true;
     final SessionCreatorState state2 = state.copyWith(
-      reversedQuestionsWithAnswers: reversedQuestionsWithAnswers,
+      areQuestionsAndAnswersSwapped: reversedQuestionsWithAnswers,
     );
     final SessionCreatorState state3 = state2.copyWith();
 
-    expect(state2.reversedQuestionsWithAnswers, reversedQuestionsWithAnswers);
-    expect(state3.reversedQuestionsWithAnswers, reversedQuestionsWithAnswers);
+    expect(state2.areQuestionsAndAnswersSwapped, reversedQuestionsWithAnswers);
+    expect(state3.areQuestionsAndAnswersSwapped, reversedQuestionsWithAnswers);
   });
 
   test('copy with date', () {
@@ -172,7 +172,7 @@ void main() {
     final Group group = groups[0];
     final SessionCreatorState updatedState = state.copyWith(
       selectedGroup: group,
-      reversedQuestionsWithAnswers: true,
+      areQuestionsAndAnswersSwapped: true,
     );
 
     expect(updatedState.nameForQuestions, group.nameForAnswers);
@@ -191,7 +191,7 @@ void main() {
     final Group group = groups[0];
     final SessionCreatorState updatedState = state.copyWith(
       selectedGroup: group,
-      reversedQuestionsWithAnswers: true,
+      areQuestionsAndAnswersSwapped: true,
     );
 
     expect(updatedState.nameForAnswers, group.nameForQuestions);

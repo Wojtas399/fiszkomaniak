@@ -5,6 +5,8 @@ import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
@@ -22,10 +24,15 @@ class MockGroupsBloc extends Mock implements GroupsBloc {}
 
 class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
 
+class MockSessionsBloc extends Mock implements SessionsBloc {}
+
+class FakeSessionsEvent extends Fake implements SessionsEvent {}
+
 void main() {
   final CoursesBloc coursesBloc = MockCoursesBloc();
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
+  final SessionsBloc sessionsBloc = MockSessionsBloc();
   late SessionCreatorBloc bloc;
   final CoursesState coursesState = CoursesState(
     allCourses: [
@@ -55,6 +62,7 @@ void main() {
       coursesBloc: coursesBloc,
       groupsBloc: groupsBloc,
       flashcardsBloc: flashcardsBloc,
+      sessionsBloc: sessionsBloc,
     );
   });
 
@@ -62,6 +70,7 @@ void main() {
     reset(coursesBloc);
     reset(groupsBloc);
     reset(flashcardsBloc);
+    reset(sessionsBloc);
   });
 
   blocTest(
@@ -197,7 +206,7 @@ void main() {
       SessionCreatorState(selectedGroup: groupsState.allGroups[0]),
       SessionCreatorState(
         selectedGroup: groupsState.allGroups[0],
-        reversedQuestionsWithAnswers: true,
+        areQuestionsAndAnswersSwapped: true,
       ),
     ],
   );
@@ -270,4 +279,155 @@ void main() {
       ),
     ],
   );
+
+  group('submit', () {
+    final Session session = createSession(
+      groupId: 'g1',
+      flashcardsType: FlashcardsType.remembered,
+      areQuestionsAndAnswersSwapped: false,
+      date: DateTime(2022),
+      time: const TimeOfDay(hour: 12, minute: 0),
+      duration: const TimeOfDay(hour: 0, minute: 30),
+      notificationTime: const TimeOfDay(hour: 9, minute: 0),
+    );
+
+    setUpAll(() {
+      registerFallbackValue(FakeSessionsEvent());
+    });
+
+    setUp(() {
+      when(() => groupsBloc.state).thenReturn(groupsState);
+      when(() => flashcardsBloc.state).thenReturn(flashcardsState);
+      when(
+        () => sessionsBloc.add(SessionsEventAddSession(session: session)),
+      ).thenAnswer((_) async => '');
+    });
+
+    blocTest(
+      'all required params completed',
+      build: () => bloc,
+      act: (_) {
+        bloc.add(SessionCreatorEventGroupSelected(groupId: session.groupId));
+        bloc.add(SessionCreatorEventDateSelected(date: session.date));
+        bloc.add(SessionCreatorEventTimeSelected(time: session.time));
+        bloc.add(SessionCreatorEventDurationSelected(
+          duration: session.duration,
+        ));
+        bloc.add(SessionCreatorEventNotificationTimeSelected(
+          notificationTime: session.notificationTime!,
+        ));
+        bloc.add(SessionCreatorEventSubmit());
+      },
+      verify: (_) {
+        verify(
+          () => sessionsBloc.add(SessionsEventAddSession(session: session)),
+        ).called(1);
+      },
+    );
+
+    blocTest(
+      'group not selected',
+      build: () => bloc,
+      act: (_) {
+        bloc.add(SessionCreatorEventDateSelected(date: session.date));
+        bloc.add(SessionCreatorEventTimeSelected(time: session.time));
+        bloc.add(SessionCreatorEventDurationSelected(
+          duration: session.duration,
+        ));
+        bloc.add(SessionCreatorEventNotificationTimeSelected(
+          notificationTime: session.notificationTime!,
+        ));
+        bloc.add(SessionCreatorEventSubmit());
+      },
+      verify: (_) {
+        verifyNever(() => sessionsBloc.add(any()));
+      },
+    );
+
+    blocTest(
+      'date not selected',
+      build: () => bloc,
+      act: (_) {
+        bloc.add(SessionCreatorEventGroupSelected(groupId: session.groupId));
+        bloc.add(SessionCreatorEventTimeSelected(time: session.time));
+        bloc.add(SessionCreatorEventDurationSelected(
+          duration: session.duration,
+        ));
+        bloc.add(SessionCreatorEventNotificationTimeSelected(
+          notificationTime: session.notificationTime!,
+        ));
+        bloc.add(SessionCreatorEventSubmit());
+      },
+      verify: (_) {
+        verifyNever(() => sessionsBloc.add(any()));
+      },
+    );
+
+    blocTest(
+      'time not selected',
+      build: () => bloc,
+      act: (_) {
+        bloc.add(SessionCreatorEventGroupSelected(groupId: session.groupId));
+        bloc.add(SessionCreatorEventDateSelected(date: session.date));
+        bloc.add(SessionCreatorEventDurationSelected(
+          duration: session.duration,
+        ));
+        bloc.add(SessionCreatorEventNotificationTimeSelected(
+          notificationTime: session.notificationTime!,
+        ));
+        bloc.add(SessionCreatorEventSubmit());
+      },
+      verify: (_) {
+        verifyNever(() => sessionsBloc.add(any()));
+      },
+    );
+
+    blocTest(
+      'duration not selected',
+      build: () => bloc,
+      act: (_) {
+        bloc.add(SessionCreatorEventGroupSelected(groupId: session.groupId));
+        bloc.add(SessionCreatorEventDateSelected(date: session.date));
+        bloc.add(SessionCreatorEventTimeSelected(time: session.time));
+        bloc.add(SessionCreatorEventNotificationTimeSelected(
+          notificationTime: session.notificationTime!,
+        ));
+        bloc.add(SessionCreatorEventSubmit());
+      },
+      verify: (_) {
+        verifyNever(() => sessionsBloc.add(any()));
+      },
+    );
+
+    blocTest(
+      'notification time not selected',
+      build: () => bloc,
+      act: (_) {
+        bloc.add(SessionCreatorEventGroupSelected(groupId: session.groupId));
+        bloc.add(SessionCreatorEventDateSelected(date: session.date));
+        bloc.add(SessionCreatorEventTimeSelected(time: session.time));
+        bloc.add(SessionCreatorEventDurationSelected(
+          duration: session.duration,
+        ));
+        bloc.add(SessionCreatorEventSubmit());
+      },
+      verify: (_) {
+        verify(
+          () => sessionsBloc.add(
+            SessionsEventAddSession(
+              session: createSession(
+                groupId: 'g1',
+                flashcardsType: FlashcardsType.remembered,
+                areQuestionsAndAnswersSwapped: false,
+                date: DateTime(2022),
+                time: const TimeOfDay(hour: 12, minute: 0),
+                duration: const TimeOfDay(hour: 0, minute: 30),
+                notificationTime: null,
+              ),
+            ),
+          ),
+        ).called(1);
+      },
+    );
+  });
 }

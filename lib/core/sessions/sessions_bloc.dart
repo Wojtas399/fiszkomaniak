@@ -9,7 +9,7 @@ import '../../models/changed_document.dart';
 
 class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   late final SessionsInterface _sessionsInterface;
-  late StreamSubscription? _sessionsSubscription;
+  StreamSubscription? _sessionsSubscription;
 
   SessionsBloc({
     required SessionsInterface sessionsInterface,

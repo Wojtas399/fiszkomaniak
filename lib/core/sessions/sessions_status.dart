@@ -1,5 +1,10 @@
-abstract class SessionsStatus {
+import 'package:equatable/equatable.dart';
+
+abstract class SessionsStatus extends Equatable {
   const SessionsStatus();
+
+  @override
+  List<Object> get props => [];
 }
 
 class SessionsStatusInitial extends SessionsStatus {
@@ -15,5 +20,8 @@ class SessionsStatusSessionAdded extends SessionsStatus {}
 class SessionsStatusError extends SessionsStatus {
   final String message;
 
-  SessionsStatusError({required this.message});
+  const SessionsStatusError({required this.message});
+
+  @override
+  List<Object> get props => [message];
 }
