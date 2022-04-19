@@ -1,9 +1,13 @@
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/course_model.dart';
 
@@ -12,15 +16,18 @@ class SessionCreatorBloc
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
   late final FlashcardsBloc _flashcardsBloc;
+  late final SessionsBloc _sessionsBloc;
 
   SessionCreatorBloc({
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
     required FlashcardsBloc flashcardsBloc,
+    required SessionsBloc sessionsBloc,
   }) : super(const SessionCreatorState()) {
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
     _flashcardsBloc = flashcardsBloc;
+    _sessionsBloc = sessionsBloc;
     on<SessionCreatorEventInitialize>(_initialize);
     on<SessionCreatorEventCourseSelected>(_courseSelected);
     on<SessionCreatorEventGroupSelected>(_groupSelected);
@@ -31,6 +38,7 @@ class SessionCreatorBloc
     on<SessionCreatorEventDurationSelected>(_durationSelected);
     on<SessionCreatorEventNotificationTimeSelected>(_notificationTimeSelected);
     on<SessionCreatorEventCleanNotificationTime>(_cleanNotificationTime);
+    on<SessionCreatorEventSubmit>(_submit);
   }
 
   void _initialize(
@@ -81,7 +89,7 @@ class SessionCreatorBloc
   ) {
     if (state.selectedGroup != null) {
       emit(state.copyWith(
-        reversedQuestionsWithAnswers: !state.reversedQuestionsWithAnswers,
+        areQuestionsAndAnswersSwapped: !state.areQuestionsAndAnswersSwapped,
       ));
     }
   }
@@ -119,6 +127,33 @@ class SessionCreatorBloc
     Emitter<SessionCreatorState> emit,
   ) {
     emit(state.reset(notificationTime: true));
+  }
+
+  void _submit(
+    SessionCreatorEventSubmit event,
+    Emitter<SessionCreatorState> emit,
+  ) {
+    final String? groupId = state.selectedGroup?.id;
+    final DateTime? date = state.date;
+    final TimeOfDay? time = state.time;
+    final TimeOfDay? duration = state.duration;
+    final TimeOfDay? notificationTime = state.notificationTime;
+    if (groupId != null && date != null && time != null && duration != null) {
+      _sessionsBloc.add(
+        SessionsEventAddSession(
+          session: Session(
+            id: '',
+            groupId: groupId,
+            flashcardsType: state.flashcardsType,
+            areQuestionsAndAnswersSwapped: state.areQuestionsAndAnswersSwapped,
+            date: date,
+            time: time,
+            duration: duration,
+            notificationTime: notificationTime,
+          ),
+        ),
+      );
+    }
   }
 
   bool _areThereFlashcardsInGroup(Group group) {

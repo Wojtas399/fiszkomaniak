@@ -6,7 +6,7 @@ import 'package:fiszkomaniak/firebase/services/fire_flashcards_service.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
-import '../fire_utils.dart';
+import '../firebase/fire_utils.dart';
 
 class FlashcardsRepository implements FlashcardsInterface {
   late final FireFlashcardsService _fireFlashcardsService;

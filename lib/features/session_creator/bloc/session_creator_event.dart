@@ -50,3 +50,5 @@ class SessionCreatorEventNotificationTimeSelected extends SessionCreatorEvent {
 }
 
 class SessionCreatorEventCleanNotificationTime extends SessionCreatorEvent {}
+
+class SessionCreatorEventSubmit extends SessionCreatorEvent {}

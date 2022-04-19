@@ -32,22 +32,23 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
     GroupsEventInitialize event,
     Emitter<GroupsState> emit,
   ) {
-    _groupsSubscription =
-        _groupsInterface.getGroupsSnapshots().listen((groups) {
-      for (final group in groups) {
-        switch (group.changeType) {
-          case DbDocChangeType.added:
-            add(GroupsEventGroupAdded(group: group.doc));
-            break;
-          case DbDocChangeType.updated:
-            add(GroupsEventGroupUpdated(group: group.doc));
-            break;
-          case DbDocChangeType.removed:
-            add(GroupsEventGroupRemoved(groupId: group.doc.id));
-            break;
+    _groupsSubscription = _groupsInterface.getGroupsSnapshots().listen(
+      (groups) {
+        for (final group in groups) {
+          switch (group.changeType) {
+            case DbDocChangeType.added:
+              add(GroupsEventGroupAdded(group: group.doc));
+              break;
+            case DbDocChangeType.updated:
+              add(GroupsEventGroupUpdated(group: group.doc));
+              break;
+            case DbDocChangeType.removed:
+              add(GroupsEventGroupRemoved(groupId: group.doc.id));
+              break;
+          }
         }
-      }
-    });
+      },
+    );
   }
 
   void _groupAdded(

@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiszkomaniak/models/sign_in_model.dart';
 import 'package:fiszkomaniak/models/sign_up_model.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
-import '../services/fire_auth_service.dart';
+import '../firebase/services/fire_auth_service.dart';
 
 class AuthRepository implements AuthInterface {
   late final FireAuthService _fireAuthService;

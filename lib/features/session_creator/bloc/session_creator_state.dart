@@ -10,17 +10,17 @@ class SessionCreatorState extends Equatable {
   final Course? selectedCourse;
   final Group? selectedGroup;
   final FlashcardsType flashcardsType;
-  final bool reversedQuestionsWithAnswers;
+  final bool areQuestionsAndAnswersSwapped;
   final DateTime? date;
   final TimeOfDay? time;
   final TimeOfDay? duration;
   final TimeOfDay? notificationTime;
 
-  String? get nameForQuestions => reversedQuestionsWithAnswers
+  String? get nameForQuestions => areQuestionsAndAnswersSwapped
       ? selectedGroup?.nameForAnswers
       : selectedGroup?.nameForQuestions;
 
-  String? get nameForAnswers => reversedQuestionsWithAnswers
+  String? get nameForAnswers => areQuestionsAndAnswersSwapped
       ? selectedGroup?.nameForQuestions
       : selectedGroup?.nameForAnswers;
 
@@ -37,7 +37,7 @@ class SessionCreatorState extends Equatable {
     this.selectedCourse,
     this.selectedGroup,
     this.flashcardsType = FlashcardsType.all,
-    this.reversedQuestionsWithAnswers = false,
+    this.areQuestionsAndAnswersSwapped = false,
     this.date,
     this.time,
     this.duration,
@@ -50,7 +50,7 @@ class SessionCreatorState extends Equatable {
     Course? selectedCourse,
     Group? selectedGroup,
     FlashcardsType? flashcardsType,
-    bool? reversedQuestionsWithAnswers,
+    bool? areQuestionsAndAnswersSwapped,
     DateTime? date,
     TimeOfDay? time,
     TimeOfDay? duration,
@@ -62,8 +62,8 @@ class SessionCreatorState extends Equatable {
       selectedCourse: selectedCourse ?? this.selectedCourse,
       selectedGroup: selectedGroup ?? this.selectedGroup,
       flashcardsType: flashcardsType ?? this.flashcardsType,
-      reversedQuestionsWithAnswers:
-          reversedQuestionsWithAnswers ?? this.reversedQuestionsWithAnswers,
+      areQuestionsAndAnswersSwapped:
+          areQuestionsAndAnswersSwapped ?? this.areQuestionsAndAnswersSwapped,
       date: date ?? this.date,
       time: time ?? this.time,
       duration: duration ?? this.duration,
@@ -81,7 +81,7 @@ class SessionCreatorState extends Equatable {
       selectedCourse: selectedCourse,
       selectedGroup: selectedGroup ? null : this.selectedGroup,
       flashcardsType: flashcardsType,
-      reversedQuestionsWithAnswers: reversedQuestionsWithAnswers,
+      areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
       date: date,
       time: time,
       duration: duration,
@@ -96,7 +96,7 @@ class SessionCreatorState extends Equatable {
         selectedCourse ?? createCourse(),
         selectedGroup ?? createGroup(),
         flashcardsType,
-        reversedQuestionsWithAnswers,
+        areQuestionsAndAnswersSwapped,
         date ?? '',
         time ?? '',
         duration ?? '',

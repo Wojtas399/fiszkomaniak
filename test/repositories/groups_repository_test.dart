@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/firebase/models/group_db_model.dart';
-import 'package:fiszkomaniak/firebase/repositories/groups_repository.dart';
+import 'package:fiszkomaniak/repositories/groups_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_groups_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

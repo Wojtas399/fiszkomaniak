@@ -2,16 +2,20 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class Session extends Equatable {
+  final String id;
   final String groupId;
   final FlashcardsType flashcardsType;
+  final bool areQuestionsAndAnswersSwapped;
   final DateTime date;
   final TimeOfDay time;
   final TimeOfDay duration;
-  final TimeOfDay notificationTime;
+  final TimeOfDay? notificationTime;
 
   const Session({
+    required this.id,
     required this.groupId,
     required this.flashcardsType,
+    required this.areQuestionsAndAnswersSwapped,
     required this.date,
     required this.time,
     required this.duration,
@@ -20,12 +24,14 @@ class Session extends Equatable {
 
   @override
   List<Object> get props => [
+        id,
         groupId,
         flashcardsType,
+        areQuestionsAndAnswersSwapped,
         date,
         time,
         duration,
-        notificationTime,
+        notificationTime ?? '',
       ];
 }
 

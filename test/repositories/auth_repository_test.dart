@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-import 'package:fiszkomaniak/firebase/repositories/auth_repository.dart';
+import 'package:fiszkomaniak/repositories/auth_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_auth_service.dart';
 import 'package:fiszkomaniak/models/sign_in_model.dart';
 import 'package:fiszkomaniak/models/sign_up_model.dart';

@@ -4,7 +4,7 @@ import 'package:fiszkomaniak/firebase/services/fire_courses_service.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
-import '../models/course_db_model.dart';
+import '../firebase/models/course_db_model.dart';
 
 class CoursesRepository implements CoursesInterface {
   late final FireCoursesService _fireCoursesService;

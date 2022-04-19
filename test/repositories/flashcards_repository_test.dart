@@ -1,6 +1,6 @@
 import 'package:fiszkomaniak/firebase/models/fire_doc_model.dart';
 import 'package:fiszkomaniak/firebase/models/flashcard_db_model.dart';
-import 'package:fiszkomaniak/firebase/repositories/flashcards_repository.dart';
+import 'package:fiszkomaniak/repositories/flashcards_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_flashcards_service.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:flutter_test/flutter_test.dart';

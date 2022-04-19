@@ -7,9 +7,12 @@ import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
+import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,9 +37,22 @@ class HomeProviders extends StatelessWidget {
         RepositoryProvider(
           create: (_) => FirebaseProvider.provideFlashcardsInterface(),
         ),
+        RepositoryProvider(
+          create: (_) => FirebaseProvider.provideSessionsInterface(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
+          BlocProvider(
+            create: (BuildContext context) => AppearanceSettingsBloc(
+              settingsInterface: context.read<SettingsInterface>(),
+            )..add(AppearanceSettingsEventLoad()),
+          ),
+          BlocProvider(
+            create: (BuildContext context) => NotificationsSettingsBloc(
+              settingsInterface: context.read<SettingsInterface>(),
+            )..add(NotificationsSettingsEventLoad()),
+          ),
           BlocProvider<CoursesBloc>(
             create: (BuildContext context) => CoursesBloc(
               coursesInterface: context.read<CoursesInterface>(),
@@ -56,14 +72,9 @@ class HomeProviders extends StatelessWidget {
             )..add(FlashcardsEventInitialize()),
           ),
           BlocProvider(
-            create: (BuildContext context) => AppearanceSettingsBloc(
-              settingsInterface: context.read<SettingsInterface>(),
-            )..add(AppearanceSettingsEventLoad()),
-          ),
-          BlocProvider(
-            create: (BuildContext context) => NotificationsSettingsBloc(
-              settingsInterface: context.read<SettingsInterface>(),
-            )..add(NotificationsSettingsEventLoad()),
+            create: (BuildContext context) => SessionsBloc(
+              sessionsInterface: context.read<SessionsInterface>(),
+            )..add(SessionsEventInitialize()),
           ),
         ],
         child: child,

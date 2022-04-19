@@ -1,6 +1,6 @@
 import 'package:fiszkomaniak/firebase/models/appearance_settings_db_model.dart';
 import 'package:fiszkomaniak/firebase/models/notifications_settings_db_model.dart';
-import 'package:fiszkomaniak/firebase/repositories/settings_repository.dart';
+import 'package:fiszkomaniak/repositories/settings_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_settings_service.dart';
 import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
 import 'package:fiszkomaniak/models/settings/notifications_settings_model.dart';
