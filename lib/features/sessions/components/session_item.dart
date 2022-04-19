@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/components/card_item.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/converters/date_converters.dart';
 import 'package:fiszkomaniak/converters/time_converter.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
@@ -20,6 +21,9 @@ class SessionItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return IntrinsicHeight(
       child: CardItem(
+        onTap: () {
+          Navigation.navigateToSessionPreview(session.id);
+        },
         child: Row(
           children: [
             _BigDate(date: session.date),

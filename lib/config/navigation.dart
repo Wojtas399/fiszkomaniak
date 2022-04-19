@@ -99,4 +99,11 @@ class Navigation {
       arguments: flashcardId,
     );
   }
+
+  static void navigateToSessionPreview(String sessionId) {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.sessionPreview,
+      arguments: sessionId,
+    );
+  }
 }

@@ -12,6 +12,7 @@ import 'package:fiszkomaniak/features/group_preview/group_preview_page.dart';
 import 'package:fiszkomaniak/features/home/home.dart';
 import 'package:fiszkomaniak/features/home/home_view.dart';
 import 'package:fiszkomaniak/features/session_creator/session_creator.dart';
+import 'package:fiszkomaniak/features/session_preview/session_preview.dart';
 import 'package:fiszkomaniak/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 
@@ -39,6 +40,8 @@ class HomeRouter extends StatelessWidget {
   static const String groupPreview = '/group-preview';
 
   static const String flashcardPreview = '/flashcard-preview';
+
+  static const String sessionPreview = '/session-preview';
 
   const HomeRouter({Key? key}) : super(key: key);
 
@@ -105,6 +108,12 @@ class HomeRouter extends StatelessWidget {
         return SlideUpRouteAnimation(
           page: FlashcardPreview(
             flashcardId: routeSettings.arguments as String,
+          ),
+        );
+      case sessionPreview:
+        return SlideUpRouteAnimation(
+          page: SessionPreview(
+            sessionId: routeSettings.arguments as String,
           ),
         );
       default:
