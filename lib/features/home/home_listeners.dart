@@ -7,19 +7,23 @@ import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_status.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../components/dialogs/dialogs.dart';
 import '../../core/appearance_settings/appearance_settings_bloc.dart';
 import '../../core/appearance_settings/appearance_settings_state.dart';
 import '../../core/groups/groups_status.dart';
+import '../../core/sessions/sessions_state.dart';
+import '../../core/sessions/sessions_status.dart';
 import '../../providers/theme_provider.dart';
 
 class HomeListeners extends StatelessWidget {
   final Widget child;
   final PageController pageController;
+  final Dialogs dialogs = Dialogs();
 
-  const HomeListeners({
+  HomeListeners({
     Key? key,
     required this.child,
     required this.pageController,
@@ -27,7 +31,6 @@ class HomeListeners extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Dialogs dialogs = Dialogs();
     return MultiBlocListener(
       listeners: [
         BlocListener<AppearanceSettingsBloc, AppearanceSettingsState>(
@@ -59,10 +62,7 @@ class HomeListeners extends StatelessWidget {
               dialogs.showSnackbarWithMessage('Pomyślnie usunięto kurs');
             } else if (status is CoursesStatusError) {
               _closeLoadingDialog(context);
-              dialogs.showDialogWithMessage(
-                title: 'Wystąpił błąd...',
-                message: status.message,
-              );
+              _displayError(status.message);
             }
           },
         ),
@@ -88,10 +88,7 @@ class HomeListeners extends StatelessWidget {
               dialogs.showSnackbarWithMessage('Pomyślnie usunięto grupę');
             } else if (status is GroupsStatusError) {
               _closeLoadingDialog(context);
-              dialogs.showDialogWithMessage(
-                title: 'Wystąpił błąd...',
-                message: status.message,
-              );
+              _displayError(status.message);
             }
           },
         ),
@@ -117,15 +114,35 @@ class HomeListeners extends StatelessWidget {
               dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
             } else if (status is FlashcardsStatusError) {
               _closeLoadingDialog(context);
-              dialogs.showDialogWithMessage(
-                title: 'Wystąpił błąd...',
-                message: status.message,
-              );
+              _displayError(status.message);
             }
           },
-        )
+        ),
+        BlocListener<SessionsBloc, SessionsState>(
+          listener: (BuildContext context, SessionsState state) {
+            final SessionsStatus status = state.status;
+            if (status is SessionsStatusLoading) {
+              dialogs.showLoadingDialog();
+            } else if (status is SessionsStatusSessionAdded) {
+              _closeLoadingDialog(context);
+              Navigation.backHome();
+              dialogs.showSnackbarWithMessage('Pomyślnie dodano nową sesję');
+              _animateToPage(1);
+            } else if (status is SessionsStatusError) {
+              _closeLoadingDialog(context);
+              _displayError(status.message);
+            }
+          },
+        ),
       ],
       child: child,
+    );
+  }
+
+  void _displayError(String message) {
+    dialogs.showDialogWithMessage(
+      title: 'Wystąpił błąd...',
+      message: message,
     );
   }
 
