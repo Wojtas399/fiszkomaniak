@@ -25,7 +25,12 @@ class SessionsPage extends StatelessWidget {
                 return BouncingScroll(
                   child: SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.only(
+                        top: 16,
+                        right: 16,
+                        bottom: 32,
+                        left: 16,
+                      ),
                       child: Column(
                         children: sessionsState.allSessions
                             .map(

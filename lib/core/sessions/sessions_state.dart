@@ -21,6 +21,14 @@ class SessionsState extends Equatable {
     );
   }
 
+  Session? getSessionById(String? sessionId) {
+    final List<Session?> sessions = [...allSessions];
+    return sessions.firstWhere(
+      (session) => session?.id == sessionId,
+      orElse: () => null,
+    );
+  }
+
   @override
   List<Object> get props => [
         allSessions,
