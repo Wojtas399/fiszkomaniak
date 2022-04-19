@@ -27,7 +27,7 @@ class SessionDbModel extends Equatable {
               json['areQuestionsAndAnswersSwapped'] as bool,
           date: json['date']! as String,
           time: json['time']! as String,
-          duration: json['duration']! as String,
+          duration: json['duration'] as String?,
           notificationTime: json['notificationTime'] as String?,
         );
 

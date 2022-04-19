@@ -262,6 +262,21 @@ void main() {
   );
 
   blocTest(
+    'clean duration',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(SessionCreatorEventDurationSelected(
+        duration: const TimeOfDay(hour: 0, minute: 30),
+      ));
+      bloc.add(SessionCreatorEventCleanDurationTime());
+    },
+    expect: () => [
+      const SessionCreatorState(duration: TimeOfDay(hour: 0, minute: 30)),
+      const SessionCreatorState(duration: null),
+    ],
+  );
+
+  blocTest(
     'clean notification time',
     build: () => bloc,
     act: (_) {
@@ -274,9 +289,7 @@ void main() {
       const SessionCreatorState(
         notificationTime: TimeOfDay(hour: 12, minute: 30),
       ),
-      const SessionCreatorState(
-        notificationTime: null,
-      ),
+      const SessionCreatorState(notificationTime: null),
     ],
   );
 
@@ -304,14 +317,14 @@ void main() {
     });
 
     blocTest(
-      'all required params completed',
+      'all params completed',
       build: () => bloc,
       act: (_) {
         bloc.add(SessionCreatorEventGroupSelected(groupId: session.groupId));
         bloc.add(SessionCreatorEventDateSelected(date: session.date));
         bloc.add(SessionCreatorEventTimeSelected(time: session.time));
         bloc.add(SessionCreatorEventDurationSelected(
-          duration: session.duration,
+          duration: session.duration!,
         ));
         bloc.add(SessionCreatorEventNotificationTimeSelected(
           notificationTime: session.notificationTime!,
@@ -332,7 +345,7 @@ void main() {
         bloc.add(SessionCreatorEventDateSelected(date: session.date));
         bloc.add(SessionCreatorEventTimeSelected(time: session.time));
         bloc.add(SessionCreatorEventDurationSelected(
-          duration: session.duration,
+          duration: session.duration!,
         ));
         bloc.add(SessionCreatorEventNotificationTimeSelected(
           notificationTime: session.notificationTime!,
@@ -351,7 +364,7 @@ void main() {
         bloc.add(SessionCreatorEventGroupSelected(groupId: session.groupId));
         bloc.add(SessionCreatorEventTimeSelected(time: session.time));
         bloc.add(SessionCreatorEventDurationSelected(
-          duration: session.duration,
+          duration: session.duration!,
         ));
         bloc.add(SessionCreatorEventNotificationTimeSelected(
           notificationTime: session.notificationTime!,
@@ -370,7 +383,7 @@ void main() {
         bloc.add(SessionCreatorEventGroupSelected(groupId: session.groupId));
         bloc.add(SessionCreatorEventDateSelected(date: session.date));
         bloc.add(SessionCreatorEventDurationSelected(
-          duration: session.duration,
+          duration: session.duration!,
         ));
         bloc.add(SessionCreatorEventNotificationTimeSelected(
           notificationTime: session.notificationTime!,
@@ -395,7 +408,21 @@ void main() {
         bloc.add(SessionCreatorEventSubmit());
       },
       verify: (_) {
-        verifyNever(() => sessionsBloc.add(any()));
+        verify(
+          () => sessionsBloc.add(
+            SessionsEventAddSession(
+              session: createSession(
+                groupId: 'g1',
+                flashcardsType: FlashcardsType.remembered,
+                areQuestionsAndAnswersSwapped: false,
+                date: DateTime(2022),
+                time: const TimeOfDay(hour: 12, minute: 0),
+                duration: null,
+                notificationTime: const TimeOfDay(hour: 9, minute: 0),
+              ),
+            ),
+          ),
+        ).called(1);
       },
     );
 
@@ -407,7 +434,7 @@ void main() {
         bloc.add(SessionCreatorEventDateSelected(date: session.date));
         bloc.add(SessionCreatorEventTimeSelected(time: session.time));
         bloc.add(SessionCreatorEventDurationSelected(
-          duration: session.duration,
+          duration: session.duration!,
         ));
         bloc.add(SessionCreatorEventSubmit());
       },

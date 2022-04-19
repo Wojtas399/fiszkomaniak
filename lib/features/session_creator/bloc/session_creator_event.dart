@@ -49,6 +49,8 @@ class SessionCreatorEventNotificationTimeSelected extends SessionCreatorEvent {
   SessionCreatorEventNotificationTimeSelected({required this.notificationTime});
 }
 
+class SessionCreatorEventCleanDurationTime extends SessionCreatorEvent {}
+
 class SessionCreatorEventCleanNotificationTime extends SessionCreatorEvent {}
 
 class SessionCreatorEventSubmit extends SessionCreatorEvent {}

@@ -148,6 +148,15 @@ void main() {
     expect(state3.selectedGroup, null);
   });
 
+  test('reset duration', () {
+    const TimeOfDay duration = TimeOfDay(hour: 0, minute: 30);
+    final SessionCreatorState state2 = state.copyWith(duration: duration);
+    final SessionCreatorState state3 = state2.reset(duration: true);
+
+    expect(state2.duration, duration);
+    expect(state3.duration, null);
+  });
+
   test('reset notification time', () {
     const TimeOfDay notificationTime = TimeOfDay(hour: 12, minute: 30);
     final SessionCreatorState state2 = state.copyWith(
@@ -243,17 +252,6 @@ void main() {
         selectedGroup: selectedGroup,
         date: date,
         duration: duration,
-      );
-
-      expect(updatedState.isButtonDisabled, true);
-    });
-
-    test('duration as null', () {
-      final SessionCreatorState updatedState = state.copyWith(
-        selectedCourse: selectedCourse,
-        selectedGroup: selectedGroup,
-        date: date,
-        time: time,
       );
 
       expect(updatedState.isButtonDisabled, true);

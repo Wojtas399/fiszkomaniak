@@ -37,6 +37,7 @@ class SessionCreatorBloc
     on<SessionCreatorEventTimeSelected>(_timeSelected);
     on<SessionCreatorEventDurationSelected>(_durationSelected);
     on<SessionCreatorEventNotificationTimeSelected>(_notificationTimeSelected);
+    on<SessionCreatorEventCleanDurationTime>(_cleanDurationTime);
     on<SessionCreatorEventCleanNotificationTime>(_cleanNotificationTime);
     on<SessionCreatorEventSubmit>(_submit);
   }
@@ -122,6 +123,13 @@ class SessionCreatorBloc
     emit(state.copyWith(notificationTime: event.notificationTime));
   }
 
+  void _cleanDurationTime(
+    SessionCreatorEventCleanDurationTime event,
+    Emitter<SessionCreatorState> emit,
+  ) {
+    emit(state.reset(duration: true));
+  }
+
   void _cleanNotificationTime(
     SessionCreatorEventCleanNotificationTime event,
     Emitter<SessionCreatorState> emit,
@@ -136,8 +144,7 @@ class SessionCreatorBloc
     final String? groupId = state.selectedGroup?.id;
     final DateTime? date = state.date;
     final TimeOfDay? time = state.time;
-    final TimeOfDay? duration = state.duration;
-    if (groupId != null && date != null && time != null && duration != null) {
+    if (groupId != null && date != null && time != null) {
       _sessionsBloc.add(
         SessionsEventAddSession(
           session: Session(
@@ -147,7 +154,7 @@ class SessionCreatorBloc
             areQuestionsAndAnswersSwapped: state.areQuestionsAndAnswersSwapped,
             date: date,
             time: time,
-            duration: duration,
+            duration: state.duration,
             notificationTime: state.notificationTime,
           ),
         ),

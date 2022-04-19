@@ -28,8 +28,7 @@ class SessionCreatorState extends Equatable {
       selectedCourse == null ||
       selectedGroup == null ||
       date == null ||
-      time == null ||
-      duration == null;
+      time == null;
 
   const SessionCreatorState({
     this.courses = const [],
@@ -73,6 +72,7 @@ class SessionCreatorState extends Equatable {
 
   SessionCreatorState reset({
     bool selectedGroup = false,
+    bool duration = false,
     bool notificationTime = false,
   }) {
     return SessionCreatorState(
@@ -84,7 +84,7 @@ class SessionCreatorState extends Equatable {
       areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
       date: date,
       time: time,
-      duration: duration,
+      duration: duration ? null : this.duration,
       notificationTime: notificationTime ? null : this.notificationTime,
     );
   }

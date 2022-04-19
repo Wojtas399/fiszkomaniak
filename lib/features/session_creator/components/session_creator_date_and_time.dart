@@ -19,27 +19,27 @@ class SessionCreatorDateAndTime extends StatelessWidget {
       builder: (BuildContext context, SessionCreatorState state) {
         return Section(
           title: 'Data i czas',
-          child: Stack(
+          child: Column(
             children: [
-              Column(
+              const SessionCreatorDatePicker(),
+              TimePicker(
+                icon: MdiIcons.clockStart,
+                label: 'Godzina rozpoczęcia',
+                value: convertTimeToViewFormat(state.time),
+                paddingLeft: 8.0,
+                paddingRight: 8.0,
+                helpText: 'WYBIERZ GODZINĘ ROZPOCZĘCIA',
+                onSelect: (TimeOfDay time) {
+                  context
+                      .read<SessionCreatorBloc>()
+                      .add(SessionCreatorEventTimeSelected(time: time));
+                },
+              ),
+              Stack(
                 children: [
-                  const SessionCreatorDatePicker(),
-                  TimePicker(
-                    icon: MdiIcons.clockStart,
-                    label: 'Godzina rozpoczęcia',
-                    value: convertTimeToViewFormat(state.time),
-                    paddingLeft: 8.0,
-                    paddingRight: 8.0,
-                    helpText: 'WYBIERZ GODZINĘ ROZPOCZĘCIA',
-                    onSelect: (TimeOfDay time) {
-                      context
-                          .read<SessionCreatorBloc>()
-                          .add(SessionCreatorEventTimeSelected(time: time));
-                    },
-                  ),
                   TimePicker(
                     icon: MdiIcons.clockOutline,
-                    label: 'Czas trwania',
+                    label: 'Czas trwania (opcjonalnie)',
                     value: convertTimeToDurationViewFormat(state.duration),
                     initialTime:
                         state.duration ?? const TimeOfDay(hour: 0, minute: 0),
@@ -51,9 +51,27 @@ class SessionCreatorDateAndTime extends StatelessWidget {
                           SessionCreatorEventDurationSelected(duration: time));
                     },
                   ),
+                  state.duration != null
+                      ? Positioned(
+                          right: 0.0,
+                          bottom: 2.0,
+                          child: CustomIconButton(
+                            icon: MdiIcons.close,
+                            onPressed: () {
+                              context
+                                  .read<SessionCreatorBloc>()
+                                  .add(SessionCreatorEventCleanDurationTime());
+                            },
+                          ),
+                        )
+                      : const SizedBox(),
+                ],
+              ),
+              Stack(
+                children: [
                   TimePicker(
                     icon: MdiIcons.bellRingOutline,
-                    label: 'Godzina przypomnienia',
+                    label: 'Godzina przypomnienia (opcjonalnie)',
                     value: convertTimeToViewFormat(state.notificationTime),
                     initialTime: const TimeOfDay(hour: 0, minute: 0),
                     paddingLeft: 8.0,
@@ -67,22 +85,21 @@ class SessionCreatorDateAndTime extends StatelessWidget {
                           ));
                     },
                   ),
+                  state.notificationTime != null
+                      ? Positioned(
+                          right: 0.0,
+                          bottom: 2.0,
+                          child: CustomIconButton(
+                            icon: MdiIcons.close,
+                            onPressed: () {
+                              context.read<SessionCreatorBloc>().add(
+                                  SessionCreatorEventCleanNotificationTime());
+                            },
+                          ),
+                        )
+                      : const SizedBox(),
                 ],
               ),
-              state.notificationTime != null
-                  ? Positioned(
-                      bottom: 4.0,
-                      right: 0.0,
-                      child: CustomIconButton(
-                        icon: MdiIcons.close,
-                        onPressed: () {
-                          context
-                              .read<SessionCreatorBloc>()
-                              .add(SessionCreatorEventCleanNotificationTime());
-                        },
-                      ),
-                    )
-                  : const SizedBox(),
             ],
           ),
         );

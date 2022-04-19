@@ -83,8 +83,7 @@ class SessionsRepository implements SessionsInterface {
         flashcardsType != null &&
         areQuestionsAndAnswersSwapped != null &&
         date != null &&
-        time != null &&
-        duration != null) {
+        time != null) {
       return ChangedDocument(
         changeType: FireUtils.convertChangeType(docChange.type),
         doc: Session(

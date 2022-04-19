@@ -97,7 +97,7 @@ class _Title extends StatelessWidget {
 
 class _TimeAndDuration extends StatelessWidget {
   final TimeOfDay time;
-  final TimeOfDay duration;
+  final TimeOfDay? duration;
 
   const _TimeAndDuration({
     Key? key,
