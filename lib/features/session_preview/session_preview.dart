@@ -1,11 +1,15 @@
-import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
+import 'package:fiszkomaniak/features/session_preview/components/session_preview_app_bar.dart';
+import 'package:fiszkomaniak/features/session_preview/components/session_preview_button.dart';
+import 'package:fiszkomaniak/features/session_preview/components/session_preview_date.dart';
 import 'package:fiszkomaniak/features/session_preview/components/session_preview_flashcards.dart';
+import 'package:fiszkomaniak/features/session_preview/components/session_preview_time.dart';
+import 'package:fiszkomaniak/features/session_preview/components/session_preview_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,16 +26,34 @@ class SessionPreview extends StatelessWidget {
     return _SessionPreviewBlocProvider(
       sessionId: sessionId,
       child: Scaffold(
-        appBar: const AppBarWithCloseButton(label: 'Sesja'),
-        body: BouncingScroll(
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                children: const [
-                  SessionPreviewFlashcards(),
-                ],
-              ),
+        appBar: const SessionPreviewAppBar(),
+        body: SafeArea(
+          child: SizedBox(
+            height: double.infinity,
+            child: Stack(
+              children: [
+                BouncingScroll(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 24.0,
+                      right: 24.0,
+                      top: 24.0,
+                      bottom: 96.0,
+                    ),
+                    child: Column(
+                      children: const [
+                        SessionPreviewDate(),
+                        SizedBox(height: 16.0),
+                        SessionPreviewTitle(),
+                        SizedBox(height: 8.0),
+                        SessionPreviewTime(),
+                        SessionPreviewFlashcards(),
+                      ],
+                    ),
+                  ),
+                ),
+                const SessionPreviewButton(),
+              ],
             ),
           ),
         ),

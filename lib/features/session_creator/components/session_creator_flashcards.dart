@@ -4,11 +4,12 @@ import 'package:fiszkomaniak/components/section.dart';
 import 'package:fiszkomaniak/components/select_item/select_item.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
-import 'package:fiszkomaniak/features/session_creator/components/session_creator_flashcards_type_picker.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/session_flashcards_type_picker.dart';
+import '../../../models/session_model.dart';
 import '../bloc/session_creator_state.dart';
 
 class SessionCreatorFlashcards extends StatelessWidget {
@@ -53,7 +54,16 @@ class SessionCreatorFlashcards extends StatelessWidget {
                           ));
                     },
                   ),
-                  const SessionCreatorFlashcardsTypePicker(),
+                  SessionFlashcardsTypePicker(
+                    selectedType: state.flashcardsType,
+                    onTypeChanged: (FlashcardsType type) {
+                      context
+                          .read<SessionCreatorBloc>()
+                          .add(SessionCreatorEventFlashcardsTypeSelected(
+                            type: type,
+                          ));
+                    },
+                  ),
                   ItemWithIcon(
                     icon: MdiIcons.fileOutline,
                     label: 'Nazwa dla pytań',

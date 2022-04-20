@@ -28,7 +28,7 @@ class SessionCreator extends StatelessWidget {
                 children: const [
                   SessionCreatorFlashcards(),
                   SessionCreatorDateAndTime(),
-                  SizedBox(height: 32),
+                  SizedBox(height: 16),
                   SessionCreatorButton(),
                 ],
               ),
