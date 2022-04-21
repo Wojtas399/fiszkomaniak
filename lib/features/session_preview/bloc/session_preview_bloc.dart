@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
@@ -15,6 +18,7 @@ class SessionPreviewBloc
   late final GroupsBloc _groupsBloc;
   late final SessionsBloc _sessionsBloc;
   late final SessionPreviewDialogs _sessionPreviewDialogs;
+  StreamSubscription? _sessionsStateSubscription;
 
   SessionPreviewBloc({
     required CoursesBloc coursesBloc,
@@ -36,6 +40,7 @@ class SessionPreviewBloc
     on<SessionPreviewEventSaveChanges>(_saveChanges);
     on<SessionPreviewEventDeleteSession>(_deleteSession);
     on<SessionPreviewEventStartLearning>(_startLearning);
+    on<SessionPreviewEventSessionsStateUpdated>(_sessionsStateUpdated);
   }
 
   void _initialize(
@@ -62,6 +67,7 @@ class SessionPreviewBloc
         areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
       ));
     }
+    _setSessionsStateListener();
   }
 
   void _timeChanged(
@@ -152,10 +158,11 @@ class SessionPreviewBloc
     SessionPreviewEventDeleteSession event,
     Emitter<SessionPreviewState> emit,
   ) async {
+    final Session? session = state.session;
     final bool confirmation =
         await _sessionPreviewDialogs.askForDeleteConfirmation();
-    if (confirmation) {
-      //TODO
+    if (confirmation && session != null) {
+      _sessionsBloc.add(SessionsEventRemoveSession(sessionId: session.id));
     }
   }
 
@@ -164,6 +171,27 @@ class SessionPreviewBloc
     Emitter<SessionPreviewState> emit,
   ) {
     //TODO
+  }
+
+  void _sessionsStateUpdated(
+    SessionPreviewEventSessionsStateUpdated event,
+    Emitter<SessionPreviewState> emit,
+  ) {
+    final String? sessionId = state.session?.id;
+    if (sessionId != null) {
+      final Session? updatedSession = _sessionsBloc.state.getSessionById(
+        sessionId,
+      );
+      if (updatedSession != null) {
+        emit(state.copyWith(session: updatedSession));
+      }
+    }
+  }
+
+  void _setSessionsStateListener() {
+    _sessionsStateSubscription = _sessionsBloc.stream.listen((_) {
+      add(SessionPreviewEventSessionsStateUpdated());
+    });
   }
 
   bool _isTodayTimeIncorrect() {
@@ -177,5 +205,11 @@ class SessionPreviewBloc
         time != null &&
         time.hour <= nowTime.hour &&
         time.minute < nowTime.minute;
+  }
+
+  @override
+  Future<void> close() {
+    _sessionsStateSubscription?.cancel();
+    return super.close();
   }
 }

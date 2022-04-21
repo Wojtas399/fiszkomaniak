@@ -20,6 +20,8 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     on<SessionsEventSessionUpdated>(_sessionUpdated);
     on<SessionsEventSessionRemoved>(_sessionRemoved);
     on<SessionsEventAddSession>(_addSession);
+    on<SessionsEventRemoveSession>(_removeSession);
+    on<SessionsEventUpdateSession>(_updateSession);
   }
 
   void _initialize(
@@ -86,6 +88,45 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       emit(state.copyWith(status: SessionsStatusLoading()));
       await _sessionsInterface.addNewSession(event.session);
       emit(state.copyWith(status: SessionsStatusSessionAdded()));
+    } catch (error) {
+      emit(state.copyWith(
+        status: SessionsStatusError(message: error.toString()),
+      ));
+    }
+  }
+
+  Future<void> _updateSession(
+    SessionsEventUpdateSession event,
+    Emitter<SessionsState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: SessionsStatusLoading()));
+      await _sessionsInterface.updateSession(
+        sessionId: event.sessionId,
+        groupId: event.groupId,
+        flashcardsType: event.flashcardsType,
+        areQuestionsAndAnswersSwapped: event.areQuestionsAndFlashcardsSwapped,
+        date: event.date,
+        time: event.time,
+        duration: event.duration,
+        notificationTime: event.notificationTime,
+      );
+      emit(state.copyWith(status: SessionsStatusSessionUpdated()));
+    } catch (error) {
+      emit(state.copyWith(
+        status: SessionsStatusError(message: error.toString()),
+      ));
+    }
+  }
+
+  Future<void> _removeSession(
+    SessionsEventRemoveSession event,
+    Emitter<SessionsState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: SessionsStatusLoading()));
+      await _sessionsInterface.removeSession(event.sessionId);
+      emit(state.copyWith(status: SessionsStatusSessionRemoved()));
     } catch (error) {
       emit(state.copyWith(
         status: SessionsStatusError(message: error.toString()),

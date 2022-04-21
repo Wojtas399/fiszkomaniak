@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/firebase/models/fire_doc_model.dart';
 import 'package:fiszkomaniak/firebase/models/session_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
@@ -46,5 +47,43 @@ void main() {
     verify(
       () => fireSessionsService.addNewSession(expectedDataToCall),
     ).called(1);
+  });
+
+  test('update session', () async {
+    const String newGroupId = 'g2';
+    final DateTime newDate = DateTime(2022, 1, 1);
+    const TimeOfDay newDuration = TimeOfDay(hour: 0, minute: 45);
+    const FireDoc<SessionDbModel> fireDoc = FireDoc(
+      id: 's1',
+      doc: SessionDbModel(
+        groupId: newGroupId,
+        flashcardsType: null,
+        areQuestionsAndAnswersSwapped: null,
+        date: '2022-01-01',
+        time: null,
+        duration: '00:45',
+        notificationTime: null,
+      ),
+    );
+    when(() => fireSessionsService.updateSession(fireDoc))
+        .thenAnswer((_) async => '');
+
+    await repository.updateSession(
+      sessionId: 's1',
+      groupId: newGroupId,
+      date: newDate,
+      duration: newDuration,
+    );
+
+    verify(() => fireSessionsService.updateSession(fireDoc)).called(1);
+  });
+
+  test('remove session', () async {
+    when(() => fireSessionsService.removeSession('s1'))
+        .thenAnswer((_) async => '');
+
+    await repository.removeSession('s1');
+
+    verify(() => fireSessionsService.removeSession('s1')).called(1);
   });
 }

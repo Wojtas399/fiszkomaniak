@@ -17,6 +17,10 @@ class SessionsStatusLoading extends SessionsStatus {}
 
 class SessionsStatusSessionAdded extends SessionsStatus {}
 
+class SessionsStatusSessionUpdated extends SessionsStatus {}
+
+class SessionsStatusSessionRemoved extends SessionsStatus {}
+
 class SessionsStatusError extends SessionsStatus {
   final String message;
 

@@ -44,3 +44,5 @@ class SessionPreviewEventSaveChanges extends SessionPreviewEvent {}
 class SessionPreviewEventDeleteSession extends SessionPreviewEvent {}
 
 class SessionPreviewEventStartLearning extends SessionPreviewEvent {}
+
+class SessionPreviewEventSessionsStateUpdated extends SessionPreviewEvent {}

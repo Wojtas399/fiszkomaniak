@@ -75,6 +75,7 @@ void main() {
     when(() => sessionsBloc.state).thenReturn(sessionsState);
     when(() => groupsBloc.state).thenReturn(groupsState);
     when(() => coursesBloc.state).thenReturn(coursesState);
+    when(() => sessionsBloc.stream).thenAnswer((_) => const Stream.empty());
   });
 
   tearDown(() {

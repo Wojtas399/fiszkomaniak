@@ -296,7 +296,7 @@ void main() {
   group('submit', () {
     final Session session = createSession(
       groupId: 'g1',
-      flashcardsType: FlashcardsType.remembered,
+      flashcardsType: FlashcardsType.all,
       areQuestionsAndAnswersSwapped: false,
       date: DateTime(2022),
       time: const TimeOfDay(hour: 12, minute: 0),
@@ -413,7 +413,7 @@ void main() {
             SessionsEventAddSession(
               session: createSession(
                 groupId: 'g1',
-                flashcardsType: FlashcardsType.remembered,
+                flashcardsType: FlashcardsType.all,
                 areQuestionsAndAnswersSwapped: false,
                 date: DateTime(2022),
                 time: const TimeOfDay(hour: 12, minute: 0),
@@ -444,7 +444,7 @@ void main() {
             SessionsEventAddSession(
               session: createSession(
                 groupId: 'g1',
-                flashcardsType: FlashcardsType.remembered,
+                flashcardsType: FlashcardsType.all,
                 areQuestionsAndAnswersSwapped: false,
                 date: DateTime(2022),
                 time: const TimeOfDay(hour: 12, minute: 0),

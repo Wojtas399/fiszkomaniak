@@ -162,4 +162,101 @@ void main() {
       verify(() => sessionsInterface.addNewSession(snapshots[0].doc)).called(1);
     },
   );
+
+  blocTest(
+    'update session, success',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => sessionsInterface.updateSession(
+          sessionId: 's1',
+          date: DateTime(2022, 1, 1),
+          flashcardsType: FlashcardsType.remembered,
+        ),
+      ).thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(SessionsEventUpdateSession(
+      sessionId: 's1',
+      date: DateTime(2022, 1, 1),
+      flashcardsType: FlashcardsType.remembered,
+    )),
+    expect: () => [
+      SessionsState(status: SessionsStatusLoading()),
+      SessionsState(status: SessionsStatusSessionUpdated()),
+    ],
+    verify: (_) {
+      verify(
+        () => sessionsInterface.updateSession(
+          sessionId: 's1',
+          date: DateTime(2022, 1, 1),
+          flashcardsType: FlashcardsType.remembered,
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'update session, failure',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => sessionsInterface.updateSession(
+          sessionId: 's1',
+          date: DateTime(2022, 1, 1),
+          flashcardsType: FlashcardsType.remembered,
+        ),
+      ).thenThrow('Error...');
+    },
+    act: (_) => bloc.add(SessionsEventUpdateSession(
+      sessionId: 's1',
+      date: DateTime(2022, 1, 1),
+      flashcardsType: FlashcardsType.remembered,
+    )),
+    expect: () => [
+      SessionsState(status: SessionsStatusLoading()),
+      const SessionsState(status: SessionsStatusError(message: 'Error...')),
+    ],
+    verify: (_) {
+      verify(
+        () => sessionsInterface.updateSession(
+          sessionId: 's1',
+          date: DateTime(2022, 1, 1),
+          flashcardsType: FlashcardsType.remembered,
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'remove session, success',
+    build: () => bloc,
+    setUp: () {
+      when(() => sessionsInterface.removeSession('s1'))
+          .thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(SessionsEventRemoveSession(sessionId: 's1')),
+    expect: () => [
+      SessionsState(status: SessionsStatusLoading()),
+      SessionsState(status: SessionsStatusSessionRemoved()),
+    ],
+    verify: (_) {
+      verify(() => sessionsInterface.removeSession('s1')).called(1);
+    },
+  );
+
+  blocTest(
+    'remove session, failure',
+    build: () => bloc,
+    setUp: () {
+      when(() => sessionsInterface.removeSession('s1')).thenThrow('Error...');
+    },
+    act: (_) => bloc.add(SessionsEventRemoveSession(sessionId: 's1')),
+    expect: () => [
+      SessionsState(status: SessionsStatusLoading()),
+      const SessionsState(status: SessionsStatusError(message: 'Error...')),
+    ],
+    verify: (_) {
+      verify(() => sessionsInterface.removeSession('s1')).called(1);
+    },
+  );
 }

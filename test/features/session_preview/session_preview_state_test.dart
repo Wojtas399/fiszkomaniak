@@ -136,17 +136,6 @@ void main() {
     expect(updatedState.isOverdueSession, true);
   });
 
-  test('is overdue session, today, past time', () {
-    final SessionPreviewState updatedState = state.copyWith(
-      session: createSession(
-        date: DateTime.now(),
-        time: TimeOfDay.now().subtractMinutes(1),
-      ),
-    );
-
-    expect(updatedState.isOverdueSession, true);
-  });
-
   test('is overdue session, future day', () {
     final SessionPreviewState updatedState = state.copyWith(
       session: createSession(

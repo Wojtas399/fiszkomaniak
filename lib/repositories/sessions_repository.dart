@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiszkomaniak/firebase/models/fire_doc_model.dart';
 import 'package:fiszkomaniak/firebase/models/session_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
@@ -52,15 +53,26 @@ class SessionsRepository implements SessionsInterface {
     TimeOfDay? time,
     TimeOfDay? duration,
     TimeOfDay? notificationTime,
-  }) {
-    // TODO: implement updateSession
-    throw UnimplementedError();
+  }) async {
+    await _fireSessionsService.updateSession(
+      FireDoc(
+        id: sessionId,
+        doc: SessionDbModel(
+          groupId: groupId,
+          flashcardsType: _convertFlashcardsTypeToString(flashcardsType),
+          areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
+          date: _convertDateTimeToString(date),
+          time: _convertTimeOfDayToString(time),
+          duration: _convertTimeOfDayToString(duration),
+          notificationTime: _convertTimeOfDayToString(notificationTime),
+        ),
+      ),
+    );
   }
 
   @override
-  Future<void> removeSession(String sessionId) {
-    // TODO: implement removeSession
-    throw UnimplementedError();
+  Future<void> removeSession(String sessionId) async {
+    await _fireSessionsService.removeSession(sessionId);
   }
 
   ChangedDocument<Session>? _convertFireDocumentToChangedDocumentModel(
@@ -101,7 +113,10 @@ class SessionsRepository implements SessionsInterface {
     return null;
   }
 
-  String _convertFlashcardsTypeToString(FlashcardsType type) {
+  String? _convertFlashcardsTypeToString(FlashcardsType? type) {
+    if (type == null) {
+      return null;
+    }
     switch (type) {
       case FlashcardsType.all:
         return 'all';
@@ -125,7 +140,10 @@ class SessionsRepository implements SessionsInterface {
     }
   }
 
-  String _convertDateTimeToString(DateTime date) {
+  String? _convertDateTimeToString(DateTime? date) {
+    if (date == null) {
+      return null;
+    }
     final String month = _convertNumberToDateTimeString(date.month);
     final String day = _convertNumberToDateTimeString(date.day);
     return '${date.year}-$month-$day';

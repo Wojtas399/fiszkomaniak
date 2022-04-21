@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiszkomaniak/firebase/models/fire_doc_model.dart';
 import 'package:fiszkomaniak/firebase/models/session_db_model.dart';
 import '../fire_instances.dart';
 import '../fire_user.dart';
@@ -18,6 +19,34 @@ class FireSessionsService {
       final String? loggedUserId = FireUser.getLoggedUserId();
       if (loggedUserId != null) {
         await _getSessionsRef(loggedUserId).add(sessionData);
+      } else {
+        throw FireUser.noLoggedUserMessage;
+      }
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> updateSession(FireDoc<SessionDbModel> sessionData) async {
+    try {
+      final String? loggedUserId = FireUser.getLoggedUserId();
+      if (loggedUserId != null) {
+        await _getSessionsRef(loggedUserId).doc(sessionData.id).update(
+              sessionData.doc.toJson(),
+            );
+      } else {
+        throw FireUser.noLoggedUserMessage;
+      }
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> removeSession(String sessionId) async {
+    try {
+      final String? loggedUserId = FireUser.getLoggedUserId();
+      if (loggedUserId != null) {
+        await _getSessionsRef(loggedUserId).doc(sessionId).delete();
       } else {
         throw FireUser.noLoggedUserMessage;
       }
