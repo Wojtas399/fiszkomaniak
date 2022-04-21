@@ -37,26 +37,28 @@ class TimePicker extends StatelessWidget {
       paddingRight: paddingRight,
       paddingTop: paddingTop,
       paddingBottom: paddingBottom,
-      onTap: () async {
-        final TimeOfDay? time = await showTimePicker(
-          context: context,
-          initialTime: initialTime ?? TimeOfDay.now(),
-          cancelText: 'ANULUJ',
-          confirmText: 'WYBIERZ',
-          helpText: helpText,
-          builder: (BuildContext context, Widget? child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                alwaysUse24HourFormat: true,
-              ),
-              child: child!,
-            );
-          },
-        );
-        if (time != null) {
-          onSelect!(time);
-        }
-      },
+      onTap: onSelect != null
+          ? () async {
+              final TimeOfDay? time = await showTimePicker(
+                context: context,
+                initialTime: initialTime ?? TimeOfDay.now(),
+                cancelText: 'ANULUJ',
+                confirmText: 'WYBIERZ',
+                helpText: helpText,
+                builder: (BuildContext context, Widget? child) {
+                  return MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      alwaysUse24HourFormat: true,
+                    ),
+                    child: child!,
+                  );
+                },
+              );
+              if (time != null) {
+                onSelect!(time);
+              }
+            }
+          : null,
     );
   }
 }

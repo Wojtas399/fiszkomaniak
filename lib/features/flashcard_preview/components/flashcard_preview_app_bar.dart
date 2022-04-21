@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/components/confirmation_app_bar.dart';
 import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_event.dart';
@@ -61,30 +62,19 @@ class _ConfirmationAppBar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      automaticallyImplyLeading: false,
-      centerTitle: false,
-      title: const Text('Zapisać zmiany?'),
-      actions: [
-        CustomIconButton(
-          icon: MdiIcons.close,
-          onPressed: () {
-            Utils.unfocusElements();
-            context
-                .read<FlashcardPreviewBloc>()
-                .add(FlashcardPreviewEventResetChanges());
-          },
-        ),
-        CustomIconButton(
-          icon: MdiIcons.check,
-          onPressed: () {
-            Utils.unfocusElements();
-            context
-                .read<FlashcardPreviewBloc>()
-                .add(FlashcardPreviewEventSaveChanges());
-          },
-        ),
-      ],
+    return ConfirmationAppBar(
+      onAccept: () {
+        Utils.unfocusElements();
+        context
+            .read<FlashcardPreviewBloc>()
+            .add(FlashcardPreviewEventSaveChanges());
+      },
+      onCancel: () {
+        Utils.unfocusElements();
+        context
+            .read<FlashcardPreviewBloc>()
+            .add(FlashcardPreviewEventResetChanges());
+      },
     );
   }
 }

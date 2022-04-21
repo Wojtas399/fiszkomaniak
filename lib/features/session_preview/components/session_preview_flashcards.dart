@@ -2,6 +2,7 @@ import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:fiszkomaniak/components/item_with_icon.dart';
 import 'package:fiszkomaniak/components/session_flashcards_type_picker.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
+import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,8 @@ class SessionPreviewFlashcards extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SessionPreviewBloc, SessionPreviewState>(
       builder: (BuildContext context, SessionPreviewState state) {
-        final Session? session = state.session;
-        if (session == null) {
+        final FlashcardsType? flashcardsType = state.flashcardsType;
+        if (flashcardsType == null) {
           return const SizedBox();
         }
         return Stack(
@@ -24,7 +25,12 @@ class SessionPreviewFlashcards extends StatelessWidget {
             Column(
               children: [
                 SessionFlashcardsTypePicker(
-                  selectedType: session.flashcardsType,
+                  selectedType: flashcardsType,
+                  onTypeChanged: (FlashcardsType type) =>
+                      _onFlashcardsTypeChanged(
+                    context,
+                    type,
+                  ),
                 ),
                 ItemWithIcon(
                   icon: MdiIcons.fileOutline,
@@ -47,12 +53,24 @@ class SessionPreviewFlashcards extends StatelessWidget {
               bottom: 42.0,
               child: CustomIconButton(
                 icon: MdiIcons.swapVertical,
-                onPressed: () {},
+                onPressed: () => _swapQuestionsAndAnswers(context),
               ),
             ),
           ],
         );
       },
     );
+  }
+
+  void _onFlashcardsTypeChanged(BuildContext context, FlashcardsType type) {
+    context
+        .read<SessionPreviewBloc>()
+        .add(SessionPreviewEventFlashcardsTypeChanged(flashcardsType: type));
+  }
+
+  void _swapQuestionsAndAnswers(BuildContext context) {
+    context
+        .read<SessionPreviewBloc>()
+        .add(SessionPreviewEventSwapQuestionsAndAnswers());
   }
 }
