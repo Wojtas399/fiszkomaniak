@@ -25,10 +25,6 @@ class GroupPreviewAppBar extends StatelessWidget
               label: 'Edytuj',
             ),
             PopupMenuItemParams(
-              icon: MdiIcons.plus,
-              label: 'Dodaj fiszki',
-            ),
-            PopupMenuItemParams(
               icon: MdiIcons.deleteOutline,
               label: 'Usuń',
             ),
@@ -48,8 +44,6 @@ class GroupPreviewAppBar extends StatelessWidget
     if (actionIndex == 0) {
       context.read<GroupPreviewBloc>().add(GroupPreviewEventEdit());
     } else if (actionIndex == 1) {
-      context.read<GroupPreviewBloc>().add(GroupPreviewEventAddFlashcards());
-    } else if (actionIndex == 2) {
       context.read<GroupPreviewBloc>().add(GroupPreviewEventRemove());
     }
   }

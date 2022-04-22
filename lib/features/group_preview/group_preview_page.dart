@@ -22,7 +22,7 @@ class GroupPreview extends StatelessWidget {
         appBar: GroupPreviewAppBar(),
         body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.all(24),
             child: GroupPreviewContent(),
           ),
         ),

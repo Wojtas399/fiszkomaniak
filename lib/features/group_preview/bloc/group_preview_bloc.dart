@@ -31,9 +31,10 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
     _groupPreviewDialogs = groupPreviewDialogs;
     on<GroupPreviewEventInitialize>(_initialize);
     on<GroupPreviewEventEdit>(_edit);
-    on<GroupPreviewEventAddFlashcards>(_addFlashcards);
     on<GroupPreviewEventRemove>(_remove);
     on<GroupPreviewEventGroupsStateUpdated>(_groupsStateUpdated);
+    on<GroupPreviewEventEditFlashcards>(_editFlashcards);
+    on<GroupPreviewEventReviewFlashcards>(_reviewFlashcards);
     on<GroupPreviewEventFlashcardsStateUpdated>(_flashcardsStateUpdated);
   }
 
@@ -69,16 +70,6 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
     }
   }
 
-  void _addFlashcards(
-    GroupPreviewEventAddFlashcards event,
-    Emitter<GroupPreviewState> emit,
-  ) {
-    final String? groupId = state.group?.id;
-    if (groupId != null) {
-      Navigation.navigateToFlashcardsEditor(groupId);
-    }
-  }
-
   Future<void> _remove(
     GroupPreviewEventRemove event,
     Emitter<GroupPreviewState> emit,
@@ -90,6 +81,26 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
       if (confirmation == true) {
         _groupsBloc.add(GroupsEventRemoveGroup(groupId: groupId));
       }
+    }
+  }
+
+  void _editFlashcards(
+    GroupPreviewEventEditFlashcards event,
+    Emitter<GroupPreviewState> emi,
+  ) {
+    final String? groupId = state.group?.id;
+    if (groupId != null) {
+      Navigation.navigateToFlashcardsEditor(groupId);
+    }
+  }
+
+  void _reviewFlashcards(
+    GroupPreviewEventReviewFlashcards event,
+    Emitter<GroupPreviewState> emit,
+  ) {
+    final String? groupId = state.group?.id;
+    if (groupId != null) {
+      Navigation.navigateToGroupFlashcardsPreview(groupId);
     }
   }
 

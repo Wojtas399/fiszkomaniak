@@ -6,7 +6,7 @@ import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/button.dart';
-import 'group_preview_progress_bar.dart';
+import 'group_preview_flashcards_state.dart';
 import 'group_preview_information.dart';
 
 class GroupPreviewContent extends StatelessWidget {
@@ -34,7 +34,7 @@ class GroupPreviewContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 const GroupPreviewInformation(),
-                const GroupPreviewProgressBar(),
+                const GroupPreviewFlashcardsState(),
               ],
             ),
             Button(
