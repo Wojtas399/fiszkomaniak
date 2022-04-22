@@ -11,22 +11,10 @@ class SessionPreviewEventInitialize extends SessionPreviewEvent {
   SessionPreviewEventInitialize({required this.sessionId, this.mode});
 }
 
-class SessionPreviewEventTimeChanged extends SessionPreviewEvent {
-  final TimeOfDay time;
-
-  SessionPreviewEventTimeChanged({required this.time});
-}
-
 class SessionPreviewEventDurationChanged extends SessionPreviewEvent {
   final TimeOfDay? duration;
 
   SessionPreviewEventDurationChanged({required this.duration});
-}
-
-class SessionPreviewEventNotificationTimeChanged extends SessionPreviewEvent {
-  final TimeOfDay? notificationTime;
-
-  SessionPreviewEventNotificationTimeChanged({required this.notificationTime});
 }
 
 class SessionPreviewEventFlashcardsTypeChanged extends SessionPreviewEvent {
@@ -37,9 +25,7 @@ class SessionPreviewEventFlashcardsTypeChanged extends SessionPreviewEvent {
 
 class SessionPreviewEventSwapQuestionsAndAnswers extends SessionPreviewEvent {}
 
-class SessionPreviewEventResetChanges extends SessionPreviewEvent {}
-
-class SessionPreviewEventSaveChanges extends SessionPreviewEvent {}
+class SessionPreviewEventEditSession extends SessionPreviewEvent {}
 
 class SessionPreviewEventDeleteSession extends SessionPreviewEvent {}
 

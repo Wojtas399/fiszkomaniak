@@ -4,6 +4,7 @@ import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_state.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
@@ -60,9 +61,9 @@ void main() {
     session: sessionsState.allSessions[0],
     group: groupsState.allGroups[0],
     courseName: 'course 1 name',
-    time: sessionsState.allSessions[0].time,
     duration: sessionsState.allSessions[0].duration,
-    notificationTime: sessionsState.allSessions[0].notificationTime,
+    flashcardsType: FlashcardsType.all,
+    areQuestionsAndAnswersSwapped: false,
   );
 
   setUp(() {
@@ -103,7 +104,6 @@ void main() {
       initialState.copyWith(
         mode: SessionMode.quick,
         duration: initialState.duration,
-        notificationTime: initialState.notificationTime,
       ),
     ],
   );
@@ -113,25 +113,6 @@ void main() {
     build: () => bloc,
     act: (_) => bloc.add(SessionPreviewEventInitialize(sessionId: 's3')),
     expect: () => [],
-  );
-
-  blocTest(
-    'time changed',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(SessionPreviewEventInitialize(sessionId: 's1'));
-      bloc.add(SessionPreviewEventTimeChanged(
-        time: const TimeOfDay(hour: 20, minute: 0),
-      ));
-    },
-    expect: () => [
-      initialState,
-      initialState.copyWith(
-        time: const TimeOfDay(hour: 20, minute: 0),
-        duration: initialState.duration,
-        notificationTime: initialState.notificationTime,
-      ),
-    ],
   );
 
   blocTest(
@@ -147,25 +128,6 @@ void main() {
       initialState,
       initialState.copyWith(
         duration: const TimeOfDay(hour: 1, minute: 0),
-        notificationTime: initialState.notificationTime,
-      ),
-    ],
-  );
-
-  blocTest(
-    'notification time changed',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(SessionPreviewEventInitialize(sessionId: 's1'));
-      bloc.add(SessionPreviewEventNotificationTimeChanged(
-        notificationTime: const TimeOfDay(hour: 10, minute: 0),
-      ));
-    },
-    expect: () => [
-      initialState,
-      initialState.copyWith(
-        duration: initialState.duration,
-        notificationTime: const TimeOfDay(hour: 10, minute: 0),
       ),
     ],
   );
@@ -183,7 +145,6 @@ void main() {
       initialState,
       initialState.copyWith(
         duration: initialState.duration,
-        notificationTime: initialState.notificationTime,
         flashcardsType: FlashcardsType.remembered,
       ),
     ],
@@ -200,7 +161,6 @@ void main() {
       initialState,
       initialState.copyWith(
         duration: initialState.duration,
-        notificationTime: initialState.notificationTime,
         areQuestionsAndAnswersSwapped: true,
       ),
     ],
@@ -216,48 +176,38 @@ void main() {
   );
 
   blocTest(
-    'reset changes',
+    'delete session, confirmed',
     build: () => bloc,
+    setUp: () {
+      when(() => sessionPreviewDialogs.askForDeleteConfirmation())
+          .thenAnswer((_) async => true);
+    },
     act: (_) {
       bloc.add(SessionPreviewEventInitialize(sessionId: 's1'));
-      bloc.add(SessionPreviewEventTimeChanged(
-        time: const TimeOfDay(hour: 21, minute: 0),
-      ));
-      bloc.add(SessionPreviewEventDurationChanged(
-        duration: const TimeOfDay(hour: 0, minute: 45),
-      ));
-      bloc.add(SessionPreviewEventNotificationTimeChanged(
-        notificationTime: const TimeOfDay(hour: 6, minute: 0),
-      ));
-      bloc.add(SessionPreviewEventFlashcardsTypeChanged(
-        flashcardsType: FlashcardsType.notRemembered,
-      ));
-      bloc.add(SessionPreviewEventResetChanges());
+      bloc.add(SessionPreviewEventDeleteSession());
     },
-    expect: () => [
-      initialState,
-      initialState.copyWith(
-        time: const TimeOfDay(hour: 21, minute: 0),
-        duration: initialState.duration,
-        notificationTime: initialState.notificationTime,
-      ),
-      initialState.copyWith(
-        time: const TimeOfDay(hour: 21, minute: 0),
-        duration: const TimeOfDay(hour: 0, minute: 45),
-        notificationTime: initialState.notificationTime,
-      ),
-      initialState.copyWith(
-        time: const TimeOfDay(hour: 21, minute: 0),
-        duration: const TimeOfDay(hour: 0, minute: 45),
-        notificationTime: const TimeOfDay(hour: 6, minute: 0),
-      ),
-      initialState.copyWith(
-        time: const TimeOfDay(hour: 21, minute: 0),
-        duration: const TimeOfDay(hour: 0, minute: 45),
-        notificationTime: const TimeOfDay(hour: 6, minute: 0),
-        flashcardsType: FlashcardsType.notRemembered,
-      ),
-      initialState,
-    ],
+    verify: (_) {
+      verify(
+        () => sessionsBloc.add(SessionsEventRemoveSession(sessionId: 's1')),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'delete session, cancelled',
+    build: () => bloc,
+    setUp: () {
+      when(() => sessionPreviewDialogs.askForDeleteConfirmation())
+          .thenAnswer((_) async => false);
+    },
+    act: (_) {
+      bloc.add(SessionPreviewEventInitialize(sessionId: 's1'));
+      bloc.add(SessionPreviewEventDeleteSession());
+    },
+    verify: (_) {
+      verifyNever(
+        () => sessionsBloc.add(SessionsEventRemoveSession(sessionId: 's1')),
+      );
+    },
   );
 }

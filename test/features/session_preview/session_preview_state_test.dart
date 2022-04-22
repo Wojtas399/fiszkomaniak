@@ -22,9 +22,7 @@ void main() {
     expect(state.session, null);
     expect(state.group, null);
     expect(state.courseName, null);
-    expect(state.time, null);
     expect(state.duration, null);
-    expect(state.notificationTime, null);
     expect(state.flashcardsType, null);
     expect(state.areQuestionsAndAnswersSwapped, null);
   });
@@ -69,16 +67,6 @@ void main() {
     expect(state3.courseName, courseName);
   });
 
-  test('copy with time', () {
-    const TimeOfDay time = TimeOfDay(hour: 12, minute: 30);
-
-    final SessionPreviewState state2 = state.copyWith(time: time);
-    final SessionPreviewState state3 = state2.copyWith();
-
-    expect(state2.time, time);
-    expect(state3.time, time);
-  });
-
   test('copy with duration', () {
     const TimeOfDay duration = TimeOfDay(hour: 0, minute: 30);
 
@@ -87,18 +75,6 @@ void main() {
 
     expect(state2.duration, duration);
     expect(state3.duration, null);
-  });
-
-  test('copy with notification time', () {
-    const TimeOfDay notificationTime = TimeOfDay(hour: 60, minute: 00);
-
-    final SessionPreviewState state2 = state.copyWith(
-      notificationTime: notificationTime,
-    );
-    final SessionPreviewState state3 = state2.copyWith();
-
-    expect(state2.notificationTime, notificationTime);
-    expect(state3.notificationTime, null);
   });
 
   test('copy with flashcards type', () {
@@ -123,28 +99,6 @@ void main() {
 
     expect(state2.areQuestionsAndAnswersSwapped, areQuestionsAndAnswersSwapped);
     expect(state3.areQuestionsAndAnswersSwapped, areQuestionsAndAnswersSwapped);
-  });
-
-  test('is overdue session, past day', () {
-    final SessionPreviewState updatedState = state.copyWith(
-      session: createSession(
-        date: DateTime(2021, 1, 1),
-        time: const TimeOfDay(hour: 12, minute: 0),
-      ),
-    );
-
-    expect(updatedState.isOverdueSession, true);
-  });
-
-  test('is overdue session, future day', () {
-    final SessionPreviewState updatedState = state.copyWith(
-      session: createSession(
-        date: DateUtils.addDaysToDate(DateTime.now(), 2),
-        time: const TimeOfDay(hour: 12, minute: 0),
-      ),
-    );
-
-    expect(updatedState.isOverdueSession, false);
   });
 
   group('name for questions and answers', () {
@@ -176,43 +130,5 @@ void main() {
       expect(updatedState.nameForQuestions, group.nameForAnswers);
       expect(updatedState.nameForAnswers, group.nameForQuestions);
     });
-  });
-
-  test('have changes been made, false', () {
-    final SessionPreviewState updatedState = state.copyWith(
-      session: createSession(
-        time: const TimeOfDay(hour: 12, minute: 30),
-        duration: const TimeOfDay(hour: 0, minute: 30),
-        notificationTime: const TimeOfDay(hour: 8, minute: 0),
-        flashcardsType: FlashcardsType.remembered,
-        areQuestionsAndAnswersSwapped: false,
-      ),
-      time: const TimeOfDay(hour: 12, minute: 30),
-      duration: const TimeOfDay(hour: 0, minute: 30),
-      notificationTime: const TimeOfDay(hour: 8, minute: 0),
-      flashcardsType: FlashcardsType.remembered,
-      areQuestionsAndAnswersSwapped: false,
-    );
-
-    expect(updatedState.haveChangesBeenMade, false);
-  });
-
-  test('have changes been made, true', () {
-    final SessionPreviewState updatedState = state.copyWith(
-      session: createSession(
-        time: const TimeOfDay(hour: 12, minute: 30),
-        duration: const TimeOfDay(hour: 0, minute: 30),
-        notificationTime: const TimeOfDay(hour: 8, minute: 0),
-        flashcardsType: FlashcardsType.remembered,
-        areQuestionsAndAnswersSwapped: false,
-      ),
-      time: const TimeOfDay(hour: 12, minute: 30),
-      duration: const TimeOfDay(hour: 1, minute: 30),
-      notificationTime: const TimeOfDay(hour: 8, minute: 0),
-      flashcardsType: FlashcardsType.notRemembered,
-      areQuestionsAndAnswersSwapped: true,
-    );
-
-    expect(updatedState.haveChangesBeenMade, true);
   });
 }

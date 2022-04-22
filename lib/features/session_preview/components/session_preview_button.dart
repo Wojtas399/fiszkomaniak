@@ -17,10 +17,7 @@ class SessionPreviewButton extends StatelessWidget {
           right: 24.0,
           child: Button(
             label: 'rozpocznij naukę',
-            onPressed:
-                state.mode == SessionMode.normal && state.haveChangesBeenMade
-                    ? null
-                    : () {},
+            onPressed: () {},
           ),
         );
       },

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
@@ -8,7 +7,6 @@ import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialo
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/session_model.dart';
 
@@ -31,13 +29,10 @@ class SessionPreviewBloc
     _sessionsBloc = sessionsBloc;
     _sessionPreviewDialogs = sessionPreviewDialogs;
     on<SessionPreviewEventInitialize>(_initialize);
-    on<SessionPreviewEventTimeChanged>(_timeChanged);
     on<SessionPreviewEventDurationChanged>(_durationChanged);
-    on<SessionPreviewEventNotificationTimeChanged>(_notificationTimeChanged);
     on<SessionPreviewEventFlashcardsTypeChanged>(_flashcardsTypeChanged);
     on<SessionPreviewEventSwapQuestionsAndAnswers>(_swapQuestionsAndAnswers);
-    on<SessionPreviewEventResetChanges>(_resetChanges);
-    on<SessionPreviewEventSaveChanges>(_saveChanges);
+    on<SessionPreviewEventEditSession>(_editSession);
     on<SessionPreviewEventDeleteSession>(_deleteSession);
     on<SessionPreviewEventStartLearning>(_startLearning);
     on<SessionPreviewEventSessionsStateUpdated>(_sessionsStateUpdated);
@@ -60,9 +55,7 @@ class SessionPreviewBloc
         session: session,
         group: group,
         courseName: courseName,
-        time: session.time,
         duration: session.duration,
-        notificationTime: session.notificationTime,
         flashcardsType: session.flashcardsType,
         areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
       ));
@@ -70,35 +63,11 @@ class SessionPreviewBloc
     _setSessionsStateListener();
   }
 
-  void _timeChanged(
-    SessionPreviewEventTimeChanged event,
-    Emitter<SessionPreviewState> emit,
-  ) {
-    emit(state.copyWith(
-      time: event.time,
-      duration: state.duration,
-      notificationTime: state.notificationTime,
-    ));
-  }
-
   void _durationChanged(
     SessionPreviewEventDurationChanged event,
     Emitter<SessionPreviewState> emit,
   ) {
-    emit(state.copyWith(
-      duration: event.duration,
-      notificationTime: state.notificationTime,
-    ));
-  }
-
-  void _notificationTimeChanged(
-    SessionPreviewEventNotificationTimeChanged event,
-    Emitter<SessionPreviewState> emit,
-  ) {
-    emit(state.copyWith(
-      notificationTime: event.notificationTime,
-      duration: state.duration,
-    ));
+    emit(state.copyWith(duration: event.duration));
   }
 
   void _flashcardsTypeChanged(
@@ -108,7 +77,6 @@ class SessionPreviewBloc
     emit(state.copyWith(
       flashcardsType: event.flashcardsType,
       duration: state.duration,
-      notificationTime: state.notificationTime,
     ));
   }
 
@@ -122,36 +90,15 @@ class SessionPreviewBloc
       emit(state.copyWith(
         areQuestionsAndAnswersSwapped: !areQuestionsAndAnswersSwapped,
         duration: state.duration,
-        notificationTime: state.notificationTime,
       ));
     }
   }
 
-  void _resetChanges(
-    SessionPreviewEventResetChanges event,
+  void _editSession(
+    SessionPreviewEventEditSession event,
     Emitter<SessionPreviewState> emit,
   ) {
-    emit(state.copyWith(
-      time: state.session?.time,
-      duration: state.session?.duration,
-      notificationTime: state.session?.notificationTime,
-      flashcardsType: state.session?.flashcardsType,
-      areQuestionsAndAnswersSwapped:
-          state.session?.areQuestionsAndAnswersSwapped,
-    ));
-  }
-
-  Future<void> _saveChanges(
-    SessionPreviewEventSaveChanges event,
-    Emitter<SessionPreviewState> emit,
-  ) async {
-    if (state.mode == SessionMode.normal) {
-      if (_isTodayTimeIncorrect()) {
-        await _sessionPreviewDialogs.showMessageAboutWrongTimeFromToday();
-      } else {
-        //TODO
-      }
-    }
+    //TODO
   }
 
   Future<void> _deleteSession(
@@ -192,19 +139,6 @@ class SessionPreviewBloc
     _sessionsStateSubscription = _sessionsBloc.stream.listen((_) {
       add(SessionPreviewEventSessionsStateUpdated());
     });
-  }
-
-  bool _isTodayTimeIncorrect() {
-    final DateTime? date = state.session?.date;
-    final DateTime nowDate = DateTime.now();
-    final TimeOfDay? time = state.time;
-    final TimeOfDay nowTime = TimeOfDay.now();
-    return date?.year == nowDate.year &&
-        date?.month == nowDate.month &&
-        date?.day == nowDate.day &&
-        time != null &&
-        time.hour <= nowTime.hour &&
-        time.minute < nowTime.minute;
   }
 
   @override

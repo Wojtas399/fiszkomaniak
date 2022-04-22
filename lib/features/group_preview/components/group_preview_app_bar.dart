@@ -1,9 +1,10 @@
+import 'package:fiszkomaniak/components/popup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/app_bar_with_close_button.dart';
 import '../bloc/group_preview_bloc.dart';
 import '../bloc/group_preview_event.dart';
-import 'group_preview_popup_menu.dart';
 
 class GroupPreviewAppBar extends StatelessWidget
     implements PreferredSizeWidget {
@@ -17,9 +18,23 @@ class GroupPreviewAppBar extends StatelessWidget
     return AppBarWithCloseButton(
       label: 'Grupa',
       actions: [
-        GroupPreviewPopupMenu(
-          onPopupActionSelected: (GroupPopupAction action) {
-            _managePopupAction(context, action);
+        PopupMenu(
+          items: [
+            PopupMenuItemParams(
+              icon: MdiIcons.squareEditOutline,
+              label: 'Edytuj',
+            ),
+            PopupMenuItemParams(
+              icon: MdiIcons.plus,
+              label: 'Dodaj fiszki',
+            ),
+            PopupMenuItemParams(
+              icon: MdiIcons.deleteOutline,
+              label: 'Usuń',
+            ),
+          ],
+          onPopupActionSelected: (int selectedActionIndex) {
+            _managePopupAction(context, selectedActionIndex);
           },
         ),
       ],
@@ -28,18 +43,14 @@ class GroupPreviewAppBar extends StatelessWidget
 
   Future<void> _managePopupAction(
     BuildContext context,
-    GroupPopupAction action,
+    int actionIndex,
   ) async {
-    switch (action) {
-      case GroupPopupAction.edit:
-        context.read<GroupPreviewBloc>().add(GroupPreviewEventEdit());
-        break;
-      case GroupPopupAction.addFlashcards:
-        context.read<GroupPreviewBloc>().add(GroupPreviewEventAddFlashcards());
-        break;
-      case GroupPopupAction.remove:
-        context.read<GroupPreviewBloc>().add(GroupPreviewEventRemove());
-        break;
+    if (actionIndex == 0) {
+      context.read<GroupPreviewBloc>().add(GroupPreviewEventEdit());
+    } else if (actionIndex == 1) {
+      context.read<GroupPreviewBloc>().add(GroupPreviewEventAddFlashcards());
+    } else if (actionIndex == 2) {
+      context.read<GroupPreviewBloc>().add(GroupPreviewEventRemove());
     }
   }
 }

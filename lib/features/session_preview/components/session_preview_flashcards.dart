@@ -26,11 +26,12 @@ class SessionPreviewFlashcards extends StatelessWidget {
               children: [
                 SessionFlashcardsTypePicker(
                   selectedType: flashcardsType,
-                  onTypeChanged: (FlashcardsType type) =>
-                      _onFlashcardsTypeChanged(
-                    context,
-                    type,
-                  ),
+                  onTypeChanged: state.mode == SessionMode.quick
+                      ? (FlashcardsType type) => _onFlashcardsTypeChanged(
+                            context,
+                            type,
+                          )
+                      : null,
                 ),
                 ItemWithIcon(
                   icon: MdiIcons.fileOutline,
@@ -48,14 +49,16 @@ class SessionPreviewFlashcards extends StatelessWidget {
                 ),
               ],
             ),
-            Positioned(
-              right: 0.0,
-              bottom: 42.0,
-              child: CustomIconButton(
-                icon: MdiIcons.swapVertical,
-                onPressed: () => _swapQuestionsAndAnswers(context),
-              ),
-            ),
+            state.mode == SessionMode.quick
+                ? Positioned(
+                    right: 0.0,
+                    bottom: 42.0,
+                    child: CustomIconButton(
+                      icon: MdiIcons.swapVertical,
+                      onPressed: () => _swapQuestionsAndAnswers(context),
+                    ),
+                  )
+                : const SizedBox(),
           ],
         );
       },

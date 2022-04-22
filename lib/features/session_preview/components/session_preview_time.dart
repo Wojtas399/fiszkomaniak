@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/components/custom_icon_button.dart';
+import 'package:fiszkomaniak/components/item_with_icon.dart';
 import 'package:fiszkomaniak/components/time_picker.dart';
 import 'package:fiszkomaniak/converters/time_converter.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
@@ -19,16 +20,12 @@ class SessionPreviewTime extends StatelessWidget {
           children: [
             state.mode == SessionMode.quick
                 ? const SizedBox()
-                : TimePicker(
+                : ItemWithIcon(
                     icon: MdiIcons.clockStart,
                     label: 'Godzina rozpoczęcia',
-                    value: convertTimeToViewFormat(state.time),
-                    initialTime: state.time,
+                    text: convertTimeToViewFormat(state.session?.time),
                     paddingLeft: 8.0,
                     paddingRight: 8.0,
-                    onSelect: state.isOverdueSession
-                        ? null
-                        : (TimeOfDay value) => _timeChanged(context, value),
                   ),
             Stack(
               children: [
@@ -39,12 +36,14 @@ class SessionPreviewTime extends StatelessWidget {
                   initialTime: state.duration,
                   paddingLeft: 8.0,
                   paddingRight: 8.0,
-                  onSelect: (TimeOfDay value) => _durationChanged(
-                    context,
-                    value,
-                  ),
+                  onSelect: state.mode == SessionMode.quick
+                      ? (TimeOfDay value) => _durationChanged(
+                            context,
+                            value,
+                          )
+                      : null,
                 ),
-                state.duration != null
+                state.mode == SessionMode.quick && state.duration != null
                     ? Positioned(
                         right: 0.0,
                         bottom: 8.0,
@@ -58,45 +57,19 @@ class SessionPreviewTime extends StatelessWidget {
             ),
             state.mode == SessionMode.quick
                 ? const SizedBox()
-                : Stack(
-                    children: [
-                      TimePicker(
-                        icon: MdiIcons.bellRingOutline,
-                        label: 'Godzina przypomnienia',
-                        value: convertTimeToViewFormat(state.notificationTime),
-                        initialTime: state.notificationTime,
-                        paddingLeft: 8.0,
-                        paddingRight: 8.0,
-                        onSelect: state.isOverdueSession
-                            ? null
-                            : (TimeOfDay value) => _notificationTimeChanged(
-                                  context,
-                                  value,
-                                ),
-                      ),
-                      state.notificationTime != null && !state.isOverdueSession
-                          ? Positioned(
-                              right: 0.0,
-                              bottom: 8.0,
-                              child: CustomIconButton(
-                                icon: MdiIcons.close,
-                                onPressed: () =>
-                                    _cleanNotificationTime(context),
-                              ),
-                            )
-                          : const SizedBox(),
-                    ],
+                : ItemWithIcon(
+                    icon: MdiIcons.bellRingOutline,
+                    label: 'Godzina przypomnienia',
+                    text: convertTimeToViewFormat(
+                      state.session?.notificationTime,
+                    ),
+                    paddingLeft: 8.0,
+                    paddingRight: 8.0,
                   ),
           ],
         );
       },
     );
-  }
-
-  void _timeChanged(BuildContext context, TimeOfDay value) {
-    context
-        .read<SessionPreviewBloc>()
-        .add(SessionPreviewEventTimeChanged(time: value));
   }
 
   void _durationChanged(BuildContext context, TimeOfDay value) {
@@ -109,21 +82,5 @@ class SessionPreviewTime extends StatelessWidget {
     context
         .read<SessionPreviewBloc>()
         .add(SessionPreviewEventDurationChanged(duration: null));
-  }
-
-  void _notificationTimeChanged(BuildContext context, TimeOfDay value) {
-    context
-        .read<SessionPreviewBloc>()
-        .add(SessionPreviewEventNotificationTimeChanged(
-          notificationTime: value,
-        ));
-  }
-
-  void _cleanNotificationTime(BuildContext context) {
-    context
-        .read<SessionPreviewBloc>()
-        .add(SessionPreviewEventNotificationTimeChanged(
-          notificationTime: null,
-        ));
   }
 }
