@@ -12,7 +12,7 @@ class SessionPreviewTitle extends StatelessWidget {
     return BlocBuilder<SessionPreviewBloc, SessionPreviewState>(
       builder: (BuildContext context, SessionPreviewState state) {
         final String dateAsString = convertDateToViewFormatWithDayAndMonthNames(
-          state.session?.date,
+          state.date,
         );
         return SizedBox(
           width: double.infinity,

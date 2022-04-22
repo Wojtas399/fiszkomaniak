@@ -5,6 +5,7 @@ import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
+import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,25 +43,12 @@ class SessionPreviewBloc
     SessionPreviewEventInitialize event,
     Emitter<SessionPreviewState> emit,
   ) {
-    final Session? session = _sessionsBloc.state.getSessionById(
-      event.sessionId,
-    );
-    final Group? group = _groupsBloc.state.getGroupById(session?.groupId);
-    final String? courseName = _coursesBloc.state.getCourseNameById(
-      group?.courseId,
-    );
-    if (session != null && group != null && courseName != null) {
-      emit(state.copyWith(
-        mode: event.mode ?? SessionMode.normal,
-        session: session,
-        group: group,
-        courseName: courseName,
-        duration: session.duration,
-        flashcardsType: session.flashcardsType,
-        areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
-      ));
+    final SessionPreviewMode? mode = event.mode;
+    if (mode is SessionPreviewModeNormal) {
+      _initializeNormalMode(mode, emit);
+    } else if (mode is SessionPreviewModeQuick) {
+      _initializeQuickMode(mode, emit);
     }
-    _setSessionsStateListener();
   }
 
   void _durationChanged(
@@ -139,6 +127,50 @@ class SessionPreviewBloc
     _sessionsStateSubscription = _sessionsBloc.stream.listen((_) {
       add(SessionPreviewEventSessionsStateUpdated());
     });
+  }
+
+  void _initializeNormalMode(
+    SessionPreviewModeNormal mode,
+    Emitter<SessionPreviewState> emit,
+  ) {
+    final Session? session = _sessionsBloc.state.getSessionById(
+      mode.sessionId,
+    );
+    final Group? group = _groupsBloc.state.getGroupById(session?.groupId);
+    final String? courseName = _coursesBloc.state.getCourseNameById(
+      group?.courseId,
+    );
+    if (session != null && group != null && courseName != null) {
+      emit(state.copyWith(
+        mode: mode,
+        session: session,
+        group: group,
+        courseName: courseName,
+        duration: session.duration,
+        flashcardsType: session.flashcardsType,
+        areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
+      ));
+    }
+    _setSessionsStateListener();
+  }
+
+  void _initializeQuickMode(
+    SessionPreviewModeQuick mode,
+    Emitter<SessionPreviewState> emit,
+  ) {
+    final Group? group = _groupsBloc.state.getGroupById(mode.groupId);
+    final String? courseName = _coursesBloc.state.getCourseNameById(
+      group?.courseId,
+    );
+    if (group != null && courseName != null) {
+      emit(state.copyWith(
+        mode: mode,
+        group: group,
+        courseName: courseName,
+        flashcardsType: FlashcardsType.all,
+        areQuestionsAndAnswersSwapped: false,
+      ));
+    }
   }
 
   @override

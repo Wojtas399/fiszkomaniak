@@ -1,14 +1,13 @@
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
+import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
 
 abstract class SessionPreviewEvent {}
 
 class SessionPreviewEventInitialize extends SessionPreviewEvent {
-  final String sessionId;
-  final SessionMode? mode;
+  final SessionPreviewMode mode;
 
-  SessionPreviewEventInitialize({required this.sessionId, this.mode});
+  SessionPreviewEventInitialize({required this.mode});
 }
 
 class SessionPreviewEventDurationChanged extends SessionPreviewEvent {

@@ -1,10 +1,11 @@
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
 import '../../../models/group_model.dart';
 
 class SessionPreviewState extends Equatable {
-  final SessionMode mode;
+  final SessionPreviewMode? mode;
   final Session? session;
   final Group? group;
   final String? courseName;
@@ -13,7 +14,7 @@ class SessionPreviewState extends Equatable {
   final bool? areQuestionsAndAnswersSwapped;
 
   const SessionPreviewState({
-    this.mode = SessionMode.normal,
+    this.mode,
     this.session,
     this.group,
     this.courseName,
@@ -21,6 +22,15 @@ class SessionPreviewState extends Equatable {
     this.flashcardsType,
     this.areQuestionsAndAnswersSwapped,
   });
+
+  DateTime? get date {
+    if (mode is SessionPreviewModeNormal) {
+      return session?.date;
+    } else if (mode is SessionPreviewModeQuick) {
+      return DateTime.now();
+    }
+    return null;
+  }
 
   String? get nameForQuestions => areQuestionsAndAnswersSwapped == true
       ? group?.nameForAnswers
@@ -31,7 +41,7 @@ class SessionPreviewState extends Equatable {
       : group?.nameForAnswers;
 
   SessionPreviewState copyWith({
-    SessionMode? mode,
+    SessionPreviewMode? mode,
     Session? session,
     Group? group,
     String? courseName,
@@ -53,7 +63,7 @@ class SessionPreviewState extends Equatable {
 
   @override
   List<Object> get props => [
-        mode,
+        mode ?? '',
         session ?? '',
         group ?? '',
         courseName ?? '',
@@ -61,9 +71,4 @@ class SessionPreviewState extends Equatable {
         flashcardsType ?? '',
         areQuestionsAndAnswersSwapped ?? '',
       ];
-}
-
-enum SessionMode {
-  normal,
-  quick,
 }

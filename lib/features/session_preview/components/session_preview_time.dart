@@ -4,6 +4,7 @@ import 'package:fiszkomaniak/components/time_picker.dart';
 import 'package:fiszkomaniak/converters/time_converter.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
+import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +19,7 @@ class SessionPreviewTime extends StatelessWidget {
       builder: (BuildContext context, SessionPreviewState state) {
         return Column(
           children: [
-            state.mode == SessionMode.quick
+            state.mode is SessionPreviewModeQuick
                 ? const SizedBox()
                 : ItemWithIcon(
                     icon: MdiIcons.clockStart,
@@ -36,14 +37,14 @@ class SessionPreviewTime extends StatelessWidget {
                   initialTime: state.duration,
                   paddingLeft: 8.0,
                   paddingRight: 8.0,
-                  onSelect: state.mode == SessionMode.quick
+                  onSelect: state.mode is SessionPreviewModeQuick
                       ? (TimeOfDay value) => _durationChanged(
                             context,
                             value,
                           )
                       : null,
                 ),
-                state.mode == SessionMode.quick && state.duration != null
+                state.mode is SessionPreviewModeQuick && state.duration != null
                     ? Positioned(
                         right: 0.0,
                         bottom: 8.0,
@@ -55,7 +56,7 @@ class SessionPreviewTime extends StatelessWidget {
                     : const SizedBox(),
               ],
             ),
-            state.mode == SessionMode.quick
+            state.mode is SessionPreviewModeQuick
                 ? const SizedBox()
                 : ItemWithIcon(
                     icon: MdiIcons.bellRingOutline,

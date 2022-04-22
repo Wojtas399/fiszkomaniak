@@ -3,6 +3,7 @@ import 'package:fiszkomaniak/components/item_with_icon.dart';
 import 'package:fiszkomaniak/components/session_flashcards_type_picker.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
+import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class SessionPreviewFlashcards extends StatelessWidget {
               children: [
                 SessionFlashcardsTypePicker(
                   selectedType: flashcardsType,
-                  onTypeChanged: state.mode == SessionMode.quick
+                  onTypeChanged: state.mode is SessionPreviewModeQuick
                       ? (FlashcardsType type) => _onFlashcardsTypeChanged(
                             context,
                             type,
@@ -49,7 +50,7 @@ class SessionPreviewFlashcards extends StatelessWidget {
                 ),
               ],
             ),
-            state.mode == SessionMode.quick
+            state.mode is SessionPreviewModeQuick
                 ? Positioned(
                     right: 0.0,
                     bottom: 42.0,

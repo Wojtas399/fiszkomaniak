@@ -5,6 +5,7 @@ import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
+import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/components/session_preview_app_bar.dart';
 import 'package:fiszkomaniak/features/session_preview/components/session_preview_button.dart';
 import 'package:fiszkomaniak/features/session_preview/components/session_preview_flashcards.dart';
@@ -14,17 +15,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SessionPreview extends StatelessWidget {
-  final String sessionId;
+  final SessionPreviewMode mode;
 
-  const SessionPreview({
-    Key? key,
-    required this.sessionId,
-  }) : super(key: key);
+  const SessionPreview({Key? key, required this.mode}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return _SessionPreviewBlocProvider(
-      sessionId: sessionId,
+      mode: mode,
       child: Scaffold(
         appBar: const SessionPreviewAppBar(),
         body: SafeArea(
@@ -61,12 +59,12 @@ class SessionPreview extends StatelessWidget {
 }
 
 class _SessionPreviewBlocProvider extends StatelessWidget {
-  final String sessionId;
+  final SessionPreviewMode mode;
   final Widget child;
 
   const _SessionPreviewBlocProvider({
     Key? key,
-    required this.sessionId,
+    required this.mode,
     required this.child,
   }) : super(key: key);
 
@@ -78,7 +76,7 @@ class _SessionPreviewBlocProvider extends StatelessWidget {
         groupsBloc: context.read<GroupsBloc>(),
         sessionsBloc: context.read<SessionsBloc>(),
         sessionPreviewDialogs: SessionPreviewDialogs(),
-      )..add(SessionPreviewEventInitialize(sessionId: sessionId)),
+      )..add(SessionPreviewEventInitialize(mode: mode)),
       child: child,
     );
   }

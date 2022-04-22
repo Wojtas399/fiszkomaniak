@@ -9,6 +9,7 @@ import 'package:fiszkomaniak/core/sessions/sessions_state.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
+import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
@@ -32,6 +33,7 @@ void main() {
   final SessionPreviewDialogs sessionPreviewDialogs =
       MockSessionPreviewDialogs();
   late SessionPreviewBloc bloc;
+  final SessionPreviewMode mode = SessionPreviewModeNormal(sessionId: 's1');
   final SessionsState sessionsState = SessionsState(
     allSessions: [
       createSession(
@@ -57,7 +59,7 @@ void main() {
     ],
   );
   final SessionPreviewState initialState = SessionPreviewState(
-    mode: SessionMode.normal,
+    mode: SessionPreviewModeNormal(sessionId: 's1'),
     session: sessionsState.allSessions[0],
     group: groupsState.allGroups[0],
     courseName: 'course 1 name',
@@ -87,23 +89,25 @@ void main() {
   });
 
   blocTest(
-    'initialize without mode',
+    'initialize normal mode',
     build: () => bloc,
-    act: (_) => bloc.add(SessionPreviewEventInitialize(sessionId: 's1')),
+    act: (_) => bloc.add(SessionPreviewEventInitialize(mode: mode)),
     expect: () => [initialState],
   );
 
   blocTest(
-    'initialize with mode',
+    'initialize quick mode',
     build: () => bloc,
     act: (_) => bloc.add(SessionPreviewEventInitialize(
-      sessionId: 's1',
-      mode: SessionMode.quick,
+      mode: SessionPreviewModeQuick(groupId: 'g1'),
     )),
     expect: () => [
-      initialState.copyWith(
-        mode: SessionMode.quick,
-        duration: initialState.duration,
+      SessionPreviewState(
+        mode: SessionPreviewModeQuick(groupId: 'g1'),
+        group: groupsState.allGroups[0],
+        courseName: 'course 1 name',
+        flashcardsType: FlashcardsType.all,
+        areQuestionsAndAnswersSwapped: false,
       ),
     ],
   );
@@ -111,7 +115,9 @@ void main() {
   blocTest(
     'initialize, elements not found',
     build: () => bloc,
-    act: (_) => bloc.add(SessionPreviewEventInitialize(sessionId: 's3')),
+    act: (_) => bloc.add(SessionPreviewEventInitialize(
+      mode: SessionPreviewModeNormal(sessionId: 's3'),
+    )),
     expect: () => [],
   );
 
@@ -119,7 +125,7 @@ void main() {
     'duration changed',
     build: () => bloc,
     act: (_) {
-      bloc.add(SessionPreviewEventInitialize(sessionId: 's1'));
+      bloc.add(SessionPreviewEventInitialize(mode: mode));
       bloc.add(SessionPreviewEventDurationChanged(
         duration: const TimeOfDay(hour: 1, minute: 0),
       ));
@@ -136,7 +142,7 @@ void main() {
     'flashcards type changed',
     build: () => bloc,
     act: (_) {
-      bloc.add(SessionPreviewEventInitialize(sessionId: 's1'));
+      bloc.add(SessionPreviewEventInitialize(mode: mode));
       bloc.add(SessionPreviewEventFlashcardsTypeChanged(
         flashcardsType: FlashcardsType.remembered,
       ));
@@ -154,7 +160,7 @@ void main() {
     'swap questions and answers',
     build: () => bloc,
     act: (_) {
-      bloc.add(SessionPreviewEventInitialize(sessionId: 's1'));
+      bloc.add(SessionPreviewEventInitialize(mode: mode));
       bloc.add(SessionPreviewEventSwapQuestionsAndAnswers());
     },
     expect: () => [
@@ -183,7 +189,7 @@ void main() {
           .thenAnswer((_) async => true);
     },
     act: (_) {
-      bloc.add(SessionPreviewEventInitialize(sessionId: 's1'));
+      bloc.add(SessionPreviewEventInitialize(mode: mode));
       bloc.add(SessionPreviewEventDeleteSession());
     },
     verify: (_) {
@@ -201,7 +207,7 @@ void main() {
           .thenAnswer((_) async => false);
     },
     act: (_) {
-      bloc.add(SessionPreviewEventInitialize(sessionId: 's1'));
+      bloc.add(SessionPreviewEventInitialize(mode: mode));
       bloc.add(SessionPreviewEventDeleteSession());
     },
     verify: (_) {

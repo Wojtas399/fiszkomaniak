@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dart';
+import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,9 +38,11 @@ class GroupPreviewContent extends StatelessWidget {
               ],
             ),
             Button(
-              label: 'przeglądaj fiszki',
+              label: 'szybka sesja',
               onPressed: () {
-                Navigation.navigateToGroupFlashcardsPreview(group.id);
+                Navigation.navigateToSessionPreview(
+                  SessionPreviewModeQuick(groupId: group.id),
+                );
               },
             ),
           ],
