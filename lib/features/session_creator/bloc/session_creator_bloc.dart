@@ -4,6 +4,7 @@ import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
@@ -46,7 +47,31 @@ class SessionCreatorBloc
     SessionCreatorEventInitialize event,
     Emitter<SessionCreatorState> emit,
   ) {
-    emit(state.copyWith(courses: _coursesBloc.state.allCourses));
+    final SessionCreatorMode mode = event.mode;
+    if (mode is SessionCreatorCreateMode) {
+      emit(state.copyWith(courses: _coursesBloc.state.allCourses));
+    } else if (mode is SessionCreatorEditMode) {
+      final Session session = mode.session;
+      final Group? group = _groupsBloc.state.getGroupById(session.groupId);
+      final Course? course = _coursesBloc.state.getCourseById(group?.courseId);
+      final List<Group> groupsFromCourse =
+          _groupsBloc.state.getGroupsByCourseId(
+        group?.courseId,
+      );
+      emit(state.copyWith(
+        mode: mode,
+        courses: _coursesBloc.state.allCourses,
+        groups: groupsFromCourse,
+        selectedCourse: course,
+        selectedGroup: group,
+        flashcardsType: session.flashcardsType,
+        areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
+        date: session.date,
+        time: session.time,
+        duration: session.duration,
+        notificationTime: session.notificationTime,
+      ));
+    }
   }
 
   void _courseSelected(

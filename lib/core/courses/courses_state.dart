@@ -31,7 +31,7 @@ class CoursesState extends Equatable {
     );
   }
 
-  Course? getCourseById(String courseId) {
+  Course? getCourseById(String? courseId) {
     final List<Course?> courses = [...allCourses];
     return courses.firstWhere(
       (course) => course?.id == courseId,

@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
@@ -6,6 +7,7 @@ import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_state.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
@@ -26,12 +28,15 @@ class MockSessionsBloc extends Mock implements SessionsBloc {}
 
 class MockSessionPreviewDialogs extends Mock implements SessionPreviewDialogs {}
 
+class MockNavigation extends Mock implements Navigation {}
+
 void main() {
   final CoursesBloc coursesBloc = MockCoursesBloc();
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final SessionsBloc sessionsBloc = MockSessionsBloc();
   final SessionPreviewDialogs sessionPreviewDialogs =
       MockSessionPreviewDialogs();
+  final Navigation navigation = MockNavigation();
   late SessionPreviewBloc bloc;
   final SessionPreviewMode mode = SessionPreviewModeNormal(sessionId: 's1');
   final SessionsState sessionsState = SessionsState(
@@ -74,6 +79,7 @@ void main() {
       groupsBloc: groupsBloc,
       sessionsBloc: sessionsBloc,
       sessionPreviewDialogs: sessionPreviewDialogs,
+      navigation: navigation,
     );
     when(() => sessionsBloc.state).thenReturn(sessionsState);
     when(() => groupsBloc.state).thenReturn(groupsState);
@@ -86,6 +92,7 @@ void main() {
     reset(groupsBloc);
     reset(sessionsBloc);
     reset(sessionPreviewDialogs);
+    reset(navigation);
   });
 
   blocTest(
@@ -179,6 +186,49 @@ void main() {
       bloc.add(SessionPreviewEventSwapQuestionsAndAnswers());
     },
     expect: () => [],
+  );
+
+  blocTest(
+    'edit session, session assigned',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => navigation.navigateToSessionCreator(
+          SessionCreatorEditMode(session: sessionsState.allSessions[0]),
+        ),
+      ).thenReturn(null);
+    },
+    act: (_) {
+      bloc.add(SessionPreviewEventInitialize(mode: mode));
+      bloc.add(SessionPreviewEventEditSession());
+    },
+    verify: (_) {
+      verify(
+        () => navigation.navigateToSessionCreator(
+          SessionCreatorEditMode(session: sessionsState.allSessions[0]),
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'edit session, session not assigned',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => navigation.navigateToSessionCreator(
+          SessionCreatorEditMode(session: sessionsState.allSessions[0]),
+        ),
+      ).thenReturn(null);
+    },
+    act: (_) => bloc.add(SessionPreviewEventEditSession()),
+    verify: (_) {
+      verifyNever(
+        () => navigation.navigateToSessionCreator(
+          SessionCreatorEditMode(session: sessionsState.allSessions[0]),
+        ),
+      );
+    },
   );
 
   blocTest(

@@ -1,9 +1,14 @@
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:flutter/material.dart';
 import '../../../models/session_model.dart';
 
 abstract class SessionCreatorEvent {}
 
-class SessionCreatorEventInitialize extends SessionCreatorEvent {}
+class SessionCreatorEventInitialize extends SessionCreatorEvent {
+  final SessionCreatorMode mode;
+
+  SessionCreatorEventInitialize({required this.mode});
+}
 
 class SessionCreatorEventCourseSelected extends SessionCreatorEvent {
   final String courseId;

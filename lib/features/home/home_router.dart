@@ -11,6 +11,7 @@ import 'package:fiszkomaniak/features/group_creator/group_creator_page.dart';
 import 'package:fiszkomaniak/features/group_preview/group_preview_page.dart';
 import 'package:fiszkomaniak/features/home/home.dart';
 import 'package:fiszkomaniak/features/home/home_view.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_creator/session_creator.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/session_preview.dart';
@@ -78,7 +79,9 @@ class HomeRouter extends StatelessWidget {
         );
       case sessionCreator:
         return SlideUpRouteAnimation(
-          page: const SessionCreator(),
+          page: SessionCreator(
+            mode: routeSettings.arguments as SessionCreatorMode,
+          ),
         );
       case groupSelection:
         return SlideUpRouteAnimation(

@@ -37,7 +37,7 @@ class GroupsState extends Equatable {
     );
   }
 
-  List<Group> getGroupsByCourseId(String courseId) {
+  List<Group> getGroupsByCourseId(String? courseId) {
     return allGroups.where((group) => group.courseId == courseId).toList();
   }
 

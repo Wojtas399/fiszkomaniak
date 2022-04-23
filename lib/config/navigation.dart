@@ -3,6 +3,7 @@ import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/features/reset_password/reset_password_page.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:flutter/material.dart';
 import '../features/home/home.dart';
@@ -54,9 +55,10 @@ class Navigation {
     );
   }
 
-  void navigateToSessionCreator() async {
+  void navigateToSessionCreator(SessionCreatorMode mode) async {
     HomeRouter.navigatorKey.currentState?.pushNamed(
       HomeRouter.sessionCreator,
+      arguments: mode,
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
@@ -76,6 +77,7 @@ class _SessionPreviewBlocProvider extends StatelessWidget {
         groupsBloc: context.read<GroupsBloc>(),
         sessionsBloc: context.read<SessionsBloc>(),
         sessionPreviewDialogs: SessionPreviewDialogs(),
+        navigation: context.read<Navigation>(),
       )..add(SessionPreviewEventInitialize(mode: mode)),
       child: child,
     );

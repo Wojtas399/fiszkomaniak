@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
@@ -17,6 +19,7 @@ class SessionPreviewBloc
   late final GroupsBloc _groupsBloc;
   late final SessionsBloc _sessionsBloc;
   late final SessionPreviewDialogs _sessionPreviewDialogs;
+  late final Navigation _navigation;
   StreamSubscription? _sessionsStateSubscription;
 
   SessionPreviewBloc({
@@ -24,11 +27,13 @@ class SessionPreviewBloc
     required GroupsBloc groupsBloc,
     required SessionsBloc sessionsBloc,
     required SessionPreviewDialogs sessionPreviewDialogs,
+    required Navigation navigation,
   }) : super(const SessionPreviewState()) {
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
     _sessionsBloc = sessionsBloc;
     _sessionPreviewDialogs = sessionPreviewDialogs;
+    _navigation = navigation;
     on<SessionPreviewEventInitialize>(_initialize);
     on<SessionPreviewEventDurationChanged>(_durationChanged);
     on<SessionPreviewEventFlashcardsTypeChanged>(_flashcardsTypeChanged);
@@ -86,7 +91,12 @@ class SessionPreviewBloc
     SessionPreviewEventEditSession event,
     Emitter<SessionPreviewState> emit,
   ) {
-    //TODO
+    final Session? session = state.session;
+    if (session != null) {
+      _navigation.navigateToSessionCreator(
+        SessionCreatorEditMode(session: session),
+      );
+    }
   }
 
   Future<void> _deleteSession(

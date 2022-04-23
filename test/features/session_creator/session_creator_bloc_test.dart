@@ -9,6 +9,7 @@ import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
@@ -79,7 +80,9 @@ void main() {
     setUp: () {
       when(() => coursesBloc.state).thenReturn(coursesState);
     },
-    act: (_) => bloc.add(SessionCreatorEventInitialize()),
+    act: (_) => bloc.add(
+      SessionCreatorEventInitialize(mode: const SessionCreatorCreateMode()),
+    ),
     expect: () => [
       SessionCreatorState(courses: coursesState.allCourses),
     ],

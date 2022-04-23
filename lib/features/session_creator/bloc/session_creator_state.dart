@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter/material.dart';
 import '../../../models/session_model.dart';
 
 class SessionCreatorState extends Equatable {
+  final SessionCreatorMode mode;
   final List<Course> courses;
   final List<Group>? groups;
   final Course? selectedCourse;
@@ -31,6 +33,7 @@ class SessionCreatorState extends Equatable {
       time == null;
 
   const SessionCreatorState({
+    this.mode = const SessionCreatorCreateMode(),
     this.courses = const [],
     this.groups,
     this.selectedCourse,
@@ -44,6 +47,7 @@ class SessionCreatorState extends Equatable {
   });
 
   SessionCreatorState copyWith({
+    SessionCreatorMode? mode,
     List<Course>? courses,
     List<Group>? groups,
     Course? selectedCourse,
@@ -56,6 +60,7 @@ class SessionCreatorState extends Equatable {
     TimeOfDay? notificationTime,
   }) {
     return SessionCreatorState(
+      mode: mode ?? this.mode,
       courses: courses ?? this.courses,
       groups: groups ?? this.groups,
       selectedCourse: selectedCourse ?? this.selectedCourse,
@@ -76,6 +81,7 @@ class SessionCreatorState extends Equatable {
     bool notificationTime = false,
   }) {
     return SessionCreatorState(
+      mode: mode,
       courses: courses,
       groups: groups,
       selectedCourse: selectedCourse,
@@ -91,6 +97,7 @@ class SessionCreatorState extends Equatable {
 
   @override
   List<Object> get props => [
+        mode,
         courses,
         groups ?? [],
         selectedCourse ?? createCourse(),

@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -48,7 +49,9 @@ class HomeActionButton extends StatelessWidget {
           child: const Icon(MdiIcons.calendarCheck),
           label: 'Sesja',
           onTap: () {
-            context.read<Navigation>().navigateToSessionCreator();
+            context.read<Navigation>().navigateToSessionCreator(
+                  const SessionCreatorCreateMode(),
+                );
           },
         ),
       ],
