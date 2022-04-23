@@ -11,7 +11,7 @@ String convertDateToViewFormatWithDayAndMonthNames(DateTime? date) {
   if (date == null) {
     return '--';
   }
-  final String dayName = _dayNames[date.weekday];
+  final String dayName = _dayNames[date.weekday - 1];
   final String monthName = _monthNames[date.month - 1];
   return '$dayName, ${date.day} $monthName ${date.year}r.';
 }

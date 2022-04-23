@@ -128,15 +128,12 @@ class SessionPreviewBloc
         sessionId,
       );
       if (updatedSession != null) {
-        emit(state.copyWith(session: updatedSession));
+        emit(state.copyWith(
+          session: updatedSession,
+          duration: updatedSession.duration,
+        ));
       }
     }
-  }
-
-  void _setSessionsStateListener() {
-    _sessionsStateSubscription = _sessionsBloc.stream.listen((_) {
-      add(SessionPreviewEventSessionsStateUpdated());
-    });
   }
 
   void _initializeNormalMode(
@@ -181,6 +178,12 @@ class SessionPreviewBloc
         areQuestionsAndAnswersSwapped: false,
       ));
     }
+  }
+
+  void _setSessionsStateListener() {
+    _sessionsStateSubscription = _sessionsBloc.stream.listen((_) {
+      add(SessionPreviewEventSessionsStateUpdated());
+    });
   }
 
   @override

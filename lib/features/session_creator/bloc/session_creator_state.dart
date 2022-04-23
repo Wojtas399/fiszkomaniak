@@ -27,10 +27,7 @@ class SessionCreatorState extends Equatable {
       : selectedGroup?.nameForAnswers;
 
   bool get isButtonDisabled =>
-      selectedCourse == null ||
-      selectedGroup == null ||
-      date == null ||
-      time == null;
+      _isOneOfRequiredParamsNull() || _areParamsSameAsOriginal();
 
   const SessionCreatorState({
     this.mode = const SessionCreatorCreateMode(),
@@ -93,6 +90,30 @@ class SessionCreatorState extends Equatable {
       duration: duration ? null : this.duration,
       notificationTime: notificationTime ? null : this.notificationTime,
     );
+  }
+
+  bool _isOneOfRequiredParamsNull() {
+    return selectedCourse == null ||
+        selectedGroup == null ||
+        date == null ||
+        time == null;
+  }
+
+  bool _areParamsSameAsOriginal() {
+    final SessionCreatorMode mode = this.mode;
+    if (mode is SessionCreatorEditMode) {
+      final Session session = mode.session;
+      return selectedGroup?.id == session.groupId &&
+          flashcardsType == session.flashcardsType &&
+          areQuestionsAndAnswersSwapped ==
+              session.areQuestionsAndAnswersSwapped &&
+          date == session.date &&
+          time == session.time &&
+          duration == session.duration &&
+          notificationTime == session.notificationTime;
+    } else {
+      return false;
+    }
   }
 
   @override

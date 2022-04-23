@@ -8,6 +8,7 @@ import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_dialogs.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
@@ -27,13 +28,23 @@ class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
 
 class MockSessionsBloc extends Mock implements SessionsBloc {}
 
+class MockSessionCreatorDialogs extends Mock implements SessionCreatorDialogs {}
+
 class FakeSessionsEvent extends Fake implements SessionsEvent {}
+
+extension TimeOfDayExtension on TimeOfDay {
+  TimeOfDay subtractMinutes(int minutes) {
+    return replacing(hour: hour, minute: minute - minutes);
+  }
+}
 
 void main() {
   final CoursesBloc coursesBloc = MockCoursesBloc();
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
   final SessionsBloc sessionsBloc = MockSessionsBloc();
+  final SessionCreatorDialogs sessionCreatorDialogs =
+      MockSessionCreatorDialogs();
   late SessionCreatorBloc bloc;
   final CoursesState coursesState = CoursesState(
     allCourses: [
@@ -57,6 +68,33 @@ void main() {
       createFlashcard(id: 'f4', groupId: 'g1'),
     ],
   );
+  final Session session = createSession(
+    id: 's1',
+    groupId: 'g1',
+    flashcardsType: FlashcardsType.remembered,
+    areQuestionsAndAnswersSwapped: true,
+    date: DateTime(2022, 1, 1),
+    time: const TimeOfDay(hour: 20, minute: 00),
+    duration: const TimeOfDay(hour: 0, minute: 30),
+    notificationTime: const TimeOfDay(hour: 10, minute: 0),
+  );
+  final SessionCreatorState initialEditModeState = SessionCreatorState(
+    mode: SessionCreatorEditMode(session: session),
+    courses: coursesState.allCourses,
+    groups: [
+      groupsState.allGroups[0],
+      groupsState.allGroups[1],
+      groupsState.allGroups[3],
+    ],
+    selectedCourse: coursesState.allCourses[0],
+    selectedGroup: groupsState.allGroups[0],
+    flashcardsType: session.flashcardsType,
+    areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
+    date: session.date,
+    time: session.time,
+    duration: session.duration,
+    notificationTime: session.notificationTime,
+  );
 
   setUp(() {
     bloc = SessionCreatorBloc(
@@ -64,7 +102,11 @@ void main() {
       groupsBloc: groupsBloc,
       flashcardsBloc: flashcardsBloc,
       sessionsBloc: sessionsBloc,
+      sessionCreatorDialogs: sessionCreatorDialogs,
     );
+    when(() => coursesBloc.state).thenReturn(coursesState);
+    when(() => groupsBloc.state).thenReturn(groupsState);
+    when(() => flashcardsBloc.state).thenReturn(flashcardsState);
   });
 
   tearDown(() {
@@ -72,14 +114,12 @@ void main() {
     reset(groupsBloc);
     reset(flashcardsBloc);
     reset(sessionsBloc);
+    reset(sessionCreatorDialogs);
   });
 
   blocTest(
-    'initialize',
+    'initialize create mode',
     build: () => bloc,
-    setUp: () {
-      when(() => coursesBloc.state).thenReturn(coursesState);
-    },
     act: (_) => bloc.add(
       SessionCreatorEventInitialize(mode: const SessionCreatorCreateMode()),
     ),
@@ -89,13 +129,19 @@ void main() {
   );
 
   blocTest(
+    'initialize edit mode',
+    build: () => bloc,
+    act: (_) => bloc.add(
+      SessionCreatorEventInitialize(
+        mode: SessionCreatorEditMode(session: session),
+      ),
+    ),
+    expect: () => [initialEditModeState],
+  );
+
+  blocTest(
     'course selected, different than current',
     build: () => bloc,
-    setUp: () {
-      when(() => coursesBloc.state).thenReturn(coursesState);
-      when(() => groupsBloc.state).thenReturn(groupsState);
-      when(() => flashcardsBloc.state).thenReturn(flashcardsState);
-    },
     act: (_) {
       bloc.add(SessionCreatorEventCourseSelected(courseId: 'c2'));
       bloc.add(SessionCreatorEventGroupSelected(groupId: 'g2'));
@@ -136,11 +182,6 @@ void main() {
   blocTest(
     'course selected, the same',
     build: () => bloc,
-    setUp: () {
-      when(() => coursesBloc.state).thenReturn(coursesState);
-      when(() => groupsBloc.state).thenReturn(groupsState);
-      when(() => flashcardsBloc.state).thenReturn(flashcardsState);
-    },
     act: (_) {
       bloc.add(SessionCreatorEventCourseSelected(courseId: 'c1'));
       bloc.add(SessionCreatorEventGroupSelected(groupId: 'g2'));
@@ -166,15 +207,26 @@ void main() {
   );
 
   blocTest(
+    'course selected, does not exist in core',
+    build: () => bloc,
+    act: (_) => bloc.add(SessionCreatorEventCourseSelected(courseId: 's3')),
+    expect: () => [],
+  );
+
+  blocTest(
     'group selected',
     build: () => bloc,
-    setUp: () {
-      when(() => groupsBloc.state).thenReturn(groupsState);
-    },
     act: (_) => bloc.add(SessionCreatorEventGroupSelected(groupId: 'g1')),
     expect: () => [
       SessionCreatorState(selectedGroup: groupsState.allGroups[0]),
     ],
+  );
+
+  blocTest(
+    'group selected, does not exist in core',
+    build: () => bloc,
+    act: (_) => bloc.add(SessionCreatorEventGroupSelected(groupId: 'g5')),
+    expect: () => [],
   );
 
   blocTest(
@@ -198,9 +250,6 @@ void main() {
   blocTest(
     'swap questions with answer, group selected',
     build: () => bloc,
-    setUp: () {
-      when(() => groupsBloc.state).thenReturn(groupsState);
-    },
     act: (_) {
       bloc.add(SessionCreatorEventGroupSelected(groupId: 'g1'));
       bloc.add(SessionCreatorEventSwapQuestionsWithAnswers());
@@ -225,18 +274,64 @@ void main() {
     ],
   );
 
-  blocTest(
-    'time selected',
-    build: () => bloc,
-    act: (_) => bloc.add(SessionCreatorEventTimeSelected(
-      time: const TimeOfDay(hour: 14, minute: 0),
-    )),
-    expect: () => [
-      const SessionCreatorState(
-        time: TimeOfDay(hour: 14, minute: 0),
+  group('time selected', () {
+    final DateTime dateNow = DateTime.now();
+
+    blocTest(
+      'session date is the past one',
+      build: () => bloc,
+      setUp: () {
+        when(() => sessionCreatorDialogs.displayInfoAboutPastDate())
+            .thenAnswer((_) async => '');
+      },
+      act: (_) {
+        bloc.add(
+          SessionCreatorEventInitialize(
+            mode: SessionCreatorEditMode(session: session),
+          ),
+        );
+        bloc.add(SessionCreatorEventTimeSelected(time: TimeOfDay.now()));
+      },
+      expect: () => [initialEditModeState],
+      verify: (_) {
+        verify(() => sessionCreatorDialogs.displayInfoAboutPastDate())
+            .called(1);
+      },
+    );
+
+    blocTest(
+      'earlier than current time, selected date the same as today',
+      build: () => bloc,
+      setUp: () {
+        when(() => sessionCreatorDialogs.displayInfoAboutNotAllowedTime())
+            .thenAnswer((_) async => '');
+      },
+      act: (_) {
+        bloc.add(SessionCreatorEventDateSelected(date: dateNow));
+        bloc.add(SessionCreatorEventTimeSelected(
+          time: TimeOfDay.now().subtractMinutes(1),
+        ));
+      },
+      expect: () => [SessionCreatorState(date: dateNow)],
+      verify: (_) {
+        verify(() => sessionCreatorDialogs.displayInfoAboutNotAllowedTime())
+            .called(1);
+      },
+    );
+
+    blocTest(
+      'correct time',
+      build: () => bloc,
+      act: (_) => bloc.add(
+        SessionCreatorEventTimeSelected(
+          time: const TimeOfDay(hour: 12, minute: 30),
+        ),
       ),
-    ],
-  );
+      expect: () => [
+        const SessionCreatorState(time: TimeOfDay(hour: 12, minute: 30)),
+      ],
+    );
+  });
 
   blocTest(
     'duration selected',
@@ -250,6 +345,69 @@ void main() {
       ),
     ],
   );
+
+  group('notification time selected', () {
+    final DateTime dateNow = DateTime.now();
+
+    blocTest(
+      'session date is the past one',
+      build: () => bloc,
+      setUp: () {
+        when(() => sessionCreatorDialogs.displayInfoAboutPastDate())
+            .thenAnswer((_) async => '');
+      },
+      act: (_) {
+        bloc.add(
+          SessionCreatorEventInitialize(
+            mode: SessionCreatorEditMode(session: session),
+          ),
+        );
+        bloc.add(
+          SessionCreatorEventNotificationTimeSelected(
+            notificationTime: TimeOfDay.now(),
+          ),
+        );
+      },
+      expect: () => [initialEditModeState],
+      verify: (_) {
+        verify(() => sessionCreatorDialogs.displayInfoAboutPastDate())
+            .called(1);
+      },
+    );
+
+    blocTest(
+      'earlier than current time, selected date the same as today',
+      build: () => bloc,
+      setUp: () {
+        when(() => sessionCreatorDialogs.displayInfoAboutNotAllowedTime())
+            .thenAnswer((_) async => '');
+      },
+      act: (_) {
+        bloc.add(SessionCreatorEventDateSelected(date: dateNow));
+        bloc.add(SessionCreatorEventNotificationTimeSelected(
+          notificationTime: TimeOfDay.now().subtractMinutes(1),
+        ));
+      },
+      expect: () => [SessionCreatorState(date: dateNow)],
+      verify: (_) {
+        verify(() => sessionCreatorDialogs.displayInfoAboutNotAllowedTime())
+            .called(1);
+      },
+    );
+
+    blocTest(
+      'correct time',
+      build: () => bloc,
+      act: (_) => bloc.add(SessionCreatorEventNotificationTimeSelected(
+        notificationTime: const TimeOfDay(hour: 12, minute: 30),
+      )),
+      expect: () => [
+        const SessionCreatorState(
+          notificationTime: TimeOfDay(hour: 12, minute: 30),
+        ),
+      ],
+    );
+  });
 
   blocTest(
     'notification time selected',
@@ -296,15 +454,15 @@ void main() {
     ],
   );
 
-  group('submit', () {
+  group('submit, create mode', () {
     final Session session = createSession(
       groupId: 'g1',
       flashcardsType: FlashcardsType.all,
       areQuestionsAndAnswersSwapped: false,
-      date: DateTime(2022),
-      time: const TimeOfDay(hour: 12, minute: 0),
+      date: DateTime.now(),
+      time: TimeOfDay.now(),
       duration: const TimeOfDay(hour: 0, minute: 30),
-      notificationTime: const TimeOfDay(hour: 9, minute: 0),
+      notificationTime: TimeOfDay.now(),
     );
 
     setUpAll(() {
@@ -312,8 +470,6 @@ void main() {
     });
 
     setUp(() {
-      when(() => groupsBloc.state).thenReturn(groupsState);
-      when(() => flashcardsBloc.state).thenReturn(flashcardsState);
       when(
         () => sessionsBloc.add(SessionsEventAddSession(session: session)),
       ).thenAnswer((_) async => '');
@@ -415,13 +571,14 @@ void main() {
           () => sessionsBloc.add(
             SessionsEventAddSession(
               session: createSession(
-                groupId: 'g1',
-                flashcardsType: FlashcardsType.all,
-                areQuestionsAndAnswersSwapped: false,
-                date: DateTime(2022),
-                time: const TimeOfDay(hour: 12, minute: 0),
+                groupId: session.groupId,
+                flashcardsType: session.flashcardsType,
+                areQuestionsAndAnswersSwapped:
+                    session.areQuestionsAndAnswersSwapped,
+                date: session.date,
+                time: session.time,
                 duration: null,
-                notificationTime: const TimeOfDay(hour: 9, minute: 0),
+                notificationTime: session.notificationTime,
               ),
             ),
           ),
@@ -446,12 +603,13 @@ void main() {
           () => sessionsBloc.add(
             SessionsEventAddSession(
               session: createSession(
-                groupId: 'g1',
-                flashcardsType: FlashcardsType.all,
-                areQuestionsAndAnswersSwapped: false,
-                date: DateTime(2022),
-                time: const TimeOfDay(hour: 12, minute: 0),
-                duration: const TimeOfDay(hour: 0, minute: 30),
+                groupId: session.groupId,
+                flashcardsType: session.flashcardsType,
+                areQuestionsAndAnswersSwapped:
+                    session.areQuestionsAndAnswersSwapped,
+                date: session.date,
+                time: session.time,
+                duration: session.duration,
                 notificationTime: null,
               ),
             ),
@@ -460,4 +618,53 @@ void main() {
       },
     );
   });
+
+  blocTest(
+    'submit edit mode',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => sessionsBloc.add(SessionsEventUpdateSession(
+          sessionId: session.id,
+          groupId: session.groupId,
+          flashcardsType: FlashcardsType.notRemembered,
+          areQuestionsAndFlashcardsSwapped:
+              session.areQuestionsAndAnswersSwapped,
+          date: DateTime(2022, 1, 20),
+          time: session.time,
+          duration: session.duration,
+          notificationTime: session.notificationTime,
+        )),
+      ).thenAnswer((_) async => '');
+    },
+    act: (_) {
+      bloc.add(
+        SessionCreatorEventInitialize(
+          mode: SessionCreatorEditMode(session: session),
+        ),
+      );
+      bloc.add(SessionCreatorEventDateSelected(date: DateTime(2022, 1, 20)));
+      bloc.add(
+        SessionCreatorEventFlashcardsTypeSelected(
+          type: FlashcardsType.notRemembered,
+        ),
+      );
+      bloc.add(SessionCreatorEventSubmit());
+    },
+    verify: (_) {
+      verify(
+        () => sessionsBloc.add(SessionsEventUpdateSession(
+          sessionId: session.id,
+          groupId: session.groupId,
+          flashcardsType: FlashcardsType.notRemembered,
+          areQuestionsAndFlashcardsSwapped:
+              session.areQuestionsAndAnswersSwapped,
+          date: DateTime(2022, 1, 20),
+          time: session.time,
+          duration: session.duration,
+          notificationTime: session.notificationTime,
+        )),
+      ).called(1);
+    },
+  );
 }

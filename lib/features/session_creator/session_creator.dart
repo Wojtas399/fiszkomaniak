@@ -1,12 +1,13 @@
-import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_dialogs.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
+import 'package:fiszkomaniak/features/session_creator/components/session_creator_app_bar.dart';
 import 'package:fiszkomaniak/features/session_creator/components/session_creator_button.dart';
 import 'package:fiszkomaniak/features/session_creator/components/session_creator_date_and_time.dart';
 import 'package:fiszkomaniak/features/session_creator/components/session_creator_flashcards.dart';
@@ -26,7 +27,7 @@ class SessionCreator extends StatelessWidget {
     return _SessionCreatorBlocProvider(
       mode: mode,
       child: Scaffold(
-        appBar: const AppBarWithCloseButton(label: 'Nowa sesja'),
+        appBar: const SessionCreatorAppBar(),
         body: BouncingScroll(
           child: SafeArea(
             child: Padding(
@@ -64,6 +65,7 @@ class _SessionCreatorBlocProvider extends StatelessWidget {
         groupsBloc: context.read<GroupsBloc>(),
         flashcardsBloc: context.read<FlashcardsBloc>(),
         sessionsBloc: context.read<SessionsBloc>(),
+        sessionCreatorDialogs: SessionCreatorDialogs(),
       )..add(SessionCreatorEventInitialize(mode: mode)),
       child: child,
     );

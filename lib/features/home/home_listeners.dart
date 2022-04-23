@@ -128,6 +128,10 @@ class HomeListeners extends StatelessWidget {
               _backHome(context);
               dialogs.showSnackbarWithMessage('Pomyślnie dodano nową sesję');
               _animateToPage(1);
+            } else if (status is SessionsStatusSessionUpdated) {
+              _closeLoadingDialog(context);
+              _moveBack(context);
+              dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano sesję');
             } else if (status is SessionsStatusSessionRemoved) {
               _closeLoadingDialog(context);
               _backHome(context);

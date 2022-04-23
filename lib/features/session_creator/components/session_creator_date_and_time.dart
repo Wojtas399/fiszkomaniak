@@ -29,11 +29,7 @@ class SessionCreatorDateAndTime extends StatelessWidget {
                 paddingLeft: 8.0,
                 paddingRight: 8.0,
                 helpText: 'WYBIERZ GODZINĘ ROZPOCZĘCIA',
-                onSelect: (TimeOfDay time) {
-                  context
-                      .read<SessionCreatorBloc>()
-                      .add(SessionCreatorEventTimeSelected(time: time));
-                },
+                onSelect: (TimeOfDay time) => _timeSelected(context, time),
               ),
               Stack(
                 children: [
@@ -46,10 +42,10 @@ class SessionCreatorDateAndTime extends StatelessWidget {
                     paddingLeft: 8.0,
                     paddingRight: 8.0,
                     helpText: 'WYBIERZ CZAS TRWANIA',
-                    onSelect: (TimeOfDay time) {
-                      context.read<SessionCreatorBloc>().add(
-                          SessionCreatorEventDurationSelected(duration: time));
-                    },
+                    onSelect: (TimeOfDay duration) => _durationSelected(
+                      context,
+                      duration,
+                    ),
                   ),
                   state.duration != null
                       ? Positioned(
@@ -57,11 +53,7 @@ class SessionCreatorDateAndTime extends StatelessWidget {
                           bottom: 2.0,
                           child: CustomIconButton(
                             icon: MdiIcons.close,
-                            onPressed: () {
-                              context
-                                  .read<SessionCreatorBloc>()
-                                  .add(SessionCreatorEventCleanDurationTime());
-                            },
+                            onPressed: () => _cleanDuration(context),
                           ),
                         )
                       : const SizedBox(),
@@ -73,17 +65,13 @@ class SessionCreatorDateAndTime extends StatelessWidget {
                     icon: MdiIcons.bellRingOutline,
                     label: 'Godzina przypomnienia (opcjonalnie)',
                     value: convertTimeToViewFormat(state.notificationTime),
-                    initialTime: const TimeOfDay(hour: 0, minute: 0),
+                    initialTime: state.notificationTime ??
+                        const TimeOfDay(hour: 0, minute: 0),
                     paddingLeft: 8.0,
                     paddingRight: 8.0,
                     helpText: 'WYBIERZ GODZINĘ PRZYPOMNIENIA',
-                    onSelect: (TimeOfDay time) {
-                      context
-                          .read<SessionCreatorBloc>()
-                          .add(SessionCreatorEventNotificationTimeSelected(
-                            notificationTime: time,
-                          ));
-                    },
+                    onSelect: (TimeOfDay notificationTime) =>
+                        _notificationTimeSelected(context, notificationTime),
                   ),
                   state.notificationTime != null
                       ? Positioned(
@@ -91,10 +79,7 @@ class SessionCreatorDateAndTime extends StatelessWidget {
                           bottom: 2.0,
                           child: CustomIconButton(
                             icon: MdiIcons.close,
-                            onPressed: () {
-                              context.read<SessionCreatorBloc>().add(
-                                  SessionCreatorEventCleanNotificationTime());
-                            },
+                            onPressed: () => _cleanNotificationTime(context),
                           ),
                         )
                       : const SizedBox(),
@@ -105,5 +90,40 @@ class SessionCreatorDateAndTime extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _timeSelected(BuildContext context, TimeOfDay time) {
+    context
+        .read<SessionCreatorBloc>()
+        .add(SessionCreatorEventTimeSelected(time: time));
+  }
+
+  void _durationSelected(BuildContext context, TimeOfDay duration) {
+    context
+        .read<SessionCreatorBloc>()
+        .add(SessionCreatorEventDurationSelected(duration: duration));
+  }
+
+  void _cleanDuration(BuildContext context) {
+    context
+        .read<SessionCreatorBloc>()
+        .add(SessionCreatorEventCleanDurationTime());
+  }
+
+  void _notificationTimeSelected(
+    BuildContext context,
+    TimeOfDay notificationTime,
+  ) {
+    context
+        .read<SessionCreatorBloc>()
+        .add(SessionCreatorEventNotificationTimeSelected(
+          notificationTime: notificationTime,
+        ));
+  }
+
+  void _cleanNotificationTime(BuildContext context) {
+    context
+        .read<SessionCreatorBloc>()
+        .add(SessionCreatorEventCleanNotificationTime());
   }
 }

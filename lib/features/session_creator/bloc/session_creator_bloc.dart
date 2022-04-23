@@ -3,11 +3,13 @@ import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_dialogs.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/utils/date_utils.dart' as custom_date_utils;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/course_model.dart';
@@ -18,17 +20,20 @@ class SessionCreatorBloc
   late final GroupsBloc _groupsBloc;
   late final FlashcardsBloc _flashcardsBloc;
   late final SessionsBloc _sessionsBloc;
+  late final SessionCreatorDialogs _sessionCreatorDialogs;
 
   SessionCreatorBloc({
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
     required FlashcardsBloc flashcardsBloc,
     required SessionsBloc sessionsBloc,
+    required SessionCreatorDialogs sessionCreatorDialogs,
   }) : super(const SessionCreatorState()) {
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
     _flashcardsBloc = flashcardsBloc;
     _sessionsBloc = sessionsBloc;
+    _sessionCreatorDialogs = sessionCreatorDialogs;
     on<SessionCreatorEventInitialize>(_initialize);
     on<SessionCreatorEventCourseSelected>(_courseSelected);
     on<SessionCreatorEventGroupSelected>(_groupSelected);
@@ -49,28 +54,9 @@ class SessionCreatorBloc
   ) {
     final SessionCreatorMode mode = event.mode;
     if (mode is SessionCreatorCreateMode) {
-      emit(state.copyWith(courses: _coursesBloc.state.allCourses));
+      _initializeCreateMode(emit);
     } else if (mode is SessionCreatorEditMode) {
-      final Session session = mode.session;
-      final Group? group = _groupsBloc.state.getGroupById(session.groupId);
-      final Course? course = _coursesBloc.state.getCourseById(group?.courseId);
-      final List<Group> groupsFromCourse =
-          _groupsBloc.state.getGroupsByCourseId(
-        group?.courseId,
-      );
-      emit(state.copyWith(
-        mode: mode,
-        courses: _coursesBloc.state.allCourses,
-        groups: groupsFromCourse,
-        selectedCourse: course,
-        selectedGroup: group,
-        flashcardsType: session.flashcardsType,
-        areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
-        date: session.date,
-        time: session.time,
-        duration: session.duration,
-        notificationTime: session.notificationTime,
-      ));
+      _initializeEditMode(mode, emit);
     }
   }
 
@@ -131,7 +117,14 @@ class SessionCreatorBloc
     SessionCreatorEventTimeSelected event,
     Emitter<SessionCreatorState> emit,
   ) {
-    emit(state.copyWith(time: event.time));
+    if (_isSelectedDatePastDate()) {
+      _sessionCreatorDialogs.displayInfoAboutPastDate();
+    } else if (_isSelectedDateTodayDate() &&
+        _isTimeEarlierThanCurrentTime(event.time)) {
+      _sessionCreatorDialogs.displayInfoAboutNotAllowedTime();
+    } else {
+      emit(state.copyWith(time: event.time));
+    }
   }
 
   void _durationSelected(
@@ -145,7 +138,14 @@ class SessionCreatorBloc
     SessionCreatorEventNotificationTimeSelected event,
     Emitter<SessionCreatorState> emit,
   ) {
-    emit(state.copyWith(notificationTime: event.notificationTime));
+    if (_isSelectedDatePastDate()) {
+      _sessionCreatorDialogs.displayInfoAboutPastDate();
+    } else if (_isSelectedDateTodayDate() &&
+        _isTimeEarlierThanCurrentTime(event.notificationTime)) {
+      _sessionCreatorDialogs.displayInfoAboutNotAllowedTime();
+    } else {
+      emit(state.copyWith(notificationTime: event.notificationTime));
+    }
   }
 
   void _cleanDurationTime(
@@ -166,6 +166,69 @@ class SessionCreatorBloc
     SessionCreatorEventSubmit event,
     Emitter<SessionCreatorState> emit,
   ) {
+    final SessionCreatorMode mode = state.mode;
+    if (mode is SessionCreatorCreateMode) {
+      _submitCreateMode();
+    } else if (mode is SessionCreatorEditMode) {
+      _submitEditMode(mode);
+    }
+  }
+
+  void _initializeCreateMode(Emitter<SessionCreatorState> emit) {
+    emit(state.copyWith(courses: _coursesBloc.state.allCourses));
+  }
+
+  void _initializeEditMode(
+    SessionCreatorEditMode createMode,
+    Emitter<SessionCreatorState> emit,
+  ) {
+    final Session session = createMode.session;
+    final Group? group = _groupsBloc.state.getGroupById(session.groupId);
+    final Course? course = _coursesBloc.state.getCourseById(group?.courseId);
+    final List<Group> groupsFromCourse = _groupsBloc.state.getGroupsByCourseId(
+      group?.courseId,
+    );
+    emit(state.copyWith(
+      mode: createMode,
+      courses: _coursesBloc.state.allCourses,
+      groups: groupsFromCourse,
+      selectedCourse: course,
+      selectedGroup: group,
+      flashcardsType: session.flashcardsType,
+      areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
+      date: session.date,
+      time: session.time,
+      duration: session.duration,
+      notificationTime: session.notificationTime,
+    ));
+  }
+
+  bool _areThereFlashcardsInGroup(Group group) {
+    return _flashcardsBloc.state.getFlashcardsByGroupId(group.id).isNotEmpty;
+  }
+
+  bool _isSelectedDatePastDate() {
+    final DateTime? date = state.date;
+    if (date == null) {
+      return false;
+    }
+    return custom_date_utils.DateUtils.compareDates(date, DateTime.now()) == -1;
+  }
+
+  bool _isSelectedDateTodayDate() {
+    final DateTime? date = state.date;
+    if (date == null) {
+      return false;
+    }
+    return custom_date_utils.DateUtils.compareDates(date, DateTime.now()) == 0;
+  }
+
+  bool _isTimeEarlierThanCurrentTime(TimeOfDay time) {
+    return custom_date_utils.DateUtils.compareTimes(time, TimeOfDay.now()) ==
+        -1;
+  }
+
+  void _submitCreateMode() {
     final String? groupId = state.selectedGroup?.id;
     final DateTime? date = state.date;
     final TimeOfDay? time = state.time;
@@ -187,7 +250,18 @@ class SessionCreatorBloc
     }
   }
 
-  bool _areThereFlashcardsInGroup(Group group) {
-    return _flashcardsBloc.state.getFlashcardsByGroupId(group.id).isNotEmpty;
+  void _submitEditMode(SessionCreatorEditMode mode) {
+    _sessionsBloc.add(
+      SessionsEventUpdateSession(
+        sessionId: mode.session.id,
+        groupId: state.selectedGroup?.id,
+        date: state.date,
+        time: state.time,
+        duration: state.duration,
+        notificationTime: state.notificationTime,
+        flashcardsType: state.flashcardsType,
+        areQuestionsAndFlashcardsSwapped: state.areQuestionsAndAnswersSwapped,
+      ),
+    );
   }
 }
