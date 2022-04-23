@@ -1,9 +1,11 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_event.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_bloc.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_dialogs.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_event.dart';
@@ -19,11 +21,14 @@ class MockGroupsBloc extends Mock implements GroupsBloc {}
 
 class MockCoursesLibraryDialogs extends Mock implements CoursesLibraryDialogs {}
 
+class MockNavigation extends Mock implements Navigation {}
+
 void main() {
   final CoursesBloc coursesBloc = MockCoursesBloc();
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final CoursesLibraryDialogs coursesLibraryDialogs =
       MockCoursesLibraryDialogs();
+  final Navigation navigation = MockNavigation();
   late CoursesLibraryBloc bloc;
   final CoursesState coursesState = CoursesState(
     allCourses: [
@@ -44,6 +49,7 @@ void main() {
       coursesBloc: coursesBloc,
       groupsBloc: groupsBloc,
       coursesLibraryDialogs: coursesLibraryDialogs,
+      navigation: navigation,
     );
     when(() => coursesBloc.state).thenReturn(coursesState);
     when(() => coursesBloc.stream).thenAnswer((_) => const Stream.empty());
@@ -54,6 +60,7 @@ void main() {
     reset(coursesBloc);
     reset(groupsBloc);
     reset(coursesLibraryDialogs);
+    reset(navigation);
   });
 
   blocTest(
@@ -63,6 +70,28 @@ void main() {
     expect: () => [
       CoursesLibraryState(courses: [...coursesState.allCourses]),
     ],
+  );
+
+  blocTest(
+    'edit course',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => navigation.navigateToCourseCreator(
+          CourseCreatorEditMode(course: coursesState.allCourses[0]),
+        ),
+      ).thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(
+      CoursesLibraryEventEditCourse(course: coursesState.allCourses[0]),
+    ),
+    verify: (_) {
+      verify(
+        () => navigation.navigateToCourseCreator(
+          CourseCreatorEditMode(course: coursesState.allCourses[0]),
+        ),
+      ).called(1);
+    },
   );
 
   blocTest(

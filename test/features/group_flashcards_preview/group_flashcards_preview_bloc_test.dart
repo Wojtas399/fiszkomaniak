@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
@@ -15,9 +16,12 @@ class MockGroupsBloc extends Mock implements GroupsBloc {}
 
 class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
 
+class MockNavigation extends Mock implements Navigation {}
+
 void main() {
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
+  final Navigation navigation = MockNavigation();
   late GroupFlashcardsPreviewBloc bloc;
   final GroupsState groupsState = GroupsState(
     allGroups: [
@@ -38,12 +42,14 @@ void main() {
     bloc = GroupFlashcardsPreviewBloc(
       groupsBloc: groupsBloc,
       flashcardsBloc: flashcardsBloc,
+      navigation: navigation,
     );
   });
 
   tearDown(() {
     reset(groupsBloc);
     reset(flashcardsBloc);
+    reset(navigation);
   });
 
   blocTest(
@@ -78,5 +84,19 @@ void main() {
     expect: () => [
       const GroupFlashcardsPreviewState(searchValue: 'search value'),
     ],
+  );
+
+  blocTest(
+    'show flashcard details',
+    build: () => bloc,
+    setUp: () {
+      when(() => navigation.navigateToFlashcardPreview('f1')).thenReturn(null);
+    },
+    act: (_) => bloc.add(
+      GroupFlashcardsPreviewEventShowFlashcardDetails(flashcardId: 'f1'),
+    ),
+    verify: (_) {
+      verify(() => navigation.navigateToFlashcardPreview('f1')).called(1);
+    },
   );
 }

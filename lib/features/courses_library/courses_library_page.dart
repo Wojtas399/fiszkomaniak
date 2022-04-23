@@ -70,7 +70,7 @@ class CoursesLibraryPage extends StatelessWidget {
       title: course.name,
       amountOfGroups: amountOfGroups,
       onTap: () {
-        Navigation.navigateToCourseGroupsPreview(course.id);
+        context.read<Navigation>().navigateToCourseGroupsPreview(course.id);
       },
       onActionSelected: (CoursePopupAction action) {
         _manageCourseAction(context, action, course);
@@ -111,6 +111,7 @@ class _CoursesLibraryBlocProvider extends StatelessWidget {
         coursesBloc: context.read<CoursesBloc>(),
         groupsBloc: context.read<GroupsBloc>(),
         coursesLibraryDialogs: CoursesLibraryDialogs(),
+        navigation: context.read<Navigation>(),
       )..add(CoursesLibraryEventInitialize()),
       child: child,
     );

@@ -5,6 +5,7 @@ import 'package:fiszkomaniak/converters/time_converter.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SessionItem extends StatelessWidget {
   final Session session;
@@ -23,9 +24,9 @@ class SessionItem extends StatelessWidget {
     return IntrinsicHeight(
       child: CardItem(
         onTap: () {
-          Navigation.navigateToSessionPreview(
-            SessionPreviewModeNormal(sessionId: session.id),
-          );
+          context.read<Navigation>().navigateToSessionPreview(
+                SessionPreviewModeNormal(sessionId: session.id),
+              );
         },
         child: Row(
           children: [

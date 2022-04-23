@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/empty_content_info.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_bloc.dart';
+import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_event.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_state.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/components/group_flashcards_preview_item.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
@@ -24,7 +24,9 @@ class GroupFlashcardsPreviewList extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
-                children: state.matchingFlashcards.map(_generateItem).toList(),
+                children: state.matchingFlashcards
+                    .map((flashcard) => _generateItem(context, flashcard))
+                    .toList(),
               ),
             ),
           ),
@@ -33,11 +35,15 @@ class GroupFlashcardsPreviewList extends StatelessWidget {
     );
   }
 
-  Widget _generateItem(Flashcard flashcard) {
+  Widget _generateItem(BuildContext context, Flashcard flashcard) {
     return GroupFlashcardsPreviewItem(
       flashcard: flashcard,
       onTap: () {
-        Navigation.navigateToFlashcardPreview(flashcard.id);
+        context
+            .read<GroupFlashcardsPreviewBloc>()
+            .add(GroupFlashcardsPreviewEventShowFlashcardDetails(
+              flashcardId: flashcard.id,
+            ));
       },
     );
   }

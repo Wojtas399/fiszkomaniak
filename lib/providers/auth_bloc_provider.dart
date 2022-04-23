@@ -18,7 +18,7 @@ class AuthBlocProvider extends StatelessWidget {
         settingsInterface: context.read<SettingsInterface>(),
       )..initialize(
           onUserLogged: () {
-            Navigation.pushReplacementToHome(context);
+            context.read<Navigation>().pushReplacementToHome(context);
           },
         ),
       child: child,

@@ -13,16 +13,19 @@ class GroupSelectionBloc
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
   late final FlashcardsBloc _flashcardsBloc;
+  late final Navigation _navigation;
   StreamSubscription? _flashcardsStateSubscription;
 
   GroupSelectionBloc({
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
     required FlashcardsBloc flashcardsBloc,
+    required Navigation navigation,
   }) : super(GroupSelectionState()) {
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
     _flashcardsBloc = flashcardsBloc;
+    _navigation = navigation;
     on<GroupSelectionEventInitialize>(_initialize);
     on<GroupSelectionEventCourseSelected>(_courseSelected);
     on<GroupSelectionEventGroupSelected>(_groupSelected);
@@ -70,10 +73,7 @@ class GroupSelectionBloc
     GroupSelectionEventButtonPressed event,
     Emitter<GroupSelectionState> emit,
   ) {
-    final String? selectedGroupId = state.selectedGroup?.id;
-    if (selectedGroupId != null) {
-      Navigation.navigateToFlashcardsEditor(selectedGroupId);
-    }
+    _navigation.navigateToFlashcardsEditor(state.selectedGroup!.id);
   }
 
   void _flashcardsStateUpdated(

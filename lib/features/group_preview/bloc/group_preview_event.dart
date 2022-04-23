@@ -14,6 +14,8 @@ class GroupPreviewEventEditFlashcards extends GroupPreviewEvent {}
 
 class GroupPreviewEventReviewFlashcards extends GroupPreviewEvent {}
 
+class GroupPreviewEventCreateQuickSession extends GroupPreviewEvent {}
+
 class GroupPreviewEventGroupsStateUpdated extends GroupPreviewEvent {}
 
 class GroupPreviewEventFlashcardsStateUpdated extends GroupPreviewEvent {}

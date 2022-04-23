@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
@@ -20,41 +21,53 @@ class MockGroupsBloc extends Mock implements GroupsBloc {}
 
 class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
 
+class MockNavigation extends Mock implements Navigation {}
+
 void main() {
   final CoursesBloc coursesBloc = MockCoursesBloc();
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
+  final Navigation navigation = MockNavigation();
   late GroupSelectionBloc bloc;
-  final List<Course> courses = [
-    createCourse(id: 'c1'),
-    createCourse(id: 'c2'),
-    createCourse(id: 'c3'),
-  ];
-  final List<Group> groups = [
-    createGroup(id: 'g1', courseId: 'c1'),
-    createGroup(id: 'g2', courseId: 'c2'),
-    createGroup(id: 'g3', courseId: 'c3'),
-    createGroup(id: 'g4', courseId: 'c1'),
-  ];
-  final List<Flashcard> flashcards = [
-    createFlashcard(
-      id: 'f1',
-      groupId: 'g1',
-      status: FlashcardStatus.remembered,
-    ),
-    createFlashcard(id: 'f2', groupId: 'g1'),
-    createFlashcard(id: 'f3', groupId: 'g1'),
-    createFlashcard(id: 'f4', groupId: 'g2'),
-    createFlashcard(id: 'f5', groupId: 'g4'),
-  ];
+  final CoursesState coursesState = CoursesState(
+    allCourses: [
+      createCourse(id: 'c1'),
+      createCourse(id: 'c2'),
+      createCourse(id: 'c3'),
+    ],
+  );
+  final GroupsState groupsState = GroupsState(
+    allGroups: [
+      createGroup(id: 'g1', courseId: 'c1'),
+      createGroup(id: 'g2', courseId: 'c2'),
+      createGroup(id: 'g3', courseId: 'c3'),
+      createGroup(id: 'g4', courseId: 'c1'),
+    ],
+  );
+  final FlashcardsState flashcardsState = FlashcardsState(
+    allFlashcards: [
+      createFlashcard(
+        id: 'f1',
+        groupId: 'g1',
+        status: FlashcardStatus.remembered,
+      ),
+      createFlashcard(id: 'f2', groupId: 'g1'),
+      createFlashcard(id: 'f3', groupId: 'g1'),
+      createFlashcard(id: 'f4', groupId: 'g2'),
+      createFlashcard(id: 'f5', groupId: 'g4'),
+    ],
+  );
 
   setUp(() {
     bloc = GroupSelectionBloc(
       coursesBloc: coursesBloc,
       groupsBloc: groupsBloc,
       flashcardsBloc: flashcardsBloc,
+      navigation: navigation,
     );
-    when(() => coursesBloc.state).thenReturn(CoursesState(allCourses: courses));
+    when(() => coursesBloc.state).thenReturn(coursesState);
+    when(() => groupsBloc.state).thenReturn(groupsState);
+    when(() => flashcardsBloc.state).thenReturn(flashcardsState);
     when(() => flashcardsBloc.stream).thenAnswer((_) => const Stream.empty());
   });
 
@@ -62,6 +75,7 @@ void main() {
     reset(coursesBloc);
     reset(groupsBloc);
     reset(flashcardsBloc);
+    reset(navigation);
   });
 
   blocTest(
@@ -69,25 +83,20 @@ void main() {
     build: () => bloc,
     act: (_) => bloc.add(GroupSelectionEventInitialize()),
     expect: () => [
-      GroupSelectionState(allCourses: courses),
+      GroupSelectionState(allCourses: coursesState.allCourses),
     ],
   );
 
   blocTest(
     'course selected',
     build: () => bloc,
-    setUp: () {
-      when(() => groupsBloc.state).thenReturn(
-        GroupsState(allGroups: groups),
-      );
-    },
     act: (_) => bloc.add(GroupSelectionEventCourseSelected(courseId: 'c1')),
     expect: () => [
       GroupSelectionState(
-        selectedCourse: courses[0],
+        selectedCourse: coursesState.allCourses[0],
         groupsFromCourse: [
-          groups[0],
-          groups[3],
+          groupsState.allGroups[0],
+          groupsState.allGroups[3],
         ],
       ),
     ],
@@ -96,21 +105,28 @@ void main() {
   blocTest(
     'group selected',
     build: () => bloc,
-    setUp: () {
-      when(() => groupsBloc.state).thenReturn(
-        GroupsState(allGroups: groups),
-      );
-      when(() => flashcardsBloc.state).thenReturn(
-        FlashcardsState(allFlashcards: flashcards),
-      );
-    },
     act: (_) => bloc.add(GroupSelectionEventGroupSelected(groupId: 'g1')),
     expect: () => [
       GroupSelectionState(
-        selectedGroup: groups[0],
+        selectedGroup: groupsState.allGroups[0],
         amountOfAllFlashcardsFromGroup: 3,
         amountOfRememberedFlashcardsFromGroup: 1,
       ),
     ],
+  );
+
+  blocTest(
+    'button pressed',
+    build: () => bloc,
+    setUp: () {
+      when(() => navigation.navigateToFlashcardsEditor('g1')).thenReturn(null);
+    },
+    act: (_) {
+      bloc.add(GroupSelectionEventGroupSelected(groupId: 'g1'));
+      bloc.add(GroupSelectionEventButtonPressed());
+    },
+    verify: (_) {
+      verify(() => navigation.navigateToFlashcardsEditor('g1')).called(1);
+    },
   );
 }

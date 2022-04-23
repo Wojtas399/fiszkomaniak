@@ -68,7 +68,7 @@ class _PasswordRecoveryOption extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigation.navigateToResetPassword(context);
+        context.read<Navigation>().navigateToResetPassword(context);
       },
       child: Text('Zapomniałeś hasła?', style: textStyle),
     );

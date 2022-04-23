@@ -21,6 +21,7 @@ class CourseGroupsPreviewGroupsList extends StatelessWidget {
           builder: (BuildContext context, FlashcardsState flashcardsState) {
             return Column(
               children: _buildGroups(
+                context,
                 courseGroupsPreviewState,
                 flashcardsState,
               ),
@@ -32,6 +33,7 @@ class CourseGroupsPreviewGroupsList extends StatelessWidget {
   }
 
   List<Widget> _buildGroups(
+    BuildContext context,
     CourseGroupsPreviewState courseGroupsPreviewState,
     FlashcardsState flashcardsState,
   ) {
@@ -44,7 +46,7 @@ class CourseGroupsPreviewGroupsList extends StatelessWidget {
             amountOfAllFlashcards:
                 flashcardsState.getAmountOfAllFlashcardsFromGroup(group.id),
             onTap: () {
-              Navigation.navigateToGroupPreview(group.id);
+              context.read<Navigation>().navigateToGroupPreview(group.id);
             },
           ),
         )

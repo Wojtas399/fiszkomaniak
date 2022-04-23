@@ -69,7 +69,7 @@ class _FormStatusListener extends StatelessWidget {
           );
         } else if (httpStatus is HttpStatusSuccess) {
           Navigator.pop(context);
-          Navigation.pushReplacementToHome(context);
+          context.read<Navigation>().pushReplacementToHome(context);
         } else if (httpStatus is HttpStatusFailure) {
           Navigator.pop(context);
           dialogs.showDialogWithMessage(

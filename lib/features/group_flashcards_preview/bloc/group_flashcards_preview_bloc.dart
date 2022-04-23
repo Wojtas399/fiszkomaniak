@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_event.dart';
@@ -10,16 +11,20 @@ class GroupFlashcardsPreviewBloc
     extends Bloc<GroupFlashcardsPreviewEvent, GroupFlashcardsPreviewState> {
   late final GroupsBloc _groupsBloc;
   late final FlashcardsBloc _flashcardsBloc;
+  late final Navigation _navigation;
   StreamSubscription? _flashcardsStateSubscription;
 
   GroupFlashcardsPreviewBloc({
     required GroupsBloc groupsBloc,
     required FlashcardsBloc flashcardsBloc,
+    required Navigation navigation,
   }) : super(const GroupFlashcardsPreviewState()) {
     _groupsBloc = groupsBloc;
     _flashcardsBloc = flashcardsBloc;
+    _navigation = navigation;
     on<GroupFlashcardsPreviewEventInitialize>(_initialize);
     on<GroupFlashcardsPreviewEventSearchValueChanged>(_searchValueChanged);
+    on<GroupFlashcardsPreviewEventShowFlashcardDetails>(_showFlashcardDetails);
     on<GroupFlashcardsPreviewEventFlashcardsStateUpdated>(
       _flashcardsStateUpdated,
     );
@@ -47,6 +52,13 @@ class GroupFlashcardsPreviewBloc
     Emitter<GroupFlashcardsPreviewState> emit,
   ) {
     emit(state.copyWith(searchValue: event.searchValue));
+  }
+
+  void _showFlashcardDetails(
+    GroupFlashcardsPreviewEventShowFlashcardDetails event,
+    Emitter<GroupFlashcardsPreviewState> emit,
+  ) {
+    _navigation.navigateToFlashcardPreview(event.flashcardId);
   }
 
   void _flashcardsStateUpdated(

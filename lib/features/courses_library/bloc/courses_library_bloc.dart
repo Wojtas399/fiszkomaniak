@@ -14,16 +14,19 @@ class CoursesLibraryBloc
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
   late final CoursesLibraryDialogs _coursesLibraryDialogs;
+  late final Navigation _navigation;
   StreamSubscription? _coursesStateSubscription;
 
   CoursesLibraryBloc({
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
     required CoursesLibraryDialogs coursesLibraryDialogs,
+    required Navigation navigation,
   }) : super(const CoursesLibraryState()) {
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
     _coursesLibraryDialogs = coursesLibraryDialogs;
+    _navigation = navigation;
     on<CoursesLibraryEventInitialize>(_initialize);
     on<CoursesLibraryEventEditCourse>(_editCourse);
     on<CoursesLibraryEventRemoveCourse>(_removeCourse);
@@ -42,7 +45,7 @@ class CoursesLibraryBloc
     CoursesLibraryEventEditCourse event,
     Emitter<CoursesLibraryState> emit,
   ) {
-    Navigation.navigateToCourseCreator(
+    _navigation.navigateToCourseCreator(
       CourseCreatorEditMode(course: event.course),
     );
   }

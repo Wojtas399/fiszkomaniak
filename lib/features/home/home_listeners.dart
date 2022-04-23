@@ -50,12 +50,12 @@ class HomeListeners extends StatelessWidget {
               dialogs.showLoadingDialog();
             } else if (status is CoursesStatusCourseAdded) {
               _closeLoadingDialog(context);
-              Navigation.backHome();
+              _backHome(context);
               dialogs.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
               _animateToPage(2);
             } else if (status is CoursesStatusCourseUpdated) {
               _closeLoadingDialog(context);
-              Navigation.backHome();
+              _backHome(context);
               dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano kurs');
             } else if (status is CoursesStatusCourseRemoved) {
               _closeLoadingDialog(context);
@@ -73,7 +73,7 @@ class HomeListeners extends StatelessWidget {
               dialogs.showLoadingDialog();
             } else if (status is GroupsStatusGroupAdded) {
               _closeLoadingDialog(context);
-              Navigation.backHome();
+              _backHome(context);
               dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę');
               _animateToPage(0);
             } else if (status is GroupsStatusGroupUpdated) {
@@ -84,7 +84,7 @@ class HomeListeners extends StatelessWidget {
               );
             } else if (status is GroupsStatusGroupRemoved) {
               _closeLoadingDialog(context);
-              Navigation.backHome();
+              _backHome(context);
               dialogs.showSnackbarWithMessage('Pomyślnie usunięto grupę');
             } else if (status is GroupsStatusError) {
               _closeLoadingDialog(context);
@@ -125,12 +125,12 @@ class HomeListeners extends StatelessWidget {
               dialogs.showLoadingDialog();
             } else if (status is SessionsStatusSessionAdded) {
               _closeLoadingDialog(context);
-              Navigation.backHome();
+              _backHome(context);
               dialogs.showSnackbarWithMessage('Pomyślnie dodano nową sesję');
               _animateToPage(1);
             } else if (status is SessionsStatusSessionRemoved) {
               _closeLoadingDialog(context);
-              Navigation.backHome();
+              _backHome(context);
               dialogs.showSnackbarWithMessage('Pomyślnie usunięto sesję');
             } else if (status is SessionsStatusError) {
               _closeLoadingDialog(context);
@@ -164,5 +164,9 @@ class HomeListeners extends StatelessWidget {
 
   void _moveBack(BuildContext context) {
     Navigator.pop(context);
+  }
+
+  void _backHome(BuildContext context) {
+    context.read<Navigation>().backHome();
   }
 }
