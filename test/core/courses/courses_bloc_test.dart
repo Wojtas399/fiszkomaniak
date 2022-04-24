@@ -6,6 +6,7 @@ import 'package:fiszkomaniak/core/courses/courses_status.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
+import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,10 +18,13 @@ class MockGroupsInterface extends Mock implements GroupsInterface {}
 
 class MockFlashcardsInterface extends Mock implements FlashcardsInterface {}
 
+class MockSessionsInterface extends Mock implements SessionsInterface {}
+
 void main() {
   final CoursesInterface coursesInterface = MockCoursesInterface();
   final GroupsInterface groupsInterface = MockGroupsInterface();
   final FlashcardsInterface flashcardsInterface = MockFlashcardsInterface();
+  final SessionsInterface sessionsInterface = MockSessionsInterface();
   late CoursesBloc coursesBloc;
 
   setUp(() {
@@ -28,6 +32,7 @@ void main() {
       coursesInterface: coursesInterface,
       groupsInterface: groupsInterface,
       flashcardsInterface: flashcardsInterface,
+      sessionsInterface: sessionsInterface,
     );
   });
 
@@ -35,6 +40,7 @@ void main() {
     reset(coursesInterface);
     reset(groupsInterface);
     reset(flashcardsInterface);
+    reset(sessionsInterface);
   });
 
   blocTest(
@@ -205,6 +211,8 @@ void main() {
     'remove course, success',
     build: () => coursesBloc,
     setUp: () {
+      when(() => sessionsInterface.removeSessionsByGroupsIds(['g1', 'g2']))
+          .thenAnswer((_) async => '');
       when(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1', 'g2']))
           .thenAnswer((_) async => '');
       when(() => groupsInterface.removeGroupsFromCourse('c1'))
@@ -224,6 +232,9 @@ void main() {
     ],
     verify: (_) {
       verify(
+        () => sessionsInterface.removeSessionsByGroupsIds(['g1', 'g2']),
+      ).called(1);
+      verify(
         () => flashcardsInterface.removeFlashcardsByGroupsIds(['g1', 'g2']),
       ).called(1);
       verify(() => groupsInterface.removeGroupsFromCourse('c1')).called(1);
@@ -235,6 +246,8 @@ void main() {
     'remove course, failure',
     build: () => coursesBloc,
     setUp: () {
+      when(() => sessionsInterface.removeSessionsByGroupsIds(['g1', 'g2']))
+          .thenAnswer((_) async => '');
       when(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1', 'g2']))
           .thenAnswer((_) async => '');
       when(() => groupsInterface.removeGroupsFromCourse('c1'))
@@ -252,6 +265,9 @@ void main() {
       CoursesState(status: const CoursesStatusError(message: 'Error...')),
     ],
     verify: (_) {
+      verify(
+        () => sessionsInterface.removeSessionsByGroupsIds(['g1', 'g2']),
+      ).called(1);
       verify(
         () => flashcardsInterface.removeFlashcardsByGroupsIds(['g1', 'g2']),
       ).called(1);

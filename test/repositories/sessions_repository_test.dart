@@ -86,4 +86,14 @@ void main() {
 
     verify(() => fireSessionsService.removeSession('s1')).called(1);
   });
+
+  test('remove sessions by groups ids', () async {
+    when(() => fireSessionsService.removeSessionsByGroupsIds(['g1', 'g2']))
+        .thenAnswer((_) async => '');
+
+    await repository.removeSessionsByGroupsIds(['g1', 'g2']);
+
+    verify(() => fireSessionsService.removeSessionsByGroupsIds(['g1', 'g2']))
+        .called(1);
+  });
 }

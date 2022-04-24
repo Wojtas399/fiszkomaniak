@@ -5,6 +5,7 @@ import 'package:fiszkomaniak/core/courses/courses_status.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
+import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/changed_document.dart';
@@ -13,16 +14,19 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   late final CoursesInterface _coursesInterface;
   late final GroupsInterface _groupsInterface;
   late final FlashcardsInterface _flashcardsInterface;
+  late final SessionsInterface _sessionsInterface;
   StreamSubscription<List<ChangedDocument<Course>>>? _coursesSubscription;
 
   CoursesBloc({
     required CoursesInterface coursesInterface,
     required GroupsInterface groupsInterface,
     required FlashcardsInterface flashcardsInterface,
+    required SessionsInterface sessionsInterface,
   }) : super(CoursesState()) {
     _coursesInterface = coursesInterface;
     _groupsInterface = groupsInterface;
     _flashcardsInterface = flashcardsInterface;
+    _sessionsInterface = sessionsInterface;
     on<CoursesEventInitialize>(_initialize);
     on<CoursesEventAddNewCourse>(_addNewCourse);
     on<CoursesEventUpdateCourseName>(_updateCourseName);
@@ -91,6 +95,9 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   ) async {
     try {
       emit(state.copyWith(status: CoursesStatusLoading()));
+      await _sessionsInterface.removeSessionsByGroupsIds(
+        event.idsOfGroupsFromCourse,
+      );
       await _flashcardsInterface.removeFlashcardsByGroupsIds(
         event.idsOfGroupsFromCourse,
       );
