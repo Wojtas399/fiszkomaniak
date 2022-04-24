@@ -8,7 +8,7 @@ import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../../components/session_flashcards_type_picker.dart';
+import '../../../components/flashcards_type_picker.dart';
 import '../../../models/session_model.dart';
 import '../bloc/session_creator_state.dart';
 
@@ -54,7 +54,7 @@ class SessionCreatorFlashcards extends StatelessWidget {
                           ));
                     },
                   ),
-                  SessionFlashcardsTypePicker(
+                  FlashcardsTypePicker(
                     selectedType: state.flashcardsType,
                     onTypeChanged: (FlashcardsType type) {
                       context

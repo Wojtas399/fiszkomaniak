@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:fiszkomaniak/components/item_with_icon.dart';
 import 'package:fiszkomaniak/components/time_picker.dart';
-import 'package:fiszkomaniak/converters/time_converter.dart';
+import 'package:fiszkomaniak/converters/time_converters.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';

@@ -1,12 +1,9 @@
-import 'package:fiszkomaniak/components/bouncing_scroll.dart';
-import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_event.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_state.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_app_bar.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_groups_list.dart';
+import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,25 +19,9 @@ class CourseGroupsPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return _CourseGroupsPreviewBlocProvider(
       courseId: courseId,
-      child: BlocBuilder<CourseGroupsPreviewBloc, CourseGroupsPreviewState>(
-        builder: (BuildContext context, _) {
-          return const Scaffold(
-            appBar: CourseGroupsPreviewAppBar(),
-            body: OnTapFocusLoseArea(
-              child: SizedBox(
-                height: double.infinity,
-                child: BouncingScroll(
-                  child: SafeArea(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: CourseGroupsPreviewGroupsList(),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
+      child: const Scaffold(
+        appBar: CourseGroupsPreviewAppBar(),
+        body: CourseGroupsPreviewContent(),
       ),
     );
   }

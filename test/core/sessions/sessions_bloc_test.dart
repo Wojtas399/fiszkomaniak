@@ -123,7 +123,7 @@ void main() {
         status: SessionsStatusLoaded(),
       ),
       SessionsState(
-        allSessions: [],
+        allSessions: const [],
         status: SessionsStatusLoaded(),
       ),
     ],

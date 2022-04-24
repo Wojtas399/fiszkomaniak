@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/time_picker.dart';
-import '../../../converters/time_converter.dart';
+import '../../../converters/time_converters.dart';
 import '../bloc/session_creator_event.dart';
 
 class SessionCreatorDateAndTime extends StatelessWidget {

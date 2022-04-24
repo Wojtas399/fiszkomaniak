@@ -6,9 +6,11 @@ import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_p
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/bouncing_scroll.dart';
+import '../../../components/on_tap_focus_lose_area.dart';
 
-class CourseGroupsPreviewGroupsList extends StatelessWidget {
-  const CourseGroupsPreviewGroupsList({Key? key}) : super(key: key);
+class CourseGroupsPreviewList extends StatelessWidget {
+  const CourseGroupsPreviewList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +21,20 @@ class CourseGroupsPreviewGroupsList extends StatelessWidget {
       ) {
         return BlocBuilder<FlashcardsBloc, FlashcardsState>(
           builder: (BuildContext context, FlashcardsState flashcardsState) {
-            return Column(
-              children: _buildGroups(
-                context,
-                courseGroupsPreviewState,
-                flashcardsState,
+            return OnTapFocusLoseArea(
+              child: BouncingScroll(
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: _buildGroups(
+                        context,
+                        courseGroupsPreviewState,
+                        flashcardsState,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             );
           },

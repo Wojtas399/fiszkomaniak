@@ -1,15 +1,15 @@
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../converters/flashcards_type_converter.dart';
+import '../converters/flashcards_type_converters.dart';
 import 'item_with_icon.dart';
-import 'modal_bottom_sheet_options.dart';
+import 'modal_bottom_sheet.dart';
 
-class SessionFlashcardsTypePicker extends StatelessWidget {
+class FlashcardsTypePicker extends StatelessWidget {
   final FlashcardsType selectedType;
   final Function(FlashcardsType type)? onTypeChanged;
 
-  const SessionFlashcardsTypePicker({
+  const FlashcardsTypePicker({
     Key? key,
     required this.selectedType,
     this.onTypeChanged,
