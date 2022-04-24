@@ -87,15 +87,4 @@ void main() {
     verify(() => fireFlashcardsService.removeFlashcards(flashcardsIds))
         .called(1);
   });
-
-  test('remove flashcards by groups ids', () async {
-    final List<String> groupsIds = ['g1', 'g2'];
-    when(() => fireFlashcardsService.removeFlashcardsByGroupsIds(groupsIds))
-        .thenAnswer((_) async => '');
-
-    await repository.removeFlashcardsByGroupsIds(groupsIds);
-
-    verify(() => fireFlashcardsService.removeFlashcardsByGroupsIds(groupsIds))
-        .called(1);
-  });
 }

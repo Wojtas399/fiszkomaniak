@@ -1,32 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiszkomaniak/firebase/fire_references.dart';
 import 'package:fiszkomaniak/firebase/models/fire_doc_model.dart';
 import 'package:fiszkomaniak/firebase/models/flashcard_db_model.dart';
 import '../fire_instances.dart';
-import '../fire_user.dart';
 
 class FireFlashcardsService {
+  static Future<QuerySnapshot<FlashcardDbModel>> getFlashcardsByGroupsIds(
+    List<String> groupsIds,
+  ) async {
+    return await FireReferences.flashcardsRef
+        .where('groupId', whereIn: groupsIds)
+        .get();
+  }
+
   Stream<QuerySnapshot<FlashcardDbModel>> getFlashcardsSnapshots() {
-    final String? loggedUserId = FireUser.getLoggedUserId();
-    if (loggedUserId != null) {
-      return _getFlashcardsRef(loggedUserId).snapshots();
-    } else {
-      throw FireUser.noLoggedUserMessage;
-    }
+    return FireReferences.flashcardsRef.snapshots();
   }
 
   Future<void> addFlashcards(List<FlashcardDbModel> flashcards) async {
     try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        final batch = FireInstances.firestore.batch();
-        for (final flashcard in flashcards) {
-          final docRef = _getFlashcardsRef(loggedUserId).doc();
-          batch.set(docRef, flashcard);
-        }
-        batch.commit();
-      } else {
-        throw FireUser.noLoggedUserMessage;
+      final batch = FireInstances.firestore.batch();
+      for (final flashcard in flashcards) {
+        final docRef = FireReferences.flashcardsRef.doc();
+        batch.set(docRef, flashcard);
       }
+      batch.commit();
     } catch (error) {
       rethrow;
     }
@@ -36,17 +34,14 @@ class FireFlashcardsService {
     List<FireDoc<FlashcardDbModel>> flashcards,
   ) async {
     try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        final batch = FireInstances.firestore.batch();
-        for (final flashcard in flashcards) {
-          final docRef = _getFlashcardsRef(loggedUserId).doc(flashcard.id);
-          batch.update(docRef, flashcard.doc.toJson());
-        }
-        batch.commit();
-      } else {
-        throw FireUser.noLoggedUserMessage;
+      final batch = FireInstances.firestore.batch();
+      for (final flashcard in flashcards) {
+        final docRef = FireReferences.flashcardsRef.doc(
+          flashcard.id,
+        );
+        batch.update(docRef, flashcard.doc.toJson());
       }
+      batch.commit();
     } catch (error) {
       rethrow;
     }
@@ -54,54 +49,14 @@ class FireFlashcardsService {
 
   Future<void> removeFlashcards(List<String> idsOfFlashcardsToRemove) async {
     try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        final batch = FireInstances.firestore.batch();
-        for (final id in idsOfFlashcardsToRemove) {
-          final docRef = _getFlashcardsRef(loggedUserId).doc(id);
-          batch.delete(docRef);
-        }
-        batch.commit();
-      } else {
-        throw FireUser.noLoggedUserMessage;
+      final batch = FireInstances.firestore.batch();
+      for (final id in idsOfFlashcardsToRemove) {
+        final docRef = FireReferences.flashcardsRef.doc(id);
+        batch.delete(docRef);
       }
+      batch.commit();
     } catch (error) {
       rethrow;
     }
-  }
-
-  Future<void> removeFlashcardsByGroupsIds(List<String> groupsIds) async {
-    try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        final batch = FireInstances.firestore.batch();
-        final matchedDocuments = await _getFlashcardsRef(loggedUserId)
-            .where('groupId', whereIn: groupsIds)
-            .get();
-        for (final document in matchedDocuments.docs) {
-          batch.delete(document.reference);
-        }
-        await batch.commit();
-      } else {
-        throw FireUser.noLoggedUserMessage;
-      }
-    } catch (error) {
-      rethrow;
-    }
-  }
-
-  CollectionReference<FlashcardDbModel> _getFlashcardsRef(
-    String userId,
-  ) {
-    return FireInstances.firestore
-        .collection('Users')
-        .doc(userId)
-        .collection('Flashcards')
-        .withConverter<FlashcardDbModel>(
-          fromFirestore: (snapshot, _) => FlashcardDbModel.fromJson(
-            snapshot.data()!,
-          ),
-          toFirestore: (data, _) => data.toJson(),
-        );
   }
 }

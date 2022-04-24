@@ -60,11 +60,6 @@ class FlashcardsRepository implements FlashcardsInterface {
     await _fireFlashcardsService.removeFlashcards(idsOfFlashcards);
   }
 
-  @override
-  Future<void> removeFlashcardsByGroupsIds(List<String> groupsIds) async {
-    await _fireFlashcardsService.removeFlashcardsByGroupsIds(groupsIds);
-  }
-
   ChangedDocument<Flashcard>? _convertFireDocumentToChangedDocumentModel(
     DocumentChange<FlashcardDbModel> docChange,
   ) {

@@ -75,11 +75,6 @@ class SessionsRepository implements SessionsInterface {
     await _fireSessionsService.removeSession(sessionId);
   }
 
-  @override
-  Future<void> removeSessionsByGroupsIds(List<String> groupsIds) async {
-    await _fireSessionsService.removeSessionsByGroupsIds(groupsIds);
-  }
-
   ChangedDocument<Session>? _convertFireDocumentToChangedDocumentModel(
     DocumentChange<SessionDbModel> docChange,
   ) {

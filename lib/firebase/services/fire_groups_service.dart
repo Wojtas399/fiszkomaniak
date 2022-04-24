@@ -1,26 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fiszkomaniak/firebase/fire_user.dart';
+import 'package:fiszkomaniak/firebase/fire_references.dart';
 import 'package:fiszkomaniak/firebase/models/group_db_model.dart';
+import 'package:fiszkomaniak/firebase/services/fire_flashcards_service.dart';
+import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
 import '../fire_instances.dart';
 
 class FireGroupsService {
+  static Future<QuerySnapshot<GroupDbModel>> getGroupsFromCourse(
+    String courseId,
+  ) async {
+    return await FireReferences.groupsReference
+        .where('courseId', isEqualTo: courseId)
+        .get();
+  }
+
   Stream<QuerySnapshot<GroupDbModel>> getGroupsSnapshots() {
-    final String? loggedUserId = FireUser.getLoggedUserId();
-    if (loggedUserId != null) {
-      return _getGroupsRef(loggedUserId).snapshots();
-    } else {
-      throw FireUser.noLoggedUserMessage;
-    }
+    return FireReferences.groupsReference.snapshots();
   }
 
   Future<void> addNewGroup(GroupDbModel groupData) async {
     try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        await _getGroupsRef(loggedUserId).add(groupData);
-      } else {
-        throw FireUser.noLoggedUserMessage;
-      }
+      await FireReferences.groupsReference.add(groupData);
     } catch (error) {
       rethrow;
     }
@@ -34,19 +34,14 @@ class FireGroupsService {
     String? nameForAnswers,
   }) async {
     try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        await _getGroupsRef(loggedUserId).doc(groupId).update(
-              GroupDbModel(
-                name: name,
-                courseId: courseId,
-                nameForQuestions: nameForQuestions,
-                nameForAnswers: nameForAnswers,
-              ).toJson(),
-            );
-      } else {
-        throw FireUser.noLoggedUserMessage;
-      }
+      await FireReferences.groupsReference.doc(groupId).update(
+            GroupDbModel(
+              name: name,
+              courseId: courseId,
+              nameForQuestions: nameForQuestions,
+              nameForAnswers: nameForAnswers,
+            ).toJson(),
+          );
     } catch (error) {
       rethrow;
     }
@@ -54,49 +49,22 @@ class FireGroupsService {
 
   Future<void> removeGroup(String groupId) async {
     try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        await _getGroupsRef(loggedUserId).doc(groupId).delete();
-      } else {
-        throw FireUser.noLoggedUserMessage;
+      final batch = FireInstances.firestore.batch();
+      final group = await FireReferences.groupsReference.doc(groupId).get();
+      final flashcardsFromGroups =
+          await FireFlashcardsService.getFlashcardsByGroupsIds([groupId]);
+      final sessionsFromGroups =
+          await FireSessionsService.getSessionsByGroupsIds([groupId]);
+      for (final session in sessionsFromGroups.docs) {
+        batch.delete(session.reference);
       }
+      for (final flashcard in flashcardsFromGroups.docs) {
+        batch.delete(flashcard.reference);
+      }
+      batch.delete(group.reference);
+      await batch.commit();
     } catch (error) {
       rethrow;
     }
-  }
-
-  Future<void> removeGroupsFromCourse(String courseId) async {
-    try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        final batch = FireInstances.firestore.batch();
-        final matchedDocuments = await _getGroupsRef(loggedUserId)
-            .where('courseId', isEqualTo: courseId)
-            .get();
-        for (final document in matchedDocuments.docs) {
-          batch.delete(document.reference);
-        }
-        await batch.commit();
-      } else {
-        throw FireUser.noLoggedUserMessage;
-      }
-    } catch (error) {
-      rethrow;
-    }
-  }
-
-  CollectionReference<GroupDbModel> _getGroupsRef(
-    String userId,
-  ) {
-    return FireInstances.firestore
-        .collection('Users')
-        .doc(userId)
-        .collection('Groups')
-        .withConverter<GroupDbModel>(
-          fromFirestore: (snapshot, _) => GroupDbModel.fromJson(
-            snapshot.data()!,
-          ),
-          toFirestore: (data, _) => data.toJson(),
-        );
   }
 }

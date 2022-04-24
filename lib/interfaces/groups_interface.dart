@@ -20,6 +20,4 @@ abstract class GroupsInterface {
   });
 
   Future<void> removeGroup(String groupId);
-
-  Future<void> removeGroupsFromCourse(String courseId);
 }

@@ -19,6 +19,4 @@ abstract class SessionsInterface {
   });
 
   Future<void> removeSession(String sessionId);
-
-  Future<void> removeSessionsByGroupsIds(List<String> groupsIds);
 }

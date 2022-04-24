@@ -65,11 +65,6 @@ class GroupsRepository implements GroupsInterface {
     await _fireGroupsService.removeGroup(groupId);
   }
 
-  @override
-  Future<void> removeGroupsFromCourse(String courseId) async {
-    await _fireGroupsService.removeGroupsFromCourse(courseId);
-  }
-
   ChangedDocument<Group>? _convertFireDocumentToChangedDocumentModel(
     DocumentChange<GroupDbModel> docChange,
   ) {

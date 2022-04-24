@@ -9,6 +9,4 @@ abstract class FlashcardsInterface {
   Future<void> updateFlashcards(List<Flashcard> flashcards) async {}
 
   Future<void> removeFlashcards(List<String> idsOfFlashcards) async {}
-
-  Future<void> removeFlashcardsByGroupsIds(List<String> groupsIds) async {}
 }

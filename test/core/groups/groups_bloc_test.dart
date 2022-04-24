@@ -3,9 +3,7 @@ import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_status.dart';
-import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,14 +11,8 @@ import 'package:mocktail/mocktail.dart';
 
 class MockGroupsInterface extends Mock implements GroupsInterface {}
 
-class MockFlashcardsInterface extends Mock implements FlashcardsInterface {}
-
-class MockSessionsInterface extends Mock implements SessionsInterface {}
-
 void main() {
   final GroupsInterface groupsInterface = MockGroupsInterface();
-  final FlashcardsInterface flashcardsInterface = MockFlashcardsInterface();
-  final SessionsInterface sessionsInterface = MockSessionsInterface();
   late GroupsBloc bloc;
   final List<ChangedDocument<Group>> snapshots = [
     ChangedDocument(
@@ -46,17 +38,11 @@ void main() {
   ];
 
   setUp(() {
-    bloc = GroupsBloc(
-      groupsInterface: groupsInterface,
-      flashcardsInterface: flashcardsInterface,
-      sessionsInterface: sessionsInterface,
-    );
+    bloc = GroupsBloc(groupsInterface: groupsInterface);
   });
 
   tearDown(() {
     reset(groupsInterface);
-    reset(flashcardsInterface);
-    reset(sessionsInterface);
   });
 
   blocTest(
@@ -294,10 +280,6 @@ void main() {
     'remove group, success',
     build: () => bloc,
     setUp: () {
-      when(() => sessionsInterface.removeSessionsByGroupsIds(['g1']))
-          .thenAnswer((_) async => '');
-      when(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1']))
-          .thenAnswer((_) async => '');
       when(() => groupsInterface.removeGroup('g1')).thenAnswer((_) async => '');
     },
     act: (_) => bloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
@@ -306,10 +288,6 @@ void main() {
       GroupsState(status: GroupsStatusGroupRemoved()),
     ],
     verify: (_) {
-      verify(() => sessionsInterface.removeSessionsByGroupsIds(['g1']))
-          .called(1);
-      verify(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1']))
-          .called(1);
       verify(() => groupsInterface.removeGroup('g1')).called(1);
     },
   );
@@ -318,10 +296,6 @@ void main() {
     'remove group, failure',
     build: () => bloc,
     setUp: () {
-      when(() => sessionsInterface.removeSessionsByGroupsIds(['g1']))
-          .thenAnswer((_) async => '');
-      when(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1']))
-          .thenAnswer((_) async => '');
       when(() => groupsInterface.removeGroup('g1')).thenThrow('Error...');
     },
     act: (_) => bloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
@@ -330,10 +304,6 @@ void main() {
       GroupsState(status: const GroupsStatusError(message: 'Error...')),
     ],
     verify: (_) {
-      verify(() => sessionsInterface.removeSessionsByGroupsIds(['g1']))
-          .called(1);
-      verify(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1']))
-          .called(1);
       verify(() => groupsInterface.removeGroup('g1')).called(1);
     },
   );

@@ -56,16 +56,11 @@ class HomeProviders extends StatelessWidget {
           BlocProvider<CoursesBloc>(
             create: (BuildContext context) => CoursesBloc(
               coursesInterface: context.read<CoursesInterface>(),
-              groupsInterface: context.read<GroupsInterface>(),
-              flashcardsInterface: context.read<FlashcardsInterface>(),
-              sessionsInterface: context.read<SessionsInterface>(),
             )..add(CoursesEventInitialize()),
           ),
           BlocProvider<GroupsBloc>(
             create: (BuildContext context) => GroupsBloc(
               groupsInterface: context.read<GroupsInterface>(),
-              flashcardsInterface: context.read<FlashcardsInterface>(),
-              sessionsInterface: context.read<SessionsInterface>(),
             )..add(GroupsEventInitialize()),
           ),
           BlocProvider<FlashcardsBloc>(

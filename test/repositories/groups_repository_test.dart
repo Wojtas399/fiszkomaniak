@@ -64,14 +64,4 @@ void main() {
 
     verify(() => fireGroupsService.removeGroup('g1')).called(1);
   });
-
-  test('remove groups from course', () async {
-    when(
-      () => fireGroupsService.removeGroupsFromCourse('c1'),
-    ).thenAnswer((_) async => '');
-
-    await repository.removeGroupsFromCourse('c1');
-
-    verify(() => fireGroupsService.removeGroupsFromCourse('c1')).called(1);
-  });
 }
