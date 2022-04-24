@@ -1,11 +1,11 @@
-import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
+import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_event.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/button.dart';
-import 'group_preview_progress_bar.dart';
+import 'group_preview_flashcards_state.dart';
 import 'group_preview_information.dart';
 
 class GroupPreviewContent extends StatelessWidget {
@@ -33,18 +33,20 @@ class GroupPreviewContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 const GroupPreviewInformation(),
-                const GroupPreviewProgressBar(),
+                const GroupPreviewFlashcardsState(),
               ],
             ),
             Button(
-              label: 'przeglądaj fiszki',
-              onPressed: () {
-                Navigation.navigateToGroupFlashcardsPreview(group.id);
-              },
+              label: 'szybka sesja',
+              onPressed: () => _quickSession(context),
             ),
           ],
         );
       },
     );
+  }
+
+  void _quickSession(BuildContext context) {
+    context.read<GroupPreviewBloc>().add(GroupPreviewEventCreateQuickSession());
   }
 }

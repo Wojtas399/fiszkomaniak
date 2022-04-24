@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:fiszkomaniak/core/groups/groups_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_status.dart';
-import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
@@ -10,15 +9,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
   late final GroupsInterface _groupsInterface;
-  late final FlashcardsInterface _flashcardsInterface;
   StreamSubscription<List<ChangedDocument<Group>>>? _groupsSubscription;
 
   GroupsBloc({
     required GroupsInterface groupsInterface,
-    required FlashcardsInterface flashcardsInterface,
   }) : super(GroupsState()) {
     _groupsInterface = groupsInterface;
-    _flashcardsInterface = flashcardsInterface;
     on<GroupsEventInitialize>(_initialize);
     on<GroupsEventGroupAdded>(_groupAdded);
     on<GroupsEventGroupUpdated>(_groupUpdated);
@@ -32,22 +28,23 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
     GroupsEventInitialize event,
     Emitter<GroupsState> emit,
   ) {
-    _groupsSubscription =
-        _groupsInterface.getGroupsSnapshots().listen((groups) {
-      for (final group in groups) {
-        switch (group.changeType) {
-          case DbDocChangeType.added:
-            add(GroupsEventGroupAdded(group: group.doc));
-            break;
-          case DbDocChangeType.updated:
-            add(GroupsEventGroupUpdated(group: group.doc));
-            break;
-          case DbDocChangeType.removed:
-            add(GroupsEventGroupRemoved(groupId: group.doc.id));
-            break;
+    _groupsSubscription = _groupsInterface.getGroupsSnapshots().listen(
+      (groups) {
+        for (final group in groups) {
+          switch (group.changeType) {
+            case DbDocChangeType.added:
+              add(GroupsEventGroupAdded(group: group.doc));
+              break;
+            case DbDocChangeType.updated:
+              add(GroupsEventGroupUpdated(group: group.doc));
+              break;
+            case DbDocChangeType.removed:
+              add(GroupsEventGroupRemoved(groupId: group.doc.id));
+              break;
+          }
         }
-      }
-    });
+      },
+    );
   }
 
   void _groupAdded(
@@ -127,7 +124,6 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
   ) async {
     try {
       emit(state.copyWith(status: GroupsStatusLoading()));
-      await _flashcardsInterface.removeFlashcardsByGroupsIds([event.groupId]);
       await _groupsInterface.removeGroup(event.groupId);
       emit(state.copyWith(status: GroupsStatusGroupRemoved()));
     } catch (error) {

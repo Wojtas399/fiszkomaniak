@@ -21,18 +21,18 @@ class FlashcardsState extends Equatable {
     );
   }
 
-  List<Flashcard> getFlashcardsFromGroup(String? groupId) {
+  List<Flashcard> getFlashcardsByGroupId(String? groupId) {
     return allFlashcards
         .where((flashcard) => flashcard.groupId == groupId)
         .toList();
   }
 
   int getAmountOfAllFlashcardsFromGroup(String? groupId) {
-    return getFlashcardsFromGroup(groupId).length;
+    return getFlashcardsByGroupId(groupId).length;
   }
 
   int getAmountOfRememberedFlashcardsFromGroup(String? groupId) {
-    return getFlashcardsFromGroup(groupId)
+    return getFlashcardsByGroupId(groupId)
         .where((flashcard) => flashcard.status == FlashcardStatus.remembered)
         .length;
   }

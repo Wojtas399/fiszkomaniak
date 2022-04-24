@@ -23,6 +23,7 @@ class SwitchOptionItem extends StatelessWidget {
     return ItemWithIcon(
       icon: icon,
       text: text,
+      paddingRight: 0.0,
       trailing: SettingsSwitch(
         isSwitched: isSwitched,
         onSwitchChanged: onSwitchChanged,

@@ -5,6 +5,7 @@ import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_event.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dart';
+import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../config/navigation.dart';
 import '../../../core/groups/groups_event.dart';
@@ -16,6 +17,7 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
   late final CoursesBloc _coursesBloc;
   late final FlashcardsBloc _flashcardsBloc;
   late final GroupPreviewDialogs _groupPreviewDialogs;
+  late final Navigation _navigation;
   StreamSubscription? _groupsStateSubscription;
   StreamSubscription? _flashcardsStateSubscription;
 
@@ -24,15 +26,19 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
     required CoursesBloc coursesBloc,
     required FlashcardsBloc flashcardsBloc,
     required GroupPreviewDialogs groupPreviewDialogs,
+    required Navigation navigation,
   }) : super(const GroupPreviewState()) {
     _groupsBloc = groupsBloc;
     _coursesBloc = coursesBloc;
     _flashcardsBloc = flashcardsBloc;
     _groupPreviewDialogs = groupPreviewDialogs;
+    _navigation = navigation;
     on<GroupPreviewEventInitialize>(_initialize);
     on<GroupPreviewEventEdit>(_edit);
-    on<GroupPreviewEventAddFlashcards>(_addFlashcards);
     on<GroupPreviewEventRemove>(_remove);
+    on<GroupPreviewEventEditFlashcards>(_editFlashcards);
+    on<GroupPreviewEventReviewFlashcards>(_reviewFlashcards);
+    on<GroupPreviewEventCreateQuickSession>(_createQuickSession);
     on<GroupPreviewEventGroupsStateUpdated>(_groupsStateUpdated);
     on<GroupPreviewEventFlashcardsStateUpdated>(_flashcardsStateUpdated);
   }
@@ -65,17 +71,7 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
   ) {
     final Group? group = state.group;
     if (group != null) {
-      Navigation.navigateToGroupCreator(GroupCreatorEditMode(group: group));
-    }
-  }
-
-  void _addFlashcards(
-    GroupPreviewEventAddFlashcards event,
-    Emitter<GroupPreviewState> emit,
-  ) {
-    final String? groupId = state.group?.id;
-    if (groupId != null) {
-      Navigation.navigateToFlashcardsEditor(groupId);
+      _navigation.navigateToGroupCreator(GroupCreatorEditMode(group: group));
     }
   }
 
@@ -90,6 +86,38 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
       if (confirmation == true) {
         _groupsBloc.add(GroupsEventRemoveGroup(groupId: groupId));
       }
+    }
+  }
+
+  void _editFlashcards(
+    GroupPreviewEventEditFlashcards event,
+    Emitter<GroupPreviewState> emi,
+  ) {
+    final String? groupId = state.group?.id;
+    if (groupId != null) {
+      _navigation.navigateToFlashcardsEditor(groupId);
+    }
+  }
+
+  void _reviewFlashcards(
+    GroupPreviewEventReviewFlashcards event,
+    Emitter<GroupPreviewState> emit,
+  ) {
+    final String? groupId = state.group?.id;
+    if (groupId != null) {
+      _navigation.navigateToGroupFlashcardsPreview(state.group!.id);
+    }
+  }
+
+  void _createQuickSession(
+    GroupPreviewEventCreateQuickSession event,
+    Emitter<GroupPreviewState> emit,
+  ) {
+    final String? groupId = state.group?.id;
+    if (groupId != null) {
+      _navigation.navigateToSessionPreview(
+        SessionPreviewModeQuick(groupId: state.group!.id),
+      );
     }
   }
 

@@ -7,7 +7,7 @@ class GroupPreviewDialogs {
     return await dialogs.askForConfirmation(
           title: 'Czy na pewno chcesz usunąć grupę?',
           text:
-              'Usunięcie grupy spowoduje również usunięcie wszystkich fiszek należących do niej.',
+              'Usunięcie grupy spowoduje również usunięcie wszystkich fiszek oraz sesji z nią powiązanych.',
           confirmButtonText: 'Usuń',
         ) ==
         true;

@@ -7,5 +7,5 @@ class AppColors {
 
   static final backgroundLight = HexColor('#F7ECDE');
 
-  static final backgroundDark = HexColor('#1A1A40');
+  static final backgroundDark = HexColor('#25254E');
 }

@@ -3,7 +3,6 @@ import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_status.dart';
-import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
@@ -12,11 +11,8 @@ import 'package:mocktail/mocktail.dart';
 
 class MockGroupsInterface extends Mock implements GroupsInterface {}
 
-class MockFlashcardsInterface extends Mock implements FlashcardsInterface {}
-
 void main() {
   final GroupsInterface groupsInterface = MockGroupsInterface();
-  final FlashcardsInterface flashcardsInterface = MockFlashcardsInterface();
   late GroupsBloc bloc;
   final List<ChangedDocument<Group>> snapshots = [
     ChangedDocument(
@@ -42,10 +38,7 @@ void main() {
   ];
 
   setUp(() {
-    bloc = GroupsBloc(
-      groupsInterface: groupsInterface,
-      flashcardsInterface: flashcardsInterface,
-    );
+    bloc = GroupsBloc(groupsInterface: groupsInterface);
   });
 
   tearDown(() {
@@ -287,8 +280,6 @@ void main() {
     'remove group, success',
     build: () => bloc,
     setUp: () {
-      when(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1']))
-          .thenAnswer((_) async => '');
       when(() => groupsInterface.removeGroup('g1')).thenAnswer((_) async => '');
     },
     act: (_) => bloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
@@ -297,8 +288,6 @@ void main() {
       GroupsState(status: GroupsStatusGroupRemoved()),
     ],
     verify: (_) {
-      verify(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1']))
-          .called(1);
       verify(() => groupsInterface.removeGroup('g1')).called(1);
     },
   );
@@ -307,8 +296,6 @@ void main() {
     'remove group, failure',
     build: () => bloc,
     setUp: () {
-      when(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1']))
-          .thenAnswer((_) async => '');
       when(() => groupsInterface.removeGroup('g1')).thenThrow('Error...');
     },
     act: (_) => bloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
@@ -317,8 +304,6 @@ void main() {
       GroupsState(status: const GroupsStatusError(message: 'Error...')),
     ],
     verify: (_) {
-      verify(() => flashcardsInterface.removeFlashcardsByGroupsIds(['g1']))
-          .called(1);
       verify(() => groupsInterface.removeGroup('g1')).called(1);
     },
   );

@@ -14,5 +14,12 @@ class GroupFlashcardsPreviewEventSearchValueChanged
   GroupFlashcardsPreviewEventSearchValueChanged({required this.searchValue});
 }
 
+class GroupFlashcardsPreviewEventShowFlashcardDetails
+    extends GroupFlashcardsPreviewEvent {
+  final String flashcardId;
+
+  GroupFlashcardsPreviewEventShowFlashcardDetails({required this.flashcardId});
+}
+
 class GroupFlashcardsPreviewEventFlashcardsStateUpdated
     extends GroupFlashcardsPreviewEvent {}

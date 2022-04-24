@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_event.dart';
@@ -10,16 +11,20 @@ class GroupFlashcardsPreviewBloc
     extends Bloc<GroupFlashcardsPreviewEvent, GroupFlashcardsPreviewState> {
   late final GroupsBloc _groupsBloc;
   late final FlashcardsBloc _flashcardsBloc;
+  late final Navigation _navigation;
   StreamSubscription? _flashcardsStateSubscription;
 
   GroupFlashcardsPreviewBloc({
     required GroupsBloc groupsBloc,
     required FlashcardsBloc flashcardsBloc,
+    required Navigation navigation,
   }) : super(const GroupFlashcardsPreviewState()) {
     _groupsBloc = groupsBloc;
     _flashcardsBloc = flashcardsBloc;
+    _navigation = navigation;
     on<GroupFlashcardsPreviewEventInitialize>(_initialize);
     on<GroupFlashcardsPreviewEventSearchValueChanged>(_searchValueChanged);
+    on<GroupFlashcardsPreviewEventShowFlashcardDetails>(_showFlashcardDetails);
     on<GroupFlashcardsPreviewEventFlashcardsStateUpdated>(
       _flashcardsStateUpdated,
     );
@@ -31,7 +36,7 @@ class GroupFlashcardsPreviewBloc
   ) {
     final String? groupName = _groupsBloc.state.getGroupNameById(event.groupId);
     final List<Flashcard> flashcardsFromGroup =
-        _flashcardsBloc.state.getFlashcardsFromGroup(event.groupId);
+        _flashcardsBloc.state.getFlashcardsByGroupId(event.groupId);
     if (groupName != null) {
       emit(state.copyWith(
         groupId: event.groupId,
@@ -49,12 +54,19 @@ class GroupFlashcardsPreviewBloc
     emit(state.copyWith(searchValue: event.searchValue));
   }
 
+  void _showFlashcardDetails(
+    GroupFlashcardsPreviewEventShowFlashcardDetails event,
+    Emitter<GroupFlashcardsPreviewState> emit,
+  ) {
+    _navigation.navigateToFlashcardPreview(event.flashcardId);
+  }
+
   void _flashcardsStateUpdated(
     GroupFlashcardsPreviewEventFlashcardsStateUpdated event,
     Emitter<GroupFlashcardsPreviewState> emit,
   ) {
     final List<Flashcard> flashcardsFromGroup =
-        _flashcardsBloc.state.getFlashcardsFromGroup(state.groupId);
+        _flashcardsBloc.state.getFlashcardsByGroupId(state.groupId);
     emit(state.copyWith(flashcardsFromGroup: flashcardsFromGroup));
   }
 

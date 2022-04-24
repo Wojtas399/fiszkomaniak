@@ -68,23 +68,27 @@ class _ConfirmationAppBar extends StatelessWidget
       actions: [
         CustomIconButton(
           icon: MdiIcons.close,
-          onPressed: () {
-            Utils.unfocusElements();
-            context
-                .read<FlashcardPreviewBloc>()
-                .add(FlashcardPreviewEventResetChanges());
-          },
+          onPressed: () => _onCancel(context),
         ),
         CustomIconButton(
           icon: MdiIcons.check,
-          onPressed: () {
-            Utils.unfocusElements();
-            context
-                .read<FlashcardPreviewBloc>()
-                .add(FlashcardPreviewEventSaveChanges());
-          },
+          onPressed: () => _onAccept(context),
         ),
       ],
     );
+  }
+
+  void _onCancel(BuildContext context) {
+    Utils.unfocusElements();
+    context
+        .read<FlashcardPreviewBloc>()
+        .add(FlashcardPreviewEventResetChanges());
+  }
+
+  void _onAccept(BuildContext context) {
+    Utils.unfocusElements();
+    context
+        .read<FlashcardPreviewBloc>()
+        .add(FlashcardPreviewEventSaveChanges());
   }
 }

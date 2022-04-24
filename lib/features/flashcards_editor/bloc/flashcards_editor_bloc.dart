@@ -114,7 +114,7 @@ class FlashcardsEditorBloc
   }
 
   List<Flashcard> _getFlashcardsFromCore(String? groupId) {
-    return _flashcardsBloc.state.getFlashcardsFromGroup(groupId).toList();
+    return _flashcardsBloc.state.getFlashcardsByGroupId(groupId).toList();
   }
 
   List<EditorFlashcard> _convertFlashcardsFromCore(

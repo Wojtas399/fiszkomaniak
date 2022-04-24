@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/config/theme/global_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -29,7 +30,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
           IconButton(
             padding: const EdgeInsets.all(0),
             onPressed: () {
-              Navigation.navigateToSettings();
+              context.read<Navigation>().navigateToSettings();
             },
             icon: const Icon(MdiIcons.cog),
           ),

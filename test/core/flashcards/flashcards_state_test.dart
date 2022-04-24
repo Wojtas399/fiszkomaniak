@@ -59,7 +59,7 @@ void main() {
     );
 
     final List<Flashcard> flashcardsFromGroup =
-        updatedState.getFlashcardsFromGroup('g1');
+        updatedState.getFlashcardsByGroupId('g1');
 
     expect(flashcardsFromGroup, expectedFlashcards);
   });

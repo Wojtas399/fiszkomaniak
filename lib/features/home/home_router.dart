@@ -11,6 +11,10 @@ import 'package:fiszkomaniak/features/group_creator/group_creator_page.dart';
 import 'package:fiszkomaniak/features/group_preview/group_preview_page.dart';
 import 'package:fiszkomaniak/features/home/home.dart';
 import 'package:fiszkomaniak/features/home/home_view.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
+import 'package:fiszkomaniak/features/session_creator/session_creator.dart';
+import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
+import 'package:fiszkomaniak/features/session_preview/session_preview.dart';
 import 'package:fiszkomaniak/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 
@@ -25,6 +29,8 @@ class HomeRouter extends StatelessWidget {
 
   static const String groupCreator = '/group-creator';
 
+  static const String sessionCreator = '/session-creator';
+
   static const String groupSelection = '/group-selection';
 
   static const String flashcardsEditor = '/flashcards-editor';
@@ -36,6 +42,8 @@ class HomeRouter extends StatelessWidget {
   static const String groupPreview = '/group-preview';
 
   static const String flashcardPreview = '/flashcard-preview';
+
+  static const String sessionPreview = '/session-preview';
 
   const HomeRouter({Key? key}) : super(key: key);
 
@@ -69,6 +77,12 @@ class HomeRouter extends StatelessWidget {
             mode: routeSettings.arguments as GroupCreatorMode,
           ),
         );
+      case sessionCreator:
+        return SlideUpRouteAnimation(
+          page: SessionCreator(
+            mode: routeSettings.arguments as SessionCreatorMode,
+          ),
+        );
       case groupSelection:
         return SlideUpRouteAnimation(
           page: GroupSelection(),
@@ -98,6 +112,12 @@ class HomeRouter extends StatelessWidget {
         return SlideUpRouteAnimation(
           page: FlashcardPreview(
             flashcardId: routeSettings.arguments as String,
+          ),
+        );
+      case sessionPreview:
+        return SlideUpRouteAnimation(
+          page: SessionPreview(
+            mode: routeSettings.arguments as SessionPreviewMode,
           ),
         );
       default:

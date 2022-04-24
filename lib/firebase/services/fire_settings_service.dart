@@ -1,32 +1,25 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fiszkomaniak/firebase/fire_user.dart';
+import 'package:fiszkomaniak/firebase/fire_references.dart';
 import 'package:fiszkomaniak/firebase/models/appearance_settings_db_model.dart';
 import 'package:fiszkomaniak/firebase/models/notifications_settings_db_model.dart';
-import '../fire_instances.dart';
 
 class FireSettingsService {
   Future<void> setDefaultSettings() async {
     try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        _getAppearanceSettingsRef(loggedUserId).set(
-          AppearanceSettingsDbModel(
-            isDarkModeOn: false,
-            isDarkModeCompatibilityWithSystemOn: false,
-            isSessionTimerInvisibilityOn: false,
-          ),
-        );
-        _getNotificationsSettingsRef(loggedUserId).set(
-          NotificationsSettingsDbModel(
-            areSessionsPlannedNotificationsOn: true,
-            areSessionsDefaultNotificationsOn: true,
-            areAchievementsNotificationsOn: true,
-            areLossOfDaysNotificationsOn: true,
-          ),
-        );
-      } else {
-        throw 'There is no logged user.';
-      }
+      FireReferences.appearanceSettingsRef.set(
+        AppearanceSettingsDbModel(
+          isDarkModeOn: false,
+          isDarkModeCompatibilityWithSystemOn: false,
+          isSessionTimerInvisibilityOn: false,
+        ),
+      );
+      FireReferences.notificationsSettingsRef.set(
+        NotificationsSettingsDbModel(
+          areSessionsPlannedNotificationsOn: true,
+          areSessionsDefaultNotificationsOn: true,
+          areAchievementsNotificationsOn: true,
+          areLossOfDaysNotificationsOn: true,
+        ),
+      );
     } catch (error) {
       rethrow;
     }
@@ -34,17 +27,12 @@ class FireSettingsService {
 
   Future<AppearanceSettingsDbModel> loadAppearanceSettings() async {
     try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        final settings = await _getAppearanceSettingsRef(loggedUserId).get();
-        final settingsData = settings.data();
-        if (settingsData != null) {
-          return settingsData;
-        } else {
-          throw 'Cannot find appearance settings for this user.';
-        }
+      final settings = await FireReferences.appearanceSettingsRef.get();
+      final settingsData = settings.data();
+      if (settingsData != null) {
+        return settingsData;
       } else {
-        throw 'There is no logged user.';
+        throw 'Cannot find appearance settings for this user.';
       }
     } catch (error) {
       rethrow;
@@ -53,17 +41,12 @@ class FireSettingsService {
 
   Future<NotificationsSettingsDbModel> loadNotificationsSettings() async {
     try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        final settings = await _getNotificationsSettingsRef(loggedUserId).get();
-        final settingsData = settings.data();
-        if (settingsData != null) {
-          return settingsData;
-        } else {
-          throw 'Cannot find notifications settings for this user.';
-        }
+      final settings = await FireReferences.notificationsSettingsRef.get();
+      final settingsData = settings.data();
+      if (settingsData != null) {
+        return settingsData;
       } else {
-        throw FireUser.noLoggedUserMessage;
+        throw 'Cannot find notifications settings for this user.';
       }
     } catch (error) {
       rethrow;
@@ -76,19 +59,14 @@ class FireSettingsService {
     bool? isSessionTimerInvisibilityOn,
   }) async {
     try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        _getAppearanceSettingsRef(loggedUserId).update(
-          AppearanceSettingsDbModel(
-            isDarkModeOn: isDarkModeOn,
-            isDarkModeCompatibilityWithSystemOn:
-                isDarkModeCompatibilityWithSystemOn,
-            isSessionTimerInvisibilityOn: isSessionTimerInvisibilityOn,
-          ).toJson(),
-        );
-      } else {
-        throw FireUser.noLoggedUserMessage;
-      }
+      FireReferences.appearanceSettingsRef.update(
+        AppearanceSettingsDbModel(
+          isDarkModeOn: isDarkModeOn,
+          isDarkModeCompatibilityWithSystemOn:
+              isDarkModeCompatibilityWithSystemOn,
+          isSessionTimerInvisibilityOn: isSessionTimerInvisibilityOn,
+        ).toJson(),
+      );
     } catch (error) {
       rethrow;
     }
@@ -101,55 +79,16 @@ class FireSettingsService {
     bool? areLossOfDaysNotificationsOn,
   }) async {
     try {
-      final String? loggedUserId = FireUser.getLoggedUserId();
-      if (loggedUserId != null) {
-        _getNotificationsSettingsRef(loggedUserId).update(
-          NotificationsSettingsDbModel(
-            areSessionsPlannedNotificationsOn:
-                areSessionsPlannedNotificationsOn,
-            areSessionsDefaultNotificationsOn:
-                areSessionsDefaultNotificationsOn,
-            areAchievementsNotificationsOn: areAchievementsNotificationsOn,
-            areLossOfDaysNotificationsOn: areLossOfDaysNotificationsOn,
-          ).toJson(),
-        );
-      } else {
-        throw FireUser.noLoggedUserMessage;
-      }
+      FireReferences.notificationsSettingsRef.update(
+        NotificationsSettingsDbModel(
+          areSessionsPlannedNotificationsOn: areSessionsPlannedNotificationsOn,
+          areSessionsDefaultNotificationsOn: areSessionsDefaultNotificationsOn,
+          areAchievementsNotificationsOn: areAchievementsNotificationsOn,
+          areLossOfDaysNotificationsOn: areLossOfDaysNotificationsOn,
+        ).toJson(),
+      );
     } catch (error) {
       rethrow;
     }
-  }
-
-  DocumentReference<AppearanceSettingsDbModel> _getAppearanceSettingsRef(
-    String userId,
-  ) {
-    return FireInstances.firestore
-        .collection('Users')
-        .doc(userId)
-        .collection('Settings')
-        .doc('Appearance')
-        .withConverter<AppearanceSettingsDbModel>(
-          fromFirestore: (snapshot, _) => AppearanceSettingsDbModel.fromJson(
-            snapshot.data()!,
-          ),
-          toFirestore: (settings, _) => settings.toJson(),
-        );
-  }
-
-  DocumentReference<NotificationsSettingsDbModel> _getNotificationsSettingsRef(
-    String userId,
-  ) {
-    return FireInstances.firestore
-        .collection('Users')
-        .doc(userId)
-        .collection('Settings')
-        .doc('Notifications')
-        .withConverter<NotificationsSettingsDbModel>(
-          fromFirestore: (snapshot, _) => NotificationsSettingsDbModel.fromJson(
-            snapshot.data()!,
-          ),
-          toFirestore: (settings, _) => settings.toJson(),
-        );
   }
 }
