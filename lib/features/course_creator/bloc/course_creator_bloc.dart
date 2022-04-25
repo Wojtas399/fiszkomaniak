@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_event.dart';
+import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_dialogs.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_event.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
@@ -7,11 +8,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
   late final CoursesBloc _coursesBloc;
+  late final CourseCreatorDialogs _courseCreatorDialogs;
 
   CourseCreatorBloc({
     required CoursesBloc coursesBloc,
+    required CourseCreatorDialogs courseCreatorDialogs,
   }) : super(const CourseCreatorState()) {
     _coursesBloc = coursesBloc;
+    _courseCreatorDialogs = courseCreatorDialogs;
     on<CourseCreatorEventInitialize>(_initialize);
     on<CourseCreatorEventCourseNameChanged>(_courseNameChanged);
     on<CourseCreatorEventSaveChanges>(_saveChanges);
@@ -45,14 +49,19 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     CourseCreatorEventSaveChanges event,
     Emitter<CourseCreatorState> emit,
   ) {
-    CourseCreatorMode mode = state.mode;
-    if (mode is CourseCreatorCreateMode) {
-      _coursesBloc.add(CoursesEventAddNewCourse(name: state.courseName));
-    } else if (mode is CourseCreatorEditMode) {
-      _coursesBloc.add(CoursesEventUpdateCourseName(
-        courseId: mode.course.id,
-        newCourseName: state.courseName,
-      ));
+    final String courseName = state.courseName.trim();
+    if (_coursesBloc.state.isThereCourseWithTheSameName(courseName)) {
+      _courseCreatorDialogs.displayInfoAboutAlreadyTakenCourseName();
+    } else {
+      CourseCreatorMode mode = state.mode;
+      if (mode is CourseCreatorCreateMode) {
+        _coursesBloc.add(CoursesEventAddNewCourse(name: courseName));
+      } else if (mode is CourseCreatorEditMode) {
+        _coursesBloc.add(CoursesEventUpdateCourseName(
+          courseId: mode.course.id,
+          newCourseName: courseName,
+        ));
+      }
     }
   }
 }

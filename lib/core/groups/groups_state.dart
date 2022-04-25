@@ -49,6 +49,18 @@ class GroupsState extends Equatable {
     return getGroupById(groupId)?.name;
   }
 
+  bool isThereGroupWithTheSameNameInTheSameCourse(
+    String groupName,
+    String courseId,
+  ) {
+    final List<Group?> groups = [...allGroups];
+    final Group? matchingGroup = groups.firstWhere(
+      (group) => group?.name == groupName && group?.courseId == courseId,
+      orElse: () => null,
+    );
+    return matchingGroup != null;
+  }
+
   @override
   List<Object> get props => [
         allGroups,

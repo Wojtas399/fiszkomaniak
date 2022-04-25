@@ -12,12 +12,13 @@ void main() {
   ];
 
   setUp(() {
-    state = CoursesState();
+    state = CoursesState(allCourses: allCourses);
   });
 
   test('initial state', () {
-    expect(state.allCourses, const []);
-    expect(state.status, const CoursesStatusInitial());
+    final CoursesState initialState = CoursesState();
+    expect(initialState.allCourses, const []);
+    expect(initialState.status, const CoursesStatusInitial());
   });
 
   test('copy with all courses', () {
@@ -26,11 +27,10 @@ void main() {
       (course1, course2) => course1.name.compareTo(course2.name),
     );
 
-    final CoursesState state2 = state.copyWith(allCourses: allCourses);
-    final CoursesState state3 = state2.copyWith();
+    final CoursesState state2 = state.copyWith();
 
+    expect(state.allCourses, sortedCourses);
     expect(state2.allCourses, sortedCourses);
-    expect(state3.allCourses, sortedCourses);
   });
 
   test('copy with status', () {
@@ -42,34 +42,38 @@ void main() {
   });
 
   test('get course by id, course exists', () {
-    final CoursesState updatedState = state.copyWith(allCourses: allCourses);
-
-    final Course? course = updatedState.getCourseById('c1');
+    final Course? course = state.getCourseById('c1');
 
     expect(course, allCourses[1]);
   });
 
   test('get course by id, course does not exist', () {
-    final CoursesState updatedState = state.copyWith(allCourses: allCourses);
-
-    final Course? course = updatedState.getCourseById('c4');
+    final Course? course = state.getCourseById('c4');
 
     expect(course, null);
   });
 
   test('get course name by id, course exists', () {
-    final CoursesState updatedState = state.copyWith(allCourses: allCourses);
-
-    final String? name = updatedState.getCourseNameById('c1');
+    final String? name = state.getCourseNameById('c1');
 
     expect(name, 'course1');
   });
 
   test('get course name by id, course does not exist', () {
-    final CoursesState updatedState = state.copyWith(allCourses: allCourses);
-
-    final String? name = updatedState.getCourseNameById('c4');
+    final String? name = state.getCourseNameById('c4');
 
     expect(name, null);
+  });
+
+  test('is there course with the same name, true', () {
+    final bool answer = state.isThereCourseWithTheSameName('course1');
+
+    expect(answer, true);
+  });
+
+  test('is there course with the same name, false', () {
+    final bool answer = state.isThereCourseWithTheSameName('course4');
+
+    expect(answer, false);
   });
 }

@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_event.dart';
+import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_dialogs.dart';
 import 'package:fiszkomaniak/features/course_creator/components/course_creator_app_bar.dart';
 import 'package:fiszkomaniak/features/course_creator/components/course_creator_content.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
@@ -17,10 +17,7 @@ class CourseCreator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => CourseCreatorBloc(
-        coursesBloc: context.read<CoursesBloc>(),
-      )..add(CourseCreatorEventInitialize(mode: mode)),
+    return _CourseCreatorBlocProvider(
       child: Scaffold(
         appBar: const CourseCreatorAppBar(),
         body: SafeArea(
@@ -30,6 +27,26 @@ class CourseCreator extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _CourseCreatorBlocProvider extends StatelessWidget {
+  final Widget child;
+
+  const _CourseCreatorBlocProvider({
+    Key? key,
+    required this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (BuildContext context) => CourseCreatorBloc(
+        coursesBloc: context.read<CoursesBloc>(),
+        courseCreatorDialogs: CourseCreatorDialogs(),
+      ),
+      child: child,
     );
   }
 }
