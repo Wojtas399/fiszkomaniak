@@ -4,15 +4,15 @@ import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/features/sessions/components/session_item.dart';
+import 'package:fiszkomaniak/features/sessions_list//components/session_item.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/sessions/sessions_state.dart';
 import '../../models/session_model.dart';
 
-class SessionsPage extends StatelessWidget {
-  const SessionsPage({Key? key}) : super(key: key);
+class SessionsListPage extends StatelessWidget {
+  const SessionsListPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
