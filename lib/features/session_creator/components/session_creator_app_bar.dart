@@ -16,7 +16,7 @@ class SessionCreatorAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     return BlocBuilder<SessionCreatorBloc, SessionCreatorState>(
       builder: (BuildContext context, SessionCreatorState state) {
-        return AppBarWithCloseButton(label: _getTitle(state.mode));
+        return CustomAppBar(label: _getTitle(state.mode));
       },
     );
   }

@@ -18,7 +18,7 @@ class FlashcardsEditorAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     return BlocBuilder<FlashcardsEditorBloc, FlashcardsEditorState>(
       builder: (BuildContext context, FlashcardsEditorState state) {
-        return AppBarWithCloseButton(
+        return CustomAppBar(
           label: state.group?.name ?? '',
           actions: [
             CustomIconButton(

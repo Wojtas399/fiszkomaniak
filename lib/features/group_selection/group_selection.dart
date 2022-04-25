@@ -21,7 +21,7 @@ class GroupSelection extends StatelessWidget {
   Widget build(BuildContext context) {
     return _GroupSelectionBlocProvider(
       child: Scaffold(
-        appBar: const AppBarWithCloseButton(label: 'Wybór grupy'),
+        appBar: const CustomAppBar(label: 'Wybór grupy'),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(

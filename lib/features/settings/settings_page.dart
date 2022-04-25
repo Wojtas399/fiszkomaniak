@@ -13,7 +13,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarWithCloseButton(label: 'Ustawienia'),
+      appBar: const CustomAppBar(label: 'Ustawienia'),
       body: BlocProvider(
         create: (BuildContext context) => SettingsBloc(
           appearanceSettingsBloc: context.read<AppearanceSettingsBloc>(),

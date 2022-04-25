@@ -15,7 +15,7 @@ class GroupCreatorAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     return BlocBuilder<GroupCreatorBloc, GroupCreatorState>(
       builder: (BuildContext context, GroupCreatorState state) {
-        return AppBarWithCloseButton(label: state.modeTitle);
+        return CustomAppBar(label: state.modeTitle);
       },
     );
   }

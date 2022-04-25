@@ -27,7 +27,7 @@ class AppBarWithSearchTextField extends StatelessWidget
           height: double.infinity,
           child: Stack(
             children: [
-              const _CloseButton(),
+              const _BackButton(),
               _Title(label: label),
               _SearchTextField(onChanged: (String value) {
                 onChanged!(value.trim());
@@ -40,15 +40,15 @@ class AppBarWithSearchTextField extends StatelessWidget
   }
 }
 
-class _CloseButton extends StatelessWidget {
-  const _CloseButton({Key? key}) : super(key: key);
+class _BackButton extends StatelessWidget {
+  const _BackButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
       bottom: 0,
       child: CustomIconButton(
-        icon: MdiIcons.close,
+        icon: MdiIcons.arrowLeft,
         onPressed: () {
           Navigator.pop(context);
         },

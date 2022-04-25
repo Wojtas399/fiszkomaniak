@@ -1,4 +1,3 @@
-import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/course_groups_preview.dart';
@@ -64,59 +63,62 @@ class HomeRouter extends StatelessWidget {
           settings: routeSettings,
         );
       case settings:
-        return SlideUpRouteAnimation(page: const SettingsPage());
+        return MaterialPageRoute(builder: (_) => const SettingsPage());
       case courseCreator:
-        return SlideUpRouteAnimation(
-          page: CourseCreator(
+        return MaterialPageRoute(
+          builder: (_) => CourseCreator(
             mode: routeSettings.arguments as CourseCreatorMode,
           ),
         );
       case groupCreator:
-        return SlideUpRouteAnimation(
-          page: GroupCreator(
+        return MaterialPageRoute(
+          builder: (_) => GroupCreator(
             mode: routeSettings.arguments as GroupCreatorMode,
           ),
         );
       case sessionCreator:
-        return SlideUpRouteAnimation(
-          page: SessionCreator(
+        return MaterialPageRoute(
+          builder: (_) => SessionCreator(
             mode: routeSettings.arguments as SessionCreatorMode,
           ),
         );
       case groupSelection:
-        return SlideUpRouteAnimation(
-          page: GroupSelection(),
+        return MaterialPageRoute(
+          builder: (_) => GroupSelection(),
         );
       case flashcardsEditor:
-        return SlideUpRouteAnimation(
-          page: FlashcardsEditor(
+        return MaterialPageRoute(
+          builder: (_) => FlashcardsEditor(
             groupId: routeSettings.arguments as String,
           ),
         );
       case courseGroupsPreview:
-        return SlideUpRouteAnimation(
-          page: CourseGroupsPreview(
+        return MaterialPageRoute(
+          builder: (_) => CourseGroupsPreview(
             courseId: routeSettings.arguments as String,
           ),
         );
       case groupFlashcardsPreview:
-        return SlideUpRouteAnimation(
-          page: GroupFlashcardsPreview(
-              groupId: routeSettings.arguments as String),
+        return MaterialPageRoute(
+          builder: (_) => GroupFlashcardsPreview(
+            groupId: routeSettings.arguments as String,
+          ),
         );
       case groupPreview:
-        return SlideUpRouteAnimation(
-          page: GroupPreview(groupId: routeSettings.arguments as String),
+        return MaterialPageRoute(
+          builder: (_) => GroupPreview(
+            groupId: routeSettings.arguments as String,
+          ),
         );
       case flashcardPreview:
-        return SlideUpRouteAnimation(
-          page: FlashcardPreview(
+        return MaterialPageRoute(
+          builder: (_) => FlashcardPreview(
             flashcardId: routeSettings.arguments as String,
           ),
         );
       case sessionPreview:
-        return SlideUpRouteAnimation(
-          page: SessionPreview(
+        return MaterialPageRoute(
+          builder: (_) => SessionPreview(
             mode: routeSettings.arguments as SessionPreviewMode,
           ),
         );

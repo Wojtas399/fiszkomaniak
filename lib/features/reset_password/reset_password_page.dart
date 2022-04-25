@@ -7,6 +7,7 @@ import 'package:fiszkomaniak/features/reset_password/components/reset_password_t
 import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../utils/utils.dart';
 import 'bloc/reset_password_state.dart';
@@ -22,7 +23,10 @@ class ResetPasswordPage extends StatelessWidget {
       ),
       child: _StatusListener(
         child: Scaffold(
-          appBar: const AppBarWithCloseButton(label: 'Zmiana hasła'),
+          appBar: const CustomAppBar(
+            label: 'Zmiana hasła',
+            leadingIcon: MdiIcons.close,
+          ),
           body: SafeArea(
             child: _LostFocusAreaWithPaddings(
               child: Column(
