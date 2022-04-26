@@ -115,7 +115,7 @@ class SessionPreviewBloc
     SessionPreviewEventStartLearning event,
     Emitter<SessionPreviewState> emit,
   ) {
-    //TODO
+    _navigation.navigateToSession();
   }
 
   void _sessionsStateUpdated(

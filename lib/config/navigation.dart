@@ -109,4 +109,10 @@ class Navigation {
       arguments: mode,
     );
   }
+
+  void navigateToSession() {
+    HomeRouter.navigatorKey.currentState?.pushNamed(
+      HomeRouter.session,
+    );
+  }
 }

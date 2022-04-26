@@ -10,6 +10,7 @@ import 'package:fiszkomaniak/features/group_creator/group_creator_page.dart';
 import 'package:fiszkomaniak/features/group_preview/group_preview_page.dart';
 import 'package:fiszkomaniak/features/home/home.dart';
 import 'package:fiszkomaniak/features/home/home_view.dart';
+import 'package:fiszkomaniak/features/session/session.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_creator/session_creator.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
@@ -43,6 +44,8 @@ class HomeRouter extends StatelessWidget {
   static const String flashcardPreview = '/flashcard-preview';
 
   static const String sessionPreview = '/session-preview';
+
+  static const String session = '/session';
 
   const HomeRouter({Key? key}) : super(key: key);
 
@@ -121,6 +124,10 @@ class HomeRouter extends StatelessWidget {
           builder: (_) => SessionPreview(
             mode: routeSettings.arguments as SessionPreviewMode,
           ),
+        );
+      case session:
+        return MaterialPageRoute(
+          builder: (_) => const Session(),
         );
       default:
         return MaterialPageRoute(
