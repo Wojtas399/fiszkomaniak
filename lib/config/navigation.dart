@@ -2,6 +2,7 @@ import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:fiszkomaniak/features/reset_password/reset_password_page.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
@@ -110,9 +111,10 @@ class Navigation {
     );
   }
 
-  void navigateToSession() {
+  void navigateToLearningProcess(LearningProcessData data) {
     HomeRouter.navigatorKey.currentState?.pushNamed(
       HomeRouter.session,
+      arguments: data,
     );
   }
 }

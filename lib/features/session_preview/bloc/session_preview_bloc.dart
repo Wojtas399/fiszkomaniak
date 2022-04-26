@@ -4,6 +4,7 @@ import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
+import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
@@ -115,7 +116,16 @@ class SessionPreviewBloc
     SessionPreviewEventStartLearning event,
     Emitter<SessionPreviewState> emit,
   ) {
-    _navigation.navigateToSession();
+    final Group? group = state.group;
+    if (group != null) {
+      _navigation.navigateToLearningProcess(LearningProcessData(
+        groupId: group.id,
+        flashcardsType: state.flashcardsType,
+        areQuestionsAndAnswersSwapped: state.areQuestionsAndAnswersSwapped,
+        sessionId: state.session?.id,
+        duration: state.duration,
+      ));
+    }
   }
 
   void _sessionsStateUpdated(

@@ -10,13 +10,14 @@ import 'package:fiszkomaniak/features/group_creator/group_creator_page.dart';
 import 'package:fiszkomaniak/features/group_preview/group_preview_page.dart';
 import 'package:fiszkomaniak/features/home/home.dart';
 import 'package:fiszkomaniak/features/home/home_view.dart';
-import 'package:fiszkomaniak/features/session/session.dart';
+import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_creator/session_creator.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/session_preview.dart';
 import 'package:fiszkomaniak/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
+import '../learning_process/learning_process.dart';
 
 class HomeRouter extends StatelessWidget {
   static final navigatorKey = GlobalKey<NavigatorState>();
@@ -127,7 +128,9 @@ class HomeRouter extends StatelessWidget {
         );
       case session:
         return MaterialPageRoute(
-          builder: (_) => const Session(),
+          builder: (_) => LearningProcess(
+            data: routeSettings.arguments as LearningProcessData,
+          ),
         );
       default:
         return MaterialPageRoute(

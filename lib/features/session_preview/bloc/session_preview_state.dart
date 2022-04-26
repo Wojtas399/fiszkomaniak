@@ -10,8 +10,8 @@ class SessionPreviewState extends Equatable {
   final Group? group;
   final String? courseName;
   final TimeOfDay? duration;
-  final FlashcardsType? flashcardsType;
-  final bool? areQuestionsAndAnswersSwapped;
+  final FlashcardsType flashcardsType;
+  final bool areQuestionsAndAnswersSwapped;
 
   const SessionPreviewState({
     this.mode,
@@ -19,8 +19,8 @@ class SessionPreviewState extends Equatable {
     this.group,
     this.courseName,
     this.duration,
-    this.flashcardsType,
-    this.areQuestionsAndAnswersSwapped,
+    this.flashcardsType = FlashcardsType.all,
+    this.areQuestionsAndAnswersSwapped = false,
   });
 
   DateTime? get date {
@@ -68,7 +68,7 @@ class SessionPreviewState extends Equatable {
         group ?? '',
         courseName ?? '',
         duration ?? '',
-        flashcardsType ?? '',
-        areQuestionsAndAnswersSwapped ?? '',
+        flashcardsType,
+        areQuestionsAndAnswersSwapped,
       ];
 }
