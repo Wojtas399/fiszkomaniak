@@ -6,10 +6,13 @@ class LearningProcessProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const FlashcardsProgressBar(
-      amountOfRememberedFlashcards: 190,
-      amountOfAllFlashcards: 400,
-      barHeight: 16,
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24.0),
+      child: FlashcardsProgressBar(
+        amountOfRememberedFlashcards: 190,
+        amountOfAllFlashcards: 400,
+        barHeight: 16,
+      ),
     );
   }
 }

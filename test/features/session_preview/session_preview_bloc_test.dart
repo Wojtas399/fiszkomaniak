@@ -180,15 +180,6 @@ void main() {
   );
 
   blocTest(
-    'swap questions and answers, initial value as null',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(SessionPreviewEventSwapQuestionsAndAnswers());
-    },
-    expect: () => [],
-  );
-
-  blocTest(
     'edit session, session assigned',
     build: () => bloc,
     setUp: () {

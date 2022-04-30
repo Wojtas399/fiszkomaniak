@@ -78,14 +78,10 @@ class SessionPreviewBloc
     SessionPreviewEventSwapQuestionsAndAnswers event,
     Emitter<SessionPreviewState> emit,
   ) {
-    final bool? areQuestionsAndAnswersSwapped =
-        state.areQuestionsAndAnswersSwapped;
-    if (areQuestionsAndAnswersSwapped != null) {
-      emit(state.copyWith(
-        areQuestionsAndAnswersSwapped: !areQuestionsAndAnswersSwapped,
-        duration: state.duration,
-      ));
-    }
+    emit(state.copyWith(
+      areQuestionsAndAnswersSwapped: !state.areQuestionsAndAnswersSwapped,
+      duration: state.duration,
+    ));
   }
 
   void _editSession(

@@ -24,8 +24,8 @@ void main() {
     expect(state.group, null);
     expect(state.courseName, null);
     expect(state.duration, null);
-    expect(state.flashcardsType, null);
-    expect(state.areQuestionsAndAnswersSwapped, null);
+    expect(state.flashcardsType, FlashcardsType.all);
+    expect(state.areQuestionsAndAnswersSwapped, false);
   });
 
   test('copy with mode', () {

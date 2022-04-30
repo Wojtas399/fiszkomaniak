@@ -1,4 +1,9 @@
+import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
+import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_state.dart';
+import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_status.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../features/flashcards_stack/flashcards_stack.dart';
 
 class LearningProcessFlashcards extends StatelessWidget {
   const LearningProcessFlashcards({Key? key}) : super(key: key);
@@ -6,13 +11,10 @@ class LearningProcessFlashcards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column(
-        children: const [
-          _FlashcardTitle(),
-          SizedBox(height: 8.0),
-          Expanded(
-            child: _Flashcard(),
-          ),
+      child: Stack(
+        children: [
+          const _FlashcardTitle(),
+          FlashcardsStack(),
         ],
       ),
     );
@@ -24,37 +26,40 @@ class _FlashcardTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text('Pytanie', style: Theme.of(context).textTheme.subtitle1),
-        const SizedBox(width: 4.0),
-        Text(
-          '(Angielski)',
-          style: Theme.of(context).textTheme.bodyText2,
-        )
-      ],
+    return BlocBuilder<FlashcardsStackBloc, FlashcardsStackState>(
+      builder: (_, FlashcardsStackState state) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Row(
+            children: [
+              Text(
+                _getQuestionOrAnswerText(state.status),
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+              const SizedBox(width: 4.0),
+              Text(
+                '(${_getQuestionOrAnswerName(state.status)})',
+                style: Theme.of(context).textTheme.bodyText2,
+              )
+            ],
+          ),
+        );
+      },
     );
   }
-}
 
-class _Flashcard extends StatelessWidget {
-  const _Flashcard({Key? key}) : super(key: key);
+  String _getQuestionOrAnswerText(FlashcardsStackStatus status) {
+    if (status is FlashcardsStackStatusAnswer ||
+        status is FlashcardsStackStatusAnswerAgain) {
+      return 'Odpowiedź';
+    }
+    return 'Pytanie';
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: double.infinity,
-      width: double.infinity,
-      child: Card(
-        margin: const EdgeInsets.all(0.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text('Wow'),
-        ),
-      ),
-    );
+  String _getQuestionOrAnswerName(FlashcardsStackStatus status) {
+    if (status is FlashcardsStackStatusAnswer) {
+      return 'Język polski';
+    }
+    return 'Język angielski';
   }
 }
