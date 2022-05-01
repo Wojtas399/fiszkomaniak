@@ -38,7 +38,9 @@ class GroupPreviewContent extends StatelessWidget {
             ),
             Button(
               label: 'szybka sesja',
-              onPressed: () => _quickSession(context),
+              onPressed: state.amountOfAllFlashcards == 0
+                  ? null
+                  : () => _quickSession(context),
             ),
           ],
         );

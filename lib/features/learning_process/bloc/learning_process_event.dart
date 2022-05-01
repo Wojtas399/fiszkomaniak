@@ -7,3 +7,17 @@ class LearningProcessEventInitialize extends LearningProcessEvent {
 
   LearningProcessEventInitialize({required this.data});
 }
+
+class LearningProcessEventRememberedFlashcard extends LearningProcessEvent {
+  final String flashcardId;
+
+  LearningProcessEventRememberedFlashcard({required this.flashcardId});
+}
+
+class LearningProcessEventForgottenFlashcard extends LearningProcessEvent {
+  final String flashcardId;
+
+  LearningProcessEventForgottenFlashcard({required this.flashcardId});
+}
+
+class LearningProcessEventReset extends LearningProcessEvent {}

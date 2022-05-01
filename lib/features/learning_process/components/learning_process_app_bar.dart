@@ -1,5 +1,8 @@
 import 'package:fiszkomaniak/components/custom_icon_button.dart';
+import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
+import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class LearningProcessAppBar extends StatelessWidget
@@ -44,7 +47,13 @@ class _FlashcardsState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text('250/500');
+    return BlocBuilder<LearningProcessBloc, LearningProcessState>(
+      builder: (_, LearningProcessState state) {
+        return Text(
+          '${state.indexOfDisplayedFlashcard + 1}/${state.amountOfAllFlashcards}',
+        );
+      },
+    );
   }
 }
 

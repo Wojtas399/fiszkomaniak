@@ -21,7 +21,7 @@ class FlashcardsStack extends StatelessWidget {
       builder: (_, FlashcardsStackState state) {
         if (state.status is FlashcardsStackStatusAnswer ||
             (state.status is FlashcardsStackStatusEnd &&
-                state.flashcards.length == 1)) {
+                _flipCardController.state?.isFront == false)) {
           _flipCardController.toggleCard();
         }
         return Stack(

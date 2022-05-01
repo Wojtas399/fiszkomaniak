@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/components/learning_process_app_bar.dart';
 import 'package:fiszkomaniak/features/learning_process/components/learning_process_content.dart';
@@ -16,11 +17,11 @@ class LearningProcess extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const LearningProcessAppBar(),
-      body: _LearningProcessBlocProvider(
-        data: data,
-        child: const LearningProcessContent(),
+    return _LearningProcessBlocProvider(
+      data: data,
+      child: const Scaffold(
+        appBar: LearningProcessAppBar(),
+        body: LearningProcessContent(),
       ),
     );
   }
@@ -39,8 +40,9 @@ class _LearningProcessBlocProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => LearningProcessBloc()
-        ..add(LearningProcessEventInitialize(data: data)),
+      create: (BuildContext context) => LearningProcessBloc(
+        flashcardsBloc: context.read<FlashcardsBloc>(),
+      )..add(LearningProcessEventInitialize(data: data)),
       child: child,
     );
   }
