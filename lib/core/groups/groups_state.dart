@@ -3,21 +3,19 @@ import 'package:fiszkomaniak/models/group_model.dart';
 import 'groups_status.dart';
 
 class GroupsState extends Equatable {
-  late final List<Group> _allGroups;
+  final List<Group> allGroups;
   final GroupsStatus status;
 
-  List<Group> get allGroups {
-    List<Group> sortedGroups = [..._allGroups];
+  List<Group> get sortedGroups {
+    List<Group> sortedGroups = [...allGroups];
     sortedGroups.sort((group1, group2) => group1.name.compareTo(group2.name));
     return sortedGroups;
   }
 
-  GroupsState({
-    List<Group> allGroups = const [],
+  const GroupsState({
+    this.allGroups = const [],
     this.status = const GroupsStatusInitial(),
-  }) {
-    _allGroups = allGroups;
-  }
+  });
 
   GroupsState copyWith({
     List<Group>? allGroups,

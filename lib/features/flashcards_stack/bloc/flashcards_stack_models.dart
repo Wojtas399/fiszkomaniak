@@ -2,19 +2,19 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class FlashcardInfo extends Equatable {
-  final String id;
+  final int index;
   final String question;
   final String answer;
 
   const FlashcardInfo({
-    required this.id,
+    required this.index,
     required this.question,
     required this.answer,
   });
 
   @override
   List<Object> get props => [
-        id,
+        index,
         question,
         answer,
       ];
@@ -98,12 +98,12 @@ class Position extends Equatable {
 }
 
 FlashcardInfo createFlashcardInfo({
-  String? id,
+  int? index,
   String? question,
   String? answer,
 }) {
   return FlashcardInfo(
-    id: id ?? '',
+    index: index ?? -1,
     question: question ?? '',
     answer: answer ?? '',
   );

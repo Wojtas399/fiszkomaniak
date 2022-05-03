@@ -7,11 +7,11 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   late FlashcardsStackState state;
   final List<FlashcardInfo> flashcards = [
-    createFlashcardInfo(id: 'f1', question: 'q1', answer: 'a1'),
-    createFlashcardInfo(id: 'f2', question: 'g2', answer: 'a2'),
-    createFlashcardInfo(id: 'f3', question: 'q3', answer: 'a3'),
-    createFlashcardInfo(id: 'f4', question: 'f4', answer: 'a4'),
-    createFlashcardInfo(id: 'f5', question: 'g5', answer: 'a5'),
+    createFlashcardInfo(index: 0, question: 'q1', answer: 'a1'),
+    createFlashcardInfo(index: 1, question: 'g2', answer: 'a2'),
+    createFlashcardInfo(index: 2, question: 'q3', answer: 'a3'),
+    createFlashcardInfo(index: 3, question: 'f4', answer: 'a4'),
+    createFlashcardInfo(index: 4, question: 'g5', answer: 'a5'),
   ];
   final List<AnimatedElement> animatedElements = [
     createAnimatedElement(
@@ -155,7 +155,7 @@ void main() {
 
     test('any other state, should be false', () {
       final FlashcardsStackState updatedState = state.copyWith(
-        status: const FlashcardsStackStatusMovedRight(flashcardId: 'f1'),
+        status: const FlashcardsStackStatusMovedRight(flashcardIndex: 0),
       );
 
       expect(updatedState.isPreviewProcess, false);

@@ -38,8 +38,7 @@ class FlashcardsEditorBloc
   ) {
     final Group? group = _groupsBloc.state.getGroupById(event.groupId);
     if (group != null) {
-      final List<Flashcard> initialFlashcards =
-          _getFlashcardsFromCore(group.id);
+      final List<Flashcard> initialFlashcards = group.flashcards;
       final List<EditorFlashcard> convertedInitialFlashcards =
           _convertFlashcardsFromCore(initialFlashcards);
       emit(state.copyWith(
@@ -49,7 +48,7 @@ class FlashcardsEditorBloc
           EditorFlashcard(
             key: 'flashcard${convertedInitialFlashcards.length}',
             isCorrect: true,
-            doc: createFlashcard(groupId: group.id),
+            doc: createFlashcard(index: convertedInitialFlashcards.length),
           ),
         ],
         keyCounter: convertedInitialFlashcards.length,
@@ -103,18 +102,13 @@ class FlashcardsEditorBloc
     FlashcardsEditorEventSave event,
     Emitter<FlashcardsEditorState> emit,
   ) async {
-    final FlashcardsEditorGroups flashcardsGroups = _getSegregatedFlashcards();
-    if (await _canSave(flashcardsGroups, emit)) {
-      _flashcardsBloc.add(FlashcardsEventSaveMultipleActions(
-        flashcardsToUpdate: flashcardsGroups.edited,
-        flashcardsToAdd: flashcardsGroups.added,
-        idsOfFlashcardsToRemove: flashcardsGroups.removed,
+    final String? groupId = state.group?.id;
+    if (groupId != null && await _canSave(emit)) {
+      _flashcardsBloc.add(FlashcardsEventSaveFlashcards(
+        groupId: groupId,
+        flashcards: state.flashcardsWithoutLastOne,
       ));
     }
-  }
-
-  List<Flashcard> _getFlashcardsFromCore(String? groupId) {
-    return _flashcardsBloc.state.getFlashcardsByGroupId(groupId).toList();
   }
 
   List<EditorFlashcard> _convertFlashcardsFromCore(
@@ -132,32 +126,43 @@ class FlashcardsEditorBloc
   List<EditorFlashcard> _addNewFlashcard(
     List<EditorFlashcard> flashcards,
   ) {
-    final String? groupId = state.group?.id;
     final List<EditorFlashcard> updatedFlashcards = [...flashcards];
-    if (groupId != null) {
-      updatedFlashcards.add(EditorFlashcard(
-        key: 'flashcard${state.keyCounter + 1}',
-        isCorrect: true,
-        doc: createFlashcard(id: 'f${state.keyCounter + 1}', groupId: groupId),
-      ));
-    }
+    updatedFlashcards.add(EditorFlashcard(
+      key: 'flashcard${state.keyCounter + 1}',
+      isCorrect: true,
+      doc: createFlashcard(index: state.keyCounter + 1),
+    ));
     return updatedFlashcards;
   }
 
-  FlashcardsEditorGroups _getSegregatedFlashcards() {
-    final String? groupId = state.group?.id;
-    if (groupId != null) {
-      final List<Flashcard> initialFlashcards = _getFlashcardsFromCore(groupId);
-      return _flashcardsEditorUtils.groupFlashcardsIntoAppropriateGroups(
-        state.flashcardsWithoutLastOne,
-        initialFlashcards,
-      );
+  Future<bool> _canSave(Emitter<FlashcardsEditorState> emit) async {
+    if (await _areEditedFlashcardsSameAsOriginal()) {
+      return false;
     }
-    return const FlashcardsEditorGroups(edited: [], added: [], removed: []);
+    if (await _areThereIncorrectFlashcards(emit)) {
+      return false;
+    }
+    if (await _areThereDuplicates(emit)) {
+      return false;
+    }
+    return await _flashcardsEditorDialogs.askForSaveConfirmation() == true;
   }
 
-  Future<bool> _canSave(
-    FlashcardsEditorGroups groups,
+  Future<bool> _areEditedFlashcardsSameAsOriginal() async {
+    final List<Flashcard>? originalFlashcards = state.group?.flashcards;
+    if (originalFlashcards != null &&
+        _flashcardsEditorUtils.haveChangesBeenMade(
+              originalFlashcards,
+              state.flashcardsWithoutLastOne,
+            ) ==
+            false) {
+      await _flashcardsEditorDialogs.displayInfoAboutNoChanges();
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> _areThereIncorrectFlashcards(
     Emitter<FlashcardsEditorState> emit,
   ) async {
     final List<Flashcard> incorrectFlashcards = _flashcardsEditorUtils
@@ -165,24 +170,20 @@ class FlashcardsEditorBloc
     if (incorrectFlashcards.isNotEmpty) {
       _updateIncorrectFlashcards(incorrectFlashcards, emit);
       await _flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards();
-      return false;
+      return true;
     }
-    final List<Flashcard> duplications =
-        _flashcardsEditorUtils.lookForDuplicates(
-      state.flashcardsWithoutLastOne,
-    );
+    return false;
+  }
+
+  Future<bool> _areThereDuplicates(Emitter<FlashcardsEditorState> emit) async {
+    final List<Flashcard> duplications = _flashcardsEditorUtils
+        .lookForDuplicates(state.flashcardsWithoutLastOne);
     if (duplications.isNotEmpty) {
       _updateIncorrectFlashcards(duplications, emit);
       await _flashcardsEditorDialogs.displayInfoAboutDuplicates();
-      return false;
+      return true;
     }
-    if (groups.added.isEmpty &&
-        groups.edited.isEmpty &&
-        groups.removed.isEmpty) {
-      await _flashcardsEditorDialogs.displayInfoAboutNoChanges();
-      return false;
-    }
-    return await _flashcardsEditorDialogs.askForSaveConfirmation() == true;
+    return false;
   }
 
   void _updateIncorrectFlashcards(

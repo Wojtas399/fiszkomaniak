@@ -1,9 +1,15 @@
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dart';
+import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late GroupPreviewState state;
+  final Group group = createGroup(id: 'g1', flashcards: [
+    createFlashcard(index: 0, status: FlashcardStatus.remembered),
+    createFlashcard(index: 1, status: FlashcardStatus.remembered),
+    createFlashcard(index: 2, status: FlashcardStatus.notRemembered),
+  ]);
 
   setUp(() {
     state = const GroupPreviewState();
@@ -17,8 +23,6 @@ void main() {
   });
 
   test('copy with group', () {
-    final Group group = createGroup(id: 'g1');
-
     final GroupPreviewState state2 = state.copyWith(group: group);
     final GroupPreviewState state3 = state2.copyWith();
 
@@ -36,27 +40,15 @@ void main() {
     expect(state3.courseName, courseName);
   });
 
-  test('copy with amount of all flashcards', () {
-    const int amount = 5;
+  test('amount of all flashcards', () {
+    final GroupPreviewState updatedState = state.copyWith(group: group);
 
-    final GroupPreviewState state2 = state.copyWith(
-      amountOfAllFlashcards: amount,
-    );
-    final GroupPreviewState state3 = state2.copyWith();
-
-    expect(state2.amountOfAllFlashcards, amount);
-    expect(state3.amountOfAllFlashcards, amount);
+    expect(updatedState.amountOfAllFlashcards, 3);
   });
 
-  test('copy with amount of remembered flashcards', () {
-    const int amount = 2;
+  test('amount of remembered flashcards', () {
+    final GroupPreviewState updatedState = state.copyWith(group: group);
 
-    final GroupPreviewState state2 = state.copyWith(
-      amountOfRememberedFlashcards: amount,
-    );
-    final GroupPreviewState state3 = state2.copyWith();
-
-    expect(state2.amountOfRememberedFlashcards, amount);
-    expect(state3.amountOfRememberedFlashcards, amount);
+    expect(updatedState.amountOfRememberedFlashcards, 2);
   });
 }

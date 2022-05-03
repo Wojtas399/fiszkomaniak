@@ -1,53 +1,51 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_status.dart';
+import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 
 class FlashcardsState extends Equatable {
-  final List<Flashcard> allFlashcards;
+  final GroupsState groupsState;
   final FlashcardsStatus status;
 
   const FlashcardsState({
-    this.allFlashcards = const [],
+    this.groupsState = const GroupsState(),
     this.status = const FlashcardsStatusInitial(),
   });
 
   FlashcardsState copyWith({
-    List<Flashcard>? allFlashcards,
+    GroupsState? groupsState,
     FlashcardsStatus? status,
   }) {
     return FlashcardsState(
-      allFlashcards: allFlashcards ?? this.allFlashcards,
+      groupsState: groupsState ?? this.groupsState,
       status: status ?? FlashcardsStatusLoaded(),
     );
   }
 
-  List<Flashcard> getFlashcardsByGroupId(String? groupId) {
-    return allFlashcards
-        .where((flashcard) => flashcard.groupId == groupId)
-        .toList();
+  List<Flashcard> getFlashcardsFromGroup(String? groupId) {
+    return groupsState.getGroupById(groupId)?.flashcards.toList() ?? [];
   }
 
   int getAmountOfAllFlashcardsFromGroup(String? groupId) {
-    return getFlashcardsByGroupId(groupId).length;
+    return getFlashcardsFromGroup(groupId).length;
   }
 
   int getAmountOfRememberedFlashcardsFromGroup(String? groupId) {
-    return getFlashcardsByGroupId(groupId)
+    return getFlashcardsFromGroup(groupId)
         .where((flashcard) => flashcard.status == FlashcardStatus.remembered)
         .length;
   }
 
-  Flashcard? getFlashcardById(String? flashcardId) {
-    final List<Flashcard?> flashcards = [...allFlashcards];
-    return flashcards.firstWhere(
-      (flashcard) => flashcard?.id == flashcardId,
-      orElse: () => null,
-    );
+  Flashcard? getFlashcardFromGroup(String? groupId, int? flashcardIndex) {
+    if (flashcardIndex == null) {
+      return null;
+    }
+    return groupsState.getGroupById(groupId)?.flashcards[flashcardIndex];
   }
 
   @override
   List<Object> get props => [
-        allFlashcards,
+        groupsState,
         status,
       ];
 }

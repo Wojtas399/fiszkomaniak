@@ -36,47 +36,16 @@ class FlashcardsEditorUtils {
     return updatedFlashcards;
   }
 
-  FlashcardsEditorGroups groupFlashcardsIntoAppropriateGroups(
+  bool haveChangesBeenMade(
+    List<Flashcard> originalFlashcards,
     List<Flashcard> editedFlashcards,
-    List<Flashcard> initialFlashcards,
   ) {
-    final List<Flashcard> edited = [];
-    final List<Flashcard> added = [];
-    final List<String> removed = [];
-    final List<String> editedFlashcardsIds =
-        _getFlashcardsIds(editedFlashcards);
-    final List<String> initialFlashcardsIds =
-        _getFlashcardsIds(initialFlashcards);
-    for (final flashcard in editedFlashcards) {
-      if (flashcard.question.isNotEmpty && flashcard.answer.isNotEmpty) {
-        if (initialFlashcardsIds.contains(flashcard.id)) {
-          final Flashcard correspondingInitialFlashcard = initialFlashcards
-              .firstWhere((element) => element.id == flashcard.id);
-          if (_haveFlashcardsDifferentValues(
-            flashcard,
-            correspondingInitialFlashcard,
-          )) {
-            edited.add(flashcard);
-          }
-        } else {
-          added.add(flashcard);
-        }
-      } else if (initialFlashcardsIds.contains(flashcard.id)) {
-        removed.add(flashcard.id);
+    for (final editedFlashcard in editedFlashcards) {
+      if (!originalFlashcards.contains(editedFlashcard)) {
+        return true;
       }
     }
-    for (final initialFlashcard in initialFlashcards) {
-      if (!editedFlashcardsIds.contains(initialFlashcard.id) &&
-          !edited.contains(initialFlashcard) &&
-          !removed.contains(initialFlashcard.id)) {
-        removed.add(initialFlashcard.id);
-      }
-    }
-    return FlashcardsEditorGroups(
-      edited: edited,
-      added: added,
-      removed: removed,
-    );
+    return false;
   }
 
   List<Flashcard> lookForIncorrectlyCompletedFlashcards(
@@ -106,18 +75,6 @@ class FlashcardsEditorUtils {
       }
     }
     return duplicates;
-  }
-
-  List<String> _getFlashcardsIds(List<Flashcard> flashcards) {
-    return flashcards.map((flashcard) => flashcard.id).toList();
-  }
-
-  bool _haveFlashcardsDifferentValues(
-    Flashcard flashcard1,
-    Flashcard flashcard2,
-  ) {
-    return flashcard1.answer != flashcard2.answer ||
-        flashcard1.question != flashcard2.question;
   }
 
   bool _areTheSame(Flashcard? flashcard1, Flashcard? flashcard2) {

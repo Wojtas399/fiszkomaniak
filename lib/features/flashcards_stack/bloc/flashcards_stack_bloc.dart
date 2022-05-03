@@ -207,9 +207,9 @@ class FlashcardsStackBloc
   ) {
     switch (direction) {
       case _Direction.left:
-        return FlashcardsStackStatusMovedLeft(flashcardId: flashcard.id);
+        return FlashcardsStackStatusMovedLeft(flashcardIndex: flashcard.index);
       case _Direction.right:
-        return FlashcardsStackStatusMovedRight(flashcardId: flashcard.id);
+        return FlashcardsStackStatusMovedRight(flashcardIndex: flashcard.index);
     }
   }
 }

@@ -1,6 +1,5 @@
 import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_bloc.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_event.dart';
 import 'package:fiszkomaniak/features/group_selection/components/group_selection_button.dart';
@@ -62,7 +61,6 @@ class _GroupSelectionBlocProvider extends StatelessWidget {
       create: (BuildContext context) => GroupSelectionBloc(
         coursesBloc: context.read<CoursesBloc>(),
         groupsBloc: context.read<GroupsBloc>(),
-        flashcardsBloc: context.read<FlashcardsBloc>(),
         navigation: context.read<Navigation>(),
       )..add(GroupSelectionEventInitialize()),
       child: child,

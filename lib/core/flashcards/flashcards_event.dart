@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 
 abstract class FlashcardsEvent extends Equatable {
@@ -8,66 +9,53 @@ abstract class FlashcardsEvent extends Equatable {
 
 class FlashcardsEventInitialize extends FlashcardsEvent {}
 
-class FlashcardsEventFlashcardAdded extends FlashcardsEvent {
-  final Flashcard flashcard;
+class FlashcardsEventGroupsStateUpdated extends FlashcardsEvent {
+  final GroupsState newGroupsState;
 
-  FlashcardsEventFlashcardAdded({required this.flashcard});
-
-  @override
-  List<Object> get props => [flashcard];
+  FlashcardsEventGroupsStateUpdated({required this.newGroupsState});
 }
 
-class FlashcardsEventFlashcardUpdated extends FlashcardsEvent {
-  final Flashcard flashcard;
+class FlashcardsEventSaveFlashcards extends FlashcardsEvent {
+  final String groupId;
+  final List<Flashcard> flashcards;
 
-  FlashcardsEventFlashcardUpdated({required this.flashcard});
-
-  @override
-  List<Object> get props => [flashcard];
-}
-
-class FlashcardsEventFlashcardRemoved extends FlashcardsEvent {
-  final String flashcardId;
-
-  FlashcardsEventFlashcardRemoved({required this.flashcardId});
-
-  @override
-  List<Object> get props => [flashcardId];
-}
-
-class FlashcardsEventSaveMultipleActions extends FlashcardsEvent {
-  final List<Flashcard> flashcardsToUpdate;
-  final List<Flashcard> flashcardsToAdd;
-  final List<String> idsOfFlashcardsToRemove;
-
-  FlashcardsEventSaveMultipleActions({
-    required this.flashcardsToUpdate,
-    required this.flashcardsToAdd,
-    required this.idsOfFlashcardsToRemove,
+  FlashcardsEventSaveFlashcards({
+    required this.groupId,
+    required this.flashcards,
   });
 
   @override
   List<Object> get props => [
-        flashcardsToUpdate,
-        flashcardsToAdd,
-        idsOfFlashcardsToRemove,
+        groupId,
+        flashcards,
       ];
 }
 
 class FlashcardsEventUpdateFlashcard extends FlashcardsEvent {
+  final String groupId;
   final Flashcard flashcard;
 
-  FlashcardsEventUpdateFlashcard({required this.flashcard});
+  FlashcardsEventUpdateFlashcard({
+    required this.groupId,
+    required this.flashcard,
+  });
 
   @override
   List<Object> get props => [flashcard];
 }
 
 class FlashcardsEventRemoveFlashcard extends FlashcardsEvent {
-  final String flashcardId;
+  final String groupId;
+  final Flashcard flashcard;
 
-  FlashcardsEventRemoveFlashcard({required this.flashcardId});
+  FlashcardsEventRemoveFlashcard({
+    required this.groupId,
+    required this.flashcard,
+  });
 
   @override
-  List<Object> get props => [flashcardId];
+  List<Object> get props => [
+        groupId,
+        flashcard,
+      ];
 }

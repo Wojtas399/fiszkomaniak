@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_event.dart';
@@ -15,22 +14,18 @@ import '../../group_creator/bloc/group_creator_mode.dart';
 class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
   late final GroupsBloc _groupsBloc;
   late final CoursesBloc _coursesBloc;
-  late final FlashcardsBloc _flashcardsBloc;
   late final GroupPreviewDialogs _groupPreviewDialogs;
   late final Navigation _navigation;
   StreamSubscription? _groupsStateSubscription;
-  StreamSubscription? _flashcardsStateSubscription;
 
   GroupPreviewBloc({
     required GroupsBloc groupsBloc,
     required CoursesBloc coursesBloc,
-    required FlashcardsBloc flashcardsBloc,
     required GroupPreviewDialogs groupPreviewDialogs,
     required Navigation navigation,
   }) : super(const GroupPreviewState()) {
     _groupsBloc = groupsBloc;
     _coursesBloc = coursesBloc;
-    _flashcardsBloc = flashcardsBloc;
     _groupPreviewDialogs = groupPreviewDialogs;
     _navigation = navigation;
     on<GroupPreviewEventInitialize>(_initialize);
@@ -40,7 +35,6 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
     on<GroupPreviewEventReviewFlashcards>(_reviewFlashcards);
     on<GroupPreviewEventCreateQuickSession>(_createQuickSession);
     on<GroupPreviewEventGroupsStateUpdated>(_groupsStateUpdated);
-    on<GroupPreviewEventFlashcardsStateUpdated>(_flashcardsStateUpdated);
   }
 
   void _initialize(
@@ -55,14 +49,9 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
       emit(state.copyWith(
         group: group,
         courseName: courseName,
-        amountOfAllFlashcards: _flashcardsBloc.state
-            .getAmountOfAllFlashcardsFromGroup(event.groupId),
-        amountOfRememberedFlashcards: _flashcardsBloc.state
-            .getAmountOfRememberedFlashcardsFromGroup(event.groupId),
       ));
     }
     _setGroupsStateListener();
-    _setFlashcardsStateListener();
   }
 
   void _edit(
@@ -131,34 +120,15 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
     }
   }
 
-  void _flashcardsStateUpdated(
-    GroupPreviewEventFlashcardsStateUpdated event,
-    Emitter<GroupPreviewState> emit,
-  ) {
-    emit(state.copyWith(
-      amountOfAllFlashcards: _flashcardsBloc.state
-          .getAmountOfAllFlashcardsFromGroup(state.group?.id),
-      amountOfRememberedFlashcards: _flashcardsBloc.state
-          .getAmountOfRememberedFlashcardsFromGroup(state.group?.id),
-    ));
-  }
-
   void _setGroupsStateListener() {
     _groupsStateSubscription = _groupsBloc.stream.listen((_) {
       add(GroupPreviewEventGroupsStateUpdated());
     });
   }
 
-  void _setFlashcardsStateListener() {
-    _flashcardsStateSubscription = _flashcardsBloc.stream.listen((_) {
-      add(GroupPreviewEventFlashcardsStateUpdated());
-    });
-  }
-
   @override
   Future<void> close() {
     _groupsStateSubscription?.cancel();
-    _flashcardsStateSubscription?.cancel();
     return super.close();
   }
 }

@@ -7,6 +7,7 @@ import 'package:fiszkomaniak/features/reset_password/reset_password_page.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:flutter/material.dart';
+import '../features/flashcard_preview/bloc/flashcard_preview_state.dart';
 import '../features/home/home.dart';
 
 class Navigation {
@@ -97,10 +98,13 @@ class Navigation {
     );
   }
 
-  void navigateToFlashcardPreview(String flashcardId) {
+  void navigateToFlashcardPreview(String groupId, int flashcardIndex) {
     HomeRouter.navigatorKey.currentState?.pushNamed(
       HomeRouter.flashcardPreview,
-      arguments: flashcardId,
+      arguments: FlashcardPreviewParams(
+        groupId: groupId,
+        flashcardIndex: flashcardIndex,
+      ),
     );
   }
 

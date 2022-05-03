@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fiszkomaniak/firebase/fire_references.dart';
 import 'package:fiszkomaniak/firebase/models/group_db_model.dart';
-import 'package:fiszkomaniak/firebase/services/fire_flashcards_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
 import '../fire_instances.dart';
 
@@ -51,15 +50,10 @@ class FireGroupsService {
     try {
       final batch = FireInstances.firestore.batch();
       final group = await FireReferences.groupsReference.doc(groupId).get();
-      final flashcardsFromGroups =
-          await FireFlashcardsService.getFlashcardsByGroupsIds([groupId]);
       final sessionsFromGroups =
           await FireSessionsService.getSessionsByGroupsIds([groupId]);
       for (final session in sessionsFromGroups.docs) {
         batch.delete(session.reference);
-      }
-      for (final flashcard in flashcardsFromGroups.docs) {
-        batch.delete(flashcard.reference);
       }
       batch.delete(group.reference);
       await batch.commit();

@@ -6,21 +6,22 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   late GroupsState state;
   final allGroups = [
-    const Group(
+    createGroup(
       id: 'g1',
       name: 'group 1',
       courseId: 'c1',
       nameForQuestions: 'nameQ1',
       nameForAnswers: 'nameA1',
+      flashcards: [],
     ),
-    const Group(
+    createGroup(
       id: 'g2',
       name: 'group 2',
       courseId: 'c2',
       nameForQuestions: 'nameQ2',
       nameForAnswers: 'nameA2',
     ),
-    const Group(
+    createGroup(
       id: 'g3',
       name: 'group 3',
       courseId: 'c2',
@@ -34,7 +35,7 @@ void main() {
   });
 
   test('initial state', () {
-    final GroupsState initialState = GroupsState();
+    const GroupsState initialState = GroupsState();
     expect(initialState.allGroups, []);
     expect(initialState.status, const GroupsStatusInitial());
   });

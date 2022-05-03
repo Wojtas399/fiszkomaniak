@@ -1,12 +1,18 @@
-import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 
 abstract class FlashcardsInterface {
-  Stream<List<ChangedDocument<Flashcard>>> getFlashcardsSnapshots();
+  Future<void> setFlashcards({
+    required String groupId,
+    required List<Flashcard> flashcards,
+  }) async {}
 
-  Future<void> addFlashcards(List<Flashcard> flashcards) async {}
+  Future<void> updateFlashcard({
+    required String groupId,
+    required Flashcard flashcard,
+  }) async {}
 
-  Future<void> updateFlashcards(List<Flashcard> flashcards) async {}
-
-  Future<void> removeFlashcards(List<String> idsOfFlashcards) async {}
+  Future<void> removeFlashcard({
+    required String groupId,
+    required Flashcard flashcard,
+  }) async {}
 }

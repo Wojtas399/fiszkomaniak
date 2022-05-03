@@ -1,9 +1,11 @@
+import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_state.dart';
+
 abstract class FlashcardPreviewEvent {}
 
 class FlashcardPreviewEventInitialize extends FlashcardPreviewEvent {
-  final String flashcardId;
+  final FlashcardPreviewParams params;
 
-  FlashcardPreviewEventInitialize({required this.flashcardId});
+  FlashcardPreviewEventInitialize({required this.params});
 }
 
 class FlashcardPreviewEventQuestionChanged extends FlashcardPreviewEvent {

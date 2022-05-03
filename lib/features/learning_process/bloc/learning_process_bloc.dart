@@ -23,7 +23,7 @@ class LearningProcessBloc
   ) {
     emit(state.copyWith(
       data: event.data,
-      flashcards: _flashcardsBloc.state.getFlashcardsByGroupId(
+      flashcards: _flashcardsBloc.state.getFlashcardsFromGroup(
         event.data.groupId,
       ),
     ));
@@ -33,14 +33,14 @@ class LearningProcessBloc
     LearningProcessEventRememberedFlashcard event,
     Emitter<LearningProcessState> emit,
   ) {
-    final List<String> idsOfRememberedFlashcards = [
-      ...state.idsOfRememberedFlashcards,
+    final List<int> indexesOfRememberedFlashcards = [
+      ...state.indexesOfRememberedFlashcards,
     ];
-    if (!idsOfRememberedFlashcards.contains(event.flashcardId)) {
-      idsOfRememberedFlashcards.add(event.flashcardId);
+    if (!indexesOfRememberedFlashcards.contains(event.flashcardIndex)) {
+      indexesOfRememberedFlashcards.add(event.flashcardIndex);
     }
     emit(state.copyWith(
-      idsOfRememberedFlashcards: idsOfRememberedFlashcards,
+      indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
       indexOfDisplayedFlashcard: _getNewIndexOfDisplayedFlashcard(),
     ));
   }
@@ -49,12 +49,14 @@ class LearningProcessBloc
     LearningProcessEventForgottenFlashcard event,
     Emitter<LearningProcessState> emit,
   ) {
-    final List<String> idsOfRememberedFlashcards = [
-      ...state.idsOfRememberedFlashcards,
+    final List<int> indexesOfRememberedFlashcards = [
+      ...state.indexesOfRememberedFlashcards,
     ];
-    idsOfRememberedFlashcards.removeWhere((id) => id == event.flashcardId);
+    indexesOfRememberedFlashcards.removeWhere(
+      (id) => id == event.flashcardIndex,
+    );
     emit(state.copyWith(
-      idsOfRememberedFlashcards: idsOfRememberedFlashcards,
+      indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
       indexOfDisplayedFlashcard: _getNewIndexOfDisplayedFlashcard(),
     ));
   }

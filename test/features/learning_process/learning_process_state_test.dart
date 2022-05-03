@@ -6,11 +6,11 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   late LearningProcessState state;
   final List<Flashcard> flashcards = [
-    createFlashcard(id: 'f1'),
-    createFlashcard(id: 'f2'),
-    createFlashcard(id: 'f3'),
+    createFlashcard(index: 0),
+    createFlashcard(index: 1),
+    createFlashcard(index: 2),
   ];
-  final List<String> idsOfRememberedFlashcards = ['f1', 'f2'];
+  final List<int> indexesOfRememberedFlashcards = [0, 2];
 
   setUp(() {
     state = const LearningProcessState();
@@ -19,7 +19,7 @@ void main() {
   test('initial state', () {
     expect(state.data, null);
     expect(state.flashcards, []);
-    expect(state.idsOfRememberedFlashcards, []);
+    expect(state.indexesOfRememberedFlashcards, []);
     expect(state.indexOfDisplayedFlashcard, 0);
   });
 
@@ -44,14 +44,14 @@ void main() {
     expect(state3.flashcards, flashcards);
   });
 
-  test('copy with ids of remembered flashcards', () {
+  test('copy with indexes of remembered flashcards', () {
     final LearningProcessState state2 = state.copyWith(
-      idsOfRememberedFlashcards: idsOfRememberedFlashcards,
+      indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
     );
     final LearningProcessState state3 = state2.copyWith();
 
-    expect(state2.idsOfRememberedFlashcards, idsOfRememberedFlashcards);
-    expect(state3.idsOfRememberedFlashcards, idsOfRememberedFlashcards);
+    expect(state2.indexesOfRememberedFlashcards, indexesOfRememberedFlashcards);
+    expect(state3.indexesOfRememberedFlashcards, indexesOfRememberedFlashcards);
   });
 
   test('copy with index of displayed flashcards', () {
@@ -75,12 +75,12 @@ void main() {
 
   test('amount of remembered flashcards', () {
     final LearningProcessState updatedState = state.copyWith(
-      idsOfRememberedFlashcards: idsOfRememberedFlashcards,
+      indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
     );
 
     expect(
       updatedState.amountOfRememberedFlashcards,
-      idsOfRememberedFlashcards.length,
+      indexesOfRememberedFlashcards.length,
     );
   });
 }

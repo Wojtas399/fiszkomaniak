@@ -82,8 +82,7 @@ EditorFlashcard createEditorFlashcard({
   String key = '',
   bool isCorrect = true,
   Flashcard doc = const Flashcard(
-    id: '',
-    groupId: '',
+    index: 0,
     question: '',
     answer: '',
     status: FlashcardStatus.notRemembered,
@@ -94,19 +93,4 @@ EditorFlashcard createEditorFlashcard({
     isCorrect: isCorrect,
     doc: doc,
   );
-}
-
-class FlashcardsEditorGroups extends Equatable {
-  final List<Flashcard> edited;
-  final List<Flashcard> added;
-  final List<String> removed;
-
-  const FlashcardsEditorGroups({
-    required this.edited,
-    required this.added,
-    required this.removed,
-  });
-
-  @override
-  List<Object> get props => [edited, added, removed];
 }

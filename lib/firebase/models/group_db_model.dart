@@ -1,16 +1,19 @@
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/firebase/models/flashcard_db_model.dart';
 
 class GroupDbModel extends Equatable {
   final String? name;
   final String? courseId;
   final String? nameForQuestions;
   final String? nameForAnswers;
+  final List<FlashcardDbModel> flashcards;
 
   const GroupDbModel({
     required this.name,
     required this.courseId,
     required this.nameForQuestions,
     required this.nameForAnswers,
+    this.flashcards = const [],
   });
 
   GroupDbModel.fromJson(Map<String, Object?> json)
@@ -19,14 +22,20 @@ class GroupDbModel extends Equatable {
           courseId: json['courseId']! as String,
           nameForQuestions: json['nameForQuestions']! as String,
           nameForAnswers: json['nameForAnswers']! as String,
+          flashcards: (json['flashcards']! as List)
+              .asMap()
+              .entries
+              .map((entry) => FlashcardDbModel.fromJson(entry.key, entry.value))
+              .toList(),
         );
 
-  Map<String, String?> toJson() {
+  Map<String, Object?> toJson() {
     return {
       'name': name,
       'courseId': courseId,
       'nameForQuestions': nameForQuestions,
       'nameForAnswers': nameForAnswers,
+      'flashcards': flashcards.map((flashcard) => flashcard.toJson()).toList(),
     }..removeWhere((key, value) => value == null);
   }
 
@@ -36,5 +45,6 @@ class GroupDbModel extends Equatable {
         courseId ?? '',
         nameForQuestions ?? '',
         nameForAnswers ?? '',
+        flashcards,
       ];
 }

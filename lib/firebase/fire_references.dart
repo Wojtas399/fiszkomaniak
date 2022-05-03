@@ -3,7 +3,6 @@ import 'package:fiszkomaniak/firebase/fire_user.dart';
 import 'fire_instances.dart';
 import 'models/appearance_settings_db_model.dart';
 import 'models/course_db_model.dart';
-import 'models/flashcard_db_model.dart';
 import 'models/group_db_model.dart';
 import 'models/notifications_settings_db_model.dart';
 import 'models/session_db_model.dart';
@@ -55,14 +54,6 @@ class FireReferences {
   static CollectionReference<GroupDbModel> get groupsReference =>
       _loggedUserRef.collection('Groups').withConverter<GroupDbModel>(
             fromFirestore: (snapshot, _) => GroupDbModel.fromJson(
-              snapshot.data()!,
-            ),
-            toFirestore: (data, _) => data.toJson(),
-          );
-
-  static CollectionReference<FlashcardDbModel> get flashcardsRef =>
-      _loggedUserRef.collection('Flashcards').withConverter<FlashcardDbModel>(
-            fromFirestore: (snapshot, _) => FlashcardDbModel.fromJson(
               snapshot.data()!,
             ),
             toFirestore: (data, _) => data.toJson(),

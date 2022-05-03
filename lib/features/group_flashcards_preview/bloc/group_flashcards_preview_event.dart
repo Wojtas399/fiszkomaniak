@@ -16,9 +16,11 @@ class GroupFlashcardsPreviewEventSearchValueChanged
 
 class GroupFlashcardsPreviewEventShowFlashcardDetails
     extends GroupFlashcardsPreviewEvent {
-  final String flashcardId;
+  final int flashcardIndex;
 
-  GroupFlashcardsPreviewEventShowFlashcardDetails({required this.flashcardId});
+  GroupFlashcardsPreviewEventShowFlashcardDetails({
+    required this.flashcardIndex,
+  });
 }
 
 class GroupFlashcardsPreviewEventFlashcardsStateUpdated

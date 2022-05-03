@@ -21,7 +21,7 @@ void main() {
   });
 
   test('copy with flashcard', () {
-    final Flashcard flashcard = createFlashcard(id: 'f1');
+    final Flashcard flashcard = createFlashcard(index: 0);
 
     final FlashcardPreviewState state2 = state.copyWith(flashcard: flashcard);
     final FlashcardPreviewState state3 = state2.copyWith();

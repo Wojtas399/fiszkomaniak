@@ -9,15 +9,15 @@ class LearningProcessEventInitialize extends LearningProcessEvent {
 }
 
 class LearningProcessEventRememberedFlashcard extends LearningProcessEvent {
-  final String flashcardId;
+  final int flashcardIndex;
 
-  LearningProcessEventRememberedFlashcard({required this.flashcardId});
+  LearningProcessEventRememberedFlashcard({required this.flashcardIndex});
 }
 
 class LearningProcessEventForgottenFlashcard extends LearningProcessEvent {
-  final String flashcardId;
+  final int flashcardIndex;
 
-  LearningProcessEventForgottenFlashcard({required this.flashcardId});
+  LearningProcessEventForgottenFlashcard({required this.flashcardIndex});
 }
 
 class LearningProcessEventReset extends LearningProcessEvent {}

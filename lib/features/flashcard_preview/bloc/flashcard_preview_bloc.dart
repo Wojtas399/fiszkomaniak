@@ -42,10 +42,12 @@ class FlashcardPreviewBloc
     FlashcardPreviewEventInitialize event,
     Emitter<FlashcardPreviewState> emit,
   ) {
-    final Flashcard? flashcard =
-        _flashcardsBloc.state.getFlashcardById(event.flashcardId);
+    final Flashcard? flashcard = _flashcardsBloc.state.getFlashcardFromGroup(
+      event.params.groupId,
+      event.params.flashcardIndex,
+    );
     if (flashcard != null) {
-      final Group? group = _groupsBloc.state.getGroupById(flashcard.groupId);
+      final Group? group = _groupsBloc.state.getGroupById(event.params.groupId);
       if (group != null) {
         final String? courseName = _coursesBloc.state.getCourseNameById(
           group.courseId,
@@ -60,7 +62,7 @@ class FlashcardPreviewBloc
         }
       }
     }
-    _setFlashcardsStateListener(event.flashcardId);
+    _setFlashcardsStateListener();
   }
 
   void _questionChanged(
@@ -98,16 +100,22 @@ class FlashcardPreviewBloc
     FlashcardPreviewEventSaveChanges event,
     Emitter<FlashcardPreviewState> emit,
   ) async {
-    final bool confirmation =
-        await _flashcardPreviewDialogs.askForSaveConfirmation();
-    final Flashcard? flashcard = state.flashcard;
-    if (confirmation && flashcard != null) {
-      _flashcardsBloc.add(FlashcardsEventUpdateFlashcard(
-        flashcard: flashcard.copyWith(
-          question: state.newQuestion,
-          answer: state.newAnswer,
-        ),
-      ));
+    if (state.newAnswer == '' || state.newQuestion == '') {
+      _flashcardPreviewDialogs.showEmptyFlashcardInfo();
+    } else {
+      final bool confirmation =
+          await _flashcardPreviewDialogs.askForSaveConfirmation();
+      final Flashcard? flashcard = state.flashcard;
+      final String? groupId = state.group?.id;
+      if (confirmation && flashcard != null && groupId != null) {
+        _flashcardsBloc.add(FlashcardsEventUpdateFlashcard(
+          groupId: groupId,
+          flashcard: flashcard.copyWith(
+            question: state.newQuestion,
+            answer: state.newAnswer,
+          ),
+        ));
+      }
     }
   }
 
@@ -117,10 +125,14 @@ class FlashcardPreviewBloc
   ) async {
     final bool confirmation =
         await _flashcardPreviewDialogs.askForDeleteConfirmation();
-    final String? flashcardId = state.flashcard?.id;
-    if (confirmation && flashcardId != null) {
+    final String? groupId = state.group?.id;
+    final Flashcard? flashcard = state.flashcard;
+    if (confirmation && groupId != null && flashcard != null) {
       _flashcardsBloc.add(
-        FlashcardsEventRemoveFlashcard(flashcardId: flashcardId),
+        FlashcardsEventRemoveFlashcard(
+          groupId: groupId,
+          flashcard: flashcard,
+        ),
       );
     }
   }
@@ -129,15 +141,16 @@ class FlashcardPreviewBloc
     FlashcardPreviewEventFlashcardsStateUpdated event,
     Emitter<FlashcardPreviewState> emit,
   ) {
-    final Flashcard? flashcard = _flashcardsBloc.state.getFlashcardById(
-      state.flashcard?.id,
+    final Flashcard? flashcard = _flashcardsBloc.state.getFlashcardFromGroup(
+      state.group?.id,
+      state.flashcard?.index,
     );
     if (flashcard != null) {
       emit(state.copyWith(flashcard: flashcard));
     }
   }
 
-  void _setFlashcardsStateListener(String flashcardId) {
+  void _setFlashcardsStateListener() {
     _flashcardsStateSubscription = _flashcardsBloc.stream.listen((_) {
       add(FlashcardPreviewEventFlashcardsStateUpdated());
     });

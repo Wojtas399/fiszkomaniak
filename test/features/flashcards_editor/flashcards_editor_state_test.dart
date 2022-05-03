@@ -8,15 +8,15 @@ void main() {
   final List<EditorFlashcard> flashcards = [
     createEditorFlashcard(
       key: 'f1',
-      doc: createFlashcard(question: 'question', answer: 'answer'),
+      doc: createFlashcard(index: 0, question: 'question', answer: 'answer'),
     ),
     createEditorFlashcard(
       key: 'f2',
-      doc: createFlashcard(id: 'f1'),
+      doc: createFlashcard(index: 1),
     ),
     createEditorFlashcard(
       key: 'f3',
-      doc: createFlashcard(),
+      doc: createFlashcard(index: 2),
     ),
   ];
 
@@ -27,6 +27,7 @@ void main() {
   test('initial state', () {
     expect(state.group, null);
     expect(state.flashcards, const []);
+    expect(state.keyCounter, 0);
   });
 
   test('copy with group', () {
@@ -44,6 +45,14 @@ void main() {
 
     expect(state2.flashcards, flashcards);
     expect(state3.flashcards, flashcards);
+  });
+
+  test('copy with key counter', () {
+    final FlashcardsEditorState state2 = state.copyWith(keyCounter: 2);
+    final FlashcardsEditorState state3 = state2.copyWith();
+
+    expect(state2.keyCounter, 2);
+    expect(state3.keyCounter, 2);
   });
 
   test('get flashcards without last one', () {

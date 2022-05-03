@@ -20,21 +20,21 @@ class FlashcardsStackStatusQuestionAgain extends FlashcardsStackStatus {}
 class FlashcardsStackStatusAnswerAgain extends FlashcardsStackStatus {}
 
 class FlashcardsStackStatusMovedLeft extends FlashcardsStackStatus {
-  final String flashcardId;
+  final int flashcardIndex;
 
-  const FlashcardsStackStatusMovedLeft({required this.flashcardId});
+  const FlashcardsStackStatusMovedLeft({required this.flashcardIndex});
 
   @override
-  List<Object> get props => [flashcardId];
+  List<Object> get props => [flashcardIndex];
 }
 
 class FlashcardsStackStatusMovedRight extends FlashcardsStackStatus {
-  final String flashcardId;
+  final int flashcardIndex;
 
-  const FlashcardsStackStatusMovedRight({required this.flashcardId});
+  const FlashcardsStackStatusMovedRight({required this.flashcardIndex});
 
   @override
-  List<Object> get props => [flashcardId];
+  List<Object> get props => [flashcardIndex];
 }
 
 class FlashcardsStackStatusEnd extends FlashcardsStackStatus {}

@@ -10,12 +10,12 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   late FlashcardsStackBloc bloc;
   final List<FlashcardInfo> flashcards = [
-    createFlashcardInfo(id: 'f1', question: 'q1', answer: 'a1'),
-    createFlashcardInfo(id: 'f2', question: 'g2', answer: 'a2'),
-    createFlashcardInfo(id: 'f3', question: 'q3', answer: 'a3'),
-    createFlashcardInfo(id: 'f4', question: 'q4', answer: 'a4'),
-    createFlashcardInfo(id: 'f5', question: 'q5', answer: 'a5'),
-    createFlashcardInfo(id: 'f6', question: 'q6', answer: 'a6'),
+    createFlashcardInfo(index: 0, question: 'q1', answer: 'a1'),
+    createFlashcardInfo(index: 1, question: 'g2', answer: 'a2'),
+    createFlashcardInfo(index: 2, question: 'q3', answer: 'a3'),
+    createFlashcardInfo(index: 3, question: 'q4', answer: 'a4'),
+    createFlashcardInfo(index: 4, question: 'q5', answer: 'a5'),
+    createFlashcardInfo(index: 5, question: 'q6', answer: 'a6'),
   ];
   final List<AnimatedElement> initialElements = [
     AnimatedElement(
@@ -179,7 +179,7 @@ void main() {
         ],
         indexOfDisplayedFlashcard: 1,
         status: FlashcardsStackStatusMovedLeft(
-          flashcardId: initialElements[0].flashcard.id,
+          flashcardIndex: initialElements[0].flashcard.index,
         ),
       ),
     ],
@@ -241,7 +241,7 @@ void main() {
         ],
         indexOfDisplayedFlashcard: 1,
         status: FlashcardsStackStatusMovedRight(
-          flashcardId: initialElements[0].flashcard.id,
+          flashcardIndex: initialElements[0].flashcard.index,
         ),
       ),
     ],
@@ -274,7 +274,7 @@ void main() {
         ],
         indexOfDisplayedFlashcard: 1,
         status: FlashcardsStackStatusMovedRight(
-          flashcardId: initialElements[0].flashcard.id,
+          flashcardIndex: initialElements[0].flashcard.index,
         ),
       ),
       FlashcardsStackState(
@@ -350,7 +350,7 @@ void main() {
         ],
         indexOfDisplayedFlashcard: 1,
         status: FlashcardsStackStatusMovedRight(
-          flashcardId: initialElements[0].flashcard.id,
+          flashcardIndex: initialElements[0].flashcard.index,
         ),
       ),
       FlashcardsStackState(
@@ -460,7 +460,7 @@ void main() {
         ],
         indexOfDisplayedFlashcard: 1,
         status: FlashcardsStackStatusMovedRight(
-          flashcardId: initialElements[0].flashcard.id,
+          flashcardIndex: initialElements[0].flashcard.index,
         ),
       ),
     ],
@@ -534,7 +534,7 @@ void main() {
         ],
         indexOfDisplayedFlashcard: 1,
         status: FlashcardsStackStatusMovedRight(
-          flashcardId: initialElements[0].flashcard.id,
+          flashcardIndex: initialElements[0].flashcard.index,
         ),
       ),
       FlashcardsStackState(

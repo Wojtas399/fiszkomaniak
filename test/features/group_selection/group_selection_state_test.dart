@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_state.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -15,6 +16,11 @@ void main() {
       id: 'g1',
       nameForQuestions: 'questions',
       nameForAnswers: 'answers',
+      flashcards: [
+        createFlashcard(index: 0, status: FlashcardStatus.remembered),
+        createFlashcard(index: 1, status: FlashcardStatus.remembered),
+        createFlashcard(index: 2, status: FlashcardStatus.notRemembered),
+      ],
     ),
     createGroup(id: 'g2'),
     createGroup(id: 'g3'),
@@ -40,8 +46,8 @@ void main() {
     expect(state.nameForQuestions, null);
     expect(state.nameForAnswers, null);
     expect(state.isButtonDisabled, true);
-    expect(state.amountOfAllFlashcardsFromGroup, 0);
-    expect(state.amountOfRememberedFlashcardsFromGroup, 0);
+    expect(state.amountOfAllFlashcards, 0);
+    expect(state.amountOfRememberedFlashcards, 0);
   });
 
   test('copy with all courses', () {
@@ -84,26 +90,6 @@ void main() {
     expect(state3.selectedGroup, null);
   });
 
-  test('copy with amount of all flashcards from group', () {
-    final GroupSelectionState state2 = state.copyWith(
-      amountOfAllFlashcardsFromGroup: 120,
-    );
-    final GroupSelectionState state3 = state2.copyWith();
-
-    expect(state2.amountOfAllFlashcardsFromGroup, 120);
-    expect(state3.amountOfAllFlashcardsFromGroup, 120);
-  });
-
-  test('copy with amount of remembered flashcards', () {
-    final GroupSelectionState state2 = state.copyWith(
-      amountOfRememberedFlashcardsFromGroup: 20,
-    );
-    final GroupSelectionState state3 = state2.copyWith();
-
-    expect(state2.amountOfRememberedFlashcardsFromGroup, 20);
-    expect(state3.amountOfRememberedFlashcardsFromGroup, 20);
-  });
-
   test('name for questions, group selected', () {
     final GroupSelectionState updatedState = state.copyWith(
       selectedGroup: groups[0],
@@ -118,6 +104,22 @@ void main() {
     );
 
     expect(updatedState.nameForAnswers, groups[0].nameForAnswers);
+  });
+
+  test('amount of all flashcards', () {
+    final GroupSelectionState updatedState = state.copyWith(
+      selectedGroup: groups[0],
+    );
+
+    expect(updatedState.amountOfAllFlashcards, 3);
+  });
+
+  test('amount of remembered flashcards', () {
+    final GroupSelectionState updatedState = state.copyWith(
+      selectedGroup: groups[0],
+    );
+
+    expect(updatedState.amountOfRememberedFlashcards, 2);
   });
 
   test('is button disabled, course or group not selected', () {

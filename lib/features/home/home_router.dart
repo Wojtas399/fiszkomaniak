@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/features/course_creator/course_creator.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/course_groups_preview.dart';
+import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_state.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/group_flashcards_preview.dart';
@@ -117,7 +118,7 @@ class HomeRouter extends StatelessWidget {
       case flashcardPreview:
         return MaterialPageRoute(
           builder: (_) => FlashcardPreview(
-            flashcardId: routeSettings.arguments as String,
+            params: routeSettings.arguments as FlashcardPreviewParams,
           ),
         );
       case sessionPreview:

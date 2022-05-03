@@ -53,7 +53,7 @@ class LearningProcessContent extends StatelessWidget {
     return flashcards
         .map(
           (flashcard) => FlashcardInfo(
-            id: flashcard.id,
+            index: flashcard.index,
             question: flashcard.question,
             answer: flashcard.answer,
           ),
@@ -79,13 +79,13 @@ class _FlashcardsStackListener extends StatelessWidget {
           context
               .read<LearningProcessBloc>()
               .add(LearningProcessEventForgottenFlashcard(
-                flashcardId: status.flashcardId,
+                flashcardIndex: status.flashcardIndex,
               ));
         } else if (status is FlashcardsStackStatusMovedRight) {
           context
               .read<LearningProcessBloc>()
               .add(LearningProcessEventRememberedFlashcard(
-                flashcardId: status.flashcardId,
+                flashcardIndex: status.flashcardIndex,
               ));
         }
       },

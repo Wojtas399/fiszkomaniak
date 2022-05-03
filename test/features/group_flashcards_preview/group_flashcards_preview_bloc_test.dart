@@ -25,17 +25,26 @@ void main() {
   late GroupFlashcardsPreviewBloc bloc;
   final GroupsState groupsState = GroupsState(
     allGroups: [
-      createGroup(id: 'g1', name: 'group name 1'),
-      createGroup(id: 'g2', name: 'group name 2'),
+      createGroup(
+        id: 'g1',
+        name: 'group name 1',
+        flashcards: [
+          createFlashcard(index: 0, question: 'question0', answer: 'answer0'),
+          createFlashcard(index: 1, question: 'question1', answer: 'answer1'),
+        ],
+      ),
+      createGroup(
+        id: 'g2',
+        name: 'group name 2',
+        flashcards: [
+          createFlashcard(index: 0, question: 'q0', answer: 'a0'),
+          createFlashcard(index: 1, question: 'q1', answer: 'a1'),
+        ],
+      ),
     ],
   );
   final FlashcardsState flashcardsState = FlashcardsState(
-    allFlashcards: [
-      createFlashcard(id: 'f1', groupId: 'g1'),
-      createFlashcard(id: 'f2', groupId: 'g2'),
-      createFlashcard(id: 'f3', groupId: 'g1'),
-      createFlashcard(id: 'f4', groupId: 'g2'),
-    ],
+    groupsState: groupsState,
   );
 
   setUp(() {
@@ -44,6 +53,9 @@ void main() {
       flashcardsBloc: flashcardsBloc,
       navigation: navigation,
     );
+    when(() => groupsBloc.state).thenReturn(groupsState);
+    when(() => flashcardsBloc.state).thenReturn(flashcardsState);
+    when(() => flashcardsBloc.stream).thenAnswer((_) => const Stream.empty());
   });
 
   tearDown(() {
@@ -55,20 +67,12 @@ void main() {
   blocTest(
     'initialize',
     build: () => bloc,
-    setUp: () {
-      when(() => groupsBloc.state).thenReturn(groupsState);
-      when(() => flashcardsBloc.state).thenReturn(flashcardsState);
-      when(() => flashcardsBloc.stream).thenAnswer((_) => const Stream.empty());
-    },
     act: (_) => bloc.add(GroupFlashcardsPreviewEventInitialize(groupId: 'g1')),
     expect: () => [
       GroupFlashcardsPreviewState(
         groupId: 'g1',
         groupName: 'group name 1',
-        flashcardsFromGroup: [
-          flashcardsState.allFlashcards[0],
-          flashcardsState.allFlashcards[2],
-        ],
+        flashcardsFromGroup: groupsState.allGroups[0].flashcards,
       ),
     ],
   );
@@ -90,13 +94,17 @@ void main() {
     'show flashcard details',
     build: () => bloc,
     setUp: () {
-      when(() => navigation.navigateToFlashcardPreview('f1')).thenReturn(null);
+      when(() => navigation.navigateToFlashcardPreview('g1', 0))
+          .thenReturn(null);
     },
-    act: (_) => bloc.add(
-      GroupFlashcardsPreviewEventShowFlashcardDetails(flashcardId: 'f1'),
-    ),
+    act: (_) {
+      bloc.add(GroupFlashcardsPreviewEventInitialize(groupId: 'g1'));
+      bloc.add(
+        GroupFlashcardsPreviewEventShowFlashcardDetails(flashcardIndex: 0),
+      );
+    },
     verify: (_) {
-      verify(() => navigation.navigateToFlashcardPreview('f1')).called(1);
+      verify(() => navigation.navigateToFlashcardPreview('g1', 0)).called(1);
     },
   );
 }

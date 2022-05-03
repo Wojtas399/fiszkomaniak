@@ -1,3 +1,5 @@
+import 'package:fiszkomaniak/core/groups/groups_state.dart';
+
 abstract class GroupSelectionEvent {}
 
 class GroupSelectionEventInitialize extends GroupSelectionEvent {}
@@ -16,4 +18,8 @@ class GroupSelectionEventGroupSelected extends GroupSelectionEvent {
 
 class GroupSelectionEventButtonPressed extends GroupSelectionEvent {}
 
-class GroupSelectionEventFlashcardsStateUpdated extends GroupSelectionEvent {}
+class GroupSelectionEventGroupsStateUpdated extends GroupSelectionEvent {
+  final GroupsState newGroupsState;
+
+  GroupSelectionEventGroupsStateUpdated({required this.newGroupsState});
+}

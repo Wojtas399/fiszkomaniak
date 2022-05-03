@@ -1,10 +1,12 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
+import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_event.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -15,11 +17,18 @@ void main() {
   final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
   late LearningProcessBloc bloc;
   final FlashcardsState flashcardsState = FlashcardsState(
-    allFlashcards: [
-      createFlashcard(id: 'f1', groupId: 'g1'),
-      createFlashcard(id: 'f2', groupId: 'g1'),
-      createFlashcard(id: 'f3', groupId: 'g2'),
-    ],
+    groupsState: GroupsState(
+      allGroups: [
+        createGroup(
+          id: 'g1',
+          flashcards: [
+            createFlashcard(index: 0, question: 'q0', answer: 'a0'),
+            createFlashcard(index: 1, question: 'q1', answer: 'a1'),
+          ],
+        ),
+        createGroup(id: 'g2'),
+      ],
+    ),
   );
   const LearningProcessData data = LearningProcessData(
     groupId: 'g1',
@@ -32,10 +41,7 @@ void main() {
       flashcardsType: FlashcardsType.remembered,
       areQuestionsAndAnswersSwapped: false,
     ),
-    flashcards: [
-      flashcardsState.allFlashcards[0],
-      flashcardsState.allFlashcards[1],
-    ],
+    flashcards: flashcardsState.groupsState.allGroups[0].flashcards,
   );
 
   setUp(() {
@@ -59,12 +65,12 @@ void main() {
     build: () => bloc,
     act: (_) {
       bloc.add(LearningProcessEventInitialize(data: data));
-      bloc.add(LearningProcessEventRememberedFlashcard(flashcardId: 'f1'));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
     },
     expect: () => [
       initialState,
       initialState.copyWith(
-        idsOfRememberedFlashcards: ['f1'],
+        indexesOfRememberedFlashcards: [0],
         indexOfDisplayedFlashcard: 1,
       ),
     ],
@@ -75,13 +81,13 @@ void main() {
     build: () => bloc,
     act: (_) {
       bloc.add(LearningProcessEventInitialize(data: data));
-      bloc.add(LearningProcessEventRememberedFlashcard(flashcardId: 'f1'));
-      bloc.add(LearningProcessEventRememberedFlashcard(flashcardId: 'f1'));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
     },
     expect: () => [
       initialState,
       initialState.copyWith(
-        idsOfRememberedFlashcards: ['f1'],
+        indexesOfRememberedFlashcards: [0],
         indexOfDisplayedFlashcard: 1,
       ),
     ],
@@ -92,17 +98,17 @@ void main() {
     build: () => bloc,
     act: (_) {
       bloc.add(LearningProcessEventInitialize(data: data));
-      bloc.add(LearningProcessEventRememberedFlashcard(flashcardId: 'f1'));
-      bloc.add(LearningProcessEventForgottenFlashcard(flashcardId: 'f1'));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
+      bloc.add(LearningProcessEventForgottenFlashcard(flashcardIndex: 0));
     },
     expect: () => [
       initialState,
       initialState.copyWith(
-        idsOfRememberedFlashcards: ['f1'],
+        indexesOfRememberedFlashcards: [0],
         indexOfDisplayedFlashcard: 1,
       ),
       initialState.copyWith(
-        idsOfRememberedFlashcards: [],
+        indexesOfRememberedFlashcards: [],
         indexOfDisplayedFlashcard: 1,
       ),
     ],
@@ -113,17 +119,17 @@ void main() {
     build: () => bloc,
     act: (_) {
       bloc.add(LearningProcessEventInitialize(data: data));
-      bloc.add(LearningProcessEventRememberedFlashcard(flashcardId: 'f1'));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
       bloc.add(LearningProcessEventReset());
     },
     expect: () => [
       initialState,
       initialState.copyWith(
-        idsOfRememberedFlashcards: ['f1'],
+        indexesOfRememberedFlashcards: [0],
         indexOfDisplayedFlashcard: 1,
       ),
       initialState.copyWith(
-        idsOfRememberedFlashcards: ['f1'],
+        indexesOfRememberedFlashcards: [0],
         indexOfDisplayedFlashcard: 0,
       ),
     ],
