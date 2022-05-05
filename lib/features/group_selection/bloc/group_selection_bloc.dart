@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_event.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -65,7 +66,12 @@ class GroupSelectionBloc
     GroupSelectionEventButtonPressed event,
     Emitter<GroupSelectionState> emit,
   ) {
-    _navigation.navigateToFlashcardsEditor(state.selectedGroup!.id);
+    final String? groupId = state.selectedGroup?.id;
+    if (groupId != null) {
+      _navigation.navigateToFlashcardsEditor(
+        FlashcardsEditorAddMode(groupId: groupId),
+      );
+    }
   }
 
   void _groupsStateUpdated(

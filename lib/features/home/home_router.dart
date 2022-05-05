@@ -4,6 +4,7 @@ import 'package:fiszkomaniak/features/course_groups_preview/course_groups_previe
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_state.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/group_flashcards_preview.dart';
 import 'package:fiszkomaniak/features/group_selection/group_selection.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
@@ -94,7 +95,7 @@ class HomeRouter extends StatelessWidget {
       case flashcardsEditor:
         return MaterialPageRoute(
           builder: (_) => FlashcardsEditor(
-            groupId: routeSettings.arguments as String,
+            mode: routeSettings.arguments as FlashcardsEditorMode,
           ),
         );
       case courseGroupsPreview:

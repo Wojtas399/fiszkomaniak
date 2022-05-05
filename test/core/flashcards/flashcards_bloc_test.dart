@@ -85,6 +85,36 @@ void main() {
   );
 
   blocTest(
+    'save flashcards, just added flashcards, success',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => flashcardsInterface.setFlashcards(
+          groupId: 'g1',
+          flashcards: flashcards,
+        ),
+      ).thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(FlashcardsEventSaveFlashcards(
+      groupId: 'g1',
+      flashcards: flashcards,
+      justAddedFlashcards: true,
+    )),
+    expect: () => [
+      FlashcardsState(status: FlashcardsStatusLoading()),
+      FlashcardsState(status: FlashcardsStatusFlashcardsAdded()),
+    ],
+    verify: (_) {
+      verify(
+        () => flashcardsInterface.setFlashcards(
+          groupId: 'g1',
+          flashcards: flashcards,
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest(
     'save flashcards, failure',
     build: () => bloc,
     setUp: () {

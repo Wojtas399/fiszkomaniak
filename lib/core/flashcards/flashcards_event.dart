@@ -18,16 +18,19 @@ class FlashcardsEventGroupsStateUpdated extends FlashcardsEvent {
 class FlashcardsEventSaveFlashcards extends FlashcardsEvent {
   final String groupId;
   final List<Flashcard> flashcards;
+  final bool justAddedFlashcards;
 
   FlashcardsEventSaveFlashcards({
     required this.groupId,
     required this.flashcards,
+    this.justAddedFlashcards = false,
   });
 
   @override
   List<Object> get props => [
         groupId,
         flashcards,
+        justAddedFlashcards,
       ];
 }
 

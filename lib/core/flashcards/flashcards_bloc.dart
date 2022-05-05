@@ -51,7 +51,11 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
         groupId: event.groupId,
         flashcards: event.flashcards,
       );
-      emit(state.copyWith(status: FlashcardsStatusFlashcardsSaved()));
+      if (event.justAddedFlashcards) {
+        emit(state.copyWith(status: FlashcardsStatusFlashcardsAdded()));
+      } else {
+        emit(state.copyWith(status: FlashcardsStatusFlashcardsSaved()));
+      }
     } catch (error) {
       emit(state.copyWith(
         status: FlashcardsStatusError(message: error.toString()),

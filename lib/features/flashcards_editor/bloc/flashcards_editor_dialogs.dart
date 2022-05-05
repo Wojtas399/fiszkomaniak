@@ -35,7 +35,8 @@ class FlashcardsEditorDialogs {
   Future<void> displayInfoAboutDuplicates() async {
     await dialogs.showDialogWithMessage(
       title: 'Powtarzające się fiszki',
-      message: 'Wygląda na to, że niektóre fiszki występują podwójnie! Zmień je aby móc zapisać zmiany',
+      message:
+          'Wygląda na to, że niektóre fiszki występują w tej grupie podwójnie! Zmień je aby móc zapisać zmiany',
     );
   }
 }

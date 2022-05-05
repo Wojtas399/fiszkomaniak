@@ -1,11 +1,20 @@
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 
 class FlashcardsEditorState extends Equatable {
+  final FlashcardsEditorMode? mode;
   final Group? group;
   final List<EditorFlashcard> flashcards;
   final int keyCounter;
+
+  const FlashcardsEditorState({
+    this.mode,
+    this.group,
+    this.flashcards = const [],
+    this.keyCounter = 0,
+  });
 
   List<Flashcard> get flashcardsWithoutLastOne => flashcards
       .getRange(0, flashcards.length - 1)
@@ -21,18 +30,14 @@ class FlashcardsEditorState extends Equatable {
     return false;
   }
 
-  const FlashcardsEditorState({
-    this.group,
-    this.flashcards = const [],
-    this.keyCounter = 0,
-  });
-
   FlashcardsEditorState copyWith({
+    FlashcardsEditorMode? mode,
     Group? group,
     List<EditorFlashcard>? flashcards,
     int? keyCounter,
   }) {
     return FlashcardsEditorState(
+      mode: mode ?? this.mode,
       group: group ?? this.group,
       flashcards: flashcards ?? this.flashcards,
       keyCounter: keyCounter ?? this.keyCounter,
@@ -41,7 +46,8 @@ class FlashcardsEditorState extends Equatable {
 
   @override
   List<Object> get props => [
-        group ?? createGroup(),
+        mode ?? '',
+        group ?? '',
         flashcards,
         keyCounter,
       ];

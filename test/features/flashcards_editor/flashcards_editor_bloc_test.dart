@@ -9,6 +9,7 @@ import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_d
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -53,6 +54,7 @@ void main() {
     createGroup(id: 'g2', name: 'group 2'),
   ];
   final FlashcardsEditorState stateAfterInitialization = FlashcardsEditorState(
+    mode: const FlashcardsEditorEditMode(groupId: 'g1'),
     group: groups[0],
     flashcards: [
       createEditorFlashcard(
@@ -78,6 +80,11 @@ void main() {
     ],
     keyCounter: 3,
   );
+  final FlashcardsEditorState addModeStateAfterInitialization =
+      stateAfterInitialization.copyWith(
+    flashcards: [stateAfterInitialization.flashcards[3]],
+    mode: const FlashcardsEditorAddMode(groupId: 'g1'),
+  );
 
   setUp(() {
     bloc = FlashcardsEditorBloc(
@@ -102,10 +109,25 @@ void main() {
   });
 
   blocTest(
-    'initialize',
+    'initialize, edit mode',
     build: () => bloc,
-    act: (_) => bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1')),
+    act: (_) => bloc.add(
+      FlashcardsEditorEventInitialize(
+        mode: const FlashcardsEditorEditMode(groupId: 'g1'),
+      ),
+    ),
     expect: () => [stateAfterInitialization],
+  );
+
+  blocTest(
+    'initialize, add mode',
+    build: () => bloc,
+    act: (_) => bloc.add(
+      FlashcardsEditorEventInitialize(
+        mode: const FlashcardsEditorAddMode(groupId: 'g1'),
+      ),
+    ),
+    expect: () => [addModeStateAfterInitialization],
   );
 
   blocTest(
@@ -116,7 +138,9 @@ void main() {
           .thenAnswer((_) async => true);
     },
     act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+      bloc.add(FlashcardsEditorEventInitialize(
+        mode: const FlashcardsEditorEditMode(groupId: 'g1'),
+      ));
       bloc.add(FlashcardsEditorEventRemoveFlashcard(indexOfFlashcard: 1));
     },
     expect: () => [
@@ -132,6 +156,30 @@ void main() {
   );
 
   blocTest(
+    'remove flashcard, confirmed, the last flashcard',
+    build: () => bloc,
+    setUp: () {
+      when(() => flashcardsEditorDialogs.askForDeleteConfirmation())
+          .thenAnswer((_) async => true);
+    },
+    act: (_) {
+      bloc.add(FlashcardsEditorEventInitialize(
+        mode: const FlashcardsEditorAddMode(groupId: 'g1'),
+      ));
+      bloc.add(FlashcardsEditorEventRemoveFlashcard(indexOfFlashcard: 0));
+    },
+    expect: () => [
+      stateAfterInitialization.copyWith(
+        flashcards: [
+          stateAfterInitialization
+              .flashcards[stateAfterInitialization.flashcards.length - 1],
+        ],
+        mode: const FlashcardsEditorAddMode(groupId: 'g1'),
+      ),
+    ],
+  );
+
+  blocTest(
     'remove flashcard, cancelled',
     build: () => bloc,
     setUp: () {
@@ -139,7 +187,9 @@ void main() {
           .thenAnswer((_) async => false);
     },
     act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+      bloc.add(FlashcardsEditorEventInitialize(
+        mode: const FlashcardsEditorEditMode(groupId: 'g1'),
+      ));
       bloc.add(FlashcardsEditorEventRemoveFlashcard(indexOfFlashcard: 1));
     },
     expect: () => [stateAfterInitialization],
@@ -159,7 +209,9 @@ void main() {
           .thenAnswer((_) async => '');
     },
     act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+      bloc.add(FlashcardsEditorEventInitialize(
+        mode: const FlashcardsEditorEditMode(groupId: 'g1'),
+      ));
       bloc.add(FlashcardsEditorEventSave());
     },
     verify: (_) {
@@ -196,7 +248,9 @@ void main() {
       ).thenAnswer((_) async => '');
     },
     act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+      bloc.add(FlashcardsEditorEventInitialize(
+        mode: const FlashcardsEditorEditMode(groupId: 'g1'),
+      ));
       bloc.add(FlashcardsEditorEventSave());
     },
     expect: () => [
@@ -253,7 +307,9 @@ void main() {
       ).thenAnswer((_) async => '');
     },
     act: (_) {
-      bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+      bloc.add(FlashcardsEditorEventInitialize(
+        mode: const FlashcardsEditorEditMode(groupId: 'g1'),
+      ));
       bloc.add(FlashcardsEditorEventSave());
     },
     expect: () => [
@@ -310,7 +366,9 @@ void main() {
             .thenAnswer((_) async => false);
       },
       act: (_) {
-        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventInitialize(
+          mode: const FlashcardsEditorEditMode(groupId: 'g1'),
+        ));
         bloc.add(FlashcardsEditorEventSave());
       },
       verify: (_) {
@@ -335,7 +393,9 @@ void main() {
             .thenAnswer((_) async => true);
       },
       act: (_) {
-        bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+        bloc.add(FlashcardsEditorEventInitialize(
+          mode: const FlashcardsEditorEditMode(groupId: 'g1'),
+        ));
         bloc.add(FlashcardsEditorEventSave());
       },
       verify: (_) {
@@ -346,6 +406,45 @@ void main() {
             FlashcardsEventSaveFlashcards(
               groupId: 'g1',
               flashcards: stateAfterInitialization.flashcardsWithoutLastOne,
+            ),
+          ),
+        ).called(1);
+      },
+    );
+
+    blocTest(
+      'add mode',
+      build: () => bloc,
+      setUp: () {
+        when(
+          () => flashcardsEditorUtils.haveChangesBeenMade(
+            flashcards,
+            addModeStateAfterInitialization.flashcardsWithoutLastOne,
+          ),
+        ).thenReturn(true);
+        when(
+          () => flashcardsEditorUtils.lookForIncorrectlyCompletedFlashcards(
+            addModeStateAfterInitialization.flashcardsWithoutLastOne,
+          ),
+        ).thenReturn([]);
+        when(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .thenAnswer((_) async => true);
+      },
+      act: (_) {
+        bloc.add(FlashcardsEditorEventInitialize(
+          mode: const FlashcardsEditorAddMode(groupId: 'g1'),
+        ));
+        bloc.add(FlashcardsEditorEventSave());
+      },
+      verify: (_) {
+        verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
+            .called(1);
+        verify(
+          () => flashcardsBloc.add(
+            FlashcardsEventSaveFlashcards(
+              groupId: 'g1',
+              flashcards: stateAfterInitialization.flashcardsWithoutLastOne,
+              justAddedFlashcards: true,
             ),
           ),
         ).called(1);

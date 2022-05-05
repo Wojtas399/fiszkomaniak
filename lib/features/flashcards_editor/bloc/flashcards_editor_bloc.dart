@@ -4,6 +4,7 @@ import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_d
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,21 +37,25 @@ class FlashcardsEditorBloc
     FlashcardsEditorEventInitialize event,
     Emitter<FlashcardsEditorState> emit,
   ) {
-    final Group? group = _groupsBloc.state.getGroupById(event.groupId);
+    final Group? group = _groupsBloc.state.getGroupById(event.mode.groupId);
     if (group != null) {
       final List<Flashcard> initialFlashcards = group.flashcards;
       final List<EditorFlashcard> convertedInitialFlashcards =
           _convertFlashcardsFromCore(initialFlashcards);
+      final List<EditorFlashcard> flashcards = [
+        ...(event.mode is FlashcardsEditorEditMode
+            ? convertedInitialFlashcards
+            : []),
+        EditorFlashcard(
+          key: 'flashcard${convertedInitialFlashcards.length}',
+          isCorrect: true,
+          doc: createFlashcard(index: convertedInitialFlashcards.length),
+        ),
+      ];
       emit(state.copyWith(
+        mode: event.mode,
         group: group,
-        flashcards: [
-          ...convertedInitialFlashcards,
-          EditorFlashcard(
-            key: 'flashcard${convertedInitialFlashcards.length}',
-            isCorrect: true,
-            doc: createFlashcard(index: convertedInitialFlashcards.length),
-          ),
-        ],
+        flashcards: flashcards,
         keyCounter: convertedInitialFlashcards.length,
       ));
     }
@@ -65,6 +70,20 @@ class FlashcardsEditorBloc
     if (confirmation == true) {
       final List<EditorFlashcard> flashcards = [...state.flashcards];
       flashcards.removeAt(event.indexOfFlashcard);
+      final Group? group = state.group;
+      if (flashcards.isEmpty && group != null) {
+        int amountOfFlashcardsInGroup = 0;
+        if (state.mode is FlashcardsEditorAddMode) {
+          amountOfFlashcardsInGroup = group.flashcards.length;
+        }
+        flashcards.add(
+          EditorFlashcard(
+            key: 'flashcard$amountOfFlashcardsInGroup',
+            isCorrect: true,
+            doc: createFlashcard(index: amountOfFlashcardsInGroup),
+          ),
+        );
+      }
       emit(state.copyWith(flashcards: flashcards));
     }
   }
@@ -102,11 +121,16 @@ class FlashcardsEditorBloc
     FlashcardsEditorEventSave event,
     Emitter<FlashcardsEditorState> emit,
   ) async {
-    final String? groupId = state.group?.id;
-    if (groupId != null && await _canSave(emit)) {
+    final Group? group = state.group;
+    final FlashcardsEditorMode? mode = state.mode;
+    if (group != null && mode != null && await _canSave(emit)) {
+      final List<Flashcard> flashcardsToSave = mode is FlashcardsEditorEditMode
+          ? state.flashcardsWithoutLastOne
+          : [...group.flashcards, ...state.flashcardsWithoutLastOne];
       _flashcardsBloc.add(FlashcardsEventSaveFlashcards(
-        groupId: groupId,
-        flashcards: state.flashcardsWithoutLastOne,
+        groupId: group.id,
+        flashcards: flashcardsToSave,
+        justAddedFlashcards: mode is FlashcardsEditorAddMode,
       ));
     }
   }
@@ -176,8 +200,15 @@ class FlashcardsEditorBloc
   }
 
   Future<bool> _areThereDuplicates(Emitter<FlashcardsEditorState> emit) async {
-    final List<Flashcard> duplications = _flashcardsEditorUtils
-        .lookForDuplicates(state.flashcardsWithoutLastOne);
+    final List<Flashcard> flashcardsToCheck =
+        state.mode is FlashcardsEditorAddMode
+            ? [
+                ...(state.group?.flashcards ?? []),
+                ...state.flashcardsWithoutLastOne,
+              ]
+            : state.flashcardsWithoutLastOne;
+    final List<Flashcard> duplications =
+        _flashcardsEditorUtils.lookForDuplicates(flashcardsToCheck);
     if (duplications.isNotEmpty) {
       _updateIncorrectFlashcards(duplications, emit);
       await _flashcardsEditorDialogs.displayInfoAboutDuplicates();

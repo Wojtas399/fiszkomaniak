@@ -8,21 +8,22 @@ import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_e
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/components/flashcards_editor_app_bar.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/components/flashcards_editor_list.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FlashcardsEditor extends StatelessWidget {
-  final String groupId;
+  final FlashcardsEditorMode mode;
 
   const FlashcardsEditor({
     Key? key,
-    required this.groupId,
+    required this.mode,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return _FlashcardsEditorBlocProvider(
-      groupId: groupId,
+      mode: mode,
       child: const Scaffold(
         appBar: FlashcardsEditorAppBar(),
         body: BouncingScroll(
@@ -41,12 +42,12 @@ class FlashcardsEditor extends StatelessWidget {
 }
 
 class _FlashcardsEditorBlocProvider extends StatelessWidget {
-  final String groupId;
+  final FlashcardsEditorMode mode;
   final Widget child;
 
   const _FlashcardsEditorBlocProvider({
     Key? key,
-    required this.groupId,
+    required this.mode,
     required this.child,
   }) : super(key: key);
 
@@ -58,7 +59,7 @@ class _FlashcardsEditorBlocProvider extends StatelessWidget {
         flashcardsBloc: context.read<FlashcardsBloc>(),
         flashcardsEditorDialogs: FlashcardsEditorDialogs(),
         flashcardsEditorUtils: FlashcardsEditorUtils(),
-      )..add(FlashcardsEditorEventInitialize(groupId: groupId)),
+      )..add(FlashcardsEditorEventInitialize(mode: mode)),
       child: child,
     );
   }
