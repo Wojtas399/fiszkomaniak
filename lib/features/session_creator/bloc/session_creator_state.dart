@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/utils/group_utils.dart';
 import 'package:flutter/material.dart';
 import '../../../models/session_model.dart';
 
@@ -28,6 +29,14 @@ class SessionCreatorState extends Equatable {
 
   bool get isButtonDisabled =>
       _isOneOfRequiredParamsNull() || _areParamsSameAsOriginal();
+
+  List<FlashcardsType> get availableFlashcardsTypes {
+    final Group? group = selectedGroup;
+    if (group == null) {
+      return FlashcardsType.values;
+    }
+    return GroupUtils.getAvailableFlashcardsTypeFromGroup(group);
+  }
 
   const SessionCreatorState({
     this.mode = const SessionCreatorCreateMode(),

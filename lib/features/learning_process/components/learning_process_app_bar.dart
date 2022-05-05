@@ -30,14 +30,7 @@ class LearningProcessAppBar extends StatelessWidget
           _Timer(),
         ],
       ),
-      actions: [
-        CustomIconButton(
-          icon: MdiIcons.delete,
-          onPressed: () {
-            //TODO
-          },
-        ),
-      ],
+      actions: const [_DeleteIcon()],
     );
   }
 }
@@ -50,7 +43,7 @@ class _FlashcardsState extends StatelessWidget {
     return BlocBuilder<LearningProcessBloc, LearningProcessState>(
       builder: (_, LearningProcessState state) {
         return Text(
-          '${state.indexOfDisplayedFlashcard + 1}/${state.amountOfAllFlashcards}',
+          '${state.indexOfDisplayedFlashcard + 1}/${state.amountOfFlashcardsInStack}',
         );
       },
     );
@@ -68,6 +61,18 @@ class _Timer extends StatelessWidget {
         SizedBox(width: 4),
         Text('13:21'),
       ],
+    );
+  }
+}
+
+class _DeleteIcon extends StatelessWidget {
+  const _DeleteIcon({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomIconButton(
+      icon: MdiIcons.delete,
+      onPressed: () {},
     );
   }
 }

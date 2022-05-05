@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
+import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
@@ -151,5 +152,46 @@ void main() {
       expect(updatedState.nameForQuestions, group.nameForAnswers);
       expect(updatedState.nameForAnswers, group.nameForQuestions);
     });
+  });
+
+  group('available flashcards types', () {
+    test('mixed flashcards statuses, all flashcards types available', () {
+      final Group group = createGroup(flashcards: [
+        createFlashcard(index: 0, status: FlashcardStatus.remembered),
+        createFlashcard(index: 1, status: FlashcardStatus.notRemembered),
+      ]);
+
+      state = state.copyWith(group: group);
+
+      expect(state.availableFlashcardsTypes, FlashcardsType.values);
+    });
+
+    test(
+      'all flashcards not remembered, only flashcards type all available',
+      () {
+        final Group group = createGroup(flashcards: [
+          createFlashcard(index: 0, status: FlashcardStatus.notRemembered),
+          createFlashcard(index: 1, status: FlashcardStatus.notRemembered),
+        ]);
+
+        state = state.copyWith(group: group);
+
+        expect(state.availableFlashcardsTypes, [FlashcardsType.all]);
+      },
+    );
+
+    test(
+      'all flashcards remembered, only flashcards type all available',
+      () {
+        final Group group = createGroup(flashcards: [
+          createFlashcard(index: 0, status: FlashcardStatus.remembered),
+          createFlashcard(index: 1, status: FlashcardStatus.remembered),
+        ]);
+
+        state = state.copyWith(group: group);
+
+        expect(state.availableFlashcardsTypes, [FlashcardsType.all]);
+      },
+    );
   });
 }

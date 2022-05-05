@@ -1,4 +1,5 @@
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
+import 'package:fiszkomaniak/models/session_model.dart';
+import '../learning_process_data.dart';
 
 abstract class LearningProcessEvent {}
 
@@ -20,4 +21,8 @@ class LearningProcessEventForgottenFlashcard extends LearningProcessEvent {
   LearningProcessEventForgottenFlashcard({required this.flashcardIndex});
 }
 
-class LearningProcessEventReset extends LearningProcessEvent {}
+class LearningProcessEventReset extends LearningProcessEvent {
+  final FlashcardsType newFlashcardsType;
+
+  LearningProcessEventReset({required this.newFlashcardsType});
+}

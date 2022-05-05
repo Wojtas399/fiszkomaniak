@@ -3,6 +3,7 @@ import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
 import '../../../models/group_model.dart';
+import '../../../utils/group_utils.dart';
 
 class SessionPreviewState extends Equatable {
   final SessionPreviewMode? mode;
@@ -39,6 +40,14 @@ class SessionPreviewState extends Equatable {
   String? get nameForAnswers => areQuestionsAndAnswersSwapped == true
       ? group?.nameForQuestions
       : group?.nameForAnswers;
+
+  List<FlashcardsType> get availableFlashcardsTypes {
+    final Group? assignedGroup = group;
+    if (assignedGroup == null) {
+      return FlashcardsType.values;
+    }
+    return GroupUtils.getAvailableFlashcardsTypeFromGroup(assignedGroup);
+  }
 
   SessionPreviewState copyWith({
     SessionPreviewMode? mode,

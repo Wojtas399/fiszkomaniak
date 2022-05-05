@@ -3,8 +3,6 @@ import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_blo
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_state.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_status.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -18,44 +16,22 @@ class LearningProcessButtons extends StatelessWidget {
       builder: (_, FlashcardsStackState state) {
         if (state.isPreviewProcess) {
           return const _AnswerButtons();
-        } else if (state.hasLastFlashcardBeenMoved ||
-            state.status is FlashcardsStackStatusEnd) {
-          return const _ResetButton();
         }
-        return const _QuestionButton();
+        return _QuestionButton(
+          isDisabled: state.status is FlashcardsStackStatusEnd,
+        );
       },
     );
   }
 }
 
-class _ResetButton extends StatelessWidget {
-  const _ResetButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 24.0,
-        right: 24.0,
-        bottom: 24.0,
-      ),
-      child: Center(
-        child: Button(
-          label: 'Od nowa',
-          onPressed: () => _reset(context),
-        ),
-      ),
-    );
-  }
-
-  void _reset(BuildContext context) {
-    context.read<FlashcardsStackBloc>().add(FlashcardsStackEventReset());
-    context.read<LearningProcessBloc>().add(LearningProcessEventReset());
-  }
-}
-
 class _QuestionButton extends StatelessWidget {
-  const _QuestionButton({Key? key}) : super(key: key);
+  final bool isDisabled;
+
+  const _QuestionButton({
+    Key? key,
+    required this.isDisabled,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +44,7 @@ class _QuestionButton extends StatelessWidget {
       child: Center(
         child: Button(
           label: 'Pokaż odpowiedź',
-          onPressed: () => _showAnswer(context),
+          onPressed: isDisabled ? null : () => _showAnswer(context),
         ),
       ),
     );

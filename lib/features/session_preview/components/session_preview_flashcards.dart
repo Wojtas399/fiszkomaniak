@@ -27,6 +27,7 @@ class SessionPreviewFlashcards extends StatelessWidget {
               children: [
                 FlashcardsTypePicker(
                   selectedType: flashcardsType,
+                  availableTypes: state.availableFlashcardsTypes,
                   onTypeChanged: state.mode is SessionPreviewModeQuick
                       ? (FlashcardsType type) => _onFlashcardsTypeChanged(
                             context,

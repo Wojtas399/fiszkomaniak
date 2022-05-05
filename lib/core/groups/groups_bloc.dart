@@ -13,7 +13,7 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
 
   GroupsBloc({
     required GroupsInterface groupsInterface,
-  }) : super(GroupsState()) {
+  }) : super(const GroupsState()) {
     _groupsInterface = groupsInterface;
     on<GroupsEventInitialize>(_initialize);
     on<GroupsEventGroupAdded>(_groupAdded);

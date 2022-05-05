@@ -4,7 +4,6 @@ import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
@@ -13,6 +12,7 @@ import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/session_model.dart';
+import '../../learning_process/learning_process_data.dart';
 
 class SessionPreviewBloc
     extends Bloc<SessionPreviewEvent, SessionPreviewState> {
