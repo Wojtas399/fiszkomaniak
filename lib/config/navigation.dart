@@ -14,6 +14,10 @@ import '../features/home/home.dart';
 import '../features/learning_process/learning_process_data.dart';
 
 class Navigation {
+  void moveBack() {
+    HomeRouter.navigatorKey.currentState?.pop();
+  }
+
   void pushReplacementToHome(BuildContext context) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const Home()),

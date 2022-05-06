@@ -9,10 +9,10 @@ class GroupDbModel extends Equatable {
   final List<FlashcardDbModel> flashcards;
 
   const GroupDbModel({
-    required this.name,
-    required this.courseId,
-    required this.nameForQuestions,
-    required this.nameForAnswers,
+    this.name,
+    this.courseId,
+    this.nameForQuestions,
+    this.nameForAnswers,
     this.flashcards = const [],
   });
 

@@ -27,7 +27,8 @@ class FireSettingsService {
 
   Future<AppearanceSettingsDbModel> loadAppearanceSettings() async {
     try {
-      final settings = await FireReferences.appearanceSettingsRef.get();
+      final settings =
+          await FireReferences.appearanceSettingsRefWithConverter.get();
       final settingsData = settings.data();
       if (settingsData != null) {
         return settingsData;
@@ -41,7 +42,8 @@ class FireSettingsService {
 
   Future<NotificationsSettingsDbModel> loadNotificationsSettings() async {
     try {
-      final settings = await FireReferences.notificationsSettingsRef.get();
+      final settings =
+          await FireReferences.notificationsSettingsRefWithConverter.get();
       final settingsData = settings.data();
       if (settingsData != null) {
         return settingsData;

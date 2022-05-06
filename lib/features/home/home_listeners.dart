@@ -8,6 +8,9 @@ import 'package:fiszkomaniak/core/flashcards/flashcards_status.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
+import 'package:fiszkomaniak/core/user/user_bloc.dart';
+import 'package:fiszkomaniak/core/user/user_state.dart';
+import 'package:fiszkomaniak/core/user/user_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../components/dialogs/dialogs.dart';
@@ -33,6 +36,20 @@ class HomeListeners extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
+        BlocListener<UserBloc, UserState>(
+          listener: (BuildContext context, UserState state) {
+            final UserStatus status = state.status;
+            if (status is UserStatusLoading) {
+              dialogs.showLoadingDialog();
+            } else if (status is UserStatusNewRememberedFlashcardsSaved) {
+              _closeLoadingDialog(context);
+              dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
+            } else if (status is UserStatusError) {
+              _closeLoadingDialog(context);
+              _displayError(status.message);
+            }
+          },
+        ),
         BlocListener<AppearanceSettingsBloc, AppearanceSettingsState>(
           listener: (BuildContext context, AppearanceSettingsState state) {
             final ThemeProvider themeProvider = context.read<ThemeProvider>();

@@ -1,27 +1,41 @@
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/core/user/user_bloc.dart';
+import 'package:fiszkomaniak/core/user/user_event.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_event.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_status.dart';
+import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LearningProcessBloc
     extends Bloc<LearningProcessEvent, LearningProcessState> {
+  late final UserBloc _userBloc;
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
+  late final LearningProcessDialogs _dialogs;
+  late final Navigation _navigation;
 
   LearningProcessBloc({
+    required UserBloc userBloc,
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
+    required LearningProcessDialogs learningProcessDialogs,
+    required Navigation navigation,
   }) : super(const LearningProcessState()) {
+    _userBloc = userBloc;
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
+    _dialogs = learningProcessDialogs;
+    _navigation = navigation;
     on<LearningProcessEventInitialize>(_initialize);
     on<LearningProcessEventRememberedFlashcard>(_rememberedFlashcard);
     on<LearningProcessEventForgottenFlashcard>(_forgottenFlashcard);
     on<LearningProcessEventReset>(_reset);
+    on<LearningProcessEventSave>(_save);
   }
 
   void _initialize(
@@ -108,6 +122,21 @@ class LearningProcessBloc
       amountOfFlashcardsInStack: amountOfFlashcardsInStack,
       status: LearningProcessStatusReset(),
     ));
+  }
+
+  Future<void> _save(
+    LearningProcessEventSave event,
+    Emitter<LearningProcessState> emit,
+  ) async {
+    final bool confirmation = await _dialogs.askForSaveConfirmation();
+    final String? groupId = state.group?.id;
+    if (confirmation && groupId != null) {
+      _userBloc.add(UserEventSaveNewRememberedFlashcards(
+        groupId: groupId,
+        rememberedFlashcardsIndexes: state.indexesOfRememberedFlashcards,
+      ));
+    }
+    _navigation.moveBack();
   }
 
   int _getNewIndexOfDisplayedFlashcard() {

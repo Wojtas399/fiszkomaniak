@@ -9,10 +9,9 @@ class FireFlashcardsService {
     List<FlashcardDbModel> flashcards,
   ) async {
     try {
-      await FireReferences.groupsReference.doc(groupId).update({
-        'flashcards':
-            flashcards.map((flashcard) => flashcard.toJson()).toList(),
-      });
+      await FireReferences.groupsRef.doc(groupId).update(
+            GroupDbModel(flashcards: flashcards).toJson(),
+          );
     } catch (error) {
       rethrow;
     }
@@ -23,19 +22,14 @@ class FireFlashcardsService {
     FlashcardDbModel flashcard,
   ) async {
     try {
-      final group = await FireReferences.groupsReference.doc(groupId).get();
+      final group =
+          await FireReferences.groupsRefWithConverter.doc(groupId).get();
       final List<FlashcardDbModel> flashcardsFromDb =
           group.data()?.flashcards ?? [];
       if (flashcardsFromDb.isNotEmpty) {
-        flashcardsFromDb[flashcard.index] = flashcard;
-        await FireReferences.groupsReference.doc(groupId).update(
-              GroupDbModel(
-                name: null,
-                courseId: null,
-                nameForQuestions: null,
-                nameForAnswers: null,
-                flashcards: flashcardsFromDb,
-              ).toJson(),
+        flashcardsFromDb[flashcard.index] = flashcard.copyWith();
+        await FireReferences.groupsRef.doc(groupId).update(
+              GroupDbModel(flashcards: flashcardsFromDb).toJson(),
             );
       }
     } catch (error) {
@@ -48,7 +42,7 @@ class FireFlashcardsService {
     FlashcardDbModel flashcard,
   ) async {
     try {
-      await FireReferences.groupsReference.doc(groupId).update({
+      await FireReferences.groupsRef.doc(groupId).update({
         'flashcards': FieldValue.arrayRemove([flashcard.toJson()]),
       });
     } catch (error) {

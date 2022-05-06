@@ -29,6 +29,20 @@ class FlashcardDbModel extends Equatable {
     }..removeWhere((key, value) => value == null);
   }
 
+  FlashcardDbModel copyWith({
+    int? index,
+    String? question,
+    String? answer,
+    String? status,
+  }) {
+    return FlashcardDbModel(
+      index: index ?? this.index,
+      question: question ?? this.question,
+      answer: answer ?? this.answer,
+      status: status ?? this.status,
+    );
+  }
+
   @override
   List<Object> get props => [
         index,

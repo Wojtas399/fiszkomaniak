@@ -7,7 +7,7 @@ import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
 
 class FireCoursesService {
   Stream<QuerySnapshot<CourseDbModel>> getCoursesSnapshots() {
-    return FireReferences.coursesRef.snapshots();
+    return FireReferences.coursesRefWithConverter.snapshots();
   }
 
   Future<void> addNewCourse(String name) async {

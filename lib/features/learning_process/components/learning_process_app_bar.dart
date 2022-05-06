@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
+import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_event.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,10 +18,7 @@ class LearningProcessAppBar extends StatelessWidget
     return AppBar(
       leading: CustomIconButton(
         icon: MdiIcons.arrowLeft,
-        onPressed: () {
-          Navigator.pop(context);
-          //TODO
-        },
+        onPressed: () => _save(context),
       ),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -32,6 +30,10 @@ class LearningProcessAppBar extends StatelessWidget
       ),
       actions: const [_DeleteIcon()],
     );
+  }
+
+  void _save(BuildContext context) {
+    context.read<LearningProcessBloc>().add(LearningProcessEventSave());
   }
 }
 

@@ -7,13 +7,13 @@ class FireSessionsService {
   static Future<QuerySnapshot<SessionDbModel>> getSessionsByGroupsIds(
     List<String> groupsIds,
   ) async {
-    return await FireReferences.sessionsRef
+    return await FireReferences.sessionsRefWithConverter
         .where('groupId', whereIn: groupsIds)
         .get();
   }
 
   Stream<QuerySnapshot<SessionDbModel>> getSessionsSnapshots() {
-    return FireReferences.sessionsRef.snapshots();
+    return FireReferences.sessionsRefWithConverter.snapshots();
   }
 
   Future<void> addNewSession(SessionDbModel sessionData) async {

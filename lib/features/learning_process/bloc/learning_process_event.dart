@@ -26,3 +26,5 @@ class LearningProcessEventReset extends LearningProcessEvent {
 
   LearningProcessEventReset({required this.newFlashcardsType});
 }
+
+class LearningProcessEventSave extends LearningProcessEvent {}
