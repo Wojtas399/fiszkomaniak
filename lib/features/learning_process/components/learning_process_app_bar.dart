@@ -20,15 +20,15 @@ class LearningProcessAppBar extends StatelessWidget
         icon: MdiIcons.arrowLeft,
         onPressed: () => _exit(context),
       ),
+      centerTitle: true,
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: const [
           _FlashcardsState(),
           SizedBox(width: 16),
           _Timer(),
         ],
       ),
-      actions: const [_DeleteIcon()],
     );
   }
 
@@ -63,18 +63,6 @@ class _Timer extends StatelessWidget {
         SizedBox(width: 4),
         Text('13:21'),
       ],
-    );
-  }
-}
-
-class _DeleteIcon extends StatelessWidget {
-  const _DeleteIcon({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomIconButton(
-      icon: MdiIcons.delete,
-      onPressed: () {},
     );
   }
 }
