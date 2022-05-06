@@ -3,9 +3,11 @@ import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_blo
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_state.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_status.dart';
+import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
+import '../bloc/learning_process_bloc.dart';
 
 class LearningProcessButtons extends StatelessWidget {
   const LearningProcessButtons({Key? key}) : super(key: key);
@@ -16,22 +18,17 @@ class LearningProcessButtons extends StatelessWidget {
       builder: (_, FlashcardsStackState state) {
         if (state.isPreviewProcess) {
           return const _AnswerButtons();
+        } else if (state.status is FlashcardsStackStatusEnd) {
+          return const _EndSessionButton();
         }
-        return _QuestionButton(
-          isDisabled: state.status is FlashcardsStackStatusEnd,
-        );
+        return const _QuestionButton();
       },
     );
   }
 }
 
 class _QuestionButton extends StatelessWidget {
-  final bool isDisabled;
-
-  const _QuestionButton({
-    Key? key,
-    required this.isDisabled,
-  }) : super(key: key);
+  const _QuestionButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +41,7 @@ class _QuestionButton extends StatelessWidget {
       child: Center(
         child: Button(
           label: 'Pokaż odpowiedź',
-          onPressed: isDisabled ? null : () => _showAnswer(context),
+          onPressed: () => _showAnswer(context),
         ),
       ),
     );
@@ -94,6 +91,31 @@ class _AnswerButtons extends StatelessWidget {
 
   void _moveRight(BuildContext context) {
     context.read<FlashcardsStackBloc>().add(FlashcardsStackEventMoveRight());
+  }
+}
+
+class _EndSessionButton extends StatelessWidget {
+  const _EndSessionButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 24.0,
+        right: 24.0,
+        bottom: 24.0,
+      ),
+      child: Center(
+        child: Button(
+          label: 'Zakończ sesję',
+          onPressed: () => _endSession(context),
+        ),
+      ),
+    );
+  }
+
+  void _endSession(BuildContext context) {
+    context.read<LearningProcessBloc>().add(LearningProcessEventExit());
   }
 }
 

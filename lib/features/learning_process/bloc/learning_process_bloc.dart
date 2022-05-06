@@ -35,7 +35,7 @@ class LearningProcessBloc
     on<LearningProcessEventRememberedFlashcard>(_rememberedFlashcard);
     on<LearningProcessEventForgottenFlashcard>(_forgottenFlashcard);
     on<LearningProcessEventReset>(_reset);
-    on<LearningProcessEventSave>(_save);
+    on<LearningProcessEventExit>(_exit);
   }
 
   void _initialize(
@@ -124,10 +124,15 @@ class LearningProcessBloc
     ));
   }
 
-  Future<void> _save(
-    LearningProcessEventSave event,
+  Future<void> _exit(
+    LearningProcessEventExit event,
     Emitter<LearningProcessState> emit,
   ) async {
+    await _saveFlashcards();
+    _navigation.moveBack();
+  }
+
+  Future<void> _saveFlashcards() async {
     final bool confirmation = await _dialogs.askForSaveConfirmation();
     final String? groupId = state.group?.id;
     if (confirmation && groupId != null) {
@@ -136,7 +141,6 @@ class LearningProcessBloc
         rememberedFlashcardsIndexes: state.indexesOfRememberedFlashcards,
       ));
     }
-    _navigation.moveBack();
   }
 
   int _getNewIndexOfDisplayedFlashcard() {

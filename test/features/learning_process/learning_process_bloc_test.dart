@@ -185,7 +185,7 @@ void main() {
   );
 
   blocTest(
-    'save, confirmed',
+    'exit, save confirmed',
     build: () => bloc,
     setUp: () {
       when(() => learningProcessDialogs.askForSaveConfirmation())
@@ -197,7 +197,7 @@ void main() {
       ));
       bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
       bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 1));
-      bloc.add(LearningProcessEventSave());
+      bloc.add(LearningProcessEventExit());
     },
     verify: (_) {
       verify(() => learningProcessDialogs.askForSaveConfirmation()).called(1);
@@ -212,7 +212,7 @@ void main() {
   );
 
   blocTest(
-    'save, cancelled',
+    'exit, save cancelled',
     build: () => bloc,
     setUp: () {
       when(() => learningProcessDialogs.askForSaveConfirmation())
@@ -224,7 +224,7 @@ void main() {
       ));
       bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
       bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 1));
-      bloc.add(LearningProcessEventSave());
+      bloc.add(LearningProcessEventExit());
     },
     verify: (_) {
       verify(() => learningProcessDialogs.askForSaveConfirmation()).called(1);

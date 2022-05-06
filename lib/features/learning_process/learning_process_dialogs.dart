@@ -6,7 +6,7 @@ class LearningProcessDialogs {
   Future<bool> askForSaveConfirmation() async {
     return await _dialogs.askForConfirmation(
           title: 'Zapisywanie',
-          text: 'Czy chcesz zapisać zmiany przed opuszczeniem sesji?',
+          text: 'Czy chcesz zapisać zmiany przed zakończeniem sesji?',
           confirmButtonText: 'Zapisz',
         ) ==
         true;

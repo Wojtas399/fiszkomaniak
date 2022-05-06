@@ -18,7 +18,7 @@ class LearningProcessAppBar extends StatelessWidget
     return AppBar(
       leading: CustomIconButton(
         icon: MdiIcons.arrowLeft,
-        onPressed: () => _save(context),
+        onPressed: () => _exit(context),
       ),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -32,8 +32,8 @@ class LearningProcessAppBar extends StatelessWidget
     );
   }
 
-  void _save(BuildContext context) {
-    context.read<LearningProcessBloc>().add(LearningProcessEventSave());
+  void _exit(BuildContext context) {
+    context.read<LearningProcessBloc>().add(LearningProcessEventExit());
   }
 }
 
