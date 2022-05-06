@@ -16,14 +16,12 @@ class LearningProcessEndOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LearningProcessBloc, LearningProcessState>(
       builder: (_, LearningProcessState state) {
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(
-              top: 24.0,
-              bottom: 32.0,
-              left: 24.0,
-              right: 24.0,
-            ),
+        return Positioned(
+          top: 0.0,
+          bottom: 48.0,
+          left: 24.0,
+          right: 24.0,
+          child: Center(
             child: state.amountOfRememberedFlashcards == 0 ||
                     state.amountOfRememberedFlashcards ==
                         state.amountOfAllFlashcards

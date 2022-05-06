@@ -19,7 +19,11 @@ class FlashcardsStackNormalCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: Text(text, textAlign: TextAlign.center),
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
         ),
       ),
     );

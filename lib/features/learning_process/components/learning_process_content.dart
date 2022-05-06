@@ -45,11 +45,16 @@ class LearningProcessContent extends StatelessWidget {
                   children: [
                     const LearningProcessHeader(),
                     const SizedBox(height: 16.0),
-                    state.status is FlashcardsStackStatusEnd
-                        ? const LearningProcessEndOptions()
-                        : const LearningProcessFlashcards(),
-                    const SizedBox(height: 8.0),
-                    const LearningProcessProgressBar(),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          const LearningProcessProgressBar(),
+                          state.status is FlashcardsStackStatusEnd
+                              ? const LearningProcessEndOptions()
+                              : const LearningProcessFlashcards(),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 24.0),
                     const LearningProcessButtons(),
                   ],

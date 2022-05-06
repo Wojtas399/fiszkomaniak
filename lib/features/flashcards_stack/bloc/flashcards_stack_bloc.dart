@@ -8,7 +8,7 @@ import 'flashcards_stack_models.dart';
 class FlashcardsStackBloc
     extends Bloc<FlashcardsStackEvent, FlashcardsStackState> {
   final List<double> _scaleSteps = [1.0, 0.98, 0.96, 0.94];
-  final List<double> _bottomSteps = [30.0, 15.0, 0.0, -15.0];
+  final List<double> _bottomSteps = [60.0, 45.0, 30.0, 15.0];
   final List<double> _topSteps = [30.0, 45.0, 60.0, 75.0];
 
   FlashcardsStackBloc() : super(const FlashcardsStackState()) {

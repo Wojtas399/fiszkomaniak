@@ -12,7 +12,11 @@ class LearningProcessFlashcards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Positioned(
+      top: 0.0,
+      bottom: 16.0,
+      left: 0.0,
+      right: 0.0,
       child: Stack(
         children: [
           const _FlashcardTitle(),
