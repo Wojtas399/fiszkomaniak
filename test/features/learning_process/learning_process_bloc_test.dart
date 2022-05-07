@@ -61,15 +61,13 @@ void main() {
     groupId: 'g1',
     flashcardsType: FlashcardsType.all,
     areQuestionsAndAnswersSwapped: true,
+    duration: Duration(minutes: 10),
   );
   final LearningProcessState initialState = LearningProcessState(
-    data: const LearningProcessData(
-      groupId: 'g1',
-      flashcardsType: FlashcardsType.all,
-      areQuestionsAndAnswersSwapped: true,
-    ),
     courseName: coursesState.allCourses[0].name,
     group: groupsState.allGroups[0],
+    duration: const Duration(minutes: 10),
+    areQuestionsAndAnswersSwapped: true,
     status: LearningProcessStatusLoaded(),
     flashcardsType: FlashcardsType.all,
     amountOfFlashcardsInStack: 2,
@@ -182,6 +180,75 @@ void main() {
         status: LearningProcessStatusReset(),
       ),
     ],
+  );
+
+  blocTest(
+    'time finished, continuing confirmed',
+    build: () => bloc,
+    setUp: () {
+      when(() => learningProcessDialogs.askForContinuing())
+          .thenAnswer((_) async => true);
+    },
+    act: (_) {
+      bloc.add(LearningProcessEventInitialize(data: data));
+      bloc.add(LearningProcessEventTimeFinished());
+    },
+    expect: () => [
+      initialState,
+      initialState.copyWith(removedDuration: true),
+    ],
+    verify: (_) {
+      verify(() => learningProcessDialogs.askForContinuing()).called(1);
+    },
+  );
+
+  blocTest(
+    'time finished, continuing cancelled',
+    build: () => bloc,
+    setUp: () {
+      when(() => learningProcessDialogs.askForContinuing())
+          .thenAnswer((_) async => false);
+    },
+    act: (_) {
+      bloc.add(LearningProcessEventInitialize(
+        data: createLearningProcessData(groupId: 'g1'),
+      ));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 1));
+      bloc.add(LearningProcessEventTimeFinished());
+    },
+    verify: (_) {
+      verify(() => learningProcessDialogs.askForContinuing()).called(1);
+      verify(
+        () => userBloc.add(UserEventSaveNewRememberedFlashcards(
+          groupId: 'g1',
+          rememberedFlashcardsIndexes: const [0, 1],
+        )),
+      ).called(1);
+      verify(() => navigation.moveBack()).called(1);
+    },
+  );
+
+  blocTest(
+    'end session',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(LearningProcessEventInitialize(
+        data: createLearningProcessData(groupId: 'g1'),
+      ));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 1));
+      bloc.add(LearningProcessEventEndSession());
+    },
+    verify: (_) {
+      verify(
+        () => userBloc.add(UserEventSaveNewRememberedFlashcards(
+          groupId: 'g1',
+          rememberedFlashcardsIndexes: const [0, 1],
+        )),
+      ).called(1);
+      verify(() => navigation.moveBack()).called(1);
+    },
   );
 
   blocTest(

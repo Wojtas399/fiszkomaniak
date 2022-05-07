@@ -27,4 +27,8 @@ class LearningProcessEventReset extends LearningProcessEvent {
   LearningProcessEventReset({required this.newFlashcardsType});
 }
 
+class LearningProcessEventTimeFinished extends LearningProcessEvent {}
+
+class LearningProcessEventEndSession extends LearningProcessEvent {}
+
 class LearningProcessEventExit extends LearningProcessEvent {}

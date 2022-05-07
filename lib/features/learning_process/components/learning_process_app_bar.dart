@@ -60,7 +60,7 @@ class _Timer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Duration? duration = context.select(
-      (LearningProcessBloc bloc) => bloc.state.data?.duration,
+      (LearningProcessBloc bloc) => bloc.state.duration,
     );
     if (duration == null) {
       return const SizedBox();
@@ -91,10 +91,14 @@ class _TimerListener extends StatelessWidget {
     return BlocListener<TimerBloc, TimerState>(
       listener: (BuildContext context, TimerState state) {
         if (state.status is TimerStatusRunComplete) {
-          //TODO
+          _onTimeFinished(context);
         }
       },
       child: child,
     );
+  }
+
+  void _onTimeFinished(BuildContext context) {
+    context.read<LearningProcessBloc>().add(LearningProcessEventTimeFinished());
   }
 }

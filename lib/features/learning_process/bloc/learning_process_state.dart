@@ -4,13 +4,13 @@ import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import '../../../models/session_model.dart';
 import '../../flashcards_stack/bloc/flashcards_stack_models.dart';
-import '../learning_process_data.dart';
 
 class LearningProcessState extends Equatable {
   final LearningProcessStatus status;
-  final LearningProcessData? data;
   final String courseName;
   final Group? group;
+  final Duration? duration;
+  final bool areQuestionsAndAnswersSwapped;
   final List<int> indexesOfRememberedFlashcards;
   final int indexOfDisplayedFlashcard;
   final FlashcardsType? flashcardsType;
@@ -18,9 +18,10 @@ class LearningProcessState extends Equatable {
 
   const LearningProcessState({
     this.status = const LearningProcessStatusInitial(),
-    this.data,
     this.courseName = '',
     this.group,
+    this.duration,
+    this.areQuestionsAndAnswersSwapped = false,
     this.indexesOfRememberedFlashcards = const [],
     this.indexOfDisplayedFlashcard = 0,
     this.flashcardsType,
@@ -51,7 +52,7 @@ class LearningProcessState extends Equatable {
     if (group == null) {
       return '';
     }
-    return data?.areQuestionsAndAnswersSwapped == true
+    return areQuestionsAndAnswersSwapped
         ? group.nameForAnswers
         : group.nameForQuestions;
   }
@@ -61,26 +62,30 @@ class LearningProcessState extends Equatable {
     if (group == null) {
       return '';
     }
-    return data?.areQuestionsAndAnswersSwapped == true
+    return areQuestionsAndAnswersSwapped
         ? group.nameForQuestions
         : group.nameForAnswers;
   }
 
   LearningProcessState copyWith({
     LearningProcessStatus? status,
-    LearningProcessData? data,
     String? courseName,
     Group? group,
+    Duration? duration,
+    bool? areQuestionsAndAnswersSwapped,
     List<int>? indexesOfRememberedFlashcards,
     int? indexOfDisplayedFlashcard,
     FlashcardsType? flashcardsType,
     int? amountOfFlashcardsInStack,
+    bool removedDuration = false,
   }) {
     return LearningProcessState(
       status: status ?? this.status,
-      data: data ?? this.data,
       courseName: courseName ?? this.courseName,
       group: group ?? this.group,
+      duration: removedDuration ? null : duration ?? this.duration,
+      areQuestionsAndAnswersSwapped:
+          areQuestionsAndAnswersSwapped ?? this.areQuestionsAndAnswersSwapped,
       indexesOfRememberedFlashcards:
           indexesOfRememberedFlashcards ?? this.indexesOfRememberedFlashcards,
       indexOfDisplayedFlashcard:
@@ -107,10 +112,10 @@ class LearningProcessState extends Equatable {
         .map(
           (flashcard) => FlashcardInfo(
             index: flashcard.index,
-            question: data?.areQuestionsAndAnswersSwapped == true
+            question: areQuestionsAndAnswersSwapped
                 ? flashcard.answer
                 : flashcard.question,
-            answer: data?.areQuestionsAndAnswersSwapped == true
+            answer: areQuestionsAndAnswersSwapped
                 ? flashcard.question
                 : flashcard.answer,
           ),
@@ -149,9 +154,10 @@ class LearningProcessState extends Equatable {
   @override
   List<Object> get props => [
         status,
-        data ?? '',
         courseName,
         group ?? '',
+        duration ?? '',
+        areQuestionsAndAnswersSwapped,
         indexesOfRememberedFlashcards,
         indexOfDisplayedFlashcard,
         flashcardsType ?? '',

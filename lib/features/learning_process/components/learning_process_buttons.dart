@@ -115,7 +115,7 @@ class _EndSessionButton extends StatelessWidget {
   }
 
   void _endSession(BuildContext context) {
-    context.read<LearningProcessBloc>().add(LearningProcessEventExit());
+    context.read<LearningProcessBloc>().add(LearningProcessEventEndSession());
   }
 }
 

@@ -35,6 +35,8 @@ class LearningProcessBloc
     on<LearningProcessEventRememberedFlashcard>(_rememberedFlashcard);
     on<LearningProcessEventForgottenFlashcard>(_forgottenFlashcard);
     on<LearningProcessEventReset>(_reset);
+    on<LearningProcessEventTimeFinished>(_timeFinished);
+    on<LearningProcessEventEndSession>(_endSession);
     on<LearningProcessEventExit>(_exit);
   }
 
@@ -56,9 +58,10 @@ class LearningProcessBloc
           )
           .length;
       emit(state.copyWith(
-        data: event.data,
         courseName: courseName,
         group: group,
+        duration: event.data.duration,
+        areQuestionsAndAnswersSwapped: event.data.areQuestionsAndAnswersSwapped,
         flashcardsType: event.data.flashcardsType,
         amountOfFlashcardsInStack: amountOfFlashcardsInStack,
         status: LearningProcessStatusLoaded(),
@@ -124,18 +127,41 @@ class LearningProcessBloc
     ));
   }
 
-  Future<void> _exit(
-    LearningProcessEventExit event,
+  Future<void> _timeFinished(
+    LearningProcessEventTimeFinished event,
+    Emitter<LearningProcessState> emit,
+  ) async {
+    final bool decision = await _dialogs.askForContinuing();
+    if (decision) {
+      emit(state.copyWith(removedDuration: true));
+    } else {
+      await _saveFlashcards();
+      _navigation.moveBack();
+    }
+  }
+
+  Future<void> _endSession(
+    LearningProcessEventEndSession event,
     Emitter<LearningProcessState> emit,
   ) async {
     await _saveFlashcards();
     _navigation.moveBack();
   }
 
-  Future<void> _saveFlashcards() async {
+  Future<void> _exit(
+    LearningProcessEventExit event,
+    Emitter<LearningProcessState> emit,
+  ) async {
     final bool confirmation = await _dialogs.askForSaveConfirmation();
+    if (confirmation) {
+      await _saveFlashcards();
+    }
+    _navigation.moveBack();
+  }
+
+  Future<void> _saveFlashcards() async {
     final String? groupId = state.group?.id;
-    if (confirmation && groupId != null) {
+    if (groupId != null) {
       _userBloc.add(UserEventSaveNewRememberedFlashcards(
         groupId: groupId,
         rememberedFlashcardsIndexes: state.indexesOfRememberedFlashcards,
