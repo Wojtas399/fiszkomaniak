@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_state.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_status.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
@@ -32,35 +31,31 @@ class _FlashcardTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LearningProcessBloc, LearningProcessState>(
-      builder: (_, LearningProcessState learningProcessState) {
-        return BlocBuilder<FlashcardsStackBloc, FlashcardsStackState>(
-          builder: (_, FlashcardsStackState flashcardsStackState) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Row(
-                children: [
-                  Text(
-                    _getQuestionOrAnswerText(flashcardsStackState.status),
-                    style: Theme.of(context).textTheme.subtitle1,
-                  ),
-                  const SizedBox(width: 4.0),
-                  Text(
-                    '(${_getQuestionOrAnswerName(
-                      flashcardsStackState.status,
-                      learningProcessState.nameForQuestions,
-                      learningProcessState.nameForAnswers,
-                    )})',
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.6),
-                    ),
-                  )
-                ],
-              ),
-            );
-          },
-        );
-      },
+    return Positioned(
+      left: 24.0,
+      right: 24.0,
+      child: Row(
+        children: const [
+          _Side(),
+          SizedBox(width: 4.0),
+          Expanded(child: _SideName()),
+        ],
+      ),
+    );
+  }
+}
+
+class _Side extends StatelessWidget {
+  const _Side({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final FlashcardsStackStatus status = context.select(
+      (FlashcardsStackBloc bloc) => bloc.state.status,
+    );
+    return Text(
+      _getQuestionOrAnswerText(status),
+      style: Theme.of(context).textTheme.subtitle1,
     );
   }
 
@@ -70,6 +65,36 @@ class _FlashcardTitle extends StatelessWidget {
       return 'Odpowiedź';
     }
     return 'Pytanie';
+  }
+}
+
+class _SideName extends StatelessWidget {
+  const _SideName({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LearningProcessBloc, LearningProcessState>(
+      builder: (
+        BuildContext context,
+        LearningProcessState learningProcessState,
+      ) {
+        final FlashcardsStackStatus flashcardsStackStatus = context.select(
+          (FlashcardsStackBloc bloc) => bloc.state.status,
+        );
+        return Text(
+          '(${_getQuestionOrAnswerName(
+            flashcardsStackStatus,
+            learningProcessState.nameForQuestions,
+            learningProcessState.nameForAnswers,
+          )})',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Colors.black.withOpacity(0.6),
+          ),
+        );
+      },
+    );
   }
 
   String _getQuestionOrAnswerName(

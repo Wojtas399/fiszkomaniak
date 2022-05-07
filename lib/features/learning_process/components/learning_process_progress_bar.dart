@@ -9,20 +9,29 @@ class LearningProcessProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return const Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.0),
+        child: _ProgressBar(),
+      ),
+    );
+  }
+}
+
+class _ProgressBar extends StatelessWidget {
+  const _ProgressBar({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<LearningProcessBloc, LearningProcessState>(
-      builder: (BuildContext context, LearningProcessState state) {
-        return Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: FlashcardsProgressBar(
-              amountOfRememberedFlashcards: state.amountOfRememberedFlashcards,
-              amountOfAllFlashcards: state.amountOfAllFlashcards,
-              barHeight: 16,
-            ),
-          ),
+      builder: (_, LearningProcessState state) {
+        return FlashcardsProgressBar(
+          amountOfRememberedFlashcards: state.amountOfRememberedFlashcards,
+          amountOfAllFlashcards: state.amountOfAllFlashcards,
+          barHeight: 16,
         );
       },
     );

@@ -14,22 +14,22 @@ class LearningProcessEndOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LearningProcessBloc, LearningProcessState>(
-      builder: (_, LearningProcessState state) {
-        return Positioned(
-          top: 0.0,
-          bottom: 48.0,
-          left: 24.0,
-          right: 24.0,
-          child: Center(
-            child: state.amountOfRememberedFlashcards == 0 ||
+    return Positioned(
+      top: 0.0,
+      bottom: 48.0,
+      left: 24.0,
+      right: 24.0,
+      child: Center(
+        child: BlocBuilder<LearningProcessBloc, LearningProcessState>(
+          builder: (_, LearningProcessState state) {
+            return state.amountOfRememberedFlashcards == 0 ||
                     state.amountOfRememberedFlashcards ==
                         state.amountOfAllFlashcards
                 ? const _ResetButton()
-                : const _FlashcardsTypeOptions(),
-          ),
-        );
-      },
+                : const _FlashcardsTypeOptions();
+          },
+        ),
+      ),
     );
   }
 }

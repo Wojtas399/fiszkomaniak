@@ -1,8 +1,5 @@
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_state.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/components/flashcards_stack_bloc_provider.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_event.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_status.dart';
 import 'package:fiszkomaniak/features/learning_process/components/learning_process_buttons.dart';
@@ -20,47 +17,31 @@ class LearningProcessContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlashcardsStackBlocProvider(
+    return SafeArea(
       child: BlocBuilder<LearningProcessBloc, LearningProcessState>(
-        builder: (BuildContext context, LearningProcessState state) {
+        builder: (_, LearningProcessState state) {
           _updateFlashcardsStackStateAsNeeded(context, state);
           if (state.flashcards.isEmpty) {
             return const Center(
               child: Text('There is no flashcards'),
             );
           }
-          return BlocConsumer<FlashcardsStackBloc, FlashcardsStackState>(
-            listener: (BuildContext context, FlashcardsStackState state) {
-              final FlashcardsStackStatus status = state.status;
-              if (status is FlashcardsStackStatusMovedLeft) {
-                _forgottenFlashcard(context, status.flashcardIndex);
-              } else if (status is FlashcardsStackStatusMovedRight) {
-                _rememberedFlashcard(context, status.flashcardIndex);
-              }
-            },
-            builder: (_, FlashcardsStackState state) {
-              return SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const LearningProcessHeader(),
-                    const SizedBox(height: 16.0),
-                    Expanded(
-                      child: Stack(
-                        children: [
-                          const LearningProcessProgressBar(),
-                          state.status is FlashcardsStackStatusEnd
-                              ? const LearningProcessEndOptions()
-                              : const LearningProcessFlashcards(),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24.0),
-                    const LearningProcessButtons(),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const LearningProcessHeader(),
+              const SizedBox(height: 16.0),
+              Expanded(
+                child: Stack(
+                  children: const [
+                    LearningProcessProgressBar(),
+                    _FlashcardsStack(),
                   ],
                 ),
-              );
-            },
+              ),
+              const SizedBox(height: 24.0),
+              const LearningProcessButtons(),
+            ],
           );
         },
       ),
@@ -78,20 +59,18 @@ class LearningProcessContent extends StatelessWidget {
           ));
     }
   }
+}
 
-  void _forgottenFlashcard(BuildContext context, int flashcardIndex) {
-    context
-        .read<LearningProcessBloc>()
-        .add(LearningProcessEventForgottenFlashcard(
-          flashcardIndex: flashcardIndex,
-        ));
-  }
+class _FlashcardsStack extends StatelessWidget {
+  const _FlashcardsStack({Key? key}) : super(key: key);
 
-  void _rememberedFlashcard(BuildContext context, int flashcardIndex) {
-    context
-        .read<LearningProcessBloc>()
-        .add(LearningProcessEventRememberedFlashcard(
-          flashcardIndex: flashcardIndex,
-        ));
+  @override
+  Widget build(BuildContext context) {
+    final FlashcardsStackStatus status = context.select(
+      (FlashcardsStackBloc bloc) => bloc.state.status,
+    );
+    return status is FlashcardsStackStatusEnd
+        ? const LearningProcessEndOptions()
+        : const LearningProcessFlashcards();
   }
 }
