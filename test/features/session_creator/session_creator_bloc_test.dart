@@ -62,7 +62,7 @@ void main() {
     areQuestionsAndAnswersSwapped: true,
     date: DateTime(2022, 1, 1),
     time: const TimeOfDay(hour: 20, minute: 00),
-    duration: const TimeOfDay(hour: 0, minute: 30),
+    duration: const Duration(minutes: 30),
     notificationTime: const TimeOfDay(hour: 10, minute: 0),
   );
   final SessionCreatorState initialEditModeState = SessionCreatorState(
@@ -321,11 +321,11 @@ void main() {
     'duration selected',
     build: () => bloc,
     act: (_) => bloc.add(SessionCreatorEventDurationSelected(
-      duration: const TimeOfDay(hour: 0, minute: 30),
+      duration: const Duration(minutes: 30),
     )),
     expect: () => [
       const SessionCreatorState(
-        duration: TimeOfDay(hour: 0, minute: 30),
+        duration: Duration(minutes: 30),
       ),
     ],
   );
@@ -411,12 +411,12 @@ void main() {
     build: () => bloc,
     act: (_) {
       bloc.add(SessionCreatorEventDurationSelected(
-        duration: const TimeOfDay(hour: 0, minute: 30),
+        duration: const Duration(minutes: 30),
       ));
       bloc.add(SessionCreatorEventCleanDurationTime());
     },
     expect: () => [
-      const SessionCreatorState(duration: TimeOfDay(hour: 0, minute: 30)),
+      const SessionCreatorState(duration: Duration(minutes: 30)),
       const SessionCreatorState(duration: null),
     ],
   );
@@ -445,7 +445,7 @@ void main() {
       areQuestionsAndAnswersSwapped: false,
       date: DateTime.now(),
       time: TimeOfDay.now(),
-      duration: const TimeOfDay(hour: 0, minute: 30),
+      duration: const Duration(minutes: 30),
       notificationTime: TimeOfDay.now(),
     );
 

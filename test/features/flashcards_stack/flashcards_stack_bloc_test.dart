@@ -26,7 +26,7 @@ void main() {
         left: 24.0,
         right: 24.0,
         top: 30.0,
-        bottom: 30.0,
+        bottom: 60.0,
       ),
       flashcard: flashcards[0],
     ),
@@ -38,7 +38,7 @@ void main() {
         left: 24.0,
         right: 24.0,
         top: 45.0,
-        bottom: 15.0,
+        bottom: 45.0,
       ),
       flashcard: flashcards[1],
     ),
@@ -50,7 +50,7 @@ void main() {
         left: 24.0,
         right: 24.0,
         top: 60.0,
-        bottom: 0.0,
+        bottom: 30.0,
       ),
       flashcard: flashcards[2],
     ),
@@ -62,7 +62,7 @@ void main() {
         left: 24.0,
         right: 24.0,
         top: 75.0,
-        bottom: -15.0,
+        bottom: 15.0,
       ),
       flashcard: flashcards[3],
     ),
@@ -74,7 +74,7 @@ void main() {
         left: 424.0,
         right: -376.0,
         top: 30.0,
-        bottom: 30.0,
+        bottom: 60.0,
       ),
       flashcard: flashcards[4],
     ),
@@ -148,14 +148,14 @@ void main() {
             scale: 1.0,
             position: initialElements[1].position.copyWith(
                   top: 30.0,
-                  bottom: 30.0,
+                  bottom: 60.0,
                 ),
           ),
           initialElements[2].copyWith(
             scale: 0.98,
             position: initialElements[2].position.copyWith(
                   top: 45.0,
-                  bottom: 15.0,
+                  bottom: 45.0,
                 ),
           ),
           initialElements[3].copyWith(
@@ -163,7 +163,7 @@ void main() {
             scale: 0.96,
             position: initialElements[3].position.copyWith(
                   top: 60.0,
-                  bottom: 0.0,
+                  bottom: 30.0,
                 ),
           ),
           initialElements[4].copyWith(
@@ -173,7 +173,7 @@ void main() {
                   left: 24.0,
                   right: 24.0,
                   top: 75.0,
-                  bottom: -15.0,
+                  bottom: 15.0,
                 ),
           ),
         ],
@@ -210,14 +210,14 @@ void main() {
             scale: 1.0,
             position: initialElements[1].position.copyWith(
                   top: 30.0,
-                  bottom: 30.0,
+                  bottom: 60.0,
                 ),
           ),
           initialElements[2].copyWith(
             scale: 0.98,
             position: initialElements[2].position.copyWith(
                   top: 45.0,
-                  bottom: 15.0,
+                  bottom: 45.0,
                 ),
           ),
           initialElements[3].copyWith(
@@ -225,7 +225,7 @@ void main() {
             scale: 0.96,
             position: initialElements[3].position.copyWith(
                   top: 60.0,
-                  bottom: 0.0,
+                  bottom: 30.0,
                 ),
           ),
           initialElements[4].copyWith(
@@ -235,7 +235,7 @@ void main() {
                   left: 24.0,
                   right: 24.0,
                   top: 75.0,
-                  bottom: -15.0,
+                  bottom: 15.0,
                 ),
           ),
         ],
@@ -319,14 +319,14 @@ void main() {
             scale: 1.0,
             position: initialElements[1].position.copyWith(
                   top: 30.0,
-                  bottom: 30.0,
+                  bottom: 60.0,
                 ),
           ),
           initialElements[2].copyWith(
             scale: 0.98,
             position: initialElements[2].position.copyWith(
                   top: 45.0,
-                  bottom: 15.0,
+                  bottom: 45.0,
                 ),
           ),
           initialElements[3].copyWith(
@@ -334,7 +334,7 @@ void main() {
             scale: 0.96,
             position: initialElements[3].position.copyWith(
                   top: 60.0,
-                  bottom: 0.0,
+                  bottom: 30.0,
                 ),
           ),
           initialElements[4].copyWith(
@@ -344,7 +344,7 @@ void main() {
                   left: 24.0,
                   right: 24.0,
                   top: 75.0,
-                  bottom: -15.0,
+                  bottom: 15.0,
                 ),
           ),
         ],
@@ -360,14 +360,14 @@ void main() {
             scale: 1.0,
             position: initialElements[1].position.copyWith(
                   top: 30.0,
-                  bottom: 30.0,
+                  bottom: 60.0,
                 ),
           ),
           initialElements[2].copyWith(
             scale: 0.98,
             position: initialElements[2].position.copyWith(
                   top: 45.0,
-                  bottom: 15.0,
+                  bottom: 45.0,
                 ),
           ),
           initialElements[3].copyWith(
@@ -375,7 +375,7 @@ void main() {
             scale: 0.96,
             position: initialElements[3].position.copyWith(
                   top: 60.0,
-                  bottom: 0.0,
+                  bottom: 30.0,
                 ),
           ),
           initialElements[4].copyWith(
@@ -385,7 +385,7 @@ void main() {
                   left: 24.0,
                   right: 24.0,
                   top: 75.0,
-                  bottom: -15.0,
+                  bottom: 15.0,
                 ),
           ),
           initialElements[0].copyWith(
@@ -429,14 +429,14 @@ void main() {
             scale: 1.0,
             position: initialElements[1].position.copyWith(
                   top: 30.0,
-                  bottom: 30.0,
+                  bottom: 60.0,
                 ),
           ),
           initialElements[2].copyWith(
             scale: 0.98,
             position: initialElements[2].position.copyWith(
                   top: 45.0,
-                  bottom: 15.0,
+                  bottom: 45.0,
                 ),
           ),
           initialElements[3].copyWith(
@@ -444,7 +444,7 @@ void main() {
             scale: 0.96,
             position: initialElements[3].position.copyWith(
                   top: 60.0,
-                  bottom: 0.0,
+                  bottom: 30.0,
                 ),
           ),
           initialElements[4].copyWith(
@@ -454,7 +454,7 @@ void main() {
                   left: 24.0,
                   right: 24.0,
                   top: 75.0,
-                  bottom: -15.0,
+                  bottom: 15.0,
                 ),
           ),
         ],
@@ -528,7 +528,7 @@ void main() {
             scale: 1.0,
             position: initialElements[1].position.copyWith(
                   top: 30.0,
-                  bottom: 30.0,
+                  bottom: 60.0,
                 ),
           ),
         ],

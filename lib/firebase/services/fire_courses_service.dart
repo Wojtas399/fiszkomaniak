@@ -12,7 +12,9 @@ class FireCoursesService {
 
   Future<void> addNewCourse(String name) async {
     try {
-      await FireReferences.coursesRef.add(CourseDbModel(name: name));
+      await FireReferences.coursesRefWithConverter.add(
+        CourseDbModel(name: name),
+      );
     } catch (error) {
       rethrow;
     }
@@ -23,7 +25,7 @@ class FireCoursesService {
     required String newName,
   }) async {
     try {
-      await FireReferences.coursesRef
+      await FireReferences.coursesRefWithConverter
           .doc(courseId)
           .update(CourseDbModel(name: newName).toJson());
     } catch (error) {
@@ -34,7 +36,8 @@ class FireCoursesService {
   Future<void> removeCourse(String courseId) async {
     try {
       final batch = FireInstances.firestore.batch();
-      final course = await FireReferences.coursesRef.doc(courseId).get();
+      final course =
+          await FireReferences.coursesRefWithConverter.doc(courseId).get();
       final groupsFromCourse = await FireGroupsService.getGroupsFromCourse(
         courseId,
       );

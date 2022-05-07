@@ -39,7 +39,7 @@ class SessionsRepository implements SessionsInterface {
       areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
       date: FireConverters.convertDateTimeToString(session.date),
       time: FireConverters.convertTimeOfDayToString(session.time),
-      duration: FireConverters.convertTimeOfDayToString(session.duration),
+      duration: FireConverters.convertDurationToString(session.duration),
       notificationTime:
           FireConverters.convertTimeOfDayToString(session.notificationTime),
     ));
@@ -53,7 +53,7 @@ class SessionsRepository implements SessionsInterface {
     bool? areQuestionsAndAnswersSwapped,
     DateTime? date,
     TimeOfDay? time,
-    TimeOfDay? duration,
+    Duration? duration,
     TimeOfDay? notificationTime,
   }) async {
     await _fireSessionsService.updateSession(
@@ -69,7 +69,7 @@ class SessionsRepository implements SessionsInterface {
               ? FireConverters.convertDateTimeToString(date)
               : null,
           time: FireConverters.convertTimeOfDayToString(time),
-          duration: FireConverters.convertTimeOfDayToString(duration),
+          duration: FireConverters.convertDurationToString(duration),
           notificationTime: FireConverters.convertTimeOfDayToString(
             notificationTime,
           ),
@@ -95,8 +95,8 @@ class SessionsRepository implements SessionsInterface {
     final String? date = docData?.date;
     final TimeOfDay? time =
         FireConverters.convertStringToTimeOfDay(docData?.time);
-    final TimeOfDay? duration =
-        FireConverters.convertStringToTimeOfDay(docData?.duration);
+    final Duration? duration =
+        FireConverters.convertStringToDuration(docData?.duration);
     final TimeOfDay? notificationTime =
         FireConverters.convertStringToTimeOfDay(docData?.notificationTime);
     if (groupId != null &&

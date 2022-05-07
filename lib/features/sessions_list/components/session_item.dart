@@ -101,7 +101,7 @@ class _Title extends StatelessWidget {
 
 class _TimeAndDuration extends StatelessWidget {
   final TimeOfDay time;
-  final TimeOfDay? duration;
+  final Duration? duration;
 
   const _TimeAndDuration({
     Key? key,
@@ -112,7 +112,7 @@ class _TimeAndDuration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String timeAsString = convertTimeToViewFormat(time);
-    final String durationAsString = convertTimeToDurationViewFormat(duration);
+    final String durationAsString = convertDurationToViewFormat(duration);
     return IntrinsicHeight(
       child: Row(
         children: [

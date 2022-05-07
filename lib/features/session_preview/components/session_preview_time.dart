@@ -33,8 +33,11 @@ class SessionPreviewTime extends StatelessWidget {
                 TimePicker(
                   icon: MdiIcons.clockOutline,
                   label: 'Czas trwania',
-                  value: convertTimeToDurationViewFormat(state.duration),
-                  initialTime: state.duration,
+                  value: convertDurationToViewFormat(state.duration),
+                  initialTime: TimeOfDay(
+                    hour: state.duration?.inHours ?? 0,
+                    minute: state.duration?.inMinutes.remainder(60) ?? 0,
+                  ),
                   paddingLeft: 8.0,
                   paddingRight: 8.0,
                   onSelect: state.mode is SessionPreviewModeQuick
@@ -74,9 +77,11 @@ class SessionPreviewTime extends StatelessWidget {
   }
 
   void _durationChanged(BuildContext context, TimeOfDay value) {
-    context
-        .read<SessionPreviewBloc>()
-        .add(SessionPreviewEventDurationChanged(duration: value));
+    context.read<SessionPreviewBloc>().add(
+          SessionPreviewEventDurationChanged(
+            duration: Duration(hours: value.hour, minutes: value.minute),
+          ),
+        );
   }
 
   void _cleanDuration(BuildContext context) {

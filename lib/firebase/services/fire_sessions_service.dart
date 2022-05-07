@@ -17,18 +17,18 @@ class FireSessionsService {
   }
 
   Future<void> addNewSession(SessionDbModel sessionData) async {
-    await FireReferences.sessionsRef.add(sessionData);
+    await FireReferences.sessionsRefWithConverter.add(sessionData);
   }
 
   Future<void> updateSession(FireDoc<SessionDbModel> sessionData) async {
-    await FireReferences.sessionsRef.doc(sessionData.id).update(
+    await FireReferences.sessionsRefWithConverter.doc(sessionData.id).update(
           sessionData.doc.toJson(),
         );
   }
 
   Future<void> removeSession(String sessionId) async {
     try {
-      await FireReferences.sessionsRef.doc(sessionId).delete();
+      await FireReferences.sessionsRefWithConverter.doc(sessionId).delete();
     } catch (error) {
       rethrow;
     }

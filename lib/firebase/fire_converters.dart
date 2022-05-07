@@ -79,6 +79,27 @@ class FireConverters {
     return TimeOfDay(hour: hours, minute: minutes);
   }
 
+  static String? convertDurationToString(Duration? duration) {
+    if (duration == null) {
+      return null;
+    }
+    final String hours = convertNumberToDateTimeString(duration.inHours);
+    final String minutes = convertNumberToDateTimeString(
+      duration.inMinutes.remainder(60),
+    );
+    return '$hours:$minutes';
+  }
+
+  static Duration? convertStringToDuration(String? duration) {
+    if (duration == null) {
+      return null;
+    }
+    final List<String> splitByDoubleDot = duration.split(':');
+    final int minutes = int.parse(splitByDoubleDot[1]);
+    final int hours = int.parse(splitByDoubleDot[0]);
+    return Duration(hours: hours, minutes: minutes);
+  }
+
   static String convertNumberToDateTimeString(int number) {
     return number < 10 ? '0$number' : '$number';
   }

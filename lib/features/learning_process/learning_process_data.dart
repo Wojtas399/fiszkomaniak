@@ -1,11 +1,10 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import '../../models/session_model.dart';
 
 class LearningProcessData extends Equatable {
   final String? sessionId;
   final String groupId;
-  final TimeOfDay? duration;
+  final Duration? duration;
   final FlashcardsType flashcardsType;
   final bool areQuestionsAndAnswersSwapped;
 
@@ -30,7 +29,7 @@ class LearningProcessData extends Equatable {
 LearningProcessData createLearningProcessData({
   String? sessionId,
   String? groupId,
-  TimeOfDay? duration,
+  Duration? duration,
   FlashcardsType? flashcardsType,
   bool? areQuestionsAndAnswersSwapped,
 }) {

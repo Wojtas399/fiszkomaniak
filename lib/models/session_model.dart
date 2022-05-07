@@ -8,7 +8,7 @@ class Session extends Equatable {
   final bool areQuestionsAndAnswersSwapped;
   final DateTime date;
   final TimeOfDay time;
-  final TimeOfDay? duration;
+  final Duration? duration;
   final TimeOfDay? notificationTime;
 
   const Session({
@@ -48,7 +48,7 @@ Session createSession({
   bool? areQuestionsAndAnswersSwapped,
   DateTime? date,
   TimeOfDay? time,
-  TimeOfDay? duration,
+  Duration? duration,
   TimeOfDay? notificationTime,
 }) {
   return Session(

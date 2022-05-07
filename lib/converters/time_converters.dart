@@ -9,13 +9,13 @@ String convertTimeToViewFormat(TimeOfDay? time) {
   return '$hours:$minutes';
 }
 
-String convertTimeToDurationViewFormat(TimeOfDay? time) {
-  if (time == null) {
+String convertDurationToViewFormat(Duration? duration) {
+  if (duration == null) {
     return '--';
   }
-  String convertedTime = '${time.minute}min';
-  if (time.hour > 0) {
-    return '${time.hour}godz ' + convertedTime;
+  String convertedTime = '${duration.inMinutes.remainder(60)}min';
+  if (duration.inHours > 0) {
+    return '${duration.inHours}godz ' + convertedTime;
   }
   return convertedTime;
 }

@@ -43,7 +43,7 @@ class SessionCreatorEventTimeSelected extends SessionCreatorEvent {
 }
 
 class SessionCreatorEventDurationSelected extends SessionCreatorEvent {
-  final TimeOfDay duration;
+  final Duration duration;
 
   SessionCreatorEventDurationSelected({required this.duration});
 }

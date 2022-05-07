@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
-import 'package:flutter/material.dart';
 import '../../../models/group_model.dart';
 import '../../../utils/group_utils.dart';
 
@@ -10,7 +9,7 @@ class SessionPreviewState extends Equatable {
   final Session? session;
   final Group? group;
   final String? courseName;
-  final TimeOfDay? duration;
+  final Duration? duration;
   final FlashcardsType flashcardsType;
   final bool areQuestionsAndAnswersSwapped;
 
@@ -54,7 +53,7 @@ class SessionPreviewState extends Equatable {
     Session? session,
     Group? group,
     String? courseName,
-    TimeOfDay? duration,
+    Duration? duration,
     FlashcardsType? flashcardsType,
     bool? areQuestionsAndAnswersSwapped,
   }) {

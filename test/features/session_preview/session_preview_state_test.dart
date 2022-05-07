@@ -70,7 +70,7 @@ void main() {
   });
 
   test('copy with duration', () {
-    const TimeOfDay duration = TimeOfDay(hour: 0, minute: 30);
+    const Duration duration = Duration(minutes: 30);
 
     final SessionPreviewState state2 = state.copyWith(duration: duration);
     final SessionPreviewState state3 = state2.copyWith();

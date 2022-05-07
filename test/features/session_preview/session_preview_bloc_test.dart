@@ -45,7 +45,7 @@ void main() {
         id: 's1',
         groupId: 'g1',
         time: const TimeOfDay(hour: 12, minute: 30),
-        duration: const TimeOfDay(hour: 0, minute: 25),
+        duration: const Duration(minutes: 25),
         notificationTime: const TimeOfDay(hour: 8, minute: 0),
       ),
       createSession(id: 's2', groupId: 'g2'),
@@ -134,13 +134,13 @@ void main() {
     act: (_) {
       bloc.add(SessionPreviewEventInitialize(mode: mode));
       bloc.add(SessionPreviewEventDurationChanged(
-        duration: const TimeOfDay(hour: 1, minute: 0),
+        duration: const Duration(hours: 1),
       ));
     },
     expect: () => [
       initialState,
       initialState.copyWith(
-        duration: const TimeOfDay(hour: 1, minute: 0),
+        duration: const Duration(hours: 1),
       ),
     ],
   );

@@ -125,7 +125,7 @@ void main() {
   });
 
   test('copy with duration', () {
-    const TimeOfDay duration = TimeOfDay(hour: 0, minute: 30);
+    const Duration duration = Duration(minutes: 30);
 
     final SessionCreatorState state2 = state.copyWith(duration: duration);
     final SessionCreatorState state3 = state2.copyWith();
@@ -159,7 +159,7 @@ void main() {
   });
 
   test('reset duration', () {
-    const TimeOfDay duration = TimeOfDay(hour: 0, minute: 30);
+    const Duration duration = Duration(minutes: 30);
 
     final SessionCreatorState state2 = state.copyWith(duration: duration);
     final SessionCreatorState state3 = state2.reset(duration: true);
@@ -223,7 +223,7 @@ void main() {
     final Group selectedGroup = groups[0];
     final DateTime date = DateTime(2022);
     const TimeOfDay time = TimeOfDay(hour: 18, minute: 0);
-    const TimeOfDay duration = TimeOfDay(hour: 0, minute: 30);
+    const Duration duration = Duration(minutes: 30);
 
     test('selected course as null', () {
       state = state.copyWith(

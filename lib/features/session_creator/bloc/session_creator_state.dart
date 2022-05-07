@@ -16,7 +16,7 @@ class SessionCreatorState extends Equatable {
   final bool areQuestionsAndAnswersSwapped;
   final DateTime? date;
   final TimeOfDay? time;
-  final TimeOfDay? duration;
+  final Duration? duration;
   final TimeOfDay? notificationTime;
 
   String? get nameForQuestions => areQuestionsAndAnswersSwapped
@@ -62,7 +62,7 @@ class SessionCreatorState extends Equatable {
     bool? areQuestionsAndAnswersSwapped,
     DateTime? date,
     TimeOfDay? time,
-    TimeOfDay? duration,
+    Duration? duration,
     TimeOfDay? notificationTime,
   }) {
     return SessionCreatorState(

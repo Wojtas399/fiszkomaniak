@@ -9,7 +9,7 @@ class FireFlashcardsService {
     List<FlashcardDbModel> flashcards,
   ) async {
     try {
-      await FireReferences.groupsRef.doc(groupId).update(
+      await FireReferences.groupsRefWithConverter.doc(groupId).update(
             GroupDbModel(flashcards: flashcards).toJson(),
           );
     } catch (error) {
@@ -42,7 +42,7 @@ class FireFlashcardsService {
     FlashcardDbModel flashcard,
   ) async {
     try {
-      await FireReferences.groupsRef.doc(groupId).update({
+      await FireReferences.groupsRefWithConverter.doc(groupId).update({
         'flashcards': FieldValue.arrayRemove([flashcard.toJson()]),
       });
     } catch (error) {
