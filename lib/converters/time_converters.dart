@@ -14,9 +14,14 @@ String convertDurationToViewFormat(Duration? duration) {
   if (duration == null) {
     return '--';
   }
-  String convertedTime = '${duration.inMinutes.remainder(60)}min';
-  if (duration.inHours > 0) {
-    return '${duration.inHours}godz ' + convertedTime;
+  final int hours = duration.inHours;
+  final int minutes = duration.inMinutes.remainder(60);
+  final String convertedMinutes = '${minutes}min';
+  final String convertedHours = '${hours}godz';
+  if (hours > 0 && minutes == 0) {
+    return convertedHours;
+  } else if (minutes > 0 && hours == 0) {
+    return convertedMinutes;
   }
-  return convertedTime;
+  return '$convertedHours $convertedMinutes';
 }

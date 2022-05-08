@@ -17,10 +17,10 @@ class FireReferences {
       loggedUserRef.collection('Settings');
 
   static DocumentReference get appearanceSettingsRef =>
-      sessionsRef.doc('Appearance');
+      settingsRef.doc('Appearance');
 
   static DocumentReference get notificationsSettingsRef =>
-      sessionsRef.doc('Notifications');
+      settingsRef.doc('Notifications');
 
   static CollectionReference get coursesRef =>
       loggedUserRef.collection('Courses');

@@ -1,9 +1,9 @@
 import 'package:fiszkomaniak/components/card_item.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/converters/date_converters.dart';
 import 'package:fiszkomaniak/converters/time_converters.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -58,7 +58,7 @@ class _BigDate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String monthAsString = convertNumberToDateStr(date.month);
+    final String monthAsString = Utils.twoDigits(date.month);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

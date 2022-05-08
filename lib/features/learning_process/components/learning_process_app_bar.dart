@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/components/countdown_timer/countdown_timer_provider.dart';
 import 'package:fiszkomaniak/components/custom_icon_button.dart';
+import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_event.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
@@ -59,10 +60,13 @@ class _Timer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isTimerInvisible = context.select(
+      (AppearanceSettingsBloc bloc) => bloc.state.isSessionTimerInvisibilityOn,
+    );
     final Duration? duration = context.select(
       (LearningProcessBloc bloc) => bloc.state.duration,
     );
-    if (duration == null) {
+    if (duration == null || isTimerInvisible) {
       return const SizedBox();
     }
     return CountdownTimerProvider(
