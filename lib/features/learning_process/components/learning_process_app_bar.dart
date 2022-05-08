@@ -28,6 +28,7 @@ class LearningProcessAppBar extends StatelessWidget
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: const [
+          SizedBox(width: 24.0),
           _StackState(),
           _Timer(),
         ],
@@ -78,6 +79,7 @@ class _Timer extends StatelessWidget {
             Icon(MdiIcons.clockOutline),
             SizedBox(width: 4.0),
             CountdownTimer(),
+            _StopResumeButton(),
           ],
         ),
       ),
@@ -104,5 +106,36 @@ class _TimerListener extends StatelessWidget {
 
   void _onTimeFinished(BuildContext context) {
     context.read<LearningProcessBloc>().add(LearningProcessEventTimeFinished());
+  }
+}
+
+class _StopResumeButton extends StatelessWidget {
+  const _StopResumeButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final TimerStatus timerStatus = context.select(
+      (TimerBloc bloc) => bloc.state.status,
+    );
+    if (timerStatus is TimerStatusRunInProgress) {
+      return CustomIconButton(
+        icon: MdiIcons.pause,
+        onPressed: () => _pause(context),
+      );
+    } else if (timerStatus is TimerStatusRunPause) {
+      return CustomIconButton(
+        icon: MdiIcons.play,
+        onPressed: () => _resume(context),
+      );
+    }
+    return const SizedBox();
+  }
+
+  void _pause(BuildContext context) {
+    context.read<TimerBloc>().add(TimerEventPause());
+  }
+
+  void _resume(BuildContext context) {
+    context.read<TimerBloc>().add(TimerEventResume());
   }
 }

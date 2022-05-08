@@ -12,8 +12,6 @@ class TimerEventPause extends TimerEvent {}
 
 class TimerEventResume extends TimerEvent {}
 
-class TimerEventReset extends TimerEvent {}
-
 class TimerEventTicked extends TimerEvent {
   final Duration duration;
 
