@@ -9,6 +9,7 @@ import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_sta
 import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/utils/flashcards_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LearningProcessBloc
@@ -49,19 +50,22 @@ class LearningProcessBloc
       group?.courseId,
     );
     if (group != null && courseName != null) {
-      final int amountOfFlashcardsInStack = group.flashcards
-          .where(
-            (flashcard) => state.doesFlashcardMatchToFlashcardsType(
-              flashcard,
-              event.data.flashcardsType,
-            ),
-          )
-          .length;
+      final int amountOfFlashcardsInStack =
+          FlashcardsUtils.getAmountOfFlashcardsMatchingToFlashcardsType(
+        group.flashcards,
+        event.data.flashcardsType,
+      );
+      final List<int> indexesOfRememberedFlashcards =
+          FlashcardsUtils.getIndexesOfRememberedFlashcards(group.flashcards);
+      final List<int> indexesOfNotRememberedFlashcards =
+          FlashcardsUtils.getIndexesOfNotRememberedFlashcards(group.flashcards);
       emit(state.copyWith(
         courseName: courseName,
         group: group,
         duration: event.data.duration,
         areQuestionsAndAnswersSwapped: event.data.areQuestionsAndAnswersSwapped,
+        indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
+        indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
         flashcardsType: event.data.flashcardsType,
         amountOfFlashcardsInStack: amountOfFlashcardsInStack,
         status: LearningProcessStatusLoaded(),
@@ -111,12 +115,10 @@ class LearningProcessBloc
     int amountOfFlashcardsInStack = state.amountOfFlashcardsInStack;
     if (flashcardsType != null) {
       amountOfFlashcardsInStack = state.flashcards
-          .where(
-            (flashcard) => state.doesFlashcardMatchToFlashcardsType(
-              flashcard,
-              flashcardsType,
-            ),
-          )
+          .where((flashcard) => state.doesFlashcardBelongToFlashcardsType(
+                flashcard,
+                flashcardsType,
+              ))
           .length;
     }
     emit(state.copyWith(

@@ -35,7 +35,7 @@ class SessionCreatorState extends Equatable {
     if (group == null) {
       return FlashcardsType.values;
     }
-    return GroupUtils.getAvailableFlashcardsTypeFromGroup(group);
+    return GroupUtils.getAvailableFlashcardsTypes(group);
   }
 
   const SessionCreatorState({

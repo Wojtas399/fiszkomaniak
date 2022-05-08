@@ -20,6 +20,7 @@ void main() {
     expect(state.duration, null);
     expect(state.areQuestionsAndAnswersSwapped, false);
     expect(state.indexesOfRememberedFlashcards, []);
+    expect(state.indexesOfNotRememberedFlashcards, []);
     expect(state.indexOfDisplayedFlashcard, 0);
     expect(state.flashcardsType, null);
     expect(state.amountOfFlashcardsInStack, 0);
@@ -94,6 +95,18 @@ void main() {
     expect(state3.indexesOfRememberedFlashcards, expectedIndexes);
   });
 
+  test('copy with indexes of not remembered flashcards', () {
+    final List<int> expectedIndex = [1, 5];
+
+    final LearningProcessState state2 = state.copyWith(
+      indexesOfNotRememberedFlashcards: expectedIndex,
+    );
+    final LearningProcessState state3 = state2.copyWith();
+
+    expect(state2.indexesOfNotRememberedFlashcards, expectedIndex);
+    expect(state3.indexesOfNotRememberedFlashcards, expectedIndex);
+  });
+
   test('copy with index of displayed flashcards', () {
     const int expectedIndexOfDisplayedFlashcard = 2;
 
@@ -155,37 +168,6 @@ void main() {
     state = state.copyWith(group: createGroup(flashcards: flashcards));
 
     expect(state.flashcards, flashcards);
-  });
-
-  test('flashcards to learn, comparing by flashcard status', () {
-    final List<Flashcard> flashcards = [
-      createFlashcard(
-        index: 0,
-        status: FlashcardStatus.remembered,
-        question: 'q0',
-        answer: 'a0',
-      ),
-      createFlashcard(
-        index: 1,
-        status: FlashcardStatus.remembered,
-        question: 'q1',
-        answer: 'a1',
-      ),
-      createFlashcard(index: 2, status: FlashcardStatus.notRemembered),
-    ];
-
-    state = state.copyWith(
-      group: createGroup(flashcards: flashcards),
-      flashcardsType: FlashcardsType.remembered,
-    );
-
-    expect(
-      state.flashcardsToLearn,
-      [
-        const FlashcardInfo(index: 0, question: 'q0', answer: 'a0'),
-        const FlashcardInfo(index: 1, question: 'q1', answer: 'a1'),
-      ],
-    );
   });
 
   test('flashcards to learn, comparing by array with indexes', () {
@@ -261,6 +243,51 @@ void main() {
 
       expect(state.nameForQuestions, group.nameForAnswers);
       expect(state.nameForAnswers, group.nameForQuestions);
+    });
+  });
+
+  group('are all flashcards remembered or not remembered', () {
+    test('all flashcards remembered', () {
+      final List<Flashcard> flashcards = [
+        createFlashcard(index: 0),
+        createFlashcard(index: 1),
+      ];
+
+      state = state.copyWith(
+        group: createGroup(flashcards: flashcards),
+        indexesOfRememberedFlashcards: [0, 1],
+      );
+
+      expect(state.areAllFlashcardsRememberedOrNotRemembered, true);
+    });
+
+    test('all flashcards not remembered', () {
+      final List<Flashcard> flashcards = [
+        createFlashcard(index: 0),
+        createFlashcard(index: 1),
+      ];
+
+      state = state.copyWith(
+        group: createGroup(flashcards: flashcards),
+        indexesOfNotRememberedFlashcards: [0, 1],
+      );
+
+      expect(state.areAllFlashcardsRememberedOrNotRemembered, true);
+    });
+
+    test('not all flashcards are remembered or not remembered', () {
+      final List<Flashcard> flashcards = [
+        createFlashcard(index: 0),
+        createFlashcard(index: 1),
+      ];
+
+      state = state.copyWith(
+        group: createGroup(flashcards: flashcards),
+        indexesOfRememberedFlashcards: [1],
+        indexesOfNotRememberedFlashcards: [0],
+      );
+
+      expect(state.areAllFlashcardsRememberedOrNotRemembered, false);
     });
   });
 }

@@ -12,6 +12,7 @@ class LearningProcessState extends Equatable {
   final Duration? duration;
   final bool areQuestionsAndAnswersSwapped;
   final List<int> indexesOfRememberedFlashcards;
+  final List<int> indexesOfNotRememberedFlashcards;
   final int indexOfDisplayedFlashcard;
   final FlashcardsType? flashcardsType;
   final int amountOfFlashcardsInStack;
@@ -23,6 +24,7 @@ class LearningProcessState extends Equatable {
     this.duration,
     this.areQuestionsAndAnswersSwapped = false,
     this.indexesOfRememberedFlashcards = const [],
+    this.indexesOfNotRememberedFlashcards = const [],
     this.indexOfDisplayedFlashcard = 0,
     this.flashcardsType,
     this.amountOfFlashcardsInStack = 0,
@@ -37,7 +39,7 @@ class LearningProcessState extends Equatable {
     }
     final List<Flashcard> flashcards = (group?.flashcards ?? [])
         .where(
-          (flashcard) => doesFlashcardMatchToFlashcardsType(flashcard, type),
+          (flashcard) => doesFlashcardBelongToFlashcardsType(flashcard, type),
         )
         .toList();
     return _getBasicInfoOfFlashcards(flashcards);
@@ -67,6 +69,11 @@ class LearningProcessState extends Equatable {
         : group.nameForAnswers;
   }
 
+  bool get areAllFlashcardsRememberedOrNotRemembered {
+    return indexesOfNotRememberedFlashcards.length == amountOfAllFlashcards ||
+        amountOfRememberedFlashcards == amountOfAllFlashcards;
+  }
+
   LearningProcessState copyWith({
     LearningProcessStatus? status,
     String? courseName,
@@ -74,6 +81,7 @@ class LearningProcessState extends Equatable {
     Duration? duration,
     bool? areQuestionsAndAnswersSwapped,
     List<int>? indexesOfRememberedFlashcards,
+    List<int>? indexesOfNotRememberedFlashcards,
     int? indexOfDisplayedFlashcard,
     FlashcardsType? flashcardsType,
     int? amountOfFlashcardsInStack,
@@ -88,6 +96,8 @@ class LearningProcessState extends Equatable {
           areQuestionsAndAnswersSwapped ?? this.areQuestionsAndAnswersSwapped,
       indexesOfRememberedFlashcards:
           indexesOfRememberedFlashcards ?? this.indexesOfRememberedFlashcards,
+      indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards ??
+          this.indexesOfNotRememberedFlashcards,
       indexOfDisplayedFlashcard:
           indexOfDisplayedFlashcard ?? this.indexOfDisplayedFlashcard,
       flashcardsType: flashcardsType ?? this.flashcardsType,
@@ -96,15 +106,18 @@ class LearningProcessState extends Equatable {
     );
   }
 
-  bool doesFlashcardMatchToFlashcardsType(
+  bool doesFlashcardBelongToFlashcardsType(
     Flashcard flashcard,
     FlashcardsType type,
   ) {
-    if (status is LearningProcessStatusInitial ||
-        status is LearningProcessStatusLoaded) {
-      return _doesFlashcardStatusMatchFlashcardsType(flashcard.status, type);
+    switch (type) {
+      case FlashcardsType.all:
+        return true;
+      case FlashcardsType.remembered:
+        return indexesOfRememberedFlashcards.contains(flashcard.index);
+      case FlashcardsType.notRemembered:
+        return indexesOfNotRememberedFlashcards.contains(flashcard.index);
     }
-    return _doesFlashcardBelongToFlashcardsType(flashcard.index, type);
   }
 
   List<FlashcardInfo> _getBasicInfoOfFlashcards(List<Flashcard> flashcards) {
@@ -121,34 +134,6 @@ class LearningProcessState extends Equatable {
           ),
         )
         .toList();
-  }
-
-  bool _doesFlashcardStatusMatchFlashcardsType(
-    FlashcardStatus flashcardStatus,
-    FlashcardsType flashcardsType,
-  ) {
-    switch (flashcardsType) {
-      case FlashcardsType.all:
-        return true;
-      case FlashcardsType.remembered:
-        return flashcardStatus == FlashcardStatus.remembered;
-      case FlashcardsType.notRemembered:
-        return flashcardStatus == FlashcardStatus.notRemembered;
-    }
-  }
-
-  bool _doesFlashcardBelongToFlashcardsType(
-    int flashcardIndex,
-    FlashcardsType type,
-  ) {
-    switch (type) {
-      case FlashcardsType.all:
-        return true;
-      case FlashcardsType.remembered:
-        return indexesOfRememberedFlashcards.contains(flashcardIndex);
-      case FlashcardsType.notRemembered:
-        return !indexesOfRememberedFlashcards.contains(flashcardIndex);
-    }
   }
 
   @override
