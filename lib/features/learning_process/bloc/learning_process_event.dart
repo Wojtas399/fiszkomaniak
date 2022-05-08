@@ -1,5 +1,4 @@
-import 'package:fiszkomaniak/models/session_model.dart';
-import '../learning_process_data.dart';
+part of 'learning_process_bloc.dart';
 
 abstract class LearningProcessEvent {}
 

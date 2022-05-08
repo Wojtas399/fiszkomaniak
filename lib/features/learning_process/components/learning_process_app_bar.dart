@@ -2,8 +2,6 @@ import 'package:fiszkomaniak/components/countdown_timer/countdown_timer_provider
 import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_event.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

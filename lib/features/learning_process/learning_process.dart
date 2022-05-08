@@ -12,7 +12,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import '../flashcards_stack/bloc/flashcards_stack_state.dart';
 import '../flashcards_stack/bloc/flashcards_stack_status.dart';
-import 'bloc/learning_process_event.dart';
 import 'learning_process_data.dart';
 
 class LearningProcess extends StatelessWidget {

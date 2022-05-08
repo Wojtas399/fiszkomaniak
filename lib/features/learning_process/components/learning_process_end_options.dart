@@ -3,8 +3,6 @@ import 'package:fiszkomaniak/converters/flashcards_type_converters.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_event.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

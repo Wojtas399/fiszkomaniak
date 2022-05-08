@@ -1,7 +1,6 @@
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_status.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../features/flashcards_stack/flashcards_stack.dart';

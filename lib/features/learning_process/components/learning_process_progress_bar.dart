@@ -1,6 +1,5 @@
 import 'package:fiszkomaniak/components/flashcards_progress_bar.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

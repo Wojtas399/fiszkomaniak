@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'learning_process_bloc.dart';
 
 abstract class LearningProcessStatus extends Equatable {
   const LearningProcessStatus();

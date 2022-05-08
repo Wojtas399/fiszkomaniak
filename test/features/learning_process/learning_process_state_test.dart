@@ -1,6 +1,5 @@
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_models.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_status.dart';
+import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';

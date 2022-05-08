@@ -1,7 +1,5 @@
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_status.dart';
 import 'package:fiszkomaniak/features/learning_process/components/learning_process_buttons.dart';
 import 'package:fiszkomaniak/features/learning_process/components/learning_process_end_options.dart';
 import 'package:fiszkomaniak/features/learning_process/components/learning_process_flashcards.dart';

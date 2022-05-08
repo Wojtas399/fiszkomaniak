@@ -1,16 +1,23 @@
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_event.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_event.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_state.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_status.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:fiszkomaniak/utils/flashcards_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../models/flashcard_model.dart';
+import '../../flashcards_stack/bloc/flashcards_stack_models.dart';
+import '../learning_process_data.dart';
+
+part 'learning_process_event.dart';
+
+part 'learning_process_state.dart';
+
+part 'learning_process_status.dart';
 
 class LearningProcessBloc
     extends Bloc<LearningProcessEvent, LearningProcessState> {
