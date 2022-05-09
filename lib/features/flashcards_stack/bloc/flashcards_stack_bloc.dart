@@ -63,7 +63,7 @@ class FlashcardsStackBloc
         status: FlashcardsStackStatusEnd(),
       ));
     } else if (state.indexOfDisplayedFlashcard > 0 && event.elementIndex == 0) {
-      _updateOutsideElements(emit);
+      _updateOutsideElement(emit);
     }
   }
 
@@ -141,7 +141,7 @@ class FlashcardsStackBloc
     ));
   }
 
-  void _updateOutsideElements(Emitter<FlashcardsStackState> emit) {
+  void _updateOutsideElement(Emitter<FlashcardsStackState> emit) {
     final List<AnimatedElement> updatedElements = [...state.animatedElements];
     if (state.areThereUndisplayedFlashcards) {
       updatedElements[0] = updatedElements[0].copyWith(
