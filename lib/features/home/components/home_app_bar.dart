@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/components/avatar.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/config/theme/global_theme.dart';
 import 'package:flutter/material.dart';
@@ -50,14 +51,7 @@ class _AvatarAndDays extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16),
       child: Row(
         children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.red,
-            ),
-          ),
+          const Avatar(size: 42.0),
           const SizedBox(width: 12),
           const Icon(MdiIcons.medal),
           Text(
