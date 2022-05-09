@@ -15,7 +15,7 @@ class GroupPreviewAppBar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return AppBarWithCloseButton(
+    return CustomAppBar(
       label: 'Grupa',
       actions: [
         PopupMenu(

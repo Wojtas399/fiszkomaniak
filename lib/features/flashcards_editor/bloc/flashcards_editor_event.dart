@@ -1,9 +1,11 @@
+import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
+
 abstract class FlashcardsEditorEvent {}
 
 class FlashcardsEditorEventInitialize extends FlashcardsEditorEvent {
-  final String groupId;
+  final FlashcardsEditorMode mode;
 
-  FlashcardsEditorEventInitialize({required this.groupId});
+  FlashcardsEditorEventInitialize({required this.mode});
 }
 
 class FlashcardsEditorEventRemoveFlashcard extends FlashcardsEditorEvent {

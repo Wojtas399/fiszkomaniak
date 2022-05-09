@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
@@ -18,20 +17,17 @@ class SessionCreatorBloc
     extends Bloc<SessionCreatorEvent, SessionCreatorState> {
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
-  late final FlashcardsBloc _flashcardsBloc;
   late final SessionsBloc _sessionsBloc;
   late final SessionCreatorDialogs _sessionCreatorDialogs;
 
   SessionCreatorBloc({
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
-    required FlashcardsBloc flashcardsBloc,
     required SessionsBloc sessionsBloc,
     required SessionCreatorDialogs sessionCreatorDialogs,
   }) : super(const SessionCreatorState()) {
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
-    _flashcardsBloc = flashcardsBloc;
     _sessionsBloc = sessionsBloc;
     _sessionCreatorDialogs = sessionCreatorDialogs;
     on<SessionCreatorEventInitialize>(_initialize);
@@ -204,7 +200,7 @@ class SessionCreatorBloc
   }
 
   bool _areThereFlashcardsInGroup(Group group) {
-    return _flashcardsBloc.state.getFlashcardsByGroupId(group.id).isNotEmpty;
+    return group.flashcards.isNotEmpty;
   }
 
   bool _isSelectedDatePastDate() {

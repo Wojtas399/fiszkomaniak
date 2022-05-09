@@ -1,17 +1,17 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
-import 'package:flutter/material.dart';
 import '../../../models/group_model.dart';
+import '../../../utils/group_utils.dart';
 
 class SessionPreviewState extends Equatable {
   final SessionPreviewMode? mode;
   final Session? session;
   final Group? group;
   final String? courseName;
-  final TimeOfDay? duration;
-  final FlashcardsType? flashcardsType;
-  final bool? areQuestionsAndAnswersSwapped;
+  final Duration? duration;
+  final FlashcardsType flashcardsType;
+  final bool areQuestionsAndAnswersSwapped;
 
   const SessionPreviewState({
     this.mode,
@@ -19,8 +19,8 @@ class SessionPreviewState extends Equatable {
     this.group,
     this.courseName,
     this.duration,
-    this.flashcardsType,
-    this.areQuestionsAndAnswersSwapped,
+    this.flashcardsType = FlashcardsType.all,
+    this.areQuestionsAndAnswersSwapped = false,
   });
 
   DateTime? get date {
@@ -40,12 +40,20 @@ class SessionPreviewState extends Equatable {
       ? group?.nameForQuestions
       : group?.nameForAnswers;
 
+  List<FlashcardsType> get availableFlashcardsTypes {
+    final Group? assignedGroup = group;
+    if (assignedGroup == null) {
+      return FlashcardsType.values;
+    }
+    return GroupUtils.getAvailableFlashcardsTypes(assignedGroup);
+  }
+
   SessionPreviewState copyWith({
     SessionPreviewMode? mode,
     Session? session,
     Group? group,
     String? courseName,
-    TimeOfDay? duration,
+    Duration? duration,
     FlashcardsType? flashcardsType,
     bool? areQuestionsAndAnswersSwapped,
   }) {
@@ -68,7 +76,7 @@ class SessionPreviewState extends Equatable {
         group ?? '',
         courseName ?? '',
         duration ?? '',
-        flashcardsType ?? '',
-        areQuestionsAndAnswersSwapped ?? '',
+        flashcardsType,
+        areQuestionsAndAnswersSwapped,
       ];
 }

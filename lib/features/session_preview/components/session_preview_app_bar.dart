@@ -20,7 +20,7 @@ class SessionPreviewAppBar extends StatelessWidget
     return BlocBuilder<SessionPreviewBloc, SessionPreviewState>(
       builder: (BuildContext context, SessionPreviewState state) {
         final SessionPreviewMode? mode = state.mode;
-        return AppBarWithCloseButton(
+        return CustomAppBar(
           label: mode is SessionPreviewModeNormal ? 'Sesja' : 'Szybka sesja',
           actions: mode is SessionPreviewModeQuick
               ? []

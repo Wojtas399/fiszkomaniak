@@ -2,24 +2,25 @@ import 'dart:async';
 import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_status.dart';
+import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../models/changed_document.dart';
 
 class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
   late final FlashcardsInterface _flashcardsInterface;
-  StreamSubscription<List<ChangedDocument<Flashcard>>>? _flashcardsSubscription;
+  late final GroupsBloc _groupsBloc;
+  StreamSubscription<GroupsState>? _groupsStateSubscription;
 
   FlashcardsBloc({
     required FlashcardsInterface flashcardsInterface,
+    required GroupsBloc groupsBloc,
   }) : super(const FlashcardsState()) {
     _flashcardsInterface = flashcardsInterface;
+    _groupsBloc = groupsBloc;
     on<FlashcardsEventInitialize>(_initialize);
-    on<FlashcardsEventFlashcardAdded>(_flashcardAdded);
-    on<FlashcardsEventFlashcardUpdated>(_flashcardUpdated);
-    on<FlashcardsEventFlashcardRemoved>(_flashcardRemoved);
-    on<FlashcardsEventSaveMultipleActions>(_saveMultipleActions);
+    on<FlashcardsEventGroupsStateUpdated>(_groupsStateUpdated);
+    on<FlashcardsEventSaveFlashcards>(_saveFlashcards);
     on<FlashcardsEventUpdateFlashcard>(_updateFlashcard);
     on<FlashcardsEventRemoveFlashcard>(_removeFlashcard);
   }
@@ -28,74 +29,29 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
     FlashcardsEventInitialize event,
     Emitter<FlashcardsState> emit,
   ) {
-    _flashcardsSubscription =
-        _flashcardsInterface.getFlashcardsSnapshots().listen((flashcards) {
-      for (final flashcard in flashcards) {
-        switch (flashcard.changeType) {
-          case DbDocChangeType.added:
-            add(FlashcardsEventFlashcardAdded(flashcard: flashcard.doc));
-            break;
-          case DbDocChangeType.updated:
-            add(FlashcardsEventFlashcardUpdated(flashcard: flashcard.doc));
-            break;
-          case DbDocChangeType.removed:
-            add(FlashcardsEventFlashcardRemoved(flashcardId: flashcard.doc.id));
-            break;
-        }
-      }
+    _groupsStateSubscription = _groupsBloc.stream.listen((state) {
+      add(FlashcardsEventGroupsStateUpdated(newGroupsState: state));
     });
   }
 
-  void _flashcardAdded(
-    FlashcardsEventFlashcardAdded event,
+  void _groupsStateUpdated(
+    FlashcardsEventGroupsStateUpdated event,
     Emitter<FlashcardsState> emit,
   ) {
-    emit(state.copyWith(
-      allFlashcards: [...state.allFlashcards, event.flashcard],
-    ));
+    emit(state.copyWith(groupsState: event.newGroupsState));
   }
 
-  void _flashcardUpdated(
-    FlashcardsEventFlashcardUpdated event,
-    Emitter<FlashcardsState> emit,
-  ) {
-    final List<Flashcard> allFlashcards = [...state.allFlashcards];
-    final int indexOfUpdatedFlashcard = allFlashcards.indexWhere(
-      (flashcard) => flashcard.id == event.flashcard.id,
-    );
-    allFlashcards[indexOfUpdatedFlashcard] = event.flashcard;
-    emit(state.copyWith(allFlashcards: allFlashcards));
-  }
-
-  void _flashcardRemoved(
-    FlashcardsEventFlashcardRemoved event,
-    Emitter<FlashcardsState> emit,
-  ) {
-    final List<Flashcard> allFlashcards = [...state.allFlashcards];
-    allFlashcards.removeWhere((flashcard) => flashcard.id == event.flashcardId);
-    emit(state.copyWith(allFlashcards: allFlashcards));
-  }
-
-  Future<void> _saveMultipleActions(
-    FlashcardsEventSaveMultipleActions event,
+  Future<void> _saveFlashcards(
+    FlashcardsEventSaveFlashcards event,
     Emitter<FlashcardsState> emit,
   ) async {
     try {
       emit(state.copyWith(status: FlashcardsStatusLoading()));
-      if (event.flashcardsToUpdate.isNotEmpty) {
-        await _flashcardsInterface.updateFlashcards(event.flashcardsToUpdate);
-      }
-      if (event.flashcardsToAdd.isNotEmpty) {
-        await _flashcardsInterface.addFlashcards(event.flashcardsToAdd);
-      }
-      if (event.idsOfFlashcardsToRemove.isNotEmpty) {
-        await _flashcardsInterface.removeFlashcards(
-          event.idsOfFlashcardsToRemove,
-        );
-      }
-      if (event.flashcardsToAdd.isNotEmpty &&
-          event.flashcardsToUpdate.isEmpty &&
-          event.idsOfFlashcardsToRemove.isEmpty) {
+      await _flashcardsInterface.setFlashcards(
+        groupId: event.groupId,
+        flashcards: event.flashcards,
+      );
+      if (event.justAddedFlashcards) {
         emit(state.copyWith(status: FlashcardsStatusFlashcardsAdded()));
       } else {
         emit(state.copyWith(status: FlashcardsStatusFlashcardsSaved()));
@@ -113,7 +69,10 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
   ) async {
     try {
       emit(state.copyWith(status: FlashcardsStatusLoading()));
-      await _flashcardsInterface.updateFlashcards([event.flashcard]);
+      await _flashcardsInterface.updateFlashcard(
+        groupId: event.groupId,
+        flashcard: event.flashcard,
+      );
       emit(state.copyWith(status: FlashcardsStatusFlashcardUpdated()));
     } catch (error) {
       emit(state.copyWith(
@@ -128,7 +87,10 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
   ) async {
     try {
       emit(state.copyWith(status: FlashcardsStatusLoading()));
-      await _flashcardsInterface.removeFlashcards([event.flashcardId]);
+      await _flashcardsInterface.removeFlashcard(
+        groupId: event.groupId,
+        flashcard: event.flashcard,
+      );
       emit(state.copyWith(status: FlashcardsStatusFlashcardRemoved()));
     } catch (error) {
       emit(state.copyWith(
@@ -139,7 +101,7 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
 
   @override
   Future<void> close() {
-    _flashcardsSubscription?.cancel();
+    _groupsStateSubscription?.cancel();
     return super.close();
   }
 }

@@ -40,7 +40,7 @@ void main() {
       areQuestionsAndAnswersSwapped: true,
       date: DateTime(2022, 4, 19),
       time: const TimeOfDay(hour: 12, minute: 30),
-      duration: const TimeOfDay(hour: 0, minute: 30),
+      duration: const Duration(minutes: 30),
       notificationTime: null,
     ));
 
@@ -52,7 +52,7 @@ void main() {
   test('update session', () async {
     const String newGroupId = 'g2';
     final DateTime newDate = DateTime(2022, 1, 1);
-    const TimeOfDay newDuration = TimeOfDay(hour: 0, minute: 45);
+    const Duration newDuration = Duration(minutes: 45);
     const FireDoc<SessionDbModel> fireDoc = FireDoc(
       id: 's1',
       doc: SessionDbModel(

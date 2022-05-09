@@ -41,22 +41,21 @@ void main() {
   );
   final GroupsState groupsState = GroupsState(
     allGroups: [
-      createGroup(id: 'g1', courseId: 'c1'),
+      createGroup(
+        id: 'g1',
+        courseId: 'c1',
+        flashcards: [
+          createFlashcard(index: 0, question: 'q1', answer: 'a1'),
+          createFlashcard(index: 1, question: 'q2', answer: 'a2'),
+          createFlashcard(index: 2, question: 'q3', answer: 'a3'),
+        ],
+      ),
       createGroup(id: 'g2', courseId: 'c1'),
       createGroup(id: 'g3', courseId: 'c2'),
     ],
   );
   final FlashcardsState flashcardsState = FlashcardsState(
-    allFlashcards: [
-      createFlashcard(
-        id: 'f1',
-        groupId: 'g1',
-        question: 'question',
-        answer: 'answer',
-      ),
-      createFlashcard(id: 'f2', groupId: 'g1'),
-      createFlashcard(id: 'f3', groupId: 'g3'),
-    ],
+    groupsState: groupsState,
   );
 
   setUp(() {
@@ -82,10 +81,12 @@ void main() {
   blocTest(
     'initialize',
     build: () => bloc,
-    act: (_) => bloc.add(FlashcardPreviewEventInitialize(flashcardId: 'f1')),
+    act: (_) => bloc.add(FlashcardPreviewEventInitialize(
+      params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 1),
+    )),
     expect: () => [
       FlashcardPreviewState(
-        flashcard: flashcardsState.allFlashcards[0],
+        flashcard: groupsState.allGroups[0].flashcards[1],
         group: groupsState.allGroups[0],
         courseName: coursesState.allCourses[0].name,
         status: FlashcardPreviewStatusLoaded(),
@@ -125,23 +126,25 @@ void main() {
     'reset changes',
     build: () => bloc,
     act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(flashcardId: 'f1'));
+      bloc.add(FlashcardPreviewEventInitialize(
+        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
+      ));
       bloc.add(FlashcardPreviewEventResetChanges());
     },
     expect: () => [
       FlashcardPreviewState(
-        flashcard: flashcardsState.allFlashcards[0],
+        flashcard: groupsState.allGroups[0].flashcards[0],
         group: groupsState.allGroups[0],
         courseName: coursesState.allCourses[0].name,
         status: FlashcardPreviewStatusLoaded(),
       ),
       FlashcardPreviewState(
-        flashcard: flashcardsState.allFlashcards[0],
+        flashcard: groupsState.allGroups[0].flashcards[0],
         group: groupsState.allGroups[0],
         courseName: coursesState.allCourses[0].name,
         status: FlashcardPreviewStatusReset(),
-        newQuestion: flashcardsState.allFlashcards[0].question,
-        newAnswer: flashcardsState.allFlashcards[0].answer,
+        newQuestion: groupsState.allGroups[0].flashcards[0].question,
+        newAnswer: groupsState.allGroups[0].flashcards[0].answer,
       ),
     ],
   );
@@ -154,15 +157,19 @@ void main() {
           .thenAnswer((_) async => true);
     },
     act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(flashcardId: 'f1'));
+      bloc.add(FlashcardPreviewEventInitialize(
+        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
+      ));
       bloc.add(FlashcardPreviewEventQuestionChanged(question: 'q1'));
       bloc.add(FlashcardPreviewEventAnswerChanged(answer: 'a1'));
       bloc.add(FlashcardPreviewEventSaveChanges());
     },
     verify: (_) {
+      verify(() => flashcardPreviewDialogs.askForSaveConfirmation()).called(1);
       verify(
         () => flashcardsBloc.add(FlashcardsEventUpdateFlashcard(
-          flashcard: flashcardsState.allFlashcards[0].copyWith(
+          groupId: 'g1',
+          flashcard: groupsState.allGroups[0].flashcards[0].copyWith(
             question: 'q1',
             answer: 'a1',
           ),
@@ -179,16 +186,78 @@ void main() {
           .thenAnswer((_) async => false);
     },
     act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(flashcardId: 'f1'));
+      bloc.add(FlashcardPreviewEventInitialize(
+        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
+      ));
       bloc.add(FlashcardPreviewEventQuestionChanged(question: 'q1'));
       bloc.add(FlashcardPreviewEventAnswerChanged(answer: 'a1'));
       bloc.add(FlashcardPreviewEventSaveChanges());
     },
     verify: (_) {
+      verify(() => flashcardPreviewDialogs.askForSaveConfirmation()).called(1);
       verifyNever(
         () => flashcardsBloc.add(FlashcardsEventUpdateFlashcard(
-          flashcard: flashcardsState.allFlashcards[0].copyWith(
+          groupId: 'g1',
+          flashcard: groupsState.allGroups[0].flashcards[0].copyWith(
             question: 'q1',
+            answer: 'a1',
+          ),
+        )),
+      );
+    },
+  );
+
+  blocTest(
+    'save changes, new answer is empty',
+    build: () => bloc,
+    setUp: () {
+      when(() => flashcardPreviewDialogs.showEmptyFlashcardInfo())
+          .thenAnswer((_) async => '');
+    },
+    act: (_) {
+      bloc.add(FlashcardPreviewEventInitialize(
+        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
+      ));
+      bloc.add(FlashcardPreviewEventQuestionChanged(question: 'q1'));
+      bloc.add(FlashcardPreviewEventAnswerChanged(answer: ''));
+      bloc.add(FlashcardPreviewEventSaveChanges());
+    },
+    verify: (_) {
+      verify(() => flashcardPreviewDialogs.showEmptyFlashcardInfo()).called(1);
+      verifyNever(
+        () => flashcardsBloc.add(FlashcardsEventUpdateFlashcard(
+          groupId: 'g1',
+          flashcard: groupsState.allGroups[0].flashcards[0].copyWith(
+            question: 'q1',
+            answer: '',
+          ),
+        )),
+      );
+    },
+  );
+
+  blocTest(
+    'save changes, new question is empty',
+    build: () => bloc,
+    setUp: () {
+      when(() => flashcardPreviewDialogs.showEmptyFlashcardInfo())
+          .thenAnswer((_) async => '');
+    },
+    act: (_) {
+      bloc.add(FlashcardPreviewEventInitialize(
+        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
+      ));
+      bloc.add(FlashcardPreviewEventQuestionChanged(question: ''));
+      bloc.add(FlashcardPreviewEventAnswerChanged(answer: 'a1'));
+      bloc.add(FlashcardPreviewEventSaveChanges());
+    },
+    verify: (_) {
+      verify(() => flashcardPreviewDialogs.showEmptyFlashcardInfo()).called(1);
+      verifyNever(
+        () => flashcardsBloc.add(FlashcardsEventUpdateFlashcard(
+          groupId: 'g1',
+          flashcard: groupsState.allGroups[0].flashcards[0].copyWith(
+            question: '',
             answer: 'a1',
           ),
         )),
@@ -204,13 +273,20 @@ void main() {
           .thenAnswer((_) async => true);
     },
     act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(flashcardId: 'f1'));
+      bloc.add(FlashcardPreviewEventInitialize(
+        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
+      ));
       bloc.add(FlashcardPreviewEventRemoveFlashcard());
     },
     verify: (_) {
+      verify(() => flashcardPreviewDialogs.askForDeleteConfirmation())
+          .called(1);
       verify(
         () => flashcardsBloc.add(
-          FlashcardsEventRemoveFlashcard(flashcardId: 'f1'),
+          FlashcardsEventRemoveFlashcard(
+            groupId: 'g1',
+            flashcard: groupsState.allGroups[0].flashcards[0],
+          ),
         ),
       ).called(1);
     },
@@ -224,13 +300,20 @@ void main() {
           .thenAnswer((_) async => false);
     },
     act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(flashcardId: 'f1'));
+      bloc.add(FlashcardPreviewEventInitialize(
+        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
+      ));
       bloc.add(FlashcardPreviewEventRemoveFlashcard());
     },
     verify: (_) {
+      verify(() => flashcardPreviewDialogs.askForDeleteConfirmation())
+          .called(1);
       verifyNever(
         () => flashcardsBloc.add(
-          FlashcardsEventRemoveFlashcard(flashcardId: 'f1'),
+          FlashcardsEventRemoveFlashcard(
+            groupId: 'g1',
+            flashcard: groupsState.allGroups[0].flashcards[0],
+          ),
         ),
       );
     },

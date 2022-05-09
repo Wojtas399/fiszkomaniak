@@ -1,6 +1,5 @@
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_dialogs.dart';
@@ -48,7 +47,6 @@ class _GroupPreviewBlocProvider extends StatelessWidget {
       create: (BuildContext context) => GroupPreviewBloc(
         groupsBloc: context.read<GroupsBloc>(),
         coursesBloc: context.read<CoursesBloc>(),
-        flashcardsBloc: context.read<FlashcardsBloc>(),
         groupPreviewDialogs: GroupPreviewDialogs(),
         navigation: context.read<Navigation>(),
       )..add(GroupPreviewEventInitialize(groupId: groupId)),

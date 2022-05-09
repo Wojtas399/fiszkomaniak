@@ -18,9 +18,9 @@ class OptionsOfSelectItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWithCloseButton(
+      appBar: CustomAppBar(
         label: title,
-        closeIcon: MdiIcons.arrowLeft,
+        leadingIcon: MdiIcons.close,
       ),
       body: options.isEmpty
           ? _NoOptionsInfo(noOptionsMessage: noOptionsMessage)

@@ -56,6 +56,7 @@ class SessionCreatorFlashcards extends StatelessWidget {
                   ),
                   FlashcardsTypePicker(
                     selectedType: state.flashcardsType,
+                    availableTypes: state.availableFlashcardsTypes,
                     onTypeChanged: (FlashcardsType type) {
                       context
                           .read<SessionCreatorBloc>()

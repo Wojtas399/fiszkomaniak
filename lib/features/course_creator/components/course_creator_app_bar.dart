@@ -15,7 +15,7 @@ class CourseCreatorAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     return BlocBuilder<CourseCreatorBloc, CourseCreatorState>(
       builder: (_, CourseCreatorState state) {
-        return AppBarWithCloseButton(label: state.title);
+        return CustomAppBar(label: state.title);
       },
     );
   }

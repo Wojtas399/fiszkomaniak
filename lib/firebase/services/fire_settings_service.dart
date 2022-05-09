@@ -5,14 +5,14 @@ import 'package:fiszkomaniak/firebase/models/notifications_settings_db_model.dar
 class FireSettingsService {
   Future<void> setDefaultSettings() async {
     try {
-      FireReferences.appearanceSettingsRef.set(
+      FireReferences.appearanceSettingsRefWithConverter.set(
         AppearanceSettingsDbModel(
           isDarkModeOn: false,
           isDarkModeCompatibilityWithSystemOn: false,
           isSessionTimerInvisibilityOn: false,
         ),
       );
-      FireReferences.notificationsSettingsRef.set(
+      FireReferences.notificationsSettingsRefWithConverter.set(
         NotificationsSettingsDbModel(
           areSessionsPlannedNotificationsOn: true,
           areSessionsDefaultNotificationsOn: true,
@@ -27,7 +27,8 @@ class FireSettingsService {
 
   Future<AppearanceSettingsDbModel> loadAppearanceSettings() async {
     try {
-      final settings = await FireReferences.appearanceSettingsRef.get();
+      final settings =
+          await FireReferences.appearanceSettingsRefWithConverter.get();
       final settingsData = settings.data();
       if (settingsData != null) {
         return settingsData;
@@ -41,7 +42,8 @@ class FireSettingsService {
 
   Future<NotificationsSettingsDbModel> loadNotificationsSettings() async {
     try {
-      final settings = await FireReferences.notificationsSettingsRef.get();
+      final settings =
+          await FireReferences.notificationsSettingsRefWithConverter.get();
       final settingsData = settings.data();
       if (settingsData != null) {
         return settingsData;
@@ -59,7 +61,7 @@ class FireSettingsService {
     bool? isSessionTimerInvisibilityOn,
   }) async {
     try {
-      FireReferences.appearanceSettingsRef.update(
+      FireReferences.appearanceSettingsRefWithConverter.update(
         AppearanceSettingsDbModel(
           isDarkModeOn: isDarkModeOn,
           isDarkModeCompatibilityWithSystemOn:
@@ -79,7 +81,7 @@ class FireSettingsService {
     bool? areLossOfDaysNotificationsOn,
   }) async {
     try {
-      FireReferences.notificationsSettingsRef.update(
+      FireReferences.notificationsSettingsRefWithConverter.update(
         NotificationsSettingsDbModel(
           areSessionsPlannedNotificationsOn: areSessionsPlannedNotificationsOn,
           areSessionsDefaultNotificationsOn: areSessionsDefaultNotificationsOn,

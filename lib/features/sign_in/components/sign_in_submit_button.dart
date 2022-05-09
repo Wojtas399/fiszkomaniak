@@ -12,14 +12,18 @@ class SignInSubmitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SignInBloc, SignInState>(
       builder: (context, state) {
-        return Button(
-          label: 'Zaloguj',
-          onPressed: state.isButtonDisabled
-              ? null
-              : () => context.read<SignInBloc>().add(SignInEventSubmit(
-                    email: state.email,
-                    password: state.password,
-                  )),
+        return Center(
+          child: Button(
+            label: 'Zaloguj',
+            onPressed: state.isButtonDisabled
+                ? null
+                : () => context.read<SignInBloc>().add(
+                      SignInEventSubmit(
+                        email: state.email,
+                        password: state.password,
+                      ),
+                    ),
+          ),
         );
       },
     );

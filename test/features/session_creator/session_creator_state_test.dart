@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +60,7 @@ void main() {
 
   test('copy with selected course', () {
     final Course selectedCourse = courses[0];
+
     final SessionCreatorState state2 = state.copyWith(
       selectedCourse: selectedCourse,
     );
@@ -70,6 +72,7 @@ void main() {
 
   test('copy with selected group', () {
     final Group selectedGroup = groups[0];
+
     final SessionCreatorState state2 = state.copyWith(selectedGroup: groups[0]);
     final SessionCreatorState state3 = state2.copyWith();
 
@@ -79,6 +82,7 @@ void main() {
 
   test('copy with flashcards type', () {
     const FlashcardsType flashcardsType = FlashcardsType.notRemembered;
+
     final SessionCreatorState state2 = state.copyWith(
       flashcardsType: flashcardsType,
     );
@@ -90,6 +94,7 @@ void main() {
 
   test('copy with reversed questions with answers', () {
     const bool reversedQuestionsWithAnswers = true;
+
     final SessionCreatorState state2 = state.copyWith(
       areQuestionsAndAnswersSwapped: reversedQuestionsWithAnswers,
     );
@@ -101,6 +106,7 @@ void main() {
 
   test('copy with date', () {
     final DateTime date = DateTime(2022);
+
     final SessionCreatorState state2 = state.copyWith(date: date);
     final SessionCreatorState state3 = state2.copyWith();
 
@@ -110,6 +116,7 @@ void main() {
 
   test('copy with time', () {
     const TimeOfDay time = TimeOfDay(hour: 18, minute: 0);
+
     final SessionCreatorState state2 = state.copyWith(time: time);
     final SessionCreatorState state3 = state2.copyWith();
 
@@ -118,7 +125,8 @@ void main() {
   });
 
   test('copy with duration', () {
-    const TimeOfDay duration = TimeOfDay(hour: 0, minute: 30);
+    const Duration duration = Duration(minutes: 30);
+
     final SessionCreatorState state2 = state.copyWith(duration: duration);
     final SessionCreatorState state3 = state2.copyWith();
 
@@ -128,6 +136,7 @@ void main() {
 
   test('copy with notification time', () {
     const TimeOfDay notificationTime = TimeOfDay(hour: 12, minute: 30);
+
     final SessionCreatorState state2 = state.copyWith(
       notificationTime: notificationTime,
     );
@@ -139,6 +148,7 @@ void main() {
 
   test('reset selected group', () {
     final Group selectedGroup = groups[0];
+
     final SessionCreatorState state2 = state.copyWith(
       selectedGroup: selectedGroup,
     );
@@ -149,7 +159,8 @@ void main() {
   });
 
   test('reset duration', () {
-    const TimeOfDay duration = TimeOfDay(hour: 0, minute: 30);
+    const Duration duration = Duration(minutes: 30);
+
     final SessionCreatorState state2 = state.copyWith(duration: duration);
     final SessionCreatorState state3 = state2.reset(duration: true);
 
@@ -159,6 +170,7 @@ void main() {
 
   test('reset notification time', () {
     const TimeOfDay notificationTime = TimeOfDay(hour: 12, minute: 30);
+
     final SessionCreatorState state2 = state.copyWith(
       notificationTime: notificationTime,
     );
@@ -170,40 +182,40 @@ void main() {
 
   test('name for questions, normal', () {
     final Group group = groups[0];
-    final SessionCreatorState updatedState = state.copyWith(
-      selectedGroup: group,
-    );
 
-    expect(updatedState.nameForQuestions, group.nameForQuestions);
+    state = state.copyWith(selectedGroup: group);
+
+    expect(state.nameForQuestions, group.nameForQuestions);
   });
 
   test('name for questions, questions and answers reversed', () {
     final Group group = groups[0];
-    final SessionCreatorState updatedState = state.copyWith(
+
+    state = state.copyWith(
       selectedGroup: group,
       areQuestionsAndAnswersSwapped: true,
     );
 
-    expect(updatedState.nameForQuestions, group.nameForAnswers);
+    expect(state.nameForQuestions, group.nameForAnswers);
   });
 
   test('name for answers, normal', () {
     final Group group = groups[0];
-    final SessionCreatorState updatedState = state.copyWith(
-      selectedGroup: group,
-    );
 
-    expect(updatedState.nameForAnswers, group.nameForAnswers);
+    state = state.copyWith(selectedGroup: group);
+
+    expect(state.nameForAnswers, group.nameForAnswers);
   });
 
   test('name for answers, questions and answers reversed', () {
     final Group group = groups[0];
-    final SessionCreatorState updatedState = state.copyWith(
+
+    state = state.copyWith(
       selectedGroup: group,
       areQuestionsAndAnswersSwapped: true,
     );
 
-    expect(updatedState.nameForAnswers, group.nameForQuestions);
+    expect(state.nameForAnswers, group.nameForQuestions);
   });
 
   group('is button disabled', () {
@@ -211,54 +223,54 @@ void main() {
     final Group selectedGroup = groups[0];
     final DateTime date = DateTime(2022);
     const TimeOfDay time = TimeOfDay(hour: 18, minute: 0);
-    const TimeOfDay duration = TimeOfDay(hour: 0, minute: 30);
+    const Duration duration = Duration(minutes: 30);
 
     test('selected course as null', () {
-      final SessionCreatorState updatedState = state.copyWith(
+      state = state.copyWith(
         selectedGroup: selectedGroup,
         date: date,
         time: time,
         duration: duration,
       );
 
-      expect(updatedState.isButtonDisabled, true);
+      expect(state.isButtonDisabled, true);
     });
 
     test('selected group as null', () {
-      final SessionCreatorState updatedState = state.copyWith(
+      state = state.copyWith(
         selectedCourse: selectedCourse,
         date: date,
         time: time,
         duration: duration,
       );
 
-      expect(updatedState.isButtonDisabled, true);
+      expect(state.isButtonDisabled, true);
     });
 
     test('date as null', () {
-      final SessionCreatorState updatedState = state.copyWith(
+      state = state.copyWith(
         selectedCourse: selectedCourse,
         selectedGroup: selectedGroup,
         time: time,
         duration: duration,
       );
 
-      expect(updatedState.isButtonDisabled, true);
+      expect(state.isButtonDisabled, true);
     });
 
     test('time as null', () {
-      final SessionCreatorState updatedState = state.copyWith(
+      state = state.copyWith(
         selectedCourse: selectedCourse,
         selectedGroup: selectedGroup,
         date: date,
         duration: duration,
       );
 
-      expect(updatedState.isButtonDisabled, true);
+      expect(state.isButtonDisabled, true);
     });
 
     test('nothing as null', () {
-      final SessionCreatorState updatedState = state.copyWith(
+      state = state.copyWith(
         selectedCourse: selectedCourse,
         selectedGroup: selectedGroup,
         date: date,
@@ -266,7 +278,48 @@ void main() {
         duration: duration,
       );
 
-      expect(updatedState.isButtonDisabled, false);
+      expect(state.isButtonDisabled, false);
     });
+  });
+
+  group('available flashcards types', () {
+    test('mixed flashcards statuses, all flashcards types available', () {
+      final Group group = createGroup(flashcards: [
+        createFlashcard(index: 0, status: FlashcardStatus.remembered),
+        createFlashcard(index: 1, status: FlashcardStatus.notRemembered),
+      ]);
+
+      state = state.copyWith(selectedGroup: group);
+
+      expect(state.availableFlashcardsTypes, FlashcardsType.values);
+    });
+
+    test(
+      'all flashcards not remembered, only flashcards type all available',
+      () {
+        final Group group = createGroup(flashcards: [
+          createFlashcard(index: 0, status: FlashcardStatus.notRemembered),
+          createFlashcard(index: 1, status: FlashcardStatus.notRemembered),
+        ]);
+
+        state = state.copyWith(selectedGroup: group);
+
+        expect(state.availableFlashcardsTypes, [FlashcardsType.all]);
+      },
+    );
+
+    test(
+      'all flashcards remembered, only flashcards type all available',
+      () {
+        final Group group = createGroup(flashcards: [
+          createFlashcard(index: 0, status: FlashcardStatus.remembered),
+          createFlashcard(index: 1, status: FlashcardStatus.remembered),
+        ]);
+
+        state = state.copyWith(selectedGroup: group);
+
+        expect(state.availableFlashcardsTypes, [FlashcardsType.all]);
+      },
+    );
   });
 }

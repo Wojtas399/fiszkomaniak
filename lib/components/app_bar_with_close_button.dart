@@ -2,16 +2,15 @@ import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class AppBarWithCloseButton extends StatelessWidget
-    implements PreferredSizeWidget {
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String label;
-  final IconData closeIcon;
+  final IconData leadingIcon;
   final List<Widget>? actions;
 
-  const AppBarWithCloseButton({
+  const CustomAppBar({
     Key? key,
     required this.label,
-    this.closeIcon = MdiIcons.close,
+    this.leadingIcon = MdiIcons.arrowLeft,
     this.actions,
   }) : super(key: key);
 
@@ -27,7 +26,7 @@ class AppBarWithCloseButton extends StatelessWidget
         onPressed: () {
           Navigator.pop(context);
         },
-        icon: closeIcon,
+        icon: leadingIcon,
       ),
       actions: actions,
     );

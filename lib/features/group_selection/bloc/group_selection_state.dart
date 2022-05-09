@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 
 class GroupSelectionState extends Equatable {
@@ -7,16 +8,12 @@ class GroupSelectionState extends Equatable {
   late final List<Group> _groupsFromCourse;
   final Course? selectedCourse;
   final Group? selectedGroup;
-  final int amountOfAllFlashcardsFromGroup;
-  final int amountOfRememberedFlashcardsFromGroup;
 
   GroupSelectionState({
     List<Course> allCourses = const [],
     List<Group> groupsFromCourse = const [],
     this.selectedCourse,
     this.selectedGroup,
-    this.amountOfAllFlashcardsFromGroup = 0,
-    this.amountOfRememberedFlashcardsFromGroup = 0,
   }) {
     _allCourses = allCourses;
     _groupsFromCourse = groupsFromCourse;
@@ -32,6 +29,14 @@ class GroupSelectionState extends Equatable {
 
   String? get nameForAnswers => selectedGroup?.nameForAnswers;
 
+  int get amountOfAllFlashcards => selectedGroup?.flashcards.length ?? 0;
+
+  int get amountOfRememberedFlashcards =>
+      selectedGroup?.flashcards
+          .where((flashcard) => flashcard.status == FlashcardStatus.remembered)
+          .length ??
+      0;
+
   bool get isButtonDisabled => selectedCourse == null || selectedGroup == null;
 
   GroupSelectionState copyWith({
@@ -39,19 +44,12 @@ class GroupSelectionState extends Equatable {
     List<Group>? groupsFromCourse,
     Course? selectedCourse,
     Group? selectedGroup,
-    int? amountOfAllFlashcardsFromGroup,
-    int? amountOfRememberedFlashcardsFromGroup,
   }) {
     return GroupSelectionState(
       allCourses: allCourses ?? _allCourses,
       groupsFromCourse: groupsFromCourse ?? _groupsFromCourse,
       selectedCourse: selectedCourse ?? this.selectedCourse,
       selectedGroup: selectedGroup,
-      amountOfAllFlashcardsFromGroup:
-          amountOfAllFlashcardsFromGroup ?? this.amountOfAllFlashcardsFromGroup,
-      amountOfRememberedFlashcardsFromGroup:
-          amountOfRememberedFlashcardsFromGroup ??
-              this.amountOfRememberedFlashcardsFromGroup,
     );
   }
 
@@ -61,7 +59,5 @@ class GroupSelectionState extends Equatable {
         _groupsFromCourse,
         selectedCourse ?? createCourse(),
         selectedGroup ?? createGroup(),
-        amountOfAllFlashcardsFromGroup,
-        amountOfRememberedFlashcardsFromGroup,
       ];
 }

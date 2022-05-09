@@ -198,7 +198,7 @@ void main() {
     ),
     expect: () => [
       GroupsState(status: GroupsStatusLoading()),
-      GroupsState(status: const GroupsStatusError(message: 'Error...')),
+      const GroupsState(status: GroupsStatusError(message: 'Error...')),
     ],
     verify: (_) {
       verify(
@@ -263,7 +263,7 @@ void main() {
     )),
     expect: () => [
       GroupsState(status: GroupsStatusLoading()),
-      GroupsState(status: const GroupsStatusError(message: 'Error...')),
+      const GroupsState(status: GroupsStatusError(message: 'Error...')),
     ],
     verify: (_) {
       verify(
@@ -301,7 +301,7 @@ void main() {
     act: (_) => bloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
     expect: () => [
       GroupsState(status: GroupsStatusLoading()),
-      GroupsState(status: const GroupsStatusError(message: 'Error...')),
+      const GroupsState(status: GroupsStatusError(message: 'Error...')),
     ],
     verify: (_) {
       verify(() => groupsInterface.removeGroup('g1')).called(1);

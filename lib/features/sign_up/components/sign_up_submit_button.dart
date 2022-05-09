@@ -12,10 +12,12 @@ class SignUpSubmitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
-        return Button(
-          label: 'Zarejestruj',
-          onPressed:
-              state.isDisabledButton ? null : () => _submit(context, state),
+        return Center(
+          child: Button(
+            label: 'Zarejestruj',
+            onPressed:
+                state.isDisabledButton ? null : () => _submit(context, state),
+          ),
         );
       },
     );

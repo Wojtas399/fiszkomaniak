@@ -2,11 +2,10 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_state.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_dialogs.dart';
@@ -14,7 +13,6 @@ import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_event.dar
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -23,8 +21,6 @@ class MockGroupsBloc extends Mock implements GroupsBloc {}
 
 class MockCoursesBloc extends Mock implements CoursesBloc {}
 
-class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
-
 class MockGroupPreviewDialogs extends Mock implements GroupPreviewDialogs {}
 
 class MockNavigation extends Mock implements Navigation {}
@@ -32,7 +28,6 @@ class MockNavigation extends Mock implements Navigation {}
 void main() {
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final CoursesBloc coursesBloc = MockCoursesBloc();
-  final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
   final GroupPreviewDialogs groupPreviewDialogs = MockGroupPreviewDialogs();
   final Navigation navigation = MockNavigation();
   late GroupPreviewBloc bloc;
@@ -49,56 +44,22 @@ void main() {
       createGroup(id: 'g3', courseId: 'c2'),
     ],
   );
-  final FlashcardsState flashcardsState = FlashcardsState(
-    allFlashcards: [
-      createFlashcard(
-        id: 'f1',
-        groupId: 'g1',
-        status: FlashcardStatus.remembered,
-      ),
-      createFlashcard(
-        id: 'f2',
-        groupId: 'g1',
-        status: FlashcardStatus.remembered,
-      ),
-      createFlashcard(
-        id: 'f3',
-        groupId: 'g1',
-        status: FlashcardStatus.notRemembered,
-      ),
-      createFlashcard(
-        id: 'f4',
-        groupId: 'g1',
-        status: FlashcardStatus.notRemembered,
-      ),
-      createFlashcard(
-        id: 'f5',
-        groupId: 'g1',
-        status: FlashcardStatus.notRemembered,
-      ),
-      createFlashcard(id: 'f6', groupId: 'g2'),
-      createFlashcard(id: 'f7', groupId: 'g3'),
-    ],
-  );
 
   setUp(() {
     bloc = GroupPreviewBloc(
-        groupsBloc: groupsBloc,
-        coursesBloc: coursesBloc,
-        flashcardsBloc: flashcardsBloc,
-        groupPreviewDialogs: groupPreviewDialogs,
-        navigation: navigation);
+      groupsBloc: groupsBloc,
+      coursesBloc: coursesBloc,
+      groupPreviewDialogs: groupPreviewDialogs,
+      navigation: navigation,
+    );
     when(() => groupsBloc.state).thenReturn(groupsState);
     when(() => groupsBloc.stream).thenAnswer((_) => const Stream.empty());
     when(() => coursesBloc.state).thenReturn(coursesState);
-    when(() => flashcardsBloc.state).thenReturn(flashcardsState);
-    when(() => flashcardsBloc.stream).thenAnswer((_) => const Stream.empty());
   });
 
   tearDown(() {
     reset(groupsBloc);
     reset(coursesBloc);
-    reset(flashcardsBloc);
     reset(groupPreviewDialogs);
     reset(navigation);
   });
@@ -111,8 +72,6 @@ void main() {
       GroupPreviewState(
         group: groupsState.allGroups[0],
         courseName: coursesState.allCourses[0].name,
-        amountOfAllFlashcards: 5,
-        amountOfRememberedFlashcards: 2,
       ),
     ],
   );
@@ -214,14 +173,22 @@ void main() {
     'edit flashcards, group assigned',
     build: () => bloc,
     setUp: () {
-      when(() => navigation.navigateToFlashcardsEditor('g1')).thenReturn(null);
+      when(
+        () => navigation.navigateToFlashcardsEditor(
+          const FlashcardsEditorEditMode(groupId: 'g1'),
+        ),
+      ).thenReturn(null);
     },
     act: (_) {
       bloc.add(GroupPreviewEventInitialize(groupId: 'g1'));
       bloc.add(GroupPreviewEventEditFlashcards());
     },
     verify: (_) {
-      verify(() => navigation.navigateToFlashcardsEditor('g1')).called(1);
+      verify(
+        () => navigation.navigateToFlashcardsEditor(
+          const FlashcardsEditorEditMode(groupId: 'g1'),
+        ),
+      ).called(1);
     },
   );
 
@@ -229,11 +196,19 @@ void main() {
     'edit flashcards, group not assigned',
     build: () => bloc,
     setUp: () {
-      when(() => navigation.navigateToFlashcardsEditor('g1')).thenReturn(null);
+      when(
+        () => navigation.navigateToFlashcardsEditor(
+          const FlashcardsEditorEditMode(groupId: 'g1'),
+        ),
+      ).thenReturn(null);
     },
     act: (_) => bloc.add(GroupPreviewEventEditFlashcards()),
     verify: (_) {
-      verifyNever(() => navigation.navigateToFlashcardsEditor('g1'));
+      verifyNever(
+        () => navigation.navigateToFlashcardsEditor(
+          const FlashcardsEditorEditMode(groupId: 'g1'),
+        ),
+      );
     },
   );
 

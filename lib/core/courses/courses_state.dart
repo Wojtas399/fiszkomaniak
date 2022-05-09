@@ -51,6 +51,15 @@ class CoursesState extends Equatable {
     return null;
   }
 
+  bool isThereCourseWithTheSameName(String courseName) {
+    final List<Course?> courses = [...allCourses];
+    final Course? matchingCourse = courses.firstWhere(
+      (course) => course?.name == courseName,
+      orElse: () => null,
+    );
+    return matchingCourse != null;
+  }
+
   @override
   List<Object> get props => [
         allCourses,

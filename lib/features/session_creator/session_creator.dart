@@ -1,6 +1,5 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
@@ -63,7 +62,6 @@ class _SessionCreatorBlocProvider extends StatelessWidget {
       create: (BuildContext context) => SessionCreatorBloc(
         coursesBloc: context.read<CoursesBloc>(),
         groupsBloc: context.read<GroupsBloc>(),
-        flashcardsBloc: context.read<FlashcardsBloc>(),
         sessionsBloc: context.read<SessionsBloc>(),
         sessionCreatorDialogs: SessionCreatorDialogs(),
       )..add(SessionCreatorEventInitialize(mode: mode)),

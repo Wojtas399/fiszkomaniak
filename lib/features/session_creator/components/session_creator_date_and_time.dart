@@ -36,9 +36,11 @@ class SessionCreatorDateAndTime extends StatelessWidget {
                   TimePicker(
                     icon: MdiIcons.clockOutline,
                     label: 'Czas trwania (opcjonalnie)',
-                    value: convertTimeToDurationViewFormat(state.duration),
-                    initialTime:
-                        state.duration ?? const TimeOfDay(hour: 0, minute: 0),
+                    value: convertDurationToViewFormat(state.duration),
+                    initialTime: TimeOfDay(
+                      hour: state.duration?.inHours ?? 0,
+                      minute: state.duration?.inMinutes.remainder(60) ?? 0,
+                    ),
                     paddingLeft: 8.0,
                     paddingRight: 8.0,
                     helpText: 'WYBIERZ CZAS TRWANIA',
@@ -99,9 +101,9 @@ class SessionCreatorDateAndTime extends StatelessWidget {
   }
 
   void _durationSelected(BuildContext context, TimeOfDay duration) {
-    context
-        .read<SessionCreatorBloc>()
-        .add(SessionCreatorEventDurationSelected(duration: duration));
+    context.read<SessionCreatorBloc>().add(SessionCreatorEventDurationSelected(
+          duration: Duration(hours: duration.hour, minutes: duration.minute),
+        ));
   }
 
   void _cleanDuration(BuildContext context) {

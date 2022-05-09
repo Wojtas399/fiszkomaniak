@@ -12,6 +12,7 @@ import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/session_model.dart';
+import '../../learning_process/learning_process_data.dart';
 
 class SessionPreviewBloc
     extends Bloc<SessionPreviewEvent, SessionPreviewState> {
@@ -77,14 +78,10 @@ class SessionPreviewBloc
     SessionPreviewEventSwapQuestionsAndAnswers event,
     Emitter<SessionPreviewState> emit,
   ) {
-    final bool? areQuestionsAndAnswersSwapped =
-        state.areQuestionsAndAnswersSwapped;
-    if (areQuestionsAndAnswersSwapped != null) {
-      emit(state.copyWith(
-        areQuestionsAndAnswersSwapped: !areQuestionsAndAnswersSwapped,
-        duration: state.duration,
-      ));
-    }
+    emit(state.copyWith(
+      areQuestionsAndAnswersSwapped: !state.areQuestionsAndAnswersSwapped,
+      duration: state.duration,
+    ));
   }
 
   void _editSession(
@@ -115,7 +112,16 @@ class SessionPreviewBloc
     SessionPreviewEventStartLearning event,
     Emitter<SessionPreviewState> emit,
   ) {
-    //TODO
+    final Group? group = state.group;
+    if (group != null) {
+      _navigation.navigateToLearningProcess(LearningProcessData(
+        groupId: group.id,
+        flashcardsType: state.flashcardsType,
+        areQuestionsAndAnswersSwapped: state.areQuestionsAndAnswersSwapped,
+        sessionId: state.session?.id,
+        duration: state.duration,
+      ));
+    }
   }
 
   void _sessionsStateUpdated(

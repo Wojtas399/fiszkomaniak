@@ -1,23 +1,23 @@
 import 'package:equatable/equatable.dart';
 
 class FlashcardDbModel extends Equatable {
-  final String? groupId;
-  final String? question;
-  final String? answer;
-  final String? status;
+  final int index;
+  final String question;
+  final String answer;
+  final String status;
 
   const FlashcardDbModel({
-    required this.groupId,
+    required this.index,
     required this.question,
     required this.answer,
     required this.status,
   });
 
-  FlashcardDbModel.fromJson(Map<String, Object?> json)
+  FlashcardDbModel.fromJson(int index, Map<String, Object?> json)
       : this(
+          index: index,
           question: json['question']! as String,
           answer: json['answer']! as String,
-          groupId: json['groupId']! as String,
           status: json['status']! as String,
         );
 
@@ -25,16 +25,29 @@ class FlashcardDbModel extends Equatable {
     return {
       'question': question,
       'answer': answer,
-      'groupId': groupId,
       'status': status,
     }..removeWhere((key, value) => value == null);
   }
 
+  FlashcardDbModel copyWith({
+    int? index,
+    String? question,
+    String? answer,
+    String? status,
+  }) {
+    return FlashcardDbModel(
+      index: index ?? this.index,
+      question: question ?? this.question,
+      answer: answer ?? this.answer,
+      status: status ?? this.status,
+    );
+  }
+
   @override
   List<Object> get props => [
-        question ?? '',
-        answer ?? '',
-        groupId ?? '',
-        status ?? '',
+        index,
+        question,
+        answer,
+        status,
       ];
 }

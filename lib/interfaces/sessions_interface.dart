@@ -14,7 +14,7 @@ abstract class SessionsInterface {
     bool? areQuestionsAndAnswersSwapped,
     DateTime? date,
     TimeOfDay? time,
-    TimeOfDay? duration,
+    Duration? duration,
     TimeOfDay? notificationTime,
   });
 

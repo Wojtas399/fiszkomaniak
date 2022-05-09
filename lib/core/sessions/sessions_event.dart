@@ -41,7 +41,7 @@ class SessionsEventUpdateSession extends SessionsEvent {
   final String? groupId;
   final DateTime? date;
   final TimeOfDay? time;
-  final TimeOfDay? duration;
+  final Duration? duration;
   final TimeOfDay? notificationTime;
   final FlashcardsType? flashcardsType;
   final bool? areQuestionsAndFlashcardsSwapped;

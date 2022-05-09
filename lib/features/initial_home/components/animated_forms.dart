@@ -1,4 +1,3 @@
-import 'package:fiszkomaniak/features/initial_home/components/animated_form.dart';
 import 'package:fiszkomaniak/features/sign_in/sign_in_form.dart';
 import 'package:fiszkomaniak/features/sign_up/sign_up_form.dart';
 import 'package:fiszkomaniak/providers/initial_home_mode_provider.dart';
@@ -16,18 +15,9 @@ class AnimatedForms extends StatelessWidget {
 
     return Theme(
       data: GlobalTheme.lightTheme,
-      child: Stack(
-        children: [
-          AnimatedForm(
-            form: const SignInForm(),
-            isVisible: initialHomeModeProvider.isLoginMode,
-          ),
-          AnimatedForm(
-            form: const SignUpForm(),
-            isVisible: initialHomeModeProvider.isRegisterMode,
-          ),
-        ],
-      ),
+      child: initialHomeModeProvider.isLoginMode
+          ? const SignInForm()
+          : const SignUpForm(),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/models/flashcard_model.dart';
 
 class Group extends Equatable {
   final String id;
@@ -6,6 +7,7 @@ class Group extends Equatable {
   final String courseId;
   final String nameForQuestions;
   final String nameForAnswers;
+  final List<Flashcard> flashcards;
 
   const Group({
     required this.id,
@@ -13,7 +15,26 @@ class Group extends Equatable {
     required this.courseId,
     required this.nameForQuestions,
     required this.nameForAnswers,
+    required this.flashcards,
   });
+
+  Group copyWith({
+    String? id,
+    String? name,
+    String? courseId,
+    String? nameForQuestions,
+    String? nameForAnswers,
+    List<Flashcard>? flashcards,
+  }) {
+    return Group(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      courseId: courseId ?? this.courseId,
+      nameForQuestions: nameForQuestions ?? this.nameForQuestions,
+      nameForAnswers: nameForAnswers ?? this.nameForAnswers,
+      flashcards: flashcards ?? this.flashcards,
+    );
+  }
 
   @override
   List<Object> get props => [
@@ -22,6 +43,7 @@ class Group extends Equatable {
         courseId,
         nameForQuestions,
         nameForAnswers,
+        flashcards,
       ];
 }
 
@@ -31,6 +53,7 @@ Group createGroup({
   String courseId = '',
   String nameForQuestions = '',
   String nameForAnswers = '',
+  List<Flashcard> flashcards = const [],
 }) {
   return Group(
     id: id,
@@ -38,5 +61,6 @@ Group createGroup({
     courseId: courseId,
     nameForQuestions: nameForQuestions,
     nameForAnswers: nameForAnswers,
+    flashcards: flashcards,
   );
 }

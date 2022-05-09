@@ -79,7 +79,7 @@ class _AnimatedPadding extends StatelessWidget {
         Provider.of<InitialHomeModeProvider>(context);
     final double screenWidth = MediaQuery.of(context).size.width;
     final double loginModeTopPadding = screenWidth * 0.30;
-    final double registerModeTopPadding = screenWidth * 0.12;
+    final double registerModeTopPadding = screenWidth * 0.15;
     final double topPadding = initialHomeModeProvider.isLoginMode
         ? loginModeTopPadding
         : registerModeTopPadding;

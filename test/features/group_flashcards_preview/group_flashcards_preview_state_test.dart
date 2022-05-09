@@ -5,9 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   late GroupFlashcardsPreviewState state;
   final List<Flashcard> flashcards = [
-    createFlashcard(id: 'f1', question: 'question', answer: 'answer'),
-    createFlashcard(id: 'f2', question: 'What is your name?', answer: 'Jan'),
-    createFlashcard(id: 'f3', question: 'How are you?', answer: 'I am fine'),
+    createFlashcard(index: 0, question: 'question', answer: 'answer'),
+    createFlashcard(index: 1, question: 'What is your name?', answer: 'Jan'),
+    createFlashcard(index: 2, question: 'How are you?', answer: 'I am fine'),
   ];
 
   setUp(() {

@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/utils/group_utils.dart';
 import 'package:flutter/material.dart';
 import '../../../models/session_model.dart';
 
@@ -15,7 +16,7 @@ class SessionCreatorState extends Equatable {
   final bool areQuestionsAndAnswersSwapped;
   final DateTime? date;
   final TimeOfDay? time;
-  final TimeOfDay? duration;
+  final Duration? duration;
   final TimeOfDay? notificationTime;
 
   String? get nameForQuestions => areQuestionsAndAnswersSwapped
@@ -28,6 +29,14 @@ class SessionCreatorState extends Equatable {
 
   bool get isButtonDisabled =>
       _isOneOfRequiredParamsNull() || _areParamsSameAsOriginal();
+
+  List<FlashcardsType> get availableFlashcardsTypes {
+    final Group? group = selectedGroup;
+    if (group == null) {
+      return FlashcardsType.values;
+    }
+    return GroupUtils.getAvailableFlashcardsTypes(group);
+  }
 
   const SessionCreatorState({
     this.mode = const SessionCreatorCreateMode(),
@@ -53,7 +62,7 @@ class SessionCreatorState extends Equatable {
     bool? areQuestionsAndAnswersSwapped,
     DateTime? date,
     TimeOfDay? time,
-    TimeOfDay? duration,
+    Duration? duration,
     TimeOfDay? notificationTime,
   }) {
     return SessionCreatorState(

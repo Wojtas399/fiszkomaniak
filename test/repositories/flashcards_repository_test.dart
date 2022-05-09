@@ -1,4 +1,3 @@
-import 'package:fiszkomaniak/firebase/models/fire_doc_model.dart';
 import 'package:fiszkomaniak/firebase/models/flashcard_db_model.dart';
 import 'package:fiszkomaniak/repositories/flashcards_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_flashcards_service.dart';
@@ -14,32 +13,30 @@ void main() {
   late FlashcardsRepository repository;
   final List<Flashcard> flashcards = [
     createFlashcard(
-      id: 'f1',
-      groupId: 'g1',
+      index: 0,
       question: 'f1 question',
       answer: 'f1 answer',
       status: FlashcardStatus.notRemembered,
     ),
     createFlashcard(
-      id: 'f2',
-      groupId: 'g1',
+      index: 1,
       question: 'f2 question',
       answer: 'f2 answer',
-      status: FlashcardStatus.notRemembered,
+      status: FlashcardStatus.remembered,
     ),
   ];
   final List<FlashcardDbModel> convertedFlashcards = [
     FlashcardDbModel(
-      groupId: flashcards[0].groupId,
+      index: flashcards[0].index,
       question: flashcards[0].question,
       answer: flashcards[0].answer,
       status: 'notRemembered',
     ),
     FlashcardDbModel(
-      groupId: flashcards[1].groupId,
+      index: flashcards[1].index,
       question: flashcards[1].question,
       answer: flashcards[1].answer,
-      status: 'notRemembered',
+      status: 'remembered',
     ),
   ];
 
@@ -53,38 +50,37 @@ void main() {
     reset(fireFlashcardsService);
   });
 
-  test('add flashcards', () async {
-    when(() => fireFlashcardsService.addFlashcards(convertedFlashcards))
+  test('set flashcards', () async {
+    when(() => fireFlashcardsService.setFlashcards('g1', convertedFlashcards))
         .thenAnswer((_) async => '');
 
-    await repository.addFlashcards(flashcards);
+    await repository.setFlashcards(groupId: 'g1', flashcards: flashcards);
 
-    verify(() => fireFlashcardsService.addFlashcards(convertedFlashcards))
+    verify(() => fireFlashcardsService.setFlashcards('g1', convertedFlashcards))
         .called(1);
   });
 
-  test('update flashcards', () async {
-    final List<FireDoc<FlashcardDbModel>> docsToSend = [
-      FireDoc(id: flashcards[0].id, doc: convertedFlashcards[0]),
-      FireDoc(id: flashcards[1].id, doc: convertedFlashcards[1]),
-    ];
-    when(() => fireFlashcardsService.updateFlashcards(docsToSend))
-        .thenAnswer((_) async => '');
+  test('update flashcard', () async {
+    when(
+      () => fireFlashcardsService.updateFlashcard('g1', convertedFlashcards[0]),
+    ).thenAnswer((_) async => '');
 
-    await repository.updateFlashcards(flashcards);
+    await repository.updateFlashcard(groupId: 'g1', flashcard: flashcards[0]);
 
-    verify(() => fireFlashcardsService.updateFlashcards(docsToSend)).called(1);
+    verify(
+      () => fireFlashcardsService.updateFlashcard('g1', convertedFlashcards[0]),
+    ).called(1);
   });
 
-  test('remove flashcards', () async {
-    final List<String> flashcardsIds =
-        flashcards.map((flashcard) => flashcard.id).toList();
-    when(() => fireFlashcardsService.removeFlashcards(flashcardsIds))
-        .thenAnswer((_) async => '');
+  test('remove flashcard', () async {
+    when(
+      () => fireFlashcardsService.removeFlashcard('g1', convertedFlashcards[0]),
+    ).thenAnswer((_) async => '');
 
-    await repository.removeFlashcards(flashcardsIds);
+    await repository.removeFlashcard(groupId: 'g1', flashcard: flashcards[0]);
 
-    verify(() => fireFlashcardsService.removeFlashcards(flashcardsIds))
-        .called(1);
+    verify(
+      () => fireFlashcardsService.removeFlashcard('g1', convertedFlashcards[0]),
+    ).called(1);
   });
 }

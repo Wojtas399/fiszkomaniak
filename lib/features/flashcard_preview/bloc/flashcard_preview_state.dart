@@ -52,3 +52,13 @@ class FlashcardPreviewState extends Equatable {
         status,
       ];
 }
+
+class FlashcardPreviewParams {
+  final String groupId;
+  final int flashcardIndex;
+
+  FlashcardPreviewParams({
+    required this.groupId,
+    required this.flashcardIndex,
+  });
+}

@@ -1,6 +1,5 @@
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
-import 'package:flutter/material.dart';
 
 abstract class SessionPreviewEvent {}
 
@@ -11,7 +10,7 @@ class SessionPreviewEventInitialize extends SessionPreviewEvent {
 }
 
 class SessionPreviewEventDurationChanged extends SessionPreviewEvent {
-  final TimeOfDay? duration;
+  final Duration? duration;
 
   SessionPreviewEventDurationChanged({required this.duration});
 }

@@ -6,23 +6,24 @@ import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_event.dart';
+import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_state.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/components/flashcard_preview_app_bar.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/components/flashcard_preview_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FlashcardPreview extends StatelessWidget {
-  final String flashcardId;
+  final FlashcardPreviewParams params;
 
   const FlashcardPreview({
     Key? key,
-    required this.flashcardId,
+    required this.params,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return _FlashcardPreviewBlocProvider(
-      flashcardId: flashcardId,
+      params: params,
       child: Scaffold(
         appBar: const FlashcardPreviewAppBar(),
         body: BouncingScroll(
@@ -46,12 +47,12 @@ class FlashcardPreview extends StatelessWidget {
 }
 
 class _FlashcardPreviewBlocProvider extends StatelessWidget {
-  final String flashcardId;
+  final FlashcardPreviewParams params;
   final Widget child;
 
   const _FlashcardPreviewBlocProvider({
     Key? key,
-    required this.flashcardId,
+    required this.params,
     required this.child,
   }) : super(key: key);
 
@@ -63,7 +64,7 @@ class _FlashcardPreviewBlocProvider extends StatelessWidget {
         coursesBloc: context.read<CoursesBloc>(),
         groupsBloc: context.read<GroupsBloc>(),
         flashcardPreviewDialogs: FlashcardPreviewDialogs(),
-      )..add(FlashcardPreviewEventInitialize(flashcardId: flashcardId)),
+      )..add(FlashcardPreviewEventInitialize(params: params)),
       child: child,
     );
   }

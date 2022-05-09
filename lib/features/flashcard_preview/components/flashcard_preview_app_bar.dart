@@ -36,7 +36,7 @@ class _DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBarWithCloseButton(
+    return CustomAppBar(
       label: 'Fiszka',
       actions: [
         CustomIconButton(

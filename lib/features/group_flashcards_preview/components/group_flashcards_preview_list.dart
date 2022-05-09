@@ -38,14 +38,18 @@ class GroupFlashcardsPreviewList extends StatelessWidget {
   Widget _generateItem(BuildContext context, Flashcard flashcard) {
     return GroupFlashcardsPreviewItem(
       flashcard: flashcard,
-      onTap: () {
-        context
-            .read<GroupFlashcardsPreviewBloc>()
-            .add(GroupFlashcardsPreviewEventShowFlashcardDetails(
-              flashcardId: flashcard.id,
-            ));
-      },
+      onTap: () => _showFlashcardDetails(context, flashcard.index),
     );
+  }
+
+  void _showFlashcardDetails(BuildContext context, int? index) {
+    if (index != null) {
+      context
+          .read<GroupFlashcardsPreviewBloc>()
+          .add(GroupFlashcardsPreviewEventShowFlashcardDetails(
+            flashcardIndex: index,
+          ));
+    }
   }
 }
 

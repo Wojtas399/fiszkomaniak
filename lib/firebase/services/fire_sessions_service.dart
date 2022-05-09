@@ -7,28 +7,28 @@ class FireSessionsService {
   static Future<QuerySnapshot<SessionDbModel>> getSessionsByGroupsIds(
     List<String> groupsIds,
   ) async {
-    return await FireReferences.sessionsRef
+    return await FireReferences.sessionsRefWithConverter
         .where('groupId', whereIn: groupsIds)
         .get();
   }
 
   Stream<QuerySnapshot<SessionDbModel>> getSessionsSnapshots() {
-    return FireReferences.sessionsRef.snapshots();
+    return FireReferences.sessionsRefWithConverter.snapshots();
   }
 
   Future<void> addNewSession(SessionDbModel sessionData) async {
-    await FireReferences.sessionsRef.add(sessionData);
+    await FireReferences.sessionsRefWithConverter.add(sessionData);
   }
 
   Future<void> updateSession(FireDoc<SessionDbModel> sessionData) async {
-    await FireReferences.sessionsRef.doc(sessionData.id).update(
+    await FireReferences.sessionsRefWithConverter.doc(sessionData.id).update(
           sessionData.doc.toJson(),
         );
   }
 
   Future<void> removeSession(String sessionId) async {
     try {
-      await FireReferences.sessionsRef.doc(sessionId).delete();
+      await FireReferences.sessionsRefWithConverter.doc(sessionId).delete();
     } catch (error) {
       rethrow;
     }
