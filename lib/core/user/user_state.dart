@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/user/user_status.dart';
-import 'package:fiszkomaniak/models/user_model.dart';
+part of 'user_bloc.dart';
 
 class UserState extends Equatable {
   final UserStatus status;

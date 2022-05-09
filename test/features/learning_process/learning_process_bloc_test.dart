@@ -5,7 +5,6 @@ import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_event.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_data.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';

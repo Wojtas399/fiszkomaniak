@@ -1,5 +1,4 @@
-import 'package:fiszkomaniak/core/user/user_state.dart';
-import 'package:fiszkomaniak/core/user/user_status.dart';
+import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/models/day_model.dart';
 import 'package:fiszkomaniak/models/user_model.dart';
 import 'package:flutter_test/flutter_test.dart';

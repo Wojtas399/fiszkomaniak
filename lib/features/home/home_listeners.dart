@@ -9,8 +9,6 @@ import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_state.dart';
-import 'package:fiszkomaniak/core/user/user_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../components/dialogs/dialogs.dart';

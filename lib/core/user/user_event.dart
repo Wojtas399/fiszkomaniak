@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/user_model.dart';
+part of 'user_bloc.dart';
 
 abstract class UserEvent extends Equatable {
   @override

@@ -1,10 +1,14 @@
 import 'dart:async';
-import 'package:fiszkomaniak/core/user/user_event.dart';
-import 'package:fiszkomaniak/core/user/user_state.dart';
-import 'package:fiszkomaniak/core/user/user_status.dart';
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:fiszkomaniak/models/user_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+part 'user_event.dart';
+
+part 'user_state.dart';
+
+part 'user_status.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   late final UserInterface _userInterface;

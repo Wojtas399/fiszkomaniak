@@ -3,7 +3,6 @@ import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_event.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';

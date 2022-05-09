@@ -1,8 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_event.dart';
-import 'package:fiszkomaniak/core/user/user_state.dart';
-import 'package:fiszkomaniak/core/user/user_status.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:fiszkomaniak/models/day_model.dart';
 import 'package:fiszkomaniak/models/user_model.dart';

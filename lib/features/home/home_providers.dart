@@ -10,7 +10,6 @@ import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_event.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
