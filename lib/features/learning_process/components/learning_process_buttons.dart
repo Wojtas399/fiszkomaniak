@@ -1,11 +1,12 @@
-import 'package:fiszkomaniak/components/button.dart';
+import 'package:fiszkomaniak/components/buttons/button.dart';
+import 'package:fiszkomaniak/config/theme/colors.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_state.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hexcolor/hexcolor.dart';
+import '../../../components/buttons/small_button.dart';
 import '../bloc/learning_process_bloc.dart';
 
 class LearningProcessButtons extends StatelessWidget {
@@ -65,17 +66,17 @@ class _AnswerButtons extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: _SmallButton(
-              text: 'Nie udało się',
-              color: HexColor('#FF6961'),
+            child: SmallButton(
+              label: 'Nie udało się',
+              color: AppColors.red,
               onPressed: () => _moveLeft(context),
             ),
           ),
           const SizedBox(width: 16.0),
           Expanded(
-            child: _SmallButton(
-              text: 'Udało się',
-              color: HexColor('#63B76C'),
+            child: SmallButton(
+              label: 'Udało się',
+              color: AppColors.green,
               onPressed: () => _moveRight(context),
             ),
           ),
@@ -115,38 +116,5 @@ class _EndSessionButton extends StatelessWidget {
 
   void _endSession(BuildContext context) {
     context.read<LearningProcessBloc>().add(LearningProcessEventEndSession());
-  }
-}
-
-class _SmallButton extends StatelessWidget {
-  final String text;
-  final Color color;
-  final VoidCallback onPressed;
-
-  const _SmallButton({
-    Key? key,
-    required this.text,
-    required this.color,
-    required this.onPressed,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 51,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: Text(
-          text.toUpperCase(),
-          style: const TextStyle(color: Colors.white, fontSize: 14),
-        ),
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(color),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-          ),
-        ),
-      ),
-    );
   }
 }

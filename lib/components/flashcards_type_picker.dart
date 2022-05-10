@@ -27,7 +27,6 @@ class FlashcardsTypePicker extends StatelessWidget {
       paddingRight: 8.0,
       onTap: () async {
         final int? selectedOption = await ModalBottomSheet.showWithOptions(
-          context: context,
           title: 'Wybierz rodzaj fiszek',
           options: _buildOptions(),
         );

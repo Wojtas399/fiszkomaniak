@@ -1,6 +1,8 @@
-import 'package:fiszkomaniak/components/avatar.dart';
+import 'package:fiszkomaniak/components/avatar/avatar.dart';
+import 'package:fiszkomaniak/components/avatar/avatar_image_type.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/config/theme/global_theme.dart';
+import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -51,7 +53,7 @@ class _AvatarAndDays extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16),
       child: Row(
         children: [
-          const Avatar(size: 42.0),
+          const _LoggedUserAvatar(),
           const SizedBox(width: 12),
           const Icon(MdiIcons.medal),
           Text(
@@ -60,6 +62,21 @@ class _AvatarAndDays extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _LoggedUserAvatar extends StatelessWidget {
+  const _LoggedUserAvatar({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final String? avatarUrl = context.select(
+      (UserBloc bloc) => bloc.state.loggedUser?.avatarUrl,
+    );
+    return Avatar(
+      imageType: avatarUrl != null ? AvatarImageTypeUrl(url: avatarUrl) : null,
+      size: 42.0,
     );
   }
 }

@@ -1,33 +1,47 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fiszkomaniak/firebase/models/day_flashcard_db_model.dart';
+import 'package:fiszkomaniak/firebase/services/fire_avatar_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_user_service.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:fiszkomaniak/models/day_flashcard_model.dart';
 import 'package:fiszkomaniak/models/day_model.dart';
 import 'package:fiszkomaniak/firebase/fire_converters.dart';
+import 'package:rxdart/rxdart.dart';
 import '../firebase/models/day_db_model.dart';
 import '../firebase/models/user_db_model.dart';
 import '../models/user_model.dart';
 
 class UserRepository implements UserInterface {
   late final FireUserService _fireUserService;
+  late final FireAvatarService _fireAvatarService;
 
   UserRepository({
     required FireUserService fireUserService,
+    required FireAvatarService fireAvatarService,
   }) {
     _fireUserService = fireUserService;
+    _fireAvatarService = fireAvatarService;
   }
 
   @override
-  Stream<User> getLoggedUserSnapshots() async* {
-    final Stream<User?> stream = _fireUserService
-        .getLoggedUserSnapshots()
-        .map(_convertFireDocumentToUserModel);
-    await for (final value in stream) {
-      if (value != null) {
-        yield value;
-      }
-    }
+  Stream<User> getLoggedUserSnapshots() {
+    return Rx.combineLatest2(
+      _fireAvatarService.getLoggedUserAvatarSnapshots(),
+      _fireUserService.getLoggedUserSnapshots(),
+      (String? avatarUrl, DocumentSnapshot<UserDbModel> userDbModel) {
+        return _createUserModel(avatarUrl, userDbModel);
+      },
+    ).whereType<User>();
+  }
+
+  @override
+  Future<void> saveNewAvatar({required String fullPath}) async {
+    await _fireAvatarService.saveNewLoggedUserAvatar(fullPath);
+  }
+
+  @override
+  Future<void> removeAvatar() async {
+    await _fireAvatarService.removeLoggedUserAvatar();
   }
 
   @override
@@ -41,11 +55,16 @@ class UserRepository implements UserInterface {
     );
   }
 
-  User? _convertFireDocumentToUserModel(
-      DocumentSnapshot<UserDbModel> document) {
-    final UserDbModel? data = document.data();
+  User? _createUserModel(
+    String? avatarUrl,
+    DocumentSnapshot<UserDbModel> fireDocument,
+  ) {
+    final UserDbModel? data = fireDocument.data();
     if (data != null) {
-      return User(days: _convertFireDaysToDayModel(data.days));
+      return User(
+        avatarUrl: avatarUrl,
+        days: _convertFireDaysToDayModel(data.days),
+      );
     }
     return null;
   }

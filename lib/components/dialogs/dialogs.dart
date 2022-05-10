@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:fiszkomaniak/components/dialogs/confirmation_dialog.dart';
 import 'package:fiszkomaniak/components/dialogs/message_dialog.dart';
 import 'package:fiszkomaniak/components/dialogs/simple_loading_dialog.dart';
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:flutter/material.dart';
+import '../../config/slide_up_route_animation.dart';
+import 'image_confirmation_dialog.dart';
 
 class Dialogs {
   bool _isLoadingDialogOpened = false;
@@ -56,6 +59,18 @@ class Dialogs {
           cancelButtonText: cancelButtonText,
         ),
       );
+    }
+    return null;
+  }
+
+  Future<bool?> askForImageConfirmation({
+    required File imageFile,
+  }) async {
+    final BuildContext? context = HomeRouter.navigatorKey.currentContext;
+    if (context != null) {
+      return await Navigator.of(context).push(SlideUpRouteAnimation(
+        page: ImageConfirmationDialog(imageFile: imageFile),
+      ));
     }
     return null;
   }

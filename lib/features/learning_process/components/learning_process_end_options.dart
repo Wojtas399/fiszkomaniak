@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/components/button.dart';
+import 'package:fiszkomaniak/components/buttons/button.dart';
 import 'package:fiszkomaniak/converters/flashcards_type_converters.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';

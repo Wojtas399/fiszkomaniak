@@ -3,7 +3,7 @@ import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_event.dart';
 import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/button.dart';
+import '../../../components/buttons/button.dart';
 
 class SignUpSubmitButton extends StatelessWidget {
   const SignUpSubmitButton({Key? key}) : super(key: key);

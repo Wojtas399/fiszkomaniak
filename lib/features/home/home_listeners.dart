@@ -39,6 +39,16 @@ class HomeListeners extends StatelessWidget {
             final UserStatus status = state.status;
             if (status is UserStatusLoading) {
               dialogs.showLoadingDialog();
+            } else if (status is UserStatusNewAvatarSaved) {
+              _closeLoadingDialog(context);
+              dialogs.showSnackbarWithMessage(
+                'Pomyślnie zapisano nowe zdjęcie profilowe',
+              );
+            } else if (status is UserStatusAvatarRemoved) {
+              _closeLoadingDialog(context);
+              dialogs.showSnackbarWithMessage(
+                'Pomyślnie usunięto zdjęcie profilowe',
+              );
             } else if (status is UserStatusNewRememberedFlashcardsSaved) {
               _closeLoadingDialog(context);
               dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');

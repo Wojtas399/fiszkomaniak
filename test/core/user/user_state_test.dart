@@ -25,6 +25,7 @@ void main() {
 
   test('copy with logged user', () {
     final User loggedUser = createUser(
+      avatarUrl: 'avatar/url/image.jpg',
       days: [createDay(date: DateTime(2022))],
     );
 

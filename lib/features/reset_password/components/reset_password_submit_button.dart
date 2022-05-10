@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/features/reset_password/bloc/reset_password_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/button.dart';
+import '../../../components/buttons/button.dart';
 import '../bloc/reset_password_event.dart';
 import '../bloc/reset_password_state.dart';
 

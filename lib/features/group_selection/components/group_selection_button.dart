@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/components/button.dart';
+import 'package:fiszkomaniak/components/buttons/button.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_bloc.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_event.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_state.dart';

@@ -40,7 +40,8 @@ class FireUserService {
           await FireReferences.groupsRefWithConverter.doc(groupId).get();
       final List<FlashcardDbModel> flashcardsFromGroup =
           group.data()?.flashcards ?? [];
-      final List<FlashcardDbModel> updatedFlashcards = _updateFlashcards(
+      final List<FlashcardDbModel> updatedFlashcards =
+          _updateFlashcardsStatuses(
         flashcardsFromGroup,
         indexesOfRememberedFlashcards,
       );
@@ -71,7 +72,7 @@ class FireUserService {
         .toList();
   }
 
-  List<FlashcardDbModel> _updateFlashcards(
+  List<FlashcardDbModel> _updateFlashcardsStatuses(
     List<FlashcardDbModel> flashcards,
     List<int> indexesOfRememberedFlashcards,
   ) {

@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/firebase/services/fire_avatar_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/repositories/courses_repository.dart';
@@ -31,6 +32,7 @@ class FirebaseProvider {
   static UserInterface provideUserInterface() {
     return UserRepository(
       fireUserService: FireUserService(),
+      fireAvatarService: FireAvatarService(),
     );
   }
 

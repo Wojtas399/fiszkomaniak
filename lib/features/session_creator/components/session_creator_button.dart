@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/components/button.dart';
+import 'package:fiszkomaniak/components/buttons/button.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
