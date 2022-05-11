@@ -7,6 +7,8 @@ abstract class UserInterface {
 
   Future<void> removeAvatar();
 
+  Future<void> saveNewUsername({required String newUsername});
+
   Future<void> saveNewRememberedFlashcardsInDays({
     required String groupId,
     required List<int> indexesOfFlashcards,

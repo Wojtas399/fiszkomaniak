@@ -10,16 +10,16 @@ void main() {
   });
 
   test('initial state', () {
-    expect(state.userData, null);
+    expect(state.loggedUserData, null);
   });
 
   test('copy with data', () {
     final User userData = createUser(avatarUrl: 'avatar/url');
 
-    final ProfileState state2 = state.copyWith(userData: userData);
+    final ProfileState state2 = state.copyWith(loggedUserData: userData);
     final ProfileState state3 = state2.copyWith();
 
-    expect(state2.userData, userData);
-    expect(state3.userData, userData);
+    expect(state2.loggedUserData, userData);
+    expect(state3.loggedUserData, userData);
   });
 }

@@ -10,4 +10,6 @@ class ProfileEventUserUpdated extends ProfileEvent {
   ProfileEventUserUpdated({required this.newUserData});
 }
 
-class ProfileEventAvatarPressed extends ProfileEvent {}
+class ProfileEventModifyAvatar extends ProfileEvent {}
+
+class ProfileEventChangeUsername extends ProfileEvent {}

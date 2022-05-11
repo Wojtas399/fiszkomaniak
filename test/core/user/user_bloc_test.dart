@@ -109,6 +109,39 @@ void main() {
   );
 
   blocTest(
+    'change username, success',
+    build: () => bloc,
+    setUp: () {
+      when(() => userInterface.saveNewUsername(newUsername: 'newUsername'))
+          .thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(UserEventChangeUsername(newUsername: 'newUsername')),
+    expect: () => [
+      loadingState,
+      UserState(status: UserStatusUsernameUpdated()),
+    ],
+    verify: (_) {
+      verify(() => userInterface.saveNewUsername(newUsername: 'newUsername'))
+          .called(1);
+    },
+  );
+
+  blocTest(
+    'change username, failure',
+    build: () => bloc,
+    setUp: () {
+      when(() => userInterface.saveNewUsername(newUsername: 'newUsername'))
+          .thenThrow(errorMessage);
+    },
+    act: (_) => bloc.add(UserEventChangeUsername(newUsername: 'newUsername')),
+    expect: () => [loadingState, errorState],
+    verify: (_) {
+      verify(() => userInterface.saveNewUsername(newUsername: 'newUsername'))
+          .called(1);
+    },
+  );
+
+  blocTest(
     'save new remembered flashcards, success',
     build: () => bloc,
     setUp: () {

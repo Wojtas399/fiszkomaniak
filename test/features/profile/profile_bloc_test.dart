@@ -9,6 +9,8 @@ import 'package:mocktail/mocktail.dart';
 
 class MockUserBloc extends Mock implements UserBloc {}
 
+class MockUserEvent extends Mock implements UserEvent {}
+
 class MockProfileDialogs extends Mock implements ProfileDialogs {}
 
 class MockImagePicker extends Mock implements ImagePicker {}
@@ -18,9 +20,13 @@ void main() {
   final ProfileDialogs profileDialogs = MockProfileDialogs();
   final ImagePicker imagePicker = MockImagePicker();
   late ProfileBloc bloc;
-  final User loggedUser = createUser(avatarUrl: 'avatar/url');
+  final User loggedUser = createUser(
+    username: 'username',
+    avatarUrl: 'avatar/url',
+  );
 
   setUp(() {
+    registerFallbackValue(String);
     bloc = ProfileBloc(
       userBloc: userBloc,
       profileDialogs: profileDialogs,
@@ -28,6 +34,7 @@ void main() {
     );
     when(() => userBloc.state).thenReturn(UserState(loggedUser: loggedUser));
     when(() => userBloc.stream).thenAnswer((_) => const Stream.empty());
+    registerFallbackValue(MockUserEvent());
   });
 
   tearDown(() {
@@ -40,18 +47,18 @@ void main() {
     'initialize',
     build: () => bloc,
     act: (_) => bloc.add(ProfileEventInitialize()),
-    expect: () => [ProfileState(userData: loggedUser)],
+    expect: () => [ProfileState(loggedUserData: loggedUser)],
   );
 
   blocTest(
     'user updated',
     build: () => bloc,
     act: (_) => bloc.add(ProfileEventUserUpdated(newUserData: loggedUser)),
-    expect: () => [ProfileState(userData: loggedUser)],
+    expect: () => [ProfileState(loggedUserData: loggedUser)],
   );
 
   blocTest(
-    'avatar pressed, no avatar set',
+    'modify avatar, no avatar set',
     build: () => ProfileBloc(
       userBloc: userBloc,
       profileDialogs: profileDialogs,
@@ -66,7 +73,7 @@ void main() {
           .thenAnswer((_) async => true);
     },
     act: (ProfileBloc profileBloc) => profileBloc.add(
-      ProfileEventAvatarPressed(),
+      ProfileEventModifyAvatar(),
     ),
     verify: (_) {
       verify(() => profileDialogs.askForImageSource()).called(1);
@@ -83,7 +90,7 @@ void main() {
   );
 
   blocTest(
-    'avatar pressed, edit, image source not selected',
+    'modify avatar, edit, image source not selected',
     build: () => bloc,
     setUp: () {
       when(() => profileDialogs.askForAvatarAction())
@@ -97,7 +104,7 @@ void main() {
     },
     act: (_) {
       bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventAvatarPressed());
+      bloc.add(ProfileEventModifyAvatar());
     },
     verify: (_) {
       verify(() => profileDialogs.askForAvatarAction()).called(1);
@@ -113,7 +120,7 @@ void main() {
   );
 
   blocTest(
-    'avatar pressed, edit, image not selected',
+    'modify avatar, edit, image not selected',
     build: () => bloc,
     setUp: () {
       when(() => profileDialogs.askForAvatarAction())
@@ -127,7 +134,7 @@ void main() {
     },
     act: (_) {
       bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventAvatarPressed());
+      bloc.add(ProfileEventModifyAvatar());
     },
     verify: (_) {
       verify(() => profileDialogs.askForAvatarAction()).called(1);
@@ -144,7 +151,7 @@ void main() {
   );
 
   blocTest(
-    'avatar pressed, edit, confirmed',
+    'modify avatar, edit, confirmed',
     build: () => bloc,
     setUp: () {
       when(() => profileDialogs.askForAvatarAction())
@@ -158,7 +165,7 @@ void main() {
     },
     act: (_) {
       bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventAvatarPressed());
+      bloc.add(ProfileEventModifyAvatar());
     },
     verify: (_) {
       verify(() => profileDialogs.askForAvatarAction()).called(1);
@@ -176,7 +183,7 @@ void main() {
   );
 
   blocTest(
-    'avatar pressed, edit, cancelled',
+    'modify avatar, edit, cancelled',
     build: () => bloc,
     setUp: () {
       when(() => profileDialogs.askForAvatarAction())
@@ -190,7 +197,7 @@ void main() {
     },
     act: (_) {
       bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventAvatarPressed());
+      bloc.add(ProfileEventModifyAvatar());
     },
     verify: (_) {
       verify(() => profileDialogs.askForAvatarAction()).called(1);
@@ -208,7 +215,7 @@ void main() {
   );
 
   blocTest(
-    'avatar pressed, delete, confirmed',
+    'modify avatar, delete, confirmed',
     build: () => bloc,
     setUp: () {
       when(() => profileDialogs.askForAvatarAction())
@@ -218,7 +225,7 @@ void main() {
     },
     act: (_) {
       bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventAvatarPressed());
+      bloc.add(ProfileEventModifyAvatar());
     },
     verify: (_) {
       verify(() => profileDialogs.askForAvatarAction()).called(1);
@@ -228,7 +235,7 @@ void main() {
   );
 
   blocTest(
-    'avatar pressed, delete, cancelled',
+    'modify avatar, delete, cancelled',
     build: () => bloc,
     setUp: () {
       when(() => profileDialogs.askForAvatarAction())
@@ -238,12 +245,52 @@ void main() {
     },
     act: (_) {
       bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventAvatarPressed());
+      bloc.add(ProfileEventModifyAvatar());
     },
     verify: (_) {
       verify(() => profileDialogs.askForAvatarAction()).called(1);
       verify(() => profileDialogs.askForDeleteAvatarConfirmation()).called(1);
       verifyNever(() => userBloc.add(UserEventRemoveAvatar()));
+    },
+  );
+
+  blocTest(
+    'change username, new username as String',
+    build: () => bloc,
+    setUp: () {
+      when(() => profileDialogs.askForNewUsername(loggedUser.username))
+          .thenAnswer((_) async => 'new username');
+    },
+    act: (_) {
+      bloc.add(ProfileEventInitialize());
+      bloc.add(ProfileEventChangeUsername());
+    },
+    verify: (_) {
+      verify(() => profileDialogs.askForNewUsername(loggedUser.username))
+          .called(1);
+      verify(
+        () => userBloc.add(
+          UserEventChangeUsername(newUsername: 'new username'),
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'change username, new username as null',
+    build: () => bloc,
+    setUp: () {
+      when(() => profileDialogs.askForNewUsername(loggedUser.username))
+          .thenAnswer((_) async => null);
+    },
+    act: (_) {
+      bloc.add(ProfileEventInitialize());
+      bloc.add(ProfileEventChangeUsername());
+    },
+    verify: (_) {
+      verify(() => profileDialogs.askForNewUsername(loggedUser.username))
+          .called(1);
+      verifyNever(() => userBloc.add(any()));
     },
   );
 }

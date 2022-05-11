@@ -1,17 +1,19 @@
 part of 'profile_bloc.dart';
 
 class ProfileState extends Equatable {
-  final User? userData;
+  final User? loggedUserData;
 
-  const ProfileState({this.userData});
+  const ProfileState({this.loggedUserData});
 
   @override
-  List<Object> get props => [userData ?? ''];
+  List<Object> get props => [loggedUserData ?? ''];
 
   ProfileState copyWith({
-    User? userData,
+    User? loggedUserData,
   }) {
-    return ProfileState(userData: userData ?? this.userData);
+    return ProfileState(
+      loggedUserData: loggedUserData ?? this.loggedUserData,
+    );
   }
 }
 

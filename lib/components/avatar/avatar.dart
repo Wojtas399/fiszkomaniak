@@ -31,7 +31,7 @@ class Avatar extends StatelessWidget {
               : _AvatarIcon(size: size * 0.6),
           shape: RoundedRectangleBorder(
             side: BorderSide(
-              color: Theme.of(context).colorScheme.primary,
+              color: Colors.black.withOpacity(0.5),
               width: 2,
             ),
             borderRadius: BorderRadius.circular(200.0),

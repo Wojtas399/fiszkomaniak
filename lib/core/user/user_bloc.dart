@@ -22,6 +22,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UserEventLoggedUserUpdated>(_loggedUserUpdated);
     on<UserEventSaveNewAvatar>(_saveNewAvatar);
     on<UserEventRemoveAvatar>(_removeAvatar);
+    on<UserEventChangeUsername>(_changeUsername);
     on<UserEventSaveNewRememberedFlashcards>(_saveNewRememberedFlashcards);
   }
 
@@ -64,6 +65,21 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(state.copyWith(status: UserStatusLoading()));
       await _userInterface.removeAvatar();
       emit(state.copyWith(status: UserStatusAvatarRemoved()));
+    } catch (error) {
+      emit(state.copyWith(
+        status: UserStatusError(message: error.toString()),
+      ));
+    }
+  }
+
+  Future<void> _changeUsername(
+    UserEventChangeUsername event,
+    Emitter<UserState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: UserStatusLoading()));
+      await _userInterface.saveNewUsername(newUsername: event.newUsername);
+      emit(state.copyWith(status: UserStatusUsernameUpdated()));
     } catch (error) {
       emit(state.copyWith(
         status: UserStatusError(message: error.toString()),

@@ -27,6 +27,15 @@ class UserEventSaveNewAvatar extends UserEvent {
 
 class UserEventRemoveAvatar extends UserEvent {}
 
+class UserEventChangeUsername extends UserEvent {
+  final String newUsername;
+
+  UserEventChangeUsername({required this.newUsername});
+
+  @override
+  List<Object> get props => [newUsername];
+}
+
 class UserEventSaveNewRememberedFlashcards extends UserEvent {
   final String groupId;
   final List<int> rememberedFlashcardsIndexes;

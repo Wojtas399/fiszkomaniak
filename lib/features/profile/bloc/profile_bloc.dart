@@ -26,7 +26,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     _imagePicker = imagePicker;
     on<ProfileEventInitialize>(_initialize);
     on<ProfileEventUserUpdated>(_userUpdated);
-    on<ProfileEventAvatarPressed>(_avatarPressed);
+    on<ProfileEventModifyAvatar>(_modifyAvatar);
+    on<ProfileEventChangeUsername>(_changeUsername);
   }
 
   @override
@@ -39,7 +40,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileEventInitialize event,
     Emitter<ProfileState> emit,
   ) {
-    emit(state.copyWith(userData: _userBloc.state.loggedUser));
+    emit(state.copyWith(loggedUserData: _userBloc.state.loggedUser));
     _userStateSubscription = _userBloc.stream.listen((state) {
       add(ProfileEventUserUpdated(newUserData: state.loggedUser));
     });
@@ -50,15 +51,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) {
     emit(state.copyWith(
-      userData: event.newUserData,
+      loggedUserData: event.newUserData,
     ));
   }
 
-  Future<void> _avatarPressed(
-    ProfileEventAvatarPressed event,
+  Future<void> _modifyAvatar(
+    ProfileEventModifyAvatar event,
     Emitter<ProfileState> emit,
   ) async {
-    if (state.userData?.avatarUrl == null) {
+    if (state.loggedUserData?.avatarUrl == null) {
       await _editAvatar();
     } else {
       final AvatarActions? action = await _profileDialogs.askForAvatarAction();
@@ -66,6 +67,21 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         await _editAvatar();
       } else if (action == AvatarActions.delete) {
         await _deleteAvatar();
+      }
+    }
+  }
+
+  Future<void> _changeUsername(
+    ProfileEventChangeUsername event,
+    Emitter<ProfileState> emit,
+  ) async {
+    final String? currentUsername = state.loggedUserData?.username;
+    if (currentUsername != null) {
+      final String? newUsername = await _profileDialogs.askForNewUsername(
+        currentUsername,
+      );
+      if (newUsername != null) {
+        _userBloc.add(UserEventChangeUsername(newUsername: newUsername));
       }
     }
   }

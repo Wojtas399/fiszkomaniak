@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/components/modal_bottom_sheet.dart';
+import 'package:fiszkomaniak/core/validators/user_validator.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -58,5 +59,20 @@ class ProfileDialogs {
           confirmButtonText: 'Usuń',
         ) ==
         true;
+  }
+
+  Future<String?> askForNewUsername(String currentUsername) async {
+    return await _dialogs.askForValue(
+      title: 'Nowa nazwa użytkownika',
+      textFieldIcon: MdiIcons.accountOutline,
+      textFieldLabel: 'Nazwa użytkownika',
+      buttonLabel: 'Zmień',
+      value: currentUsername,
+      placeholder: 'np. Jan Nowak',
+      validator: (String? value) =>
+          !UserValidator.isUsernameCorrect(value ?? '')
+              ? UserValidator.incorrectUsernameMessage
+              : null,
+    );
   }
 }

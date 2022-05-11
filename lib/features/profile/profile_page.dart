@@ -2,6 +2,7 @@ import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
 import 'package:fiszkomaniak/features/profile/components/profile_avatar.dart';
+import 'package:fiszkomaniak/features/profile/components/profile_user_data.dart';
 import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +20,8 @@ class ProfilePage extends StatelessWidget {
           child: Column(
             children: const [
               ProfileAvatar(),
+              SizedBox(height: 24.0),
+              ProfileUserData(),
             ],
           ),
         ),

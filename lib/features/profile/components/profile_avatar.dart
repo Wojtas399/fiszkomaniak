@@ -10,7 +10,7 @@ class ProfileAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String? avatarUrl = context.select(
-      (ProfileBloc bloc) => bloc.state.userData?.avatarUrl,
+      (ProfileBloc bloc) => bloc.state.loggedUserData?.avatarUrl,
     );
     return Avatar(
       imageType: avatarUrl != null ? AvatarImageTypeUrl(url: avatarUrl) : null,
@@ -20,6 +20,6 @@ class ProfileAvatar extends StatelessWidget {
   }
 
   void _avatarPressed(BuildContext context) {
-    context.read<ProfileBloc>().add(ProfileEventAvatarPressed());
+    context.read<ProfileBloc>().add(ProfileEventModifyAvatar());
   }
 }

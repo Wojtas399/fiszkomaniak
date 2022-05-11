@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiszkomaniak/firebase/fire_user.dart';
 import 'package:fiszkomaniak/firebase/models/day_flashcard_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_avatar_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_user_service.dart';
@@ -45,6 +46,12 @@ class UserRepository implements UserInterface {
   }
 
   @override
+  Future<void> saveNewUsername({required String newUsername}) async {
+    print('User repository: $newUsername');
+    //TODO
+  }
+
+  @override
   Future<void> saveNewRememberedFlashcardsInDays({
     required String groupId,
     required List<int> indexesOfFlashcards,
@@ -60,8 +67,11 @@ class UserRepository implements UserInterface {
     DocumentSnapshot<UserDbModel> fireDocument,
   ) {
     final UserDbModel? data = fireDocument.data();
-    if (data != null) {
+    final String? loggedUserEmail = FireUser.loggedUserEmail;
+    if (data != null && loggedUserEmail != null) {
       return User(
+        email: loggedUserEmail,
+        username: data.username,
         avatarUrl: avatarUrl,
         days: _convertFireDaysToDayModel(data.days),
       );

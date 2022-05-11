@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/core/validators/user_validator.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 
 class SignUpState extends Equatable {
@@ -12,13 +13,11 @@ class SignUpState extends Equatable {
   final bool hasPasswordConfirmationBeenEdited;
   final HttpStatus httpStatus;
 
-  bool get isCorrectUsername => username.length >= 4;
+  bool get isCorrectUsername => UserValidator.isUsernameCorrect(username);
 
-  bool get isCorrectEmail => RegExp(
-        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-      ).hasMatch(email);
+  bool get isCorrectEmail => UserValidator.isEmailCorrect(email);
 
-  bool get isCorrectPassword => password.length >= 6;
+  bool get isCorrectPassword => UserValidator.isPasswordCorrect(password);
 
   bool get isCorrectPasswordConfirmation => password == passwordConfirmation;
 
@@ -28,13 +27,11 @@ class SignUpState extends Equatable {
       !isCorrectPassword ||
       !isCorrectPasswordConfirmation;
 
-  String get incorrectUsernameMessage =>
-      'Nazwa użytkownika musi zawierać co najmniej 4 znaki';
+  String get incorrectUsernameMessage => UserValidator.incorrectUsernameMessage;
 
-  String get incorrectEmailMessage => 'Niepoprawny adres email';
+  String get incorrectEmailMessage => UserValidator.incorrectEmailMessage;
 
-  String get incorrectPasswordMessage =>
-      'Hasło musi zawierać co najmniej 6 znaków';
+  String get incorrectPasswordMessage => UserValidator.incorrectPasswordMessage;
 
   String get incorrectPasswordConfirmationMessage => 'Hasła nie sa jednakowe';
 

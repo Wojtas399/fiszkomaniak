@@ -34,6 +34,7 @@ class CustomTextField extends StatelessWidget {
             context: context,
             label: label,
             icon: icon,
+            placeholder: placeholder,
           ),
         ),
       ],

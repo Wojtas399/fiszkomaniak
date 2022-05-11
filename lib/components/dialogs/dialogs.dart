@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:fiszkomaniak/components/dialogs/confirmation_dialog.dart';
 import 'package:fiszkomaniak/components/dialogs/message_dialog.dart';
 import 'package:fiszkomaniak/components/dialogs/simple_loading_dialog.dart';
+import 'package:fiszkomaniak/components/dialogs/single_input_dialog.dart';
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:flutter/material.dart';
 import '../../config/slide_up_route_animation.dart';
@@ -70,6 +71,32 @@ class Dialogs {
     if (context != null) {
       return await Navigator.of(context).push(SlideUpRouteAnimation(
         page: ImageConfirmationDialog(imageFile: imageFile),
+      ));
+    }
+    return null;
+  }
+
+  Future<String?> askForValue({
+    required String title,
+    required IconData textFieldIcon,
+    required String textFieldLabel,
+    required String buttonLabel,
+    String? value,
+    String? placeholder,
+    String? Function(String? value)? validator,
+  }) async {
+    final BuildContext? context = HomeRouter.navigatorKey.currentContext;
+    if (context != null) {
+      return await Navigator.of(context).push(SlideUpRouteAnimation(
+        page: SingleInputDialog(
+          title: title,
+          textFieldIcon: textFieldIcon,
+          textFieldLabel: textFieldLabel,
+          buttonLabel: buttonLabel,
+          value: value,
+          placeholder: placeholder,
+          validator: validator,
+        ),
       ));
     }
     return null;

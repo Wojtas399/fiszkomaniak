@@ -10,9 +10,8 @@ import 'models/session_db_model.dart';
 import 'models/user_db_model.dart';
 
 class FireReferences {
-  static DocumentReference get loggedUserRef => FireInstances.firestore
-      .collection('Users')
-      .doc(FireUser.getLoggedUserId());
+  static DocumentReference get loggedUserRef =>
+      FireInstances.firestore.collection('Users').doc(FireUser.loggedUserId);
 
   static CollectionReference get settingsRef =>
       loggedUserRef.collection('Settings');
@@ -33,7 +32,7 @@ class FireReferences {
       loggedUserRef.collection('Sessions');
 
   static Reference get avatarRef => FireInstances.storage.ref(
-        'Avatars/${FireUser.getLoggedUserId()}.jpg',
+        'Avatars/${FireUser.loggedUserId}.jpg',
       );
 
   static DocumentReference<UserDbModel> get loggedUserRefWithConverter =>
