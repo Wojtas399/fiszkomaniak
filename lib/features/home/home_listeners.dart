@@ -49,6 +49,11 @@ class HomeListeners extends StatelessWidget {
               dialogs.showSnackbarWithMessage(
                 'Pomyślnie usunięto zdjęcie profilowe',
               );
+            } else if (status is UserStatusUsernameUpdated) {
+              _closeLoadingDialog(context);
+              dialogs.showSnackbarWithMessage(
+                'Pomyślnie zmieniono nazwę użytkownika',
+              );
             } else if (status is UserStatusNewRememberedFlashcardsSaved) {
               _closeLoadingDialog(context);
               dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');

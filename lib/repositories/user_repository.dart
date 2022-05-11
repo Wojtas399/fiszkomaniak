@@ -47,8 +47,7 @@ class UserRepository implements UserInterface {
 
   @override
   Future<void> saveNewUsername({required String newUsername}) async {
-    print('User repository: $newUsername');
-    //TODO
+    await _fireUserService.saveNewUsername(newUsername);
   }
 
   @override

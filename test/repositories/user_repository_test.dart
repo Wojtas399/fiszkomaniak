@@ -45,6 +45,15 @@ void main() {
     verify(() => fireAvatarService.removeLoggedUserAvatar()).called(1);
   });
 
+  test('save new username', () async {
+    when(() => fireUserService.saveNewUsername('newUsername'))
+        .thenAnswer((_) async => '');
+
+    await repository.saveNewUsername(newUsername: 'newUsername');
+
+    verify(() => fireUserService.saveNewUsername('newUsername')).called(1);
+  });
+
   test('save new remembered flashcards in days', () async {
     when(
       () => fireUserService.saveNewRememberedFlashcards('g1', [0, 1]),

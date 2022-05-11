@@ -24,6 +24,16 @@ class FireUserService {
     }
   }
 
+  Future<void> saveNewUsername(String newUsername) async {
+    try {
+      await FireReferences.loggedUserRef.update(
+        UserDbModel(username: newUsername).toJson(),
+      );
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   Future<void> saveNewRememberedFlashcards(
     String groupId,
     List<int> indexesOfRememberedFlashcards,
