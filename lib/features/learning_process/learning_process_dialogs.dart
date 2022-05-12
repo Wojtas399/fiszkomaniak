@@ -1,10 +1,8 @@
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 
 class LearningProcessDialogs {
-  final Dialogs _dialogs = Dialogs();
-
   Future<bool> askForSaveConfirmation() async {
-    return await _dialogs.askForConfirmation(
+    return await Dialogs.askForConfirmation(
           title: 'Koniec sesji',
           text: 'Czy chcesz zapisać zmiany przed zakończeniem sesji?',
           confirmButtonText: 'Zapisz',
@@ -13,7 +11,7 @@ class LearningProcessDialogs {
   }
 
   Future<bool> askForContinuing() async {
-    return await _dialogs.askForConfirmation(
+    return await Dialogs.askForConfirmation(
           title: 'Koniec czasu',
           text:
               'Upłynął czas trwania sesji. Chcesz kontynuować bez minutnika czy zapisać postępy i wyjść?',

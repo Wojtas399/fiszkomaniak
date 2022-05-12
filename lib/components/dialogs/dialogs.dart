@@ -9,9 +9,9 @@ import '../../config/slide_up_route_animation.dart';
 import 'image_confirmation_dialog.dart';
 
 class Dialogs {
-  bool _isLoadingDialogOpened = false;
+  static bool _isLoadingDialogOpened = false;
 
-  Future<void> showLoadingDialog({
+  static Future<void> showLoadingDialog({
     BuildContext? context,
     String? loadingText,
   }) async {
@@ -27,7 +27,7 @@ class Dialogs {
     }
   }
 
-  Future<void> showDialogWithMessage({
+  static Future<void> showDialogWithMessage({
     required String title,
     required String message,
     BuildContext? context,
@@ -42,7 +42,14 @@ class Dialogs {
     }
   }
 
-  Future<bool?> askForConfirmation({
+  static Future<void> showErrorDialog(String message) async {
+    await showDialogWithMessage(
+      title: 'Wystąpił błąd...',
+      message: message,
+    );
+  }
+
+  static Future<bool?> askForConfirmation({
     required String title,
     required String text,
     String? confirmButtonText,
@@ -64,7 +71,7 @@ class Dialogs {
     return null;
   }
 
-  Future<bool?> askForImageConfirmation({
+  static Future<bool?> askForImageConfirmation({
     required File imageFile,
   }) async {
     final BuildContext? context = HomeRouter.navigatorKey.currentContext;
@@ -76,7 +83,7 @@ class Dialogs {
     return null;
   }
 
-  Future<String?> askForValue({
+  static Future<String?> askForValue({
     required String title,
     required IconData textFieldIcon,
     required String textFieldLabel,
@@ -102,7 +109,7 @@ class Dialogs {
     return null;
   }
 
-  void showSnackbarWithMessage(String message) {
+  static void showSnackbarWithMessage(String message) {
     final BuildContext? context = HomeRouter.navigatorKey.currentContext;
     if (context != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

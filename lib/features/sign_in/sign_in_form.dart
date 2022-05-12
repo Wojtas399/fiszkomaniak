@@ -63,16 +63,15 @@ class _FormStatusListener extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<SignInBloc, SignInState>(
       listener: (context, state) {
-        final Dialogs dialogs = Dialogs();
         final httpStatus = state.httpStatus;
         if (httpStatus is HttpStatusSubmitting) {
-          dialogs.showLoadingDialog(context: context);
+          Dialogs.showLoadingDialog(context: context);
         } else if (httpStatus is HttpStatusSuccess) {
           Navigator.pop(context);
           context.read<Navigation>().pushReplacementToHome(context);
         } else if (httpStatus is HttpStatusFailure) {
           Navigator.pop(context);
-          dialogs.showDialogWithMessage(
+          Dialogs.showDialogWithMessage(
             context: context,
             title: 'Wystąpił błąd',
             message: httpStatus.message,

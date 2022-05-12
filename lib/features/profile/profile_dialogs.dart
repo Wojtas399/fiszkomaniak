@@ -7,8 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class ProfileDialogs {
-  final Dialogs _dialogs = Dialogs();
-
   Future<AvatarActions?> askForAvatarAction() async {
     final int? selectedOption = await ModalBottomSheet.showWithOptions(
       title: 'Wybierz operację',
@@ -46,14 +44,14 @@ class ProfileDialogs {
   }
 
   Future<bool> askForImageConfirmation(String filePath) async {
-    return await _dialogs.askForImageConfirmation(
+    return await Dialogs.askForImageConfirmation(
           imageFile: File(filePath),
         ) ==
         true;
   }
 
   Future<bool> askForDeleteAvatarConfirmation() async {
-    return await _dialogs.askForConfirmation(
+    return await Dialogs.askForConfirmation(
           title: "Usuwanie",
           text: 'Czy na pewno chcesz usunąć obecne zdjęcie profilowe?',
           confirmButtonText: 'Usuń',
@@ -62,7 +60,7 @@ class ProfileDialogs {
   }
 
   Future<String?> askForNewUsername(String currentUsername) async {
-    return await _dialogs.askForValue(
+    return await Dialogs.askForValue(
       title: 'Nowa nazwa użytkownika',
       textFieldIcon: MdiIcons.accountOutline,
       textFieldLabel: 'Nazwa użytkownika',

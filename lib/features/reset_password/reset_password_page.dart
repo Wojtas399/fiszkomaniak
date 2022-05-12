@@ -54,13 +54,12 @@ class _StatusListener extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<ResetPasswordBloc, ResetPasswordState>(
       listener: (context, state) async {
-        final Dialogs dialogs = Dialogs();
         HttpStatus httpStatus = state.httpStatus;
         if (httpStatus is HttpStatusSubmitting) {
-          dialogs.showLoadingDialog(context: context);
+          Dialogs.showLoadingDialog(context: context);
         } else if (httpStatus is HttpStatusSuccess) {
           Navigator.pop(context);
-          await dialogs.showDialogWithMessage(
+          await Dialogs.showDialogWithMessage(
             context: context,
             title: 'Udało się!',
             message: 'Pomyślnie wysłaliśmy wiadomość na twój adres e-mail.',
@@ -68,7 +67,7 @@ class _StatusListener extends StatelessWidget {
           Navigator.pop(context);
         } else if (httpStatus is HttpStatusFailure) {
           Navigator.pop(context);
-          dialogs.showDialogWithMessage(
+          Dialogs.showDialogWithMessage(
             context: context,
             title: 'Wystąpił bład',
             message: httpStatus.message,
