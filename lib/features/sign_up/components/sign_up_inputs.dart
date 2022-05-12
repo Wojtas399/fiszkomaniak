@@ -37,11 +37,11 @@ class SignUpInputs extends StatelessWidget {
             CustomTextField(
               icon: MdiIcons.account,
               label: 'Nazwa użytkownika',
+              isRequired: true,
               placeholder: 'np. Jan Nowak',
               controller: _usernameController,
               onChanged: (String value) => _onUsernameChanged(context, value),
               validator: (String? value) => _validator(
-                state.hasUsernameBeenEdited ? value : null,
                 state.isCorrectUsername,
                 state.incorrectUsernameMessage,
               ),
@@ -50,11 +50,11 @@ class SignUpInputs extends StatelessWidget {
             CustomTextField(
               icon: MdiIcons.email,
               label: 'Adres e-mail',
+              isRequired: true,
               placeholder: 'np. jan.nowak@example.com',
               controller: _emailController,
               onChanged: (String value) => _onEmailChanged(context, value),
               validator: (String? value) => _validator(
-                state.hasEmailBeenEdited ? value : null,
                 state.isCorrectEmail,
                 state.incorrectEmailMessage,
               ),
@@ -62,10 +62,10 @@ class SignUpInputs extends StatelessWidget {
             const _FreeSpace(),
             PasswordTextField(
               label: 'Hasło',
+              isRequired: true,
               controller: _passwordController,
               onChanged: (String value) => _onPasswordChanged(context, value),
               validator: (String? value) => _validator(
-                state.hasPasswordBeenEdited ? value : null,
                 state.isCorrectPassword,
                 state.incorrectPasswordMessage,
               ),
@@ -73,11 +73,11 @@ class SignUpInputs extends StatelessWidget {
             const _FreeSpace(),
             PasswordTextField(
               label: 'Powtórz hasło',
+              isRequired: true,
               controller: _passwordConfirmationController,
               onChanged: (String value) =>
                   _onPasswordConfirmationChanged(context, value),
               validator: (String? value) => _validator(
-                state.hasPasswordConfirmationBeenEdited ? value : null,
                 state.isCorrectPasswordConfirmation,
                 state.incorrectPasswordConfirmationMessage,
               ),
@@ -106,20 +106,11 @@ class SignUpInputs extends StatelessWidget {
         );
   }
 
-  String? _validator(
-    String? value,
-    bool isCorrect,
-    String incorrectValueMessage,
-  ) {
-    if (value == null) {
+  String? _validator(bool isCorrect, String incorrectValueMessage) {
+    if (isCorrect) {
       return null;
     }
-    if (value == '') {
-      return 'To pole jest wymagane';
-    } else if (!isCorrect) {
-      return incorrectValueMessage;
-    }
-    return null;
+    return incorrectValueMessage;
   }
 }
 

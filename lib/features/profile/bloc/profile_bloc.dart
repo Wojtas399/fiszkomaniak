@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
+import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';
 import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../models/user_model.dart';
@@ -28,6 +29,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ProfileEventUserUpdated>(_userUpdated);
     on<ProfileEventModifyAvatar>(_modifyAvatar);
     on<ProfileEventChangeUsername>(_changeUsername);
+    on<ProfileEventChangePassword>(_changePassword);
   }
 
   @override
@@ -83,6 +85,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       if (newUsername != null) {
         _userBloc.add(UserEventChangeUsername(newUsername: newUsername));
       }
+    }
+  }
+
+  Future<void> _changePassword(
+    ProfileEventChangePassword event,
+    Emitter<ProfileState> emit,
+  ) async {
+    final PasswordEditorReturns? passwordEditorReturnedValues =
+        await _profileDialogs.askForNewPassword();
+    if (passwordEditorReturnedValues != null) {
+      print(
+        'current password: ${passwordEditorReturnedValues.currentPassword}',
+      );
+      print('new password: ${passwordEditorReturnedValues.newPassword}');
     }
   }
 

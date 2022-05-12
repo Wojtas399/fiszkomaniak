@@ -86,11 +86,18 @@ class LearningProcessBloc
     final List<int> indexesOfRememberedFlashcards = [
       ...state.indexesOfRememberedFlashcards,
     ];
+    final List<int> indexesOfNotRememberedFlashcards = [
+      ...state.indexesOfNotRememberedFlashcards,
+    ];
     if (!indexesOfRememberedFlashcards.contains(event.flashcardIndex)) {
       indexesOfRememberedFlashcards.add(event.flashcardIndex);
     }
+    indexesOfNotRememberedFlashcards.removeWhere(
+      (id) => id == event.flashcardIndex,
+    );
     emit(state.copyWith(
       indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
+      indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
       indexOfDisplayedFlashcard: _getNewIndexOfDisplayedFlashcard(),
       status: LearningProcessStatusInProgress(),
     ));
@@ -103,11 +110,18 @@ class LearningProcessBloc
     final List<int> indexesOfRememberedFlashcards = [
       ...state.indexesOfRememberedFlashcards,
     ];
+    final List<int> indexesOfNotRememberedFlashcards = [
+      ...state.indexesOfNotRememberedFlashcards,
+    ];
     indexesOfRememberedFlashcards.removeWhere(
       (id) => id == event.flashcardIndex,
     );
+    if (!indexesOfNotRememberedFlashcards.contains(event.flashcardIndex)) {
+      indexesOfNotRememberedFlashcards.add(event.flashcardIndex);
+    }
     emit(state.copyWith(
       indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
+      indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
       indexOfDisplayedFlashcard: _getNewIndexOfDisplayedFlashcard(),
       status: LearningProcessStatusInProgress(),
     ));

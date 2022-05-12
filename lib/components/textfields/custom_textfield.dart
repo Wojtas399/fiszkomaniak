@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatelessWidget {
   final IconData icon;
   final String label;
+  final bool isRequired;
   final Function(String value)? onChanged;
   final String? placeholder;
   final String? Function(String? value)? validator;
@@ -14,6 +15,7 @@ class CustomTextField extends StatelessWidget {
     Key? key,
     required this.icon,
     required this.label,
+    this.isRequired = false,
     this.onChanged,
     this.placeholder,
     this.validator,
@@ -27,7 +29,7 @@ class CustomTextField extends StatelessWidget {
         const TextFieldBackground(),
         TextFormField(
           onChanged: onChanged,
-          validator: validator,
+          validator: _validate,
           controller: controller,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: TextFieldTheme.basic(
@@ -39,5 +41,16 @@ class CustomTextField extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String? _validate(String? value) {
+    if (isRequired && value == '') {
+      return 'To pole jest wymagane!';
+    }
+    final String? Function(String? value)? customValidator = validator;
+    if (customValidator != null) {
+      return customValidator(value);
+    }
+    return null;
   }
 }

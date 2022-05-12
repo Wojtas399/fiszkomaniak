@@ -13,3 +13,5 @@ class ProfileEventUserUpdated extends ProfileEvent {
 class ProfileEventModifyAvatar extends ProfileEvent {}
 
 class ProfileEventChangeUsername extends ProfileEvent {}
+
+class ProfileEventChangePassword extends ProfileEvent {}

@@ -67,9 +67,11 @@ class _ChangePassword extends StatelessWidget {
     return ItemWithIcon(
       icon: MdiIcons.lockOutline,
       text: 'Zmień hasło',
-      onTap: () {
-        //TODO
-      },
+      onTap: () => _onPressed(context),
     );
+  }
+
+  void _onPressed(BuildContext context) {
+    context.read<ProfileBloc>().add(ProfileEventChangePassword());
   }
 }

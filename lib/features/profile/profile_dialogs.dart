@@ -1,8 +1,13 @@
 import 'dart:io';
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/components/modal_bottom_sheet.dart';
-import 'package:fiszkomaniak/core/validators/user_validator.dart';
+import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
+import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
+import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';
+import 'package:fiszkomaniak/features/profile/components/password_editor/password_editor.dart';
+import 'package:fiszkomaniak/features/profile/components/username_editor.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -60,17 +65,22 @@ class ProfileDialogs {
   }
 
   Future<String?> askForNewUsername(String currentUsername) async {
-    return await Dialogs.askForValue(
-      title: 'Nowa nazwa użytkownika',
-      textFieldIcon: MdiIcons.accountOutline,
-      textFieldLabel: 'Nazwa użytkownika',
-      buttonLabel: 'Zmień',
-      value: currentUsername,
-      placeholder: 'np. Jan Nowak',
-      validator: (String? value) =>
-          !UserValidator.isUsernameCorrect(value ?? '')
-              ? UserValidator.incorrectUsernameMessage
-              : null,
-    );
+    final BuildContext? context = HomeRouter.navigatorKey.currentContext;
+    if (context != null) {
+      return await Navigator.of(context).push(SlideUpRouteAnimation(
+        page: UsernameEditor(currentUsername: currentUsername),
+      ));
+    }
+    return null;
+  }
+
+  Future<PasswordEditorReturns?> askForNewPassword() async {
+    final BuildContext? context = HomeRouter.navigatorKey.currentContext;
+    if (context != null) {
+      return await Navigator.of(context).push(
+        SlideUpRouteAnimation(page: const PasswordEditor()),
+      );
+    }
+    return null;
   }
 }

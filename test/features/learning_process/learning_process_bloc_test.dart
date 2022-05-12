@@ -46,8 +46,18 @@ void main() {
         id: 'g1',
         courseId: 'c1',
         flashcards: [
-          createFlashcard(index: 0, question: 'q0', answer: 'a0'),
-          createFlashcard(index: 1, question: 'q1', answer: 'a1'),
+          createFlashcard(
+            index: 0,
+            question: 'q0',
+            answer: 'a0',
+            status: FlashcardStatus.notRemembered,
+          ),
+          createFlashcard(
+            index: 1,
+            question: 'q1',
+            answer: 'a1',
+            status: FlashcardStatus.notRemembered,
+          ),
         ],
       ),
       createGroup(id: 'g2', courseId: 'c2'),
@@ -64,6 +74,7 @@ void main() {
     group: groupsState.allGroups[0],
     duration: const Duration(minutes: 10),
     areQuestionsAndAnswersSwapped: true,
+    indexesOfNotRememberedFlashcards: const [0, 1],
     status: LearningProcessStatusLoaded(),
     flashcardsType: FlashcardsType.all,
     amountOfFlashcardsInStack: 2,
@@ -94,7 +105,7 @@ void main() {
   );
 
   blocTest(
-    'remembered flashcard, new remembered flashcard',
+    'remembered flashcard, new',
     build: () => bloc,
     act: (_) {
       bloc.add(LearningProcessEventInitialize(data: data));
@@ -104,6 +115,7 @@ void main() {
       initialState,
       initialState.copyWith(
         indexesOfRememberedFlashcards: [0],
+        indexesOfNotRememberedFlashcards: [1],
         indexOfDisplayedFlashcard: 1,
         status: LearningProcessStatusInProgress(),
       ),
@@ -111,7 +123,7 @@ void main() {
   );
 
   blocTest(
-    'remembered flashcard, existing remembered flashcard',
+    'remembered flashcard, existing',
     build: () => bloc,
     act: (_) {
       bloc.add(LearningProcessEventInitialize(data: data));
@@ -122,6 +134,7 @@ void main() {
       initialState,
       initialState.copyWith(
         indexesOfRememberedFlashcards: [0],
+        indexesOfNotRememberedFlashcards: [1],
         indexOfDisplayedFlashcard: 1,
         status: LearningProcessStatusInProgress(),
       ),
@@ -129,22 +142,34 @@ void main() {
   );
 
   blocTest(
-    'forgotten flashcard',
+    'forgotten flashcard, new',
     build: () => bloc,
     act: (_) {
       bloc.add(LearningProcessEventInitialize(data: data));
-      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
-      bloc.add(LearningProcessEventForgottenFlashcard(flashcardIndex: 0));
+      bloc.add(LearningProcessEventForgottenFlashcard(flashcardIndex: 2));
     },
     expect: () => [
       initialState,
       initialState.copyWith(
-        indexesOfRememberedFlashcards: [0],
+        indexesOfNotRememberedFlashcards: [0, 1, 2],
         indexOfDisplayedFlashcard: 1,
         status: LearningProcessStatusInProgress(),
       ),
+    ],
+  );
+
+  blocTest(
+    'forgotten flashcard, existing',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(LearningProcessEventInitialize(data: data));
+      bloc.add(LearningProcessEventForgottenFlashcard(flashcardIndex: 2));
+      bloc.add(LearningProcessEventForgottenFlashcard(flashcardIndex: 2));
+    },
+    expect: () => [
+      initialState,
       initialState.copyWith(
-        indexesOfRememberedFlashcards: [],
+        indexesOfNotRememberedFlashcards: [0, 1, 2],
         indexOfDisplayedFlashcard: 1,
         status: LearningProcessStatusInProgress(),
       ),
@@ -165,11 +190,13 @@ void main() {
       initialState,
       initialState.copyWith(
         indexesOfRememberedFlashcards: [0],
+        indexesOfNotRememberedFlashcards: [1],
         indexOfDisplayedFlashcard: 1,
         status: LearningProcessStatusInProgress(),
       ),
       initialState.copyWith(
         indexesOfRememberedFlashcards: [0],
+        indexesOfNotRememberedFlashcards: [1],
         indexOfDisplayedFlashcard: 0,
         amountOfFlashcardsInStack: 1,
         flashcardsType: FlashcardsType.remembered,

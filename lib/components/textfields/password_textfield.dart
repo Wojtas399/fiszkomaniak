@@ -5,6 +5,7 @@ import '../../config/theme/text_field_theme.dart';
 
 class PasswordTextField extends StatefulWidget {
   final String label;
+  final bool isRequired;
   final Function(String value)? onChanged;
   final String? Function(String? value)? validator;
   final TextEditingController? controller;
@@ -12,6 +13,7 @@ class PasswordTextField extends StatefulWidget {
   const PasswordTextField({
     Key? key,
     required this.label,
+    this.isRequired = false,
     this.onChanged,
     this.validator,
     this.controller,
@@ -26,16 +28,13 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
 
   @override
   Widget build(BuildContext context) {
-    // if (widget.controller != null) {
-    //   Utils.setCursorAtTheEndOfValueInsideTextField(widget.controller!);
-    // }
     return Stack(
       children: [
         const TextFieldBackground(),
         TextFormField(
           obscureText: !_isPasswordVisible,
           onChanged: widget.onChanged,
-          validator: widget.validator,
+          validator: _validate,
           controller: widget.controller,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: TextFieldTheme.basic(
@@ -53,5 +52,16 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         )
       ],
     );
+  }
+
+  String? _validate(String? value) {
+    if (widget.isRequired && value == '') {
+      return 'To pole jest wymagane!';
+    }
+    final String? Function(String? value)? validator = widget.validator;
+    if (validator != null) {
+      return validator(value);
+    }
+    return null;
   }
 }

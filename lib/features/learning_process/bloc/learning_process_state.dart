@@ -139,7 +139,9 @@ class LearningProcessState extends Equatable {
         duration ?? '',
         areQuestionsAndAnswersSwapped,
         indexesOfRememberedFlashcards,
+        indexesOfNotRememberedFlashcards,
         indexOfDisplayedFlashcard,
         flashcardsType ?? '',
+        amountOfFlashcardsInStack,
       ];
 }

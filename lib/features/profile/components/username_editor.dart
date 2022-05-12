@@ -1,43 +1,34 @@
+import 'dart:async';
 import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
 import 'package:fiszkomaniak/components/buttons/button.dart';
 import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/components/textfields/custom_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../core/validators/user_validator.dart';
 
-class SingleInputDialog extends StatefulWidget {
-  final String title;
-  final IconData textFieldIcon;
-  final String textFieldLabel;
-  final String buttonLabel;
-  final String? value;
-  final String? placeholder;
-  final String? Function(String? value)? validator;
+class UsernameEditor extends StatefulWidget {
+  final String currentUsername;
 
-  const SingleInputDialog({
+  const UsernameEditor({
     Key? key,
-    required this.title,
-    required this.textFieldIcon,
-    required this.textFieldLabel,
-    required this.buttonLabel,
-    this.value,
-    this.placeholder,
-    this.validator,
+    required this.currentUsername,
   }) : super(key: key);
 
   @override
-  _SingleInputDialogState createState() => _SingleInputDialogState();
+  _UsernameEditor createState() => _UsernameEditor();
 }
 
-class _SingleInputDialogState extends State<SingleInputDialog> {
+class _UsernameEditor extends State<UsernameEditor> {
   late final String? initialValue;
   final TextEditingController _controller = TextEditingController();
+  StreamSubscription? textFieldStatus;
   bool _isButtonDisabled = true;
 
   @override
   void initState() {
     super.initState();
-    final String? textFieldValue = widget.value;
+    final String? textFieldValue = widget.currentUsername;
     initialValue = textFieldValue;
     if (textFieldValue != null) {
       _controller.text = textFieldValue;
@@ -47,9 +38,9 @@ class _SingleInputDialogState extends State<SingleInputDialog> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         leadingIcon: MdiIcons.close,
-        label: widget.title,
+        label: 'Nowa nazwa użytkownika',
       ),
       body: SafeArea(
         child: OnTapFocusLoseArea(
@@ -59,15 +50,16 @@ class _SingleInputDialogState extends State<SingleInputDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomTextField(
-                  icon: widget.textFieldIcon,
-                  label: widget.textFieldLabel,
+                  icon: MdiIcons.accountOutline,
+                  label: 'Nazwa użytkownika',
+                  isRequired: true,
                   controller: _controller,
-                  placeholder: widget.placeholder,
-                  validator: widget.validator,
+                  placeholder: 'Np. Jan Nowak',
+                  validator: _validateUsername,
                   onChanged: _onTextFieldValueChanged,
                 ),
                 Button(
-                  label: widget.buttonLabel,
+                  label: 'Zapisz',
                   onPressed: _isButtonDisabled
                       ? null
                       : () => _onButtonPressed(context),
@@ -80,9 +72,17 @@ class _SingleInputDialogState extends State<SingleInputDialog> {
     );
   }
 
+  String? _validateUsername(String? value) {
+    return !UserValidator.isUsernameCorrect(value ?? '')
+        ? UserValidator.incorrectUsernameMessage
+        : null;
+  }
+
   void _onTextFieldValueChanged(String value) {
     setState(() {
-      _isButtonDisabled = !(value.isNotEmpty && value != initialValue);
+      _isButtonDisabled = !(value.isNotEmpty &&
+          value != initialValue &&
+          UserValidator.isUsernameCorrect(value));
     });
   }
 

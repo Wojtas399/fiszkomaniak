@@ -14,8 +14,8 @@ import '../features/home/home.dart';
 import '../features/learning_process/learning_process_data.dart';
 
 class Navigation {
-  void moveBack() {
-    HomeRouter.navigatorKey.currentState?.pop();
+  void moveBack({Object? objectToReturn}) {
+    HomeRouter.navigatorKey.currentState?.pop(objectToReturn);
   }
 
   void pushReplacementToHome(BuildContext context) {
