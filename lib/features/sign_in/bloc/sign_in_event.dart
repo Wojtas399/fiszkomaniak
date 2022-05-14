@@ -12,11 +12,6 @@ class SignInEventPasswordChanged extends SignInEvent {
   SignInEventPasswordChanged({required this.password});
 }
 
-class SignInEventSubmit extends SignInEvent {
-  final String email;
-  final String password;
-
-  SignInEventSubmit({required this.email, required this.password});
-}
+class SignInEventSubmit extends SignInEvent {}
 
 class SignInEventReset extends SignInEvent {}

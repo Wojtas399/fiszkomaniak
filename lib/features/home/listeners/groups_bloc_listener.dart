@@ -39,7 +39,7 @@ class GroupsBlocListener extends BlocListener<GroupsBloc, GroupsState> {
               Dialogs.showSnackbarWithMessage('Pomyślnie usunięto grupę');
             } else if (status is GroupsStatusError) {
               closeLoadingDialog();
-              Dialogs.showErrorDialog(status.message);
+              Dialogs.showErrorDialog(message: status.message);
             }
           },
         );

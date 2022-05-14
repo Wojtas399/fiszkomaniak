@@ -15,7 +15,7 @@ class FireAvatarService {
       final String url = await FireReferences.avatarRef.getDownloadURL();
       _loggedUserAvatarUrl.add(url);
     } catch (error) {
-      rethrow;
+      _loggedUserAvatarUrl.add(null);
     }
   }
 

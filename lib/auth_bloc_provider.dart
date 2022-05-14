@@ -1,9 +1,8 @@
-import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthBlocProvider extends StatelessWidget {
   final Widget child;
@@ -12,17 +11,12 @@ class AuthBlocProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Provider<AuthBloc>(
-      create: (context) => AuthBloc(
+    return BlocProvider(
+      create: (BuildContext context) => AuthBloc(
         authInterface: context.read<AuthInterface>(),
         settingsInterface: context.read<SettingsInterface>(),
-      )..initialize(
-          onUserLogged: () {
-            context.read<Navigation>().pushReplacementToHome(context);
-          },
-        ),
+      )..add(AuthEventInitialize()),
       child: child,
-      dispose: (_, bloc) => bloc.dispose(),
     );
   }
 }

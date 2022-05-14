@@ -1,64 +1,144 @@
 import 'dart:async';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
-import 'package:fiszkomaniak/models/http_status_model.dart';
-import 'package:fiszkomaniak/models/sign_in_model.dart';
-import 'package:fiszkomaniak/models/sign_up_model.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'auth_exception_model.dart';
 
-class AuthBloc {
+part 'auth_state.dart';
+
+part 'auth_event.dart';
+
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
   late final AuthInterface _authInterface;
   late final SettingsInterface _settingsInterface;
-  StreamSubscription<User?>? _subscription;
+  StreamSubscription<bool>? _subscription;
 
   AuthBloc({
     required AuthInterface authInterface,
     required SettingsInterface settingsInterface,
-  }) {
+  }) : super(const AuthStateInitial()) {
     _authInterface = authInterface;
     _settingsInterface = settingsInterface;
+    on<AuthEventInitialize>(_initialize);
+    on<AuthEventLoggedUserStatusChanged>(_loggedUserStatusChanged);
+    on<AuthEventSignIn>(_signIn);
+    on<AuthEventSignUp>(_signUp);
+    on<AuthEventSendPasswordResetEmail>(_sendPasswordResetEmail);
+    on<AuthEventChangePassword>(_changePassword);
   }
 
-  void initialize({
-    required VoidCallback onUserLogged,
-  }) {
-    _subscription = _authInterface.getUserChangesStream().listen((user) {
-      if (user != null) {
-        onUserLogged();
-      }
-    });
-  }
-
-  Future<HttpStatus> signIn(SignInModel data) async {
-    try {
-      await _authInterface.signIn(data);
-      return const HttpStatusSuccess();
-    } catch (error) {
-      return HttpStatusFailure(message: error.toString());
-    }
-  }
-
-  Future<HttpStatus> signUp(SignUpModel data) async {
-    try {
-      await _authInterface.signUp(data);
-      await _settingsInterface.setDefaultSettings();
-      return const HttpStatusSuccess();
-    } catch (error) {
-      return HttpStatusFailure(message: error.toString());
-    }
-  }
-
-  Future<HttpStatus> sendPasswordResetEmail(String email) async {
-    try {
-      await _authInterface.sendPasswordResetEmail(email);
-      return const HttpStatusSuccess();
-    } catch (error) {
-      return HttpStatusFailure(message: error.toString());
-    }
-  }
-
-  void dispose() {
+  @override
+  Future<void> close() {
     _subscription?.cancel();
+    return super.close();
+  }
+
+  void _initialize(
+    AuthEventInitialize event,
+    Emitter<AuthState> emit,
+  ) {
+    _subscription = _authInterface.isLoggedUserStatus().listen(
+      (bool isLoggedUser) {
+        add(AuthEventLoggedUserStatusChanged(isLoggedUser: isLoggedUser));
+      },
+    );
+  }
+
+  void _loggedUserStatusChanged(
+    AuthEventLoggedUserStatusChanged event,
+    Emitter<AuthState> emit,
+  ) {
+    if (event.isLoggedUser) {
+      emit(AuthStateSignedIn());
+    }
+  }
+
+  Future<void> _signIn(
+    AuthEventSignIn event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      emit(AuthStateLoading());
+      await _authInterface.signIn(
+        email: event.email,
+        password: event.password,
+      );
+      emit(AuthStateSignedIn());
+    } on AuthException catch (error) {
+      _onAuthException(error, emit);
+    } catch (error) {
+      emit(AuthStateError(message: error.toString()));
+    }
+  }
+
+  Future<void> _signUp(
+    AuthEventSignUp event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      emit(AuthStateLoading());
+      await _authInterface.signUp(
+        username: event.username,
+        email: event.email,
+        password: event.password,
+      );
+      await _settingsInterface.setDefaultUserSettings();
+      emit(AuthStateSignedIn());
+    } on AuthException catch (error) {
+      _onAuthException(error, emit);
+    } catch (error) {
+      emit(AuthStateError(message: error.toString()));
+    }
+  }
+
+  Future<void> _sendPasswordResetEmail(
+    AuthEventSendPasswordResetEmail event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      emit(AuthStateLoading());
+      await _authInterface.sendPasswordResetEmail(event.email);
+      emit(AuthStatePasswordResetEmailSent());
+    } on AuthException catch (error) {
+      _onAuthException(error, emit);
+    } catch (error) {
+      emit(AuthStateError(message: error.toString()));
+    }
+  }
+
+  Future<void> _changePassword(
+    AuthEventChangePassword event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      emit(AuthStateLoading());
+      await _authInterface.changePassword(
+        currentPassword: event.currentPassword,
+        newPassword: event.newPassword,
+      );
+      emit(AuthStatePasswordChanged());
+    } on AuthException catch (error) {
+      _onAuthException(error, emit);
+    } catch (error) {
+      emit(AuthStateError(message: error.toString()));
+    }
+  }
+
+  void _onAuthException(AuthException error, Emitter<AuthState> emit) {
+    switch (error.code) {
+      case AuthErrorCode.userNotFound:
+        emit(AuthStateUserNotFound());
+        break;
+      case AuthErrorCode.wrongPassword:
+        emit(AuthStateWrongPassword());
+        break;
+      case AuthErrorCode.invalidEmail:
+        emit(AuthStateInvalidEmail());
+        break;
+      case AuthErrorCode.emailAlreadyInUse:
+        emit(AuthStateEmailAlreadyInUse());
+        break;
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiszkomaniak/firebase/fire_user.dart';
 import 'package:fiszkomaniak/firebase/services/fire_user_service.dart';
 import '../fire_instances.dart';
 
@@ -17,21 +18,10 @@ class FireAuthService {
     required String email,
     required String password,
   }) async {
-    try {
-      await FireInstances.auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (error) {
-      if (error.code == 'user-not-found') {
-        throw 'Nie znaleziono użytkownika zarejestrowanego na podany adres email.';
-      } else if (error.code == 'wrong-password') {
-        throw 'Podano niepoprawne hasło dla tego użytkownika.';
-      }
-      rethrow;
-    } catch (error) {
-      rethrow;
-    }
+    await FireInstances.auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
   }
 
   Future<void> signUp({
@@ -39,38 +29,40 @@ class FireAuthService {
     required String email,
     required String password,
   }) async {
-    try {
-      UserCredential userCredential =
-          await FireInstances.auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      User? user = userCredential.user;
-      if (user != null) {
-        await _fireUserService.addUser(user.uid, username);
-      }
-    } on FirebaseAuthException catch (error) {
-      if (error.code == 'email-already-in-use') {
-        throw 'Na podany adres e-mail już zostało zarejestrowane konto.';
-      }
-      rethrow;
-    } catch (error) {
-      rethrow;
+    UserCredential userCredential =
+        await FireInstances.auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    User? user = userCredential.user;
+    if (user != null) {
+      await _fireUserService.addUser(user.uid, username);
     }
   }
 
   Future<void> sendPasswordResetEmail({required String email}) async {
-    try {
-      await FireInstances.auth.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (error) {
-      if (error.code == 'user-not-found') {
-        throw 'Nie znaleziono konta zarejestrowanego na podany adres email.';
-      } else if (error.code == 'invalid-email') {
-        throw 'Podano niepoprawny adres email.';
-      }
-      rethrow;
-    } catch (error) {
-      rethrow;
+    await FireInstances.auth.sendPasswordResetEmail(email: email);
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await _reauthenticate(currentPassword);
+    await FireUser.loggedUser?.updatePassword(newPassword);
+  }
+
+  Future<void> _reauthenticate(String password) async {
+    final User? loggedUser = FireUser.loggedUser;
+    final String? loggedUserEmail = loggedUser?.email;
+    if (loggedUser != null && loggedUserEmail != null) {
+      final AuthCredential credential = EmailAuthProvider.credential(
+        email: loggedUserEmail,
+        password: password,
+      );
+      await loggedUser.reauthenticateWithCredential(credential);
+    } else {
+      throw FireUser.noLoggedUserMessage;
     }
   }
 }

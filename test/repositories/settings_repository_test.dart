@@ -27,7 +27,7 @@ void main() {
     when(() => fireSettingsService.setDefaultSettings())
         .thenAnswer((_) async => '');
 
-    await fireSettingsRepository.setDefaultSettings();
+    await fireSettingsRepository.setDefaultUserSettings();
 
     verify(() => fireSettingsService.setDefaultSettings()).called(1);
   });

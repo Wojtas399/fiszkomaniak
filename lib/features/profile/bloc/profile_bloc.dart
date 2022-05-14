@@ -5,6 +5,7 @@ import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';
 import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../core/auth/auth_bloc.dart';
 import '../../../models/user_model.dart';
 
 part 'profile_event.dart';
@@ -13,16 +14,19 @@ part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   late final UserBloc _userBloc;
+  late final AuthBloc _authBloc;
   late final ProfileDialogs _profileDialogs;
   late final ImagePicker _imagePicker;
   StreamSubscription<UserState>? _userStateSubscription;
 
   ProfileBloc({
     required UserBloc userBloc,
+    required AuthBloc authBloc,
     required ProfileDialogs profileDialogs,
     required ImagePicker imagePicker,
   }) : super(const ProfileState()) {
     _userBloc = userBloc;
+    _authBloc = authBloc;
     _profileDialogs = profileDialogs;
     _imagePicker = imagePicker;
     on<ProfileEventInitialize>(_initialize);
@@ -95,10 +99,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final PasswordEditorReturns? passwordEditorReturnedValues =
         await _profileDialogs.askForNewPassword();
     if (passwordEditorReturnedValues != null) {
-      print(
-        'current password: ${passwordEditorReturnedValues.currentPassword}',
-      );
-      print('new password: ${passwordEditorReturnedValues.newPassword}');
+      _authBloc.add(AuthEventChangePassword(
+        currentPassword: passwordEditorReturnedValues.currentPassword,
+        newPassword: passwordEditorReturnedValues.newPassword,
+      ));
     }
   }
 

@@ -13,7 +13,7 @@ class SettingsRepository implements SettingsInterface {
   }
 
   @override
-  Future<void> setDefaultSettings() async {
+  Future<void> setDefaultUserSettings() async {
     await _fireSettingsService.setDefaultSettings();
   }
 

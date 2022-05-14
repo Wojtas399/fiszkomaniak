@@ -35,7 +35,7 @@ class FlashcardsBlocListener
               Dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
             } else if (status is FlashcardsStatusError) {
               closeLoadingDialog();
-              Dialogs.showErrorDialog(status.message);
+              Dialogs.showErrorDialog(message: status.message);
             }
           },
         );

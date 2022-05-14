@@ -35,7 +35,7 @@ class UserBlocListener extends BlocListener<UserBloc, UserState> {
               Dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
             } else if (status is UserStatusError) {
               closeLoadingDialog();
-              Dialogs.showErrorDialog(status.message);
+              Dialogs.showErrorDialog(message: status.message);
             }
           },
         );

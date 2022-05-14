@@ -41,10 +41,14 @@ class Dialogs {
     }
   }
 
-  static Future<void> showErrorDialog(String message) async {
+  static Future<void> showErrorDialog({
+    required String message,
+    BuildContext? context,
+  }) async {
     await showDialogWithMessage(
       title: 'Wystąpił błąd...',
       message: message,
+      context: context,
     );
   }
 

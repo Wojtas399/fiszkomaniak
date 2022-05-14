@@ -37,7 +37,7 @@ class SessionsBlocListener extends BlocListener<SessionsBloc, SessionsState> {
               Dialogs.showSnackbarWithMessage('Pomyślnie usunięto sesję');
             } else if (status is SessionsStatusError) {
               closeLoadingDialog();
-              Dialogs.showErrorDialog(status.message);
+              Dialogs.showErrorDialog(message: status.message);
             }
           },
         );

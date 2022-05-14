@@ -36,7 +36,7 @@ class CoursesBlocListener extends BlocListener<CoursesBloc, CoursesState> {
               Dialogs.showSnackbarWithMessage('Pomyślnie usunięto kurs');
             } else if (status is CoursesStatusError) {
               closeLoadingDialog();
-              Dialogs.showErrorDialog(status.message);
+              Dialogs.showErrorDialog(message: status.message);
             }
           },
         );

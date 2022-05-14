@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
+import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
 import 'package:fiszkomaniak/features/profile/components/profile_avatar.dart';
@@ -43,6 +44,7 @@ class _ProfileBlocProvider extends StatelessWidget {
     return BlocProvider(
       create: (_) => ProfileBloc(
         userBloc: context.read<UserBloc>(),
+        authBloc: context.read<AuthBloc>(),
         profileDialogs: ProfileDialogs(),
         imagePicker: ImagePicker(),
       )..add(ProfileEventInitialize()),

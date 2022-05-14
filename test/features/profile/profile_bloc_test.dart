@@ -1,6 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
+import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';
 import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
 import 'package:fiszkomaniak/models/user_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,12 +13,17 @@ class MockUserBloc extends Mock implements UserBloc {}
 
 class MockUserEvent extends Mock implements UserEvent {}
 
+class MockAuthBloc extends Mock implements AuthBloc {}
+
+class MockAuthEvent extends Mock implements AuthEvent {}
+
 class MockProfileDialogs extends Mock implements ProfileDialogs {}
 
 class MockImagePicker extends Mock implements ImagePicker {}
 
 void main() {
   final UserBloc userBloc = MockUserBloc();
+  final AuthBloc authBloc = MockAuthBloc();
   final ProfileDialogs profileDialogs = MockProfileDialogs();
   final ImagePicker imagePicker = MockImagePicker();
   late ProfileBloc bloc;
@@ -26,19 +33,21 @@ void main() {
   );
 
   setUp(() {
-    registerFallbackValue(String);
     bloc = ProfileBloc(
       userBloc: userBloc,
+      authBloc: authBloc,
       profileDialogs: profileDialogs,
       imagePicker: imagePicker,
     );
     when(() => userBloc.state).thenReturn(UserState(loggedUser: loggedUser));
     when(() => userBloc.stream).thenAnswer((_) => const Stream.empty());
     registerFallbackValue(MockUserEvent());
+    registerFallbackValue(MockAuthEvent());
   });
 
   tearDown(() {
     reset(userBloc);
+    reset(authBloc);
     reset(profileDialogs);
     reset(imagePicker);
   });
@@ -61,6 +70,7 @@ void main() {
     'modify avatar, no avatar set',
     build: () => ProfileBloc(
       userBloc: userBloc,
+      authBloc: authBloc,
       profileDialogs: profileDialogs,
       imagePicker: imagePicker,
     ),
@@ -291,6 +301,44 @@ void main() {
       verify(() => profileDialogs.askForNewUsername(loggedUser.username))
           .called(1);
       verifyNever(() => userBloc.add(any()));
+    },
+  );
+
+  blocTest(
+    'change password, password editor returned correct values',
+    build: () => bloc,
+    setUp: () {
+      when(() => profileDialogs.askForNewPassword()).thenAnswer(
+        (_) async => const PasswordEditorReturns(
+          currentPassword: 'current password',
+          newPassword: 'new password',
+        ),
+      );
+    },
+    act: (_) => bloc.add(ProfileEventChangePassword()),
+    verify: (_) {
+      verify(
+        () => authBloc.add(
+          AuthEventChangePassword(
+            currentPassword: 'current password',
+            newPassword: 'new password',
+          ),
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'change password, password editor returned null',
+    build: () => bloc,
+    setUp: () {
+      when(() => profileDialogs.askForNewPassword()).thenAnswer(
+        (_) async => null,
+      );
+    },
+    act: (_) => bloc.add(ProfileEventChangePassword()),
+    verify: (_) {
+      verifyNever(() => authBloc.add(any()));
     },
   );
 }
