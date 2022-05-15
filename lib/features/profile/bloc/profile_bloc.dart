@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';
 import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
@@ -15,22 +17,27 @@ part 'profile_state.dart';
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   late final UserBloc _userBloc;
   late final AuthBloc _authBloc;
+  late final FlashcardsBloc _flashcardsBloc;
   late final ProfileDialogs _profileDialogs;
   late final ImagePicker _imagePicker;
   StreamSubscription<UserState>? _userStateSubscription;
+  StreamSubscription<FlashcardsState>? _flashcardsStateSubscription;
 
   ProfileBloc({
     required UserBloc userBloc,
     required AuthBloc authBloc,
+    required FlashcardsBloc flashcardsBloc,
     required ProfileDialogs profileDialogs,
     required ImagePicker imagePicker,
   }) : super(const ProfileState()) {
     _userBloc = userBloc;
     _authBloc = authBloc;
+    _flashcardsBloc = flashcardsBloc;
     _profileDialogs = profileDialogs;
     _imagePicker = imagePicker;
     on<ProfileEventInitialize>(_initialize);
     on<ProfileEventUserUpdated>(_userUpdated);
+    on<ProfileEventFlashcardsStateUpdated>(_flashcardsStateUpdated);
     on<ProfileEventModifyAvatar>(_modifyAvatar);
     on<ProfileEventChangeUsername>(_changeUsername);
     on<ProfileEventChangePassword>(_changePassword);
@@ -39,6 +46,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   @override
   Future<void> close() {
     _userStateSubscription?.cancel();
+    _flashcardsStateSubscription?.cancel();
     return super.close();
   }
 
@@ -46,10 +54,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileEventInitialize event,
     Emitter<ProfileState> emit,
   ) {
-    emit(state.copyWith(loggedUserData: _userBloc.state.loggedUser));
-    _userStateSubscription = _userBloc.stream.listen((state) {
-      add(ProfileEventUserUpdated(newUserData: state.loggedUser));
-    });
+    emit(state.copyWith(
+      loggedUserData: _userBloc.state.loggedUser,
+      amountOfDaysInARow: _userBloc.state.amountOfDaysInARow,
+      amountOfAllFlashcards: _flashcardsBloc.state.amountOfAllFlashcards,
+    ));
+    _setUserStateSubscription();
+    _setFlashcardsStateSubscription();
   }
 
   void _userUpdated(
@@ -58,6 +69,16 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) {
     emit(state.copyWith(
       loggedUserData: event.newUserData,
+      amountOfDaysInARow: event.amountOfDaysInARow,
+    ));
+  }
+
+  void _flashcardsStateUpdated(
+    ProfileEventFlashcardsStateUpdated event,
+    Emitter<ProfileState> emit,
+  ) {
+    emit(state.copyWith(
+      amountOfAllFlashcards: event.amountOfAllFlashcards,
     ));
   }
 
@@ -104,6 +125,23 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         newPassword: passwordEditorReturnedValues.newPassword,
       ));
     }
+  }
+
+  void _setUserStateSubscription() {
+    _userStateSubscription = _userBloc.stream.listen((state) {
+      add(ProfileEventUserUpdated(
+        newUserData: state.loggedUser,
+        amountOfDaysInARow: state.amountOfDaysInARow,
+      ));
+    });
+  }
+
+  void _setFlashcardsStateSubscription() {
+    _flashcardsStateSubscription = _flashcardsBloc.stream.listen((state) {
+      add(ProfileEventFlashcardsStateUpdated(
+        amountOfAllFlashcards: state.amountOfAllFlashcards,
+      ));
+    });
   }
 
   Future<void> _editAvatar() async {

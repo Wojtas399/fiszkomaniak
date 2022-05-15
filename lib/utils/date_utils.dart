@@ -28,4 +28,33 @@ class DateUtils {
       return time1.hour > time2.hour ? 1 : -1;
     }
   }
+
+  static List<DateTime> getDaysInARow(
+    DateTime fromDate,
+    List<DateTime> dates,
+  ) {
+    final List<DateTime> days = [];
+    int daysInARow = 0;
+    int counter = 0;
+    final List<DateTime> sortedDates = [...dates];
+    sortedDates.sort();
+    final List<DateTime> datesInDescendingOrder = sortedDates.reversed.toList();
+    while (counter < datesInDescendingOrder.length &&
+        _daysBetween(
+              fromDate,
+              datesInDescendingOrder[counter],
+            ) ==
+            daysInARow) {
+      days.add(datesInDescendingOrder[counter]);
+      daysInARow++;
+      counter++;
+    }
+    return days;
+  }
+
+  static int _daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (from.difference(to).inHours / 24).round();
+  }
 }

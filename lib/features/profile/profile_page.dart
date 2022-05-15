@@ -1,8 +1,10 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
 import 'package:fiszkomaniak/features/profile/components/profile_avatar.dart';
+import 'package:fiszkomaniak/features/profile/components/profile_stats.dart';
 import 'package:fiszkomaniak/features/profile/components/profile_user_data.dart';
 import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +25,8 @@ class ProfilePage extends StatelessWidget {
               ProfileAvatar(),
               SizedBox(height: 24.0),
               ProfileUserData(),
+              ProfileStats(),
+              SizedBox(height: 148.0),
             ],
           ),
         ),
@@ -45,6 +49,7 @@ class _ProfileBlocProvider extends StatelessWidget {
       create: (_) => ProfileBloc(
         userBloc: context.read<UserBloc>(),
         authBloc: context.read<AuthBloc>(),
+        flashcardsBloc: context.read<FlashcardsBloc>(),
         profileDialogs: ProfileDialogs(),
         imagePicker: ImagePicker(),
       )..add(ProfileEventInitialize()),

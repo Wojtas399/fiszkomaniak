@@ -54,11 +54,15 @@ class _AvatarAndDays extends StatelessWidget {
       child: Row(
         children: [
           const _LoggedUserAvatar(),
-          const SizedBox(width: 12),
-          const Icon(MdiIcons.medal),
-          Text(
-            '24',
-            style: Theme.of(context).textTheme.subtitle1,
+          const SizedBox(width: 4.0),
+          Expanded(
+            child: Row(
+              children: const [
+                Icon(MdiIcons.medal),
+                SizedBox(width: 2.0),
+                _DaysInARow(),
+              ],
+            ),
           ),
         ],
       ),
@@ -78,5 +82,28 @@ class _LoggedUserAvatar extends StatelessWidget {
       imageType: avatarUrl != null ? AvatarImageTypeUrl(url: avatarUrl) : null,
       size: 42.0,
     );
+  }
+}
+
+class _DaysInARow extends StatelessWidget {
+  const _DaysInARow({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final int amountOfDaysInARow = context.select(
+      (UserBloc bloc) => bloc.state.amountOfDaysInARow,
+    );
+    return Text(
+      _getAmountAsString(amountOfDaysInARow),
+      style: Theme.of(context).textTheme.subtitle1,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  String _getAmountAsString(int value) {
+    if (value >= 1000) {
+      return '999+';
+    }
+    return '$value';
   }
 }

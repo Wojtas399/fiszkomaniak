@@ -6,8 +6,18 @@ class ProfileEventInitialize extends ProfileEvent {}
 
 class ProfileEventUserUpdated extends ProfileEvent {
   final User? newUserData;
+  final int amountOfDaysInARow;
 
-  ProfileEventUserUpdated({required this.newUserData});
+  ProfileEventUserUpdated({
+    required this.newUserData,
+    required this.amountOfDaysInARow,
+  });
+}
+
+class ProfileEventFlashcardsStateUpdated extends ProfileEvent {
+  final int amountOfAllFlashcards;
+
+  ProfileEventFlashcardsStateUpdated({required this.amountOfAllFlashcards});
 }
 
 class ProfileEventModifyAvatar extends ProfileEvent {}
