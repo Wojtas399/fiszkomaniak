@@ -155,4 +155,20 @@ void main() {
       dates[0],
     ]);
   });
+
+  test('get days from week', () {
+    final List<DateTime> daysFromWeek = DateUtils.getDaysFromWeek(
+      DateTime(2022, 5, 14),
+    );
+
+    expect(daysFromWeek, [
+      DateTime(2022, 5, 9),
+      DateTime(2022, 5, 10),
+      DateTime(2022, 5, 11),
+      DateTime(2022, 5, 12),
+      DateTime(2022, 5, 13),
+      DateTime(2022, 5, 14),
+      DateTime(2022, 5, 15),
+    ]);
+  });
 }

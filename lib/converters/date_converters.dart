@@ -18,6 +18,10 @@ String convertDateToViewFormatWithDayAndMonthNames(DateTime? date) {
   return '$dayName, ${date.day} $monthName ${date.year}r.';
 }
 
+String convertDateToWeekDayShortName(DateTime date) {
+  return _shortDayNames[date.weekday - 1];
+}
+
 final List<String> _dayNames = [
   'Poniedziałek',
   'Wtorek',
@@ -26,6 +30,16 @@ final List<String> _dayNames = [
   'Piątek',
   'Sobota',
   'Niedziela',
+];
+
+final List<String> _shortDayNames = [
+  'Pon',
+  'Wto',
+  'Śro',
+  'Czw',
+  'Pią',
+  'Sob',
+  'Nie',
 ];
 
 final List<String> _monthNames = [

@@ -52,6 +52,21 @@ class DateUtils {
     return days;
   }
 
+  static List<DateTime> getDaysFromWeek(DateTime dayFromWeek) {
+    DateTime firstDayOfWeek = dayFromWeek.subtract(
+      Duration(days: dayFromWeek.weekday - 1),
+    );
+    firstDayOfWeek = DateTime(
+      firstDayOfWeek.year,
+      firstDayOfWeek.month,
+      firstDayOfWeek.day,
+    );
+    return List<DateTime>.generate(
+      7,
+      (index) => firstDayOfWeek.add(Duration(days: index)),
+    );
+  }
+
   static int _daysBetween(DateTime from, DateTime to) {
     from = DateTime(from.year, from.month, from.day);
     to = DateTime(to.year, to.month, to.day);
