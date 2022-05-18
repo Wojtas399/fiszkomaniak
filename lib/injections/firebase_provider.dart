@@ -25,7 +25,10 @@ import '../repositories/courses_repository.dart';
 class FirebaseProvider {
   static AuthInterface provideAuthInterface() {
     return AuthRepository(
-      fireAuthService: FireAuthService(fireUserService: FireUserService()),
+      fireAuthService: FireAuthService(
+        fireUserService: FireUserService(),
+        fireAvatarService: FireAvatarService(),
+      ),
     );
   }
 

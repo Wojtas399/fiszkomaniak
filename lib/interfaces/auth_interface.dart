@@ -1,5 +1,5 @@
 abstract class AuthInterface {
-  Stream<bool> isLoggedUserStatus();
+  Stream<bool> isLoggedUser();
 
   Future<void> signIn({
     required String email,
@@ -18,4 +18,8 @@ abstract class AuthInterface {
     required String currentPassword,
     required String newPassword,
   });
+
+  Future<void> removeLoggedUser({required String password});
+
+  Future<void> signOut();
 }

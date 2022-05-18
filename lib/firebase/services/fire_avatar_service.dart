@@ -10,15 +10,6 @@ class FireAvatarService {
     return _loggedUserAvatarUrl.stream;
   }
 
-  Future<void> _loadLoggedUserAvatarUrl() async {
-    try {
-      final String url = await FireReferences.avatarRef.getDownloadURL();
-      _loggedUserAvatarUrl.add(url);
-    } catch (error) {
-      _loggedUserAvatarUrl.add(null);
-    }
-  }
-
   Future<void> saveNewLoggedUserAvatar(String fullPath) async {
     try {
       await removeLoggedUserAvatar();
@@ -33,7 +24,7 @@ class FireAvatarService {
 
   Future<void> removeLoggedUserAvatar() async {
     try {
-      if (await _doesLoggedUserAvatarExist()) {
+      if (await doesLoggedUserAvatarExist()) {
         await FireReferences.avatarRef.delete();
       }
       _loggedUserAvatarUrl.add(null);
@@ -42,7 +33,16 @@ class FireAvatarService {
     }
   }
 
-  Future<bool> _doesLoggedUserAvatarExist() async {
+  Future<void> _loadLoggedUserAvatarUrl() async {
+    try {
+      final String url = await FireReferences.avatarRef.getDownloadURL();
+      _loggedUserAvatarUrl.add(url);
+    } catch (error) {
+      _loggedUserAvatarUrl.add(null);
+    }
+  }
+
+  Future<bool> doesLoggedUserAvatarExist() async {
     try {
       await FireReferences.avatarRef.getDownloadURL();
       return true;

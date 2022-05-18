@@ -68,6 +68,22 @@ class FireUserService {
     }
   }
 
+  Future<void> removeLoggedUserData() async {
+    final batch = FireInstances.firestore.batch();
+    final courses = await FireReferences.coursesRef.get();
+    final groups = await FireReferences.groupsRef.get();
+    for (final course in courses.docs) {
+      batch.delete(course.reference);
+    }
+    for (final group in groups.docs) {
+      batch.delete(group.reference);
+    }
+    batch.delete(FireReferences.appearanceSettingsRef);
+    batch.delete(FireReferences.notificationsSettingsRef);
+    batch.delete(FireReferences.loggedUserRef);
+    await batch.commit();
+  }
+
   List<DayFlashcardDbModel> _createDaysFlashcards(
     String groupId,
     List<int> indexesOfRememberedFlashcards,

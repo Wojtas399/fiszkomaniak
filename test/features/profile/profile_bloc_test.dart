@@ -403,4 +403,58 @@ void main() {
       verifyNever(() => authBloc.add(any()));
     },
   );
+
+  blocTest(
+    'sign out, confirmed',
+    build: () => bloc,
+    setUp: () {
+      when(() => profileDialogs.askForSignOutConfirmation())
+          .thenAnswer((_) async => true);
+    },
+    act: (_) => bloc.add(ProfileEventSignOut()),
+    verify: (_) {
+      verify(() => authBloc.add(AuthEventSignOut())).called(1);
+    },
+  );
+
+  blocTest(
+    'sign out, cancelled',
+    build: () => bloc,
+    setUp: () {
+      when(() => profileDialogs.askForSignOutConfirmation())
+          .thenAnswer((_) async => false);
+    },
+    act: (_) => bloc.add(ProfileEventSignOut()),
+    verify: (_) {
+      verifyNever(() => authBloc.add(any()));
+    },
+  );
+
+  blocTest(
+    'remove account, password as string',
+    build: () => bloc,
+    setUp: () {
+      when(() => profileDialogs.askForRemoveAccountConfirmationPassword())
+          .thenAnswer((_) async => 'password');
+    },
+    act: (_) => bloc.add(ProfileEventRemoveAccount()),
+    verify: (_) {
+      verify(
+        () => authBloc.add(AuthEventRemoveLoggedUser(password: 'password')),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'remove account, password as null',
+    build: () => bloc,
+    setUp: () {
+      when(() => profileDialogs.askForRemoveAccountConfirmationPassword())
+          .thenAnswer((_) async => null);
+    },
+    act: (_) => bloc.add(ProfileEventRemoveAccount()),
+    verify: (_) {
+      verifyNever(() => authBloc.add(any()));
+    },
+  );
 }

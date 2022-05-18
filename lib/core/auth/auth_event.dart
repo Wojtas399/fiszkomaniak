@@ -65,3 +65,14 @@ class AuthEventChangePassword extends AuthEvent {
         newPassword,
       ];
 }
+
+class AuthEventRemoveLoggedUser extends AuthEvent {
+  final String password;
+
+  AuthEventRemoveLoggedUser({required this.password});
+
+  @override
+  List<Object> get props => [password];
+}
+
+class AuthEventSignOut extends AuthEvent {}

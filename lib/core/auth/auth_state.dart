@@ -19,6 +19,8 @@ class AuthStatePasswordResetEmailSent extends AuthState {}
 
 class AuthStatePasswordChanged extends AuthState {}
 
+class AuthStateSignedOut extends AuthState {}
+
 class AuthStateUserNotFound extends AuthState {}
 
 class AuthStateWrongPassword extends AuthState {}

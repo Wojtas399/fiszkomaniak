@@ -37,7 +37,7 @@ void main() {
     'logged user status changed, user is not logged',
     build: () => bloc,
     act: (_) => bloc.add(AuthEventLoggedUserStatusChanged(isLoggedUser: false)),
-    expect: () => [],
+    expect: () => [AuthStateSignedOut()],
   );
 
   blocTest(
@@ -306,5 +306,87 @@ void main() {
       AuthStateLoading(),
       const AuthStateError(message: 'Error...'),
     ],
+  );
+
+  blocTest(
+    'remove logged user, success',
+    build: () => bloc,
+    setUp: () {
+      when(() => authInterface.removeLoggedUser(password: 'password'))
+          .thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(AuthEventRemoveLoggedUser(password: 'password')),
+    expect: () => [
+      AuthStateLoading(),
+    ],
+    verify: (_) {
+      verify(() => authInterface.removeLoggedUser(password: 'password'))
+          .called(1);
+    },
+  );
+
+  blocTest(
+    'remove logged user, wrong password',
+    build: () => bloc,
+    setUp: () {
+      when(() => authInterface.removeLoggedUser(password: 'password'))
+          .thenThrow(const AuthException(code: AuthErrorCode.wrongPassword));
+    },
+    act: (_) => bloc.add(AuthEventRemoveLoggedUser(password: 'password')),
+    expect: () => [
+      AuthStateLoading(),
+      AuthStateWrongPassword(),
+    ],
+    verify: (_) {
+      verify(() => authInterface.removeLoggedUser(password: 'password'))
+          .called(1);
+    },
+  );
+
+  blocTest(
+    'remove logged user, unknown error',
+    build: () => bloc,
+    setUp: () {
+      when(() => authInterface.removeLoggedUser(password: 'password'))
+          .thenThrow('Error...');
+    },
+    act: (_) => bloc.add(AuthEventRemoveLoggedUser(password: 'password')),
+    expect: () => [
+      AuthStateLoading(),
+      const AuthStateError(message: 'Error...'),
+    ],
+    verify: (_) {
+      verify(() => authInterface.removeLoggedUser(password: 'password'))
+          .called(1);
+    },
+  );
+
+  blocTest(
+    'sign out, success',
+    build: () => bloc,
+    setUp: () {
+      when(() => authInterface.signOut()).thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(AuthEventSignOut()),
+    expect: () => [AuthStateLoading()],
+    verify: (_) {
+      verify(() => authInterface.signOut()).called(1);
+    },
+  );
+
+  blocTest(
+    'sign out, error',
+    build: () => bloc,
+    setUp: () {
+      when(() => authInterface.signOut()).thenThrow('Error...');
+    },
+    act: (_) => bloc.add(AuthEventSignOut()),
+    expect: () => [
+      AuthStateLoading(),
+      const AuthStateError(message: 'Error...'),
+    ],
+    verify: (_) {
+      verify(() => authInterface.signOut()).called(1);
+    },
   );
 }

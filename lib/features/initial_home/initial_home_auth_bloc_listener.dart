@@ -8,9 +8,9 @@ class InitialHomeAuthBlocListener extends StatelessWidget {
   final Widget child;
 
   const InitialHomeAuthBlocListener({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +23,9 @@ class InitialHomeAuthBlocListener extends StatelessWidget {
         if (state is AuthStateLoading) {
           Dialogs.showLoadingDialog(context: context);
         } else if (state is AuthStateSignedIn) {
+          if (Dialogs.isLoadingDialogOpened) {
+            closeLoadingDialog();
+          }
           context.read<Navigation>().pushReplacementToHome(context);
         } else if (state is AuthStatePasswordResetEmailSent) {
           closeLoadingDialog();

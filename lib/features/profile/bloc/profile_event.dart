@@ -25,3 +25,7 @@ class ProfileEventModifyAvatar extends ProfileEvent {}
 class ProfileEventChangeUsername extends ProfileEvent {}
 
 class ProfileEventChangePassword extends ProfileEvent {}
+
+class ProfileEventSignOut extends ProfileEvent {}
+
+class ProfileEventRemoveAccount extends ProfileEvent {}

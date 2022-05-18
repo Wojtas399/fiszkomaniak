@@ -41,6 +41,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ProfileEventModifyAvatar>(_modifyAvatar);
     on<ProfileEventChangeUsername>(_changeUsername);
     on<ProfileEventChangePassword>(_changePassword);
+    on<ProfileEventSignOut>(_signOut);
+    on<ProfileEventRemoveAccount>(_removeAccount);
   }
 
   @override
@@ -124,6 +126,27 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         currentPassword: passwordEditorReturnedValues.currentPassword,
         newPassword: passwordEditorReturnedValues.newPassword,
       ));
+    }
+  }
+
+  Future<void> _signOut(
+    ProfileEventSignOut event,
+    Emitter<ProfileState> emit,
+  ) async {
+    final bool confirmation = await _profileDialogs.askForSignOutConfirmation();
+    if (confirmation) {
+      _authBloc.add(AuthEventSignOut());
+    }
+  }
+
+  Future<void> _removeAccount(
+    ProfileEventRemoveAccount event,
+    Emitter<ProfileState> emit,
+  ) async {
+    final String? password =
+        await _profileDialogs.askForRemoveAccountConfirmationPassword();
+    if (password != null) {
+      _authBloc.add(AuthEventRemoveLoggedUser(password: password));
     }
   }
 

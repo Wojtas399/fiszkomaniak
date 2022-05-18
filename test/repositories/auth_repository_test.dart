@@ -26,7 +26,7 @@ void main() {
       (_) => Stream.value(auth.currentUser),
     );
 
-    final Stream<bool> isLoggedUser$ = repository.isLoggedUserStatus();
+    final Stream<bool> isLoggedUser$ = repository.isLoggedUser();
 
     expect(await isLoggedUser$.first, true);
   });
@@ -37,7 +37,7 @@ void main() {
       (_) => Stream.value(auth.currentUser),
     );
 
-    final Stream<bool> isLoggedUser$ = repository.isLoggedUserStatus();
+    final Stream<bool> isLoggedUser$ = repository.isLoggedUser();
 
     expect(await isLoggedUser$.first, false);
   });
@@ -376,6 +376,58 @@ void main() {
           newPassword: 'newPassword',
         ),
       ).called(1);
+      expect(error, 'Error...');
+    }
+  });
+
+  test('remove logged user, success', () async {
+    when(() => fireAuthService.removeLoggedUser('password'))
+        .thenAnswer((_) async => '');
+
+    await repository.removeLoggedUser(password: 'password');
+
+    verify(() => fireAuthService.removeLoggedUser('password')).called(1);
+  });
+
+  test('remove logged user, wrong password', () async {
+    when(() => fireAuthService.removeLoggedUser('password'))
+        .thenThrow(FirebaseAuthException(code: 'wrong-password'));
+
+    try {
+      await repository.removeLoggedUser(password: 'password');
+    } catch (error) {
+      verify(() => fireAuthService.removeLoggedUser('password')).called(1);
+      expect(error, const AuthException(code: AuthErrorCode.wrongPassword));
+    }
+  });
+
+  test('remove logged user, unknown error', () async {
+    when(() => fireAuthService.removeLoggedUser('password'))
+        .thenThrow('Error...');
+
+    try {
+      await repository.removeLoggedUser(password: 'password');
+    } catch (error) {
+      verify(() => fireAuthService.removeLoggedUser('password')).called(1);
+      expect(error, 'Error...');
+    }
+  });
+
+  test('sign out, success', () async {
+    when(() => fireAuthService.signOut()).thenAnswer((_) async => '');
+
+    await repository.signOut();
+
+    verify(() => fireAuthService.signOut()).called(1);
+  });
+
+  test('sign out, error', () async {
+    when(() => fireAuthService.signOut()).thenThrow('Error...');
+
+    try {
+      await repository.signOut();
+    } catch (error) {
+      verify(() => fireAuthService.signOut()).called(1);
       expect(error, 'Error...');
     }
   });

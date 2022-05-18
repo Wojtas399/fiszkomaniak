@@ -1,13 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiszkomaniak/firebase/fire_user.dart';
+import 'package:fiszkomaniak/firebase/services/fire_avatar_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_user_service.dart';
 import '../fire_instances.dart';
 
 class FireAuthService {
   late final FireUserService _fireUserService;
+  late final FireAvatarService _fireAvatarService;
 
-  FireAuthService({required FireUserService fireUserService}) {
+  FireAuthService({
+    required FireUserService fireUserService,
+    required FireAvatarService fireAvatarService,
+  }) {
     _fireUserService = fireUserService;
+    _fireAvatarService = fireAvatarService;
   }
 
   Stream<User?> getUserChangesStream() {
@@ -50,6 +56,22 @@ class FireAuthService {
   }) async {
     await _reauthenticate(currentPassword);
     await FireUser.loggedUser?.updatePassword(newPassword);
+  }
+
+  Future<void> removeLoggedUser(String password) async {
+    final User? loggedUser = FireUser.loggedUser;
+    if (loggedUser != null) {
+      await _reauthenticate(password);
+      await _fireUserService.removeLoggedUserData();
+      if (await _fireAvatarService.doesLoggedUserAvatarExist()) {
+        await _fireAvatarService.removeLoggedUserAvatar();
+      }
+      await loggedUser.delete();
+    }
+  }
+
+  Future<void> signOut() async {
+    await FireInstances.auth.signOut();
   }
 
   Future<void> _reauthenticate(String password) async {

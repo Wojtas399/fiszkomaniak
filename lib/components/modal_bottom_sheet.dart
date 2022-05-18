@@ -8,7 +8,7 @@ class ModalBottomSheet {
     String title = '',
     List<ModalBottomSheetOption> options = const [],
   }) async {
-    final BuildContext? context = HomeRouter.navigatorKey.currentContext;
+    final BuildContext? context = navigatorKey.currentContext;
     if (context != null) {
       return await showModalBottomSheet<int>(
         context: context,

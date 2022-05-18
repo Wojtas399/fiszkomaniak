@@ -26,6 +26,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventSignUp>(_signUp);
     on<AuthEventSendPasswordResetEmail>(_sendPasswordResetEmail);
     on<AuthEventChangePassword>(_changePassword);
+    on<AuthEventRemoveLoggedUser>(_removeLoggedUser);
+    on<AuthEventSignOut>(_signOut);
   }
 
   @override
@@ -38,7 +40,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthEventInitialize event,
     Emitter<AuthState> emit,
   ) {
-    _subscription = _authInterface.isLoggedUserStatus().listen(
+    _subscription = _authInterface.isLoggedUser().listen(
       (bool isLoggedUser) {
         add(AuthEventLoggedUserStatusChanged(isLoggedUser: isLoggedUser));
       },
@@ -51,6 +53,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) {
     if (event.isLoggedUser) {
       emit(AuthStateSignedIn());
+    } else {
+      emit(AuthStateSignedOut());
     }
   }
 
@@ -120,6 +124,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthStatePasswordChanged());
     } on AuthException catch (error) {
       _onAuthException(error, emit);
+    } catch (error) {
+      emit(AuthStateError(message: error.toString()));
+    }
+  }
+
+  Future<void> _removeLoggedUser(
+    AuthEventRemoveLoggedUser event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      emit(AuthStateLoading());
+      await _authInterface.removeLoggedUser(password: event.password);
+    } on AuthException catch (error) {
+      _onAuthException(error, emit);
+    } catch (error) {
+      emit(AuthStateError(message: error.toString()));
+    }
+  }
+
+  Future<void> _signOut(
+    AuthEventSignOut event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      emit(AuthStateLoading());
+      await _authInterface.signOut();
     } catch (error) {
       emit(AuthStateError(message: error.toString()));
     }

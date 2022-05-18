@@ -11,7 +11,7 @@ class AuthRepository implements AuthInterface {
   }
 
   @override
-  Stream<bool> isLoggedUserStatus() async* {
+  Stream<bool> isLoggedUser() async* {
     await for (final user in _fireAuthService.getUserChangesStream()) {
       if (user != null) {
         yield true;
@@ -77,6 +77,26 @@ class AuthRepository implements AuthInterface {
       );
     } on FirebaseAuthException catch (error) {
       _onFirebaseAuthException(error);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeLoggedUser({required String password}) async {
+    try {
+      await _fireAuthService.removeLoggedUser(password);
+    } on FirebaseAuthException catch (error) {
+      _onFirebaseAuthException(error);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> signOut() async {
+    try {
+      await _fireAuthService.signOut();
     } catch (error) {
       rethrow;
     }

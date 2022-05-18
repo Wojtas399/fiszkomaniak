@@ -1,9 +1,12 @@
+import 'package:fiszkomaniak/config/routes.dart';
+import 'package:fiszkomaniak/config/slide_right_route_animation.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/features/initial_home/initial_home.dart';
 import 'package:fiszkomaniak/features/reset_password/reset_password_page.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
@@ -15,7 +18,13 @@ import '../features/learning_process/learning_process_data.dart';
 
 class Navigation {
   void moveBack({Object? objectToReturn}) {
-    HomeRouter.navigatorKey.currentState?.pop(objectToReturn);
+    navigatorKey.currentState?.pop(objectToReturn);
+  }
+
+  void pushReplacementToInitialHome() {
+    navigatorKey.currentState?.pushReplacement(
+      SlideRightRouteAnimation(page: const InitialHome()),
+    );
   }
 
   void pushReplacementToHome(BuildContext context) {
@@ -34,21 +43,21 @@ class Navigation {
   }
 
   void backHome() {
-    HomeRouter.navigatorKey.currentState?.popUntil(
-      ModalRoute.withName(HomeRouter.home),
+    navigatorKey.currentState?.popUntil(
+      ModalRoute.withName(Routes.home),
     );
   }
 
   void navigateToSettings() {
-    HomeRouter.navigatorKey.currentState?.pushNamed(HomeRouter.settings);
+    navigatorKey.currentState?.pushNamed(Routes.settings);
   }
 
   Future<void> navigateToCourseCreator(CourseCreatorMode mode) async {
     await Future.delayed(
       const Duration(milliseconds: 1),
       () {
-        HomeRouter.navigatorKey.currentState?.pushNamed(
-          HomeRouter.courseCreator,
+        navigatorKey.currentState?.pushNamed(
+          Routes.courseCreator,
           arguments: mode,
         );
       },
@@ -59,8 +68,8 @@ class Navigation {
     await Future.delayed(
       const Duration(milliseconds: 1),
       () {
-        HomeRouter.navigatorKey.currentState?.pushNamed(
-          HomeRouter.groupCreator,
+        navigatorKey.currentState?.pushNamed(
+          Routes.groupCreator,
           arguments: mode,
         );
       },
@@ -68,49 +77,49 @@ class Navigation {
   }
 
   void navigateToSessionCreator(SessionCreatorMode mode) async {
-    HomeRouter.navigatorKey.currentState?.pushNamed(
-      HomeRouter.sessionCreator,
+    navigatorKey.currentState?.pushNamed(
+      Routes.sessionCreator,
       arguments: mode,
     );
   }
 
   void navigateToGroupSelection() {
-    HomeRouter.navigatorKey.currentState?.pushNamed(
-      HomeRouter.groupSelection,
+    navigatorKey.currentState?.pushNamed(
+      Routes.groupSelection,
     );
   }
 
   void navigateToFlashcardsEditor(FlashcardsEditorMode mode) {
-    HomeRouter.navigatorKey.currentState?.pushNamed(
-      HomeRouter.flashcardsEditor,
+    navigatorKey.currentState?.pushNamed(
+      Routes.flashcardsEditor,
       arguments: mode,
     );
   }
 
   void navigateToCourseGroupsPreview(String courseId) {
-    HomeRouter.navigatorKey.currentState?.pushNamed(
-      HomeRouter.courseGroupsPreview,
+    navigatorKey.currentState?.pushNamed(
+      Routes.courseGroupsPreview,
       arguments: courseId,
     );
   }
 
   void navigateToGroupFlashcardsPreview(String groupId) {
-    HomeRouter.navigatorKey.currentState?.pushNamed(
-      HomeRouter.groupFlashcardsPreview,
+    navigatorKey.currentState?.pushNamed(
+      Routes.groupFlashcardsPreview,
       arguments: groupId,
     );
   }
 
   void navigateToGroupPreview(String groupId) {
-    HomeRouter.navigatorKey.currentState?.pushNamed(
-      HomeRouter.groupPreview,
+    navigatorKey.currentState?.pushNamed(
+      Routes.groupPreview,
       arguments: groupId,
     );
   }
 
   void navigateToFlashcardPreview(String groupId, int flashcardIndex) {
-    HomeRouter.navigatorKey.currentState?.pushNamed(
-      HomeRouter.flashcardPreview,
+    navigatorKey.currentState?.pushNamed(
+      Routes.flashcardPreview,
       arguments: FlashcardPreviewParams(
         groupId: groupId,
         flashcardIndex: flashcardIndex,
@@ -119,15 +128,15 @@ class Navigation {
   }
 
   void navigateToSessionPreview(SessionPreviewMode mode) {
-    HomeRouter.navigatorKey.currentState?.pushNamed(
-      HomeRouter.sessionPreview,
+    navigatorKey.currentState?.pushNamed(
+      Routes.sessionPreview,
       arguments: mode,
     );
   }
 
   void navigateToLearningProcess(LearningProcessData data) {
-    HomeRouter.navigatorKey.currentState?.pushNamed(
-      HomeRouter.session,
+    navigatorKey.currentState?.pushNamed(
+      Routes.session,
       arguments: data,
     );
   }
