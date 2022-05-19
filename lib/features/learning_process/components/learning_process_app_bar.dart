@@ -26,7 +26,7 @@ class LearningProcessAppBar extends StatelessWidget
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: const [
-          SizedBox(width: 24.0),
+          _LeftMargin(),
           _StackState(),
           _Timer(),
         ],
@@ -36,6 +36,21 @@ class LearningProcessAppBar extends StatelessWidget
 
   void _exit(BuildContext context) {
     context.read<LearningProcessBloc>().add(LearningProcessEventExit());
+  }
+}
+
+class _LeftMargin extends StatelessWidget {
+  const _LeftMargin({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isTimerInvisible = context.select(
+      (AppearanceSettingsBloc bloc) => bloc.state.isSessionTimerInvisibilityOn,
+    );
+    final Duration? duration = context.select(
+      (LearningProcessBloc bloc) => bloc.state.duration,
+    );
+    return SizedBox(width: isTimerInvisible || duration == null ? 0.0 : 14.0);
   }
 }
 
@@ -73,7 +88,7 @@ class _Timer extends StatelessWidget {
       child: _TimerListener(
         child: Row(
           children: const [
-            SizedBox(width: 16.0),
+            SizedBox(width: 24.0),
             Icon(MdiIcons.clockOutline),
             SizedBox(width: 4.0),
             CountdownTimer(),

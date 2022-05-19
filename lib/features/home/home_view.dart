@@ -1,4 +1,3 @@
-import 'package:fiszkomaniak/features/account/account_page.dart';
 import 'package:fiszkomaniak/features/courses_library/courses_library_page.dart';
 import 'package:fiszkomaniak/features/home/components/home_app_bar.dart';
 import 'package:fiszkomaniak/features/home/components/home_bottom_navigation_bar.dart';
@@ -7,6 +6,7 @@ import 'package:fiszkomaniak/features/sessions_list/sessions_list_page.dart';
 import 'package:fiszkomaniak/features/study/study_page.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import '../profile/profile_page.dart';
 import 'components/home_action_button.dart';
 
 class HomeView extends StatelessWidget {
@@ -35,7 +35,7 @@ class HomeView extends StatelessWidget {
                 StudyPage(),
                 SessionsListPage(),
                 CoursesLibraryPage(),
-                AccountPage(),
+                ProfilePage(),
               ],
             ),
             floatingActionButton: const HomeActionButton(),

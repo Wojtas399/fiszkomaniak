@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiszkomaniak/models/sign_in_model.dart';
-import 'package:fiszkomaniak/models/sign_up_model.dart';
+import 'package:fiszkomaniak/core/auth/auth_exception_model.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 import '../firebase/services/fire_auth_service.dart';
 
@@ -12,29 +11,109 @@ class AuthRepository implements AuthInterface {
   }
 
   @override
-  Stream<User?> getUserChangesStream() {
-    return _fireAuthService.getUserChangesStream();
+  Stream<bool> isLoggedUser() async* {
+    await for (final user in _fireAuthService.getUserChangesStream()) {
+      if (user != null) {
+        yield true;
+      } else {
+        yield false;
+      }
+    }
   }
 
   @override
-  Future<void> signIn(SignInModel data) async {
-    await _fireAuthService.signIn(
-      email: data.email,
-      password: data.password,
-    );
+  Future<void> signIn({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _fireAuthService.signIn(email: email, password: password);
+    } on FirebaseAuthException catch (error) {
+      _onFirebaseAuthException(error);
+    } catch (error) {
+      rethrow;
+    }
   }
 
   @override
-  Future<void> signUp(SignUpModel data) async {
-    await _fireAuthService.signUp(
-      username: data.username,
-      email: data.email,
-      password: data.password,
-    );
+  Future<void> signUp({
+    required String username,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _fireAuthService.signUp(
+        username: username,
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (error) {
+      _onFirebaseAuthException(error);
+    } catch (error) {
+      rethrow;
+    }
   }
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {
-    await _fireAuthService.sendPasswordResetEmail(email: email);
+    try {
+      await _fireAuthService.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (error) {
+      _onFirebaseAuthException(error);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      await _fireAuthService.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+    } on FirebaseAuthException catch (error) {
+      _onFirebaseAuthException(error);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeLoggedUser({required String password}) async {
+    try {
+      await _fireAuthService.removeLoggedUser(password);
+    } on FirebaseAuthException catch (error) {
+      _onFirebaseAuthException(error);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> signOut() async {
+    try {
+      await _fireAuthService.signOut();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  void _onFirebaseAuthException(FirebaseAuthException error) {
+    switch (error.code) {
+      case 'user-not-found':
+        throw const AuthException(code: AuthErrorCode.userNotFound);
+      case 'wrong-password':
+        throw const AuthException(code: AuthErrorCode.wrongPassword);
+      case 'invalid-email':
+        throw const AuthException(code: AuthErrorCode.invalidEmail);
+      case 'email-already-in-use':
+        throw const AuthException(code: AuthErrorCode.emailAlreadyInUse);
+      default:
+        throw error;
+    }
   }
 }

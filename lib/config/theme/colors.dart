@@ -8,4 +8,8 @@ class AppColors {
   static final backgroundLight = HexColor('#F7ECDE');
 
   static final backgroundDark = HexColor('#25254E');
+
+  static final red = HexColor('#FF6961');
+
+  static final green = HexColor('#63B76C');
 }

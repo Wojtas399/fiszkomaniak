@@ -11,16 +11,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class SessionPreviewFlashcards extends StatelessWidget {
-  const SessionPreviewFlashcards({Key? key}) : super(key: key);
+  const SessionPreviewFlashcards({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SessionPreviewBloc, SessionPreviewState>(
       builder: (BuildContext context, SessionPreviewState state) {
-        final FlashcardsType? flashcardsType = state.flashcardsType;
-        if (flashcardsType == null) {
-          return const SizedBox();
-        }
+        final FlashcardsType flashcardsType = state.flashcardsType;
         return Stack(
           children: [
             Column(

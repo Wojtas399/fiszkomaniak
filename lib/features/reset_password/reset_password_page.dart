@@ -1,40 +1,34 @@
 import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
+import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
-import 'package:fiszkomaniak/features/reset_password/bloc/reset_password_bloc.dart';
-import 'package:fiszkomaniak/features/reset_password/components/reset_password_submit_button.dart';
-import 'package:fiszkomaniak/features/reset_password/components/reset_password_text_and_input.dart';
-import 'package:fiszkomaniak/models/http_status_model.dart';
+import 'package:fiszkomaniak/features/reset_password/reset_password_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
-import '../../utils/utils.dart';
-import 'bloc/reset_password_state.dart';
+import '../../components/buttons/button.dart';
+import '../../components/textfields/custom_textfield.dart';
 
 class ResetPasswordPage extends StatelessWidget {
   const ResetPasswordPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ResetPasswordBloc(
-        authBloc: Provider.of<AuthBloc>(context),
+    return Scaffold(
+      appBar: const CustomAppBar(
+        label: 'Zmiana hasła',
+        leadingIcon: MdiIcons.close,
       ),
-      child: _StatusListener(
-        child: Scaffold(
-          appBar: const CustomAppBar(
-            label: 'Zmiana hasła',
-            leadingIcon: MdiIcons.close,
-          ),
-          body: SafeArea(
-            child: _LostFocusAreaWithPaddings(
+      body: SafeArea(
+        child: OnTapFocusLoseArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: _ResetPasswordCubitProvider(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
-                  ResetPasswordTextAndInput(),
-                  ResetPasswordSubmitButton(),
+                  _ResetPasswordTextAndInput(),
+                  _SubmitButton(),
                 ],
               ),
             ),
@@ -45,61 +39,69 @@ class ResetPasswordPage extends StatelessWidget {
   }
 }
 
-class _StatusListener extends StatelessWidget {
+class _ResetPasswordCubitProvider extends StatelessWidget {
   final Widget child;
 
-  const _StatusListener({Key? key, required this.child}) : super(key: key);
+  const _ResetPasswordCubitProvider({Key? key, required this.child})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ResetPasswordBloc, ResetPasswordState>(
-      listener: (context, state) async {
-        final Dialogs dialogs = Dialogs();
-        HttpStatus httpStatus = state.httpStatus;
-        if (httpStatus is HttpStatusSubmitting) {
-          dialogs.showLoadingDialog(context: context);
-        } else if (httpStatus is HttpStatusSuccess) {
-          Navigator.pop(context);
-          await dialogs.showDialogWithMessage(
-            context: context,
-            title: 'Udało się!',
-            message: 'Pomyślnie wysłaliśmy wiadomość na twój adres e-mail.',
-          );
-          Navigator.pop(context);
-        } else if (httpStatus is HttpStatusFailure) {
-          Navigator.pop(context);
-          dialogs.showDialogWithMessage(
-            context: context,
-            title: 'Wystąpił bład',
-            message: httpStatus.message,
-          );
-        }
-      },
+    return BlocProvider(
+      create: (BuildContext context) => ResetPasswordCubit(
+        authBloc: context.read<AuthBloc>(),
+      ),
       child: child,
     );
   }
 }
 
-class _LostFocusAreaWithPaddings extends StatelessWidget {
-  final Widget child;
-
-  const _LostFocusAreaWithPaddings({Key? key, required this.child})
-      : super(key: key);
+class _ResetPasswordTextAndInput extends StatelessWidget {
+  const _ResetPasswordTextAndInput({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: GestureDetector(
-        child: Container(
-          height: double.infinity,
-          color: Colors.transparent,
-          child: child,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Zapomniałeś hasła?',
+          style: Theme.of(context).textTheme.headline5,
         ),
-        onTap: () {
-          Utils.unfocusElements();
-        },
-      ),
+        const SizedBox(height: 8),
+        Text(
+          'Podaj adres e-mail na który otrzymasz wiadomość z instrukcjami dotyczącymi resetowania hasła.',
+          style: Theme.of(context).textTheme.subtitle1,
+        ),
+        const SizedBox(height: 16),
+        CustomTextField(
+          icon: MdiIcons.email,
+          isRequired: true,
+          label: 'Adres e-mail',
+          onChanged: (String value) {
+            context.read<ResetPasswordCubit>().emailChanged(value);
+          },
+        ),
+      ],
     );
+  }
+}
+
+class _SubmitButton extends StatelessWidget {
+  const _SubmitButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isDisabled = context.select(
+      (ResetPasswordCubit cubit) => cubit.isButtonDisabled,
+    );
+    return Button(
+      label: 'Wyślij',
+      onPressed: isDisabled ? null : () => _submit(context),
+    );
+  }
+
+  void _submit(BuildContext context) {
+    context.read<ResetPasswordCubit>().submit();
   }
 }

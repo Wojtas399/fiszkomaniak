@@ -26,11 +26,14 @@ class LearningProcess extends StatelessWidget {
   Widget build(BuildContext context) {
     return _LearningProcessBlocProvider(
       data: data,
-      child: const FlashcardsStackBlocProvider(
+      child: FlashcardsStackBlocProvider(
         child: _FlashcardsStackListener(
-          child: Scaffold(
-            appBar: LearningProcessAppBar(),
-            body: LearningProcessContent(),
+          child: WillPopScope(
+            onWillPop: () async => false,
+            child: const Scaffold(
+              appBar: LearningProcessAppBar(),
+              body: LearningProcessContent(),
+            ),
           ),
         ),
       ),

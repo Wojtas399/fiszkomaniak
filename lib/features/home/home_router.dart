@@ -18,117 +18,103 @@ import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.
 import 'package:fiszkomaniak/features/session_preview/session_preview.dart';
 import 'package:fiszkomaniak/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
+import '../../config/routes.dart';
 import '../learning_process/learning_process.dart';
 import '../learning_process/learning_process_data.dart';
 
-class HomeRouter extends StatelessWidget {
-  static final navigatorKey = GlobalKey<NavigatorState>();
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  static const String home = '/';
+class HomeRouter extends StatefulWidget {
+  const HomeRouter({super.key});
 
-  static const String settings = '/settings';
+  @override
+  State<HomeRouter> createState() => _HomeRouterState();
+}
 
-  static const String courseCreator = '/course-creator';
-
-  static const String groupCreator = '/group-creator';
-
-  static const String sessionCreator = '/session-creator';
-
-  static const String groupSelection = '/group-selection';
-
-  static const String flashcardsEditor = '/flashcards-editor';
-
-  static const String courseGroupsPreview = '/course-groups-preview';
-
-  static const String groupFlashcardsPreview = '/group-flashcards-preview';
-
-  static const String groupPreview = '/group-preview';
-
-  static const String flashcardPreview = '/flashcard-preview';
-
-  static const String sessionPreview = '/session-preview';
-
-  static const String session = '/session';
-
-  const HomeRouter({Key? key}) : super(key: key);
+class _HomeRouterState extends State<HomeRouter> {
+  @override
+  void initState() {
+    super.initState();
+    navigatorKey = GlobalKey<NavigatorState>();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Navigator(
       key: navigatorKey,
-      initialRoute: home,
+      initialRoute: Routes.home,
       onGenerateRoute: _onGenerateRoute,
     );
   }
 
   Route<dynamic> _onGenerateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
-      case home:
+      case Routes.home:
         return MaterialPageRoute(
           builder: (_) => HomeView(),
           settings: routeSettings,
         );
-      case settings:
+      case Routes.settings:
         return MaterialPageRoute(builder: (_) => const SettingsPage());
-      case courseCreator:
+      case Routes.courseCreator:
         return MaterialPageRoute(
           builder: (_) => CourseCreator(
             mode: routeSettings.arguments as CourseCreatorMode,
           ),
         );
-      case groupCreator:
+      case Routes.groupCreator:
         return MaterialPageRoute(
           builder: (_) => GroupCreator(
             mode: routeSettings.arguments as GroupCreatorMode,
           ),
         );
-      case sessionCreator:
+      case Routes.sessionCreator:
         return MaterialPageRoute(
           builder: (_) => SessionCreator(
             mode: routeSettings.arguments as SessionCreatorMode,
           ),
         );
-      case groupSelection:
+      case Routes.groupSelection:
         return MaterialPageRoute(
           builder: (_) => GroupSelection(),
         );
-      case flashcardsEditor:
+      case Routes.flashcardsEditor:
         return MaterialPageRoute(
           builder: (_) => FlashcardsEditor(
             mode: routeSettings.arguments as FlashcardsEditorMode,
           ),
         );
-      case courseGroupsPreview:
+      case Routes.courseGroupsPreview:
         return MaterialPageRoute(
           builder: (_) => CourseGroupsPreview(
             courseId: routeSettings.arguments as String,
           ),
         );
-      case groupFlashcardsPreview:
+      case Routes.groupFlashcardsPreview:
         return MaterialPageRoute(
           builder: (_) => GroupFlashcardsPreview(
             groupId: routeSettings.arguments as String,
           ),
         );
-      case groupPreview:
+      case Routes.groupPreview:
         return MaterialPageRoute(
           builder: (_) => GroupPreview(
             groupId: routeSettings.arguments as String,
           ),
         );
-      case flashcardPreview:
+      case Routes.flashcardPreview:
         return MaterialPageRoute(
           builder: (_) => FlashcardPreview(
             params: routeSettings.arguments as FlashcardPreviewParams,
           ),
         );
-      case sessionPreview:
+      case Routes.sessionPreview:
         return MaterialPageRoute(
           builder: (_) => SessionPreview(
             mode: routeSettings.arguments as SessionPreviewMode,
           ),
         );
-      case session:
+      case Routes.session:
         return MaterialPageRoute(
           builder: (_) => LearningProcess(
             data: routeSettings.arguments as LearningProcessData,

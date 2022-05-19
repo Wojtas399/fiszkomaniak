@@ -13,7 +13,7 @@ class FlashcardsStack extends StatelessWidget {
   final int _duration = 400;
   final FlipCardController _flipCardController = FlipCardController();
 
-  FlashcardsStack({Key? key}) : super(key: key);
+  FlashcardsStack({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +46,9 @@ class FlashcardsStack extends StatelessWidget {
             right: element.value.position.right,
             top: element.value.position.top,
             bottom: element.value.position.bottom,
+            duration: Duration(milliseconds: _duration),
+            curve: _curve,
+            onEnd: () => _elementAnimationFinished(context, element.key),
             child: AnimatedScale(
               scale: element.value.scale,
               duration: Duration(milliseconds: _duration),
@@ -53,6 +56,7 @@ class FlashcardsStack extends StatelessWidget {
               child: AnimatedOpacity(
                 opacity: element.value.opacity,
                 duration: Duration(milliseconds: _duration),
+                curve: _curve,
                 child: element.key == state.animatedElements.length - 1
                     ? FlashcardsStackFlipCard(
                         controller: _flipCardController,
@@ -66,12 +70,8 @@ class FlashcardsStack extends StatelessWidget {
                     : FlashcardsStackNormalCard(
                         text: element.value.flashcard.question,
                       ),
-                curve: _curve,
               ),
             ),
-            duration: Duration(milliseconds: _duration),
-            curve: _curve,
-            onEnd: () => _elementAnimationFinished(context, element.key),
           ),
         )
         .toList();

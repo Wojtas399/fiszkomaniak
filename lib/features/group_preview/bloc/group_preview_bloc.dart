@@ -71,7 +71,7 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
   ) async {
     final String? groupId = state.group?.id;
     if (groupId != null) {
-      final bool? confirmation =
+      final bool confirmation =
           await _groupPreviewDialogs.askForDeleteConfirmation();
       if (confirmation == true) {
         _groupsBloc.add(GroupsEventRemoveGroup(groupId: groupId));

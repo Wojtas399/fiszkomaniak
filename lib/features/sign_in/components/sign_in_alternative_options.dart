@@ -1,6 +1,6 @@
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
-import 'package:fiszkomaniak/providers/initial_home_mode_provider.dart';
+import 'package:fiszkomaniak/features/initial_home/initial_home_mode_provider.dart';
 import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

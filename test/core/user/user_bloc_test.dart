@@ -11,6 +11,11 @@ class MockUserInterface extends Mock implements UserInterface {}
 void main() {
   final UserInterface userInterface = MockUserInterface();
   late UserBloc bloc;
+  const String errorMessage = 'Error...';
+  final UserState loadingState = UserState(status: UserStatusLoading());
+  const UserState errorState = UserState(
+    status: UserStatusError(message: errorMessage),
+  );
 
   setUp(() {
     bloc = UserBloc(userInterface: userInterface);
@@ -42,6 +47,101 @@ void main() {
   );
 
   blocTest(
+    'save new avatar, success',
+    build: () => bloc,
+    setUp: () {
+      when(() => userInterface.saveNewAvatar(fullPath: 'full/path'))
+          .thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(UserEventSaveNewAvatar(imageFullPath: 'full/path')),
+    expect: () => [
+      loadingState,
+      UserState(status: UserStatusNewAvatarSaved()),
+    ],
+    verify: (_) {
+      verify(() => userInterface.saveNewAvatar(fullPath: 'full/path'))
+          .called(1);
+    },
+  );
+
+  blocTest(
+    'save new avatar, failure',
+    build: () => bloc,
+    setUp: () {
+      when(() => userInterface.saveNewAvatar(fullPath: 'full/path'))
+          .thenThrow(errorMessage);
+    },
+    act: (_) => bloc.add(UserEventSaveNewAvatar(imageFullPath: 'full/path')),
+    expect: () => [loadingState, errorState],
+    verify: (_) {
+      verify(() => userInterface.saveNewAvatar(fullPath: 'full/path'))
+          .called(1);
+    },
+  );
+
+  blocTest(
+    'remove avatar, success',
+    build: () => bloc,
+    setUp: () {
+      when(() => userInterface.removeAvatar()).thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(UserEventRemoveAvatar()),
+    expect: () => [
+      loadingState,
+      UserState(status: UserStatusAvatarRemoved()),
+    ],
+    verify: (_) {
+      verify(() => userInterface.removeAvatar()).called(1);
+    },
+  );
+
+  blocTest(
+    'remove avatar, failure',
+    build: () => bloc,
+    setUp: () {
+      when(() => userInterface.removeAvatar()).thenThrow(errorMessage);
+    },
+    act: (_) => bloc.add(UserEventRemoveAvatar()),
+    expect: () => [loadingState, errorState],
+    verify: (_) {
+      verify(() => userInterface.removeAvatar()).called(1);
+    },
+  );
+
+  blocTest(
+    'change username, success',
+    build: () => bloc,
+    setUp: () {
+      when(() => userInterface.saveNewUsername(newUsername: 'newUsername'))
+          .thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(UserEventChangeUsername(newUsername: 'newUsername')),
+    expect: () => [
+      loadingState,
+      UserState(status: UserStatusUsernameUpdated()),
+    ],
+    verify: (_) {
+      verify(() => userInterface.saveNewUsername(newUsername: 'newUsername'))
+          .called(1);
+    },
+  );
+
+  blocTest(
+    'change username, failure',
+    build: () => bloc,
+    setUp: () {
+      when(() => userInterface.saveNewUsername(newUsername: 'newUsername'))
+          .thenThrow(errorMessage);
+    },
+    act: (_) => bloc.add(UserEventChangeUsername(newUsername: 'newUsername')),
+    expect: () => [loadingState, errorState],
+    verify: (_) {
+      verify(() => userInterface.saveNewUsername(newUsername: 'newUsername'))
+          .called(1);
+    },
+  );
+
+  blocTest(
     'save new remembered flashcards, success',
     build: () => bloc,
     setUp: () {
@@ -57,7 +157,7 @@ void main() {
       rememberedFlashcardsIndexes: const [0, 1],
     )),
     expect: () => [
-      UserState(status: UserStatusLoading()),
+      loadingState,
       UserState(status: UserStatusNewRememberedFlashcardsSaved()),
     ],
     verify: (_) {
@@ -79,16 +179,13 @@ void main() {
           groupId: 'g1',
           indexesOfFlashcards: [0, 1],
         ),
-      ).thenThrow('Error...');
+      ).thenThrow(errorMessage);
     },
     act: (_) => bloc.add(UserEventSaveNewRememberedFlashcards(
       groupId: 'g1',
       rememberedFlashcardsIndexes: const [0, 1],
     )),
-    expect: () => [
-      UserState(status: UserStatusLoading()),
-      const UserState(status: UserStatusError(message: 'Error...')),
-    ],
+    expect: () => [loadingState, errorState],
     verify: (_) {
       verify(
         () => userInterface.saveNewRememberedFlashcardsInDays(

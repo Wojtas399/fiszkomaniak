@@ -24,6 +24,16 @@ class FireUserService {
     }
   }
 
+  Future<void> saveNewUsername(String newUsername) async {
+    try {
+      await FireReferences.loggedUserRef.update(
+        UserDbModel(username: newUsername).toJson(),
+      );
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   Future<void> saveNewRememberedFlashcards(
     String groupId,
     List<int> indexesOfRememberedFlashcards,
@@ -40,7 +50,8 @@ class FireUserService {
           await FireReferences.groupsRefWithConverter.doc(groupId).get();
       final List<FlashcardDbModel> flashcardsFromGroup =
           group.data()?.flashcards ?? [];
-      final List<FlashcardDbModel> updatedFlashcards = _updateFlashcards(
+      final List<FlashcardDbModel> updatedFlashcards =
+          _updateFlashcardsStatuses(
         flashcardsFromGroup,
         indexesOfRememberedFlashcards,
       );
@@ -57,6 +68,22 @@ class FireUserService {
     }
   }
 
+  Future<void> removeLoggedUserData() async {
+    final batch = FireInstances.firestore.batch();
+    final courses = await FireReferences.coursesRef.get();
+    final groups = await FireReferences.groupsRef.get();
+    for (final course in courses.docs) {
+      batch.delete(course.reference);
+    }
+    for (final group in groups.docs) {
+      batch.delete(group.reference);
+    }
+    batch.delete(FireReferences.appearanceSettingsRef);
+    batch.delete(FireReferences.notificationsSettingsRef);
+    batch.delete(FireReferences.loggedUserRef);
+    await batch.commit();
+  }
+
   List<DayFlashcardDbModel> _createDaysFlashcards(
     String groupId,
     List<int> indexesOfRememberedFlashcards,
@@ -71,7 +98,7 @@ class FireUserService {
         .toList();
   }
 
-  List<FlashcardDbModel> _updateFlashcards(
+  List<FlashcardDbModel> _updateFlashcardsStatuses(
     List<FlashcardDbModel> flashcards,
     List<int> indexesOfRememberedFlashcards,
   ) {

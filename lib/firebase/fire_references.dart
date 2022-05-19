@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fiszkomaniak/firebase/fire_user.dart';
 import 'fire_instances.dart';
 import 'models/appearance_settings_db_model.dart';
@@ -9,9 +10,8 @@ import 'models/session_db_model.dart';
 import 'models/user_db_model.dart';
 
 class FireReferences {
-  static DocumentReference get loggedUserRef => FireInstances.firestore
-      .collection('Users')
-      .doc(FireUser.getLoggedUserId());
+  static DocumentReference get loggedUserRef =>
+      FireInstances.firestore.collection('Users').doc(FireUser.loggedUserId);
 
   static CollectionReference get settingsRef =>
       loggedUserRef.collection('Settings');
@@ -30,6 +30,10 @@ class FireReferences {
 
   static CollectionReference get sessionsRef =>
       loggedUserRef.collection('Sessions');
+
+  static Reference get avatarRef => FireInstances.storage.ref(
+        'Avatars/${FireUser.loggedUserId}.jpg',
+      );
 
   static DocumentReference<UserDbModel> get loggedUserRefWithConverter =>
       loggedUserRef.withConverter<UserDbModel>(

@@ -2,7 +2,7 @@ import '../models/settings/appearance_settings_model.dart';
 import '../models/settings/notifications_settings_model.dart';
 
 abstract class SettingsInterface {
-  Future<void> setDefaultSettings();
+  Future<void> setDefaultUserSettings();
 
   Future<AppearanceSettings> loadAppearanceSettings();
 

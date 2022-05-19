@@ -4,7 +4,7 @@ import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dar
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/button.dart';
+import '../../../components/buttons/button.dart';
 import 'group_preview_flashcards_state.dart';
 import 'group_preview_information.dart';
 

@@ -15,6 +15,12 @@ class UserStatusLoaded extends UserStatus {}
 
 class UserStatusLoading extends UserStatus {}
 
+class UserStatusNewAvatarSaved extends UserStatus {}
+
+class UserStatusAvatarRemoved extends UserStatus {}
+
+class UserStatusUsernameUpdated extends UserStatus {}
+
 class UserStatusNewRememberedFlashcardsSaved extends UserStatus {}
 
 class UserStatusError extends UserStatus {

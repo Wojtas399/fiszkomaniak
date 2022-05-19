@@ -1,24 +1,32 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/http_status_model.dart';
+import 'package:fiszkomaniak/core/validators/user_validator.dart';
 
 class SignUpState extends Equatable {
   final String username;
   final String email;
   final String password;
   final String passwordConfirmation;
-  final bool hasUsernameBeenEdited;
-  final bool hasEmailBeenEdited;
-  final bool hasPasswordBeenEdited;
-  final bool hasPasswordConfirmationBeenEdited;
-  final HttpStatus httpStatus;
 
-  bool get isCorrectUsername => username.length >= 4;
+  const SignUpState({
+    this.username = '',
+    this.email = '',
+    this.password = '',
+    this.passwordConfirmation = '',
+  });
 
-  bool get isCorrectEmail => RegExp(
-        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-      ).hasMatch(email);
+  @override
+  List<Object> get props => [
+        username,
+        email,
+        password,
+        passwordConfirmation,
+      ];
 
-  bool get isCorrectPassword => password.length >= 6;
+  bool get isCorrectUsername => UserValidator.isUsernameCorrect(username);
+
+  bool get isCorrectEmail => UserValidator.isEmailCorrect(email);
+
+  bool get isCorrectPassword => UserValidator.isPasswordCorrect(password);
 
   bool get isCorrectPasswordConfirmation => password == passwordConfirmation;
 
@@ -28,60 +36,17 @@ class SignUpState extends Equatable {
       !isCorrectPassword ||
       !isCorrectPasswordConfirmation;
 
-  String get incorrectUsernameMessage =>
-      'Nazwa użytkownika musi zawierać co najmniej 4 znaki';
-
-  String get incorrectEmailMessage => 'Niepoprawny adres email';
-
-  String get incorrectPasswordMessage =>
-      'Hasło musi zawierać co najmniej 6 znaków';
-
-  String get incorrectPasswordConfirmationMessage => 'Hasła nie sa jednakowe';
-
-  const SignUpState({
-    this.username = '',
-    this.email = '',
-    this.password = '',
-    this.passwordConfirmation = '',
-    this.hasUsernameBeenEdited = false,
-    this.hasEmailBeenEdited = false,
-    this.hasPasswordBeenEdited = false,
-    this.hasPasswordConfirmationBeenEdited = false,
-    this.httpStatus = const HttpStatusInitial(),
-  });
-
   SignUpState copyWith({
     String? username,
     String? email,
     String? password,
     String? passwordConfirmation,
-    HttpStatus? httpStatus,
   }) {
     return SignUpState(
-      hasUsernameBeenEdited: username != null ? true : hasUsernameBeenEdited,
-      hasEmailBeenEdited: email != null ? true : hasEmailBeenEdited,
-      hasPasswordBeenEdited: password != null ? true : hasPasswordBeenEdited,
-      hasPasswordConfirmationBeenEdited: passwordConfirmation != null
-          ? true
-          : hasPasswordConfirmationBeenEdited,
       username: username ?? this.username,
       email: email ?? this.email,
       password: password ?? this.password,
       passwordConfirmation: passwordConfirmation ?? this.passwordConfirmation,
-      httpStatus: httpStatus ?? const HttpStatusInitial(),
     );
   }
-
-  @override
-  List<Object> get props => [
-        username,
-        email,
-        password,
-        passwordConfirmation,
-        hasUsernameBeenEdited,
-        hasEmailBeenEdited,
-        hasPasswordBeenEdited,
-        hasPasswordConfirmationBeenEdited,
-        httpStatus,
-      ];
 }

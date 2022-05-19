@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:fiszkomaniak/models/user_model.dart';
+import 'package:fiszkomaniak/utils/date_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'user_event.dart';
@@ -20,6 +21,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     _userInterface = userInterface;
     on<UserEventInitialize>(_initialize);
     on<UserEventLoggedUserUpdated>(_loggedUserUpdated);
+    on<UserEventSaveNewAvatar>(_saveNewAvatar);
+    on<UserEventRemoveAvatar>(_removeAvatar);
+    on<UserEventChangeUsername>(_changeUsername);
     on<UserEventSaveNewRememberedFlashcards>(_saveNewRememberedFlashcards);
   }
 
@@ -39,13 +43,58 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(state.copyWith(loggedUser: event.updatedLoggedUser));
   }
 
-  void _saveNewRememberedFlashcards(
-    UserEventSaveNewRememberedFlashcards event,
+  Future<void> _saveNewAvatar(
+    UserEventSaveNewAvatar event,
     Emitter<UserState> emit,
-  ) {
+  ) async {
     try {
       emit(state.copyWith(status: UserStatusLoading()));
-      _userInterface.saveNewRememberedFlashcardsInDays(
+      await _userInterface.saveNewAvatar(fullPath: event.imageFullPath);
+      emit(state.copyWith(status: UserStatusNewAvatarSaved()));
+    } catch (error) {
+      emit(state.copyWith(
+        status: UserStatusError(message: error.toString()),
+      ));
+    }
+  }
+
+  Future<void> _removeAvatar(
+    UserEventRemoveAvatar event,
+    Emitter<UserState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: UserStatusLoading()));
+      await _userInterface.removeAvatar();
+      emit(state.copyWith(status: UserStatusAvatarRemoved()));
+    } catch (error) {
+      emit(state.copyWith(
+        status: UserStatusError(message: error.toString()),
+      ));
+    }
+  }
+
+  Future<void> _changeUsername(
+    UserEventChangeUsername event,
+    Emitter<UserState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: UserStatusLoading()));
+      await _userInterface.saveNewUsername(newUsername: event.newUsername);
+      emit(state.copyWith(status: UserStatusUsernameUpdated()));
+    } catch (error) {
+      emit(state.copyWith(
+        status: UserStatusError(message: error.toString()),
+      ));
+    }
+  }
+
+  Future<void> _saveNewRememberedFlashcards(
+    UserEventSaveNewRememberedFlashcards event,
+    Emitter<UserState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: UserStatusLoading()));
+      await _userInterface.saveNewRememberedFlashcardsInDays(
         groupId: event.groupId,
         indexesOfFlashcards: event.rememberedFlashcardsIndexes,
       );

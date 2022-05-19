@@ -22,6 +22,17 @@ class FlashcardsState extends Equatable {
     );
   }
 
+  int get amountOfAllFlashcards {
+    return groupsState.allGroups.isNotEmpty
+        ? groupsState.allGroups
+            .map(
+              (group) => group.flashcards.length,
+            )
+            .reduce((sumOfAllFlashcards, amountOfFlashcardsInGroup) =>
+                sumOfAllFlashcards + amountOfFlashcardsInGroup)
+        : 0;
+  }
+
   List<Flashcard> getFlashcardsFromGroup(String? groupId) {
     return groupsState.getGroupById(groupId)?.flashcards.toList() ?? [];
   }

@@ -7,8 +7,11 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const HomeProviders(
-      child: HomeRouter(),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: const HomeProviders(
+        child: HomeRouter(),
+      ),
     );
   }
 }

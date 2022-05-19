@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/components/button.dart';
+import 'package:fiszkomaniak/components/buttons/button.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
 import 'package:flutter/material.dart';

@@ -25,6 +25,7 @@ void main() {
 
   test('copy with logged user', () {
     final User loggedUser = createUser(
+      avatarUrl: 'avatar/url/image.jpg',
       days: [createDay(date: DateTime(2022))],
     );
 
@@ -33,5 +34,21 @@ void main() {
 
     expect(state2.loggedUser, loggedUser);
     expect(state3.loggedUser, loggedUser);
+  });
+
+  test('amount of days in a row, user is null', () {
+    expect(state.amountOfDaysInARow, 0);
+  });
+
+  test('amount of days in a row, user is not null', () {
+    final User loggedUser = createUser(days: [
+      createDay(date: DateTime.now()),
+      createDay(date: DateTime.now().subtract(const Duration(days: 1))),
+      createDay(date: DateTime.now().subtract(const Duration(days: 2))),
+    ]);
+
+    state = state.copyWith(loggedUser: loggedUser);
+
+    expect(state.amountOfDaysInARow, 3);
   });
 }

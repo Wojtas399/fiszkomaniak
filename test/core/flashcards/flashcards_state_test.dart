@@ -74,6 +74,18 @@ void main() {
     expect(state3.status, FlashcardsStatusLoaded());
   });
 
+  test('amount of all flashcards, groups do not exist', () {
+    state = const FlashcardsState(groupsState: GroupsState());
+
+    expect(state.amountOfAllFlashcards, 0);
+  });
+
+  test('amount of all flashcards, groups exist', () {
+    final int amount = state.amountOfAllFlashcards;
+
+    expect(amount, 5);
+  });
+
   test('get flashcards from group', () {
     final List<Flashcard> expectedFlashcards =
         groupsState.allGroups[0].flashcards;

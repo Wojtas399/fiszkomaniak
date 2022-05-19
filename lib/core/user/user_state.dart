@@ -9,6 +9,23 @@ class UserState extends Equatable {
     this.loggedUser,
   });
 
+  @override
+  List<Object> get props => [
+        status,
+        loggedUser ?? '',
+      ];
+
+  List<DateTime> get _daysInARow {
+    final List<DateTime>? dates =
+        loggedUser?.days.map((day) => day.date).toList();
+    if (dates != null) {
+      return DateUtils.getDaysInARow(DateTime.now(), dates);
+    }
+    return [];
+  }
+
+  int get amountOfDaysInARow => _daysInARow.length;
+
   UserState copyWith({
     UserStatus? status,
     User? loggedUser,
@@ -18,10 +35,4 @@ class UserState extends Equatable {
       loggedUser: loggedUser ?? this.loggedUser,
     );
   }
-
-  @override
-  List<Object> get props => [
-        status,
-        loggedUser ?? '',
-      ];
 }

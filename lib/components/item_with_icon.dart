@@ -6,6 +6,7 @@ class ItemWithIcon extends StatelessWidget {
   final String? label;
   final Color? iconColor;
   final Color? textColor;
+  final Color? borderColor;
   final Widget? trailing;
   final double? paddingLeft;
   final double? paddingRight;
@@ -14,19 +15,20 @@ class ItemWithIcon extends StatelessWidget {
   final VoidCallback? onTap;
 
   const ItemWithIcon({
-    Key? key,
+    super.key,
     required this.icon,
     required this.text,
     this.label,
     this.iconColor,
     this.textColor,
+    this.borderColor,
     this.trailing,
     this.paddingLeft,
     this.paddingRight,
     this.paddingTop,
     this.paddingBottom,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +43,10 @@ class ItemWithIcon extends StatelessWidget {
             right: paddingRight ?? 16.0,
             top: paddingTop ?? 16.0,
             bottom: paddingBottom ?? 16.0,
+          ),
+          decoration: BoxDecoration(
+            border: Border.all(color: borderColor ?? Colors.transparent),
+            borderRadius: BorderRadius.circular(8.0),
           ),
           width: double.infinity,
           child: Row(
