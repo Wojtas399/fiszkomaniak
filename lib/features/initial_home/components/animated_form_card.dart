@@ -6,18 +6,18 @@ import '../initial_home_mode_provider.dart';
 class AnimatedFormCard extends StatelessWidget {
   final Widget child;
 
-  const AnimatedFormCard({Key? key, required this.child}) : super(key: key);
+  const AnimatedFormCard({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
     return KeyboardVisibilityBuilder(
       builder: (context, isKeyboardVisible) {
         return _AnimatedCard(
-          child: _AnimatedPadding(
-            child: child,
-            isKeyboardVisible: isKeyboardVisible,
-          ),
           isKeyboardVisible: isKeyboardVisible,
+          child: _AnimatedPadding(
+            isKeyboardVisible: isKeyboardVisible,
+            child: child,
+          ),
         );
       },
     );
@@ -29,10 +29,9 @@ class _AnimatedCard extends StatelessWidget {
   final bool isKeyboardVisible;
 
   const _AnimatedCard({
-    Key? key,
     required this.child,
     required this.isKeyboardVisible,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -68,10 +67,9 @@ class _AnimatedPadding extends StatelessWidget {
   final bool isKeyboardVisible;
 
   const _AnimatedPadding({
-    Key? key,
     required this.child,
     required this.isKeyboardVisible,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

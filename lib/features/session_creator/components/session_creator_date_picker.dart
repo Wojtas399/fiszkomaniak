@@ -7,9 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/item_with_icon.dart';
 
-class SessionCreatorDatePicker extends StatelessWidget {
-  const SessionCreatorDatePicker({Key? key}) : super(key: key);
+class SessionCreatorDatePicker extends StatefulWidget {
+  const SessionCreatorDatePicker({super.key});
 
+  @override
+  State<SessionCreatorDatePicker> createState() =>
+      _SessionCreatorDatePickerState();
+}
+
+class _SessionCreatorDatePickerState extends State<SessionCreatorDatePicker> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SessionCreatorBloc, SessionCreatorState>(
@@ -31,14 +37,18 @@ class SessionCreatorDatePicker extends StatelessWidget {
               firstDate: DateTime.now(),
               locale: const Locale('pl', 'PL'),
             );
-            if (date != null) {
-              context
-                  .read<SessionCreatorBloc>()
-                  .add(SessionCreatorEventDateSelected(date: date));
+            if (date != null && mounted) {
+              _onDateSelected(context, date);
             }
           },
         );
       },
     );
+  }
+
+  void _onDateSelected(BuildContext context, DateTime date) {
+    context
+        .read<SessionCreatorBloc>()
+        .add(SessionCreatorEventDateSelected(date: date));
   }
 }

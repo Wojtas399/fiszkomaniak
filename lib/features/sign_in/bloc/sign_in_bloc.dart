@@ -1,7 +1,7 @@
-import 'package:bloc/bloc.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_event.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignInBloc extends Bloc<SignInEvent, SignInState> {
   final AuthBloc authBloc;

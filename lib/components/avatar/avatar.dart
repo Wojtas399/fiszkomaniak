@@ -10,11 +10,11 @@ class Avatar extends StatelessWidget {
   final VoidCallback? onPressed;
 
   const Avatar({
-    Key? key,
+    super.key,
     required this.imageType,
     required this.size,
     this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +26,6 @@ class Avatar extends StatelessWidget {
         onTap: onPressed,
         child: Card(
           clipBehavior: Clip.hardEdge,
-          child: type != null
-              ? _AvatarImage(imageType: type)
-              : _AvatarIcon(size: size * 0.6),
           shape: RoundedRectangleBorder(
             side: BorderSide(
               color: Colors.black.withOpacity(0.5),
@@ -36,6 +33,9 @@ class Avatar extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(200.0),
           ),
+          child: type != null
+              ? _AvatarImage(imageType: type)
+              : _AvatarIcon(size: size * 0.6),
         ),
       ),
     );
@@ -45,7 +45,7 @@ class Avatar extends StatelessWidget {
 class _AvatarImage extends StatelessWidget {
   final AvatarImageType imageType;
 
-  const _AvatarImage({Key? key, required this.imageType}) : super(key: key);
+  const _AvatarImage({required this.imageType});
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +84,7 @@ class _AvatarImage extends StatelessWidget {
 class _UrlImage extends StatelessWidget {
   final String url;
 
-  const _UrlImage({Key? key, required this.url}) : super(key: key);
+  const _UrlImage({required this.url});
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +100,7 @@ class _UrlImage extends StatelessWidget {
 class _AvatarIcon extends StatelessWidget {
   final double size;
 
-  const _AvatarIcon({Key? key, required this.size}) : super(key: key);
+  const _AvatarIcon({required this.size});
 
   @override
   Widget build(BuildContext context) {

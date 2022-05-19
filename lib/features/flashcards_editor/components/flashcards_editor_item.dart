@@ -13,7 +13,7 @@ class FlashcardsEditorItem extends StatefulWidget {
   final VoidCallback? onTapDeleteButton;
 
   const FlashcardsEditorItem({
-    required Key key,
+    required super.key,
     required this.questionInitialValue,
     required this.answerInitialValue,
     required this.nameForQuestion,
@@ -22,10 +22,10 @@ class FlashcardsEditorItem extends StatefulWidget {
     this.onQuestionChanged,
     this.onAnswerChanged,
     this.onTapDeleteButton,
-  }) : super(key: key);
+  });
 
   @override
-  _FlashcardsEditorItemState createState() => _FlashcardsEditorItemState();
+  State<FlashcardsEditorItem> createState() => _FlashcardsEditorItemState();
 }
 
 class _FlashcardsEditorItemState extends State<FlashcardsEditorItem> {
@@ -85,14 +85,13 @@ class _Flashcard extends StatelessWidget {
   final Function(String value)? onAnswerChanged;
 
   const _Flashcard({
-    Key? key,
     required this.questionController,
     required this.answerController,
     required this.nameForQuestion,
     required this.nameForAnswer,
     required this.onQuestionChanged,
     required this.onAnswerChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +125,7 @@ class _Flashcard extends StatelessWidget {
 class _DeleteButton extends StatelessWidget {
   final VoidCallback? onTap;
 
-  const _DeleteButton({Key? key, this.onTap}) : super(key: key);
+  const _DeleteButton({this.onTap});
 
   @override
   Widget build(BuildContext context) {

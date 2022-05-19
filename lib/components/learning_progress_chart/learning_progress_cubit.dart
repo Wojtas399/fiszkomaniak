@@ -37,7 +37,7 @@ class LearningProgressCubit extends Cubit<List<ChartDay>> {
   }
 
   void _setDays() {
-    final List<Day>? daysFromUser = [...?_daysFromUser];
+    final List<Day> daysFromUser = [...?_daysFromUser];
     final List<DateTime> datesFromWeek = DateUtils.getDaysFromWeek(
       _firstDayOfDisplayedWeek,
     );
@@ -45,18 +45,16 @@ class LearningProgressCubit extends Cubit<List<ChartDay>> {
       datesFromWeek.length,
       (index) => ChartDay(date: datesFromWeek[index]),
     );
-    if (daysFromUser != null) {
-      final List<DateTime> datesFromUser =
-          daysFromUser.map((day) => day.date).toList();
-      for (int i = 0; i < datesFromWeek.length; i++) {
-        final DateTime date = datesFromWeek[i];
-        if (datesFromUser.contains(date)) {
-          final Day day = daysFromUser.firstWhere((day) => day.date == date);
-          chartDaysFromWeek[i] =
-              chartDaysFromWeek[i].copyWithAmountOfRememberedFlashcards(
-            day.rememberedFlashcards.length,
-          );
-        }
+    final List<DateTime> datesFromUser =
+        daysFromUser.map((day) => day.date).toList();
+    for (int i = 0; i < datesFromWeek.length; i++) {
+      final DateTime date = datesFromWeek[i];
+      if (datesFromUser.contains(date)) {
+        final Day day = daysFromUser.firstWhere((day) => day.date == date);
+        chartDaysFromWeek[i] =
+            chartDaysFromWeek[i].copyWithAmountOfRememberedFlashcards(
+          day.rememberedFlashcards.length,
+        );
       }
     }
     emit(chartDaysFromWeek);

@@ -49,7 +49,7 @@ class SessionPreviewBloc
     SessionPreviewEventInitialize event,
     Emitter<SessionPreviewState> emit,
   ) {
-    final SessionPreviewMode? mode = event.mode;
+    final SessionPreviewMode mode = event.mode;
     if (mode is SessionPreviewModeNormal) {
       _initializeNormalMode(mode, emit);
     } else if (mode is SessionPreviewModeQuick) {

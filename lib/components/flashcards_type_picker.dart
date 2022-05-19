@@ -11,11 +11,11 @@ class FlashcardsTypePicker extends StatelessWidget {
   final Function(FlashcardsType type)? onTypeChanged;
 
   const FlashcardsTypePicker({
-    Key? key,
+    super.key,
     required this.selectedType,
     required this.availableTypes,
     this.onTypeChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class FlashcardsTypePicker extends StatelessWidget {
           title: 'Wybierz rodzaj fiszek',
           options: _buildOptions(),
         );
-        _changeFlashcardsType(context, selectedOption);
+        _changeFlashcardsType(selectedOption);
       },
     );
   }
@@ -59,7 +59,7 @@ class FlashcardsTypePicker extends StatelessWidget {
     }
   }
 
-  void _changeFlashcardsType(BuildContext context, int? selectedOption) {
+  void _changeFlashcardsType(int? selectedOption) {
     FlashcardsType? type;
     if (selectedOption == 0) {
       type = availableTypes[0];

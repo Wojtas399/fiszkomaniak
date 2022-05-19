@@ -54,7 +54,7 @@ class CoursesLibraryBloc
     CoursesLibraryEventRemoveCourse event,
     Emitter<CoursesLibraryState> emit,
   ) async {
-    final bool? confirmation =
+    final bool confirmation =
         await _coursesLibraryDialogs.askForDeleteConfirmation();
     if (confirmation == true) {
       final List<String> idsOfGroupsFromCourse =

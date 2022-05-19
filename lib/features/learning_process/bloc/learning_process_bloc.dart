@@ -131,16 +131,13 @@ class LearningProcessBloc
     LearningProcessEventReset event,
     Emitter<LearningProcessState> emit,
   ) {
-    final FlashcardsType? flashcardsType = event.newFlashcardsType;
-    int amountOfFlashcardsInStack = state.amountOfFlashcardsInStack;
-    if (flashcardsType != null) {
-      amountOfFlashcardsInStack = state.flashcards
-          .where((flashcard) => state.doesFlashcardBelongToFlashcardsType(
-                flashcard,
-                flashcardsType,
-              ))
-          .length;
-    }
+    final FlashcardsType flashcardsType = event.newFlashcardsType;
+    int amountOfFlashcardsInStack = state.flashcards
+        .where((flashcard) => state.doesFlashcardBelongToFlashcardsType(
+              flashcard,
+              flashcardsType,
+            ))
+        .length;
     emit(state.copyWith(
       indexOfDisplayedFlashcard: 0,
       flashcardsType: flashcardsType,

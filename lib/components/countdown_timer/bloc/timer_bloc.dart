@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/components/countdown_timer/ticker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'timer_event.dart';
 

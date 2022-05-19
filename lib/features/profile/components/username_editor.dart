@@ -11,12 +11,12 @@ class UsernameEditor extends StatefulWidget {
   final String currentUsername;
 
   const UsernameEditor({
-    Key? key,
+    super.key,
     required this.currentUsername,
-  }) : super(key: key);
+  });
 
   @override
-  _UsernameEditor createState() => _UsernameEditor();
+  State<UsernameEditor> createState() => _UsernameEditor();
 }
 
 class _UsernameEditor extends State<UsernameEditor> {
@@ -28,11 +28,9 @@ class _UsernameEditor extends State<UsernameEditor> {
   @override
   void initState() {
     super.initState();
-    final String? textFieldValue = widget.currentUsername;
+    final String textFieldValue = widget.currentUsername;
     initialValue = textFieldValue;
-    if (textFieldValue != null) {
-      _controller.text = textFieldValue;
-    }
+    _controller.text = textFieldValue;
   }
 
   @override
