@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'flashcards_bloc.dart';
 
 abstract class FlashcardsStatus extends Equatable {
   const FlashcardsStatus();

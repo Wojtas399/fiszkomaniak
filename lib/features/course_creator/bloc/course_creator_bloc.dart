@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/courses/courses_event.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_dialogs.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_event.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';

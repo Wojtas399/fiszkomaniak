@@ -1,12 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_state.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';

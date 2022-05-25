@@ -1,24 +1,36 @@
 import 'dart:async';
-import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_state.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_status.dart';
+import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
+import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/changed_document.dart';
 
+part 'sessions_event.dart';
+
+part 'sessions_state.dart';
+
+part 'sessions_status.dart';
+
 class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   late final SessionsInterface _sessionsInterface;
+  late final NotificationsInterface _notificationsInterface;
+  late final GroupsBloc _groupsBloc;
   StreamSubscription? _sessionsSubscription;
 
   SessionsBloc({
     required SessionsInterface sessionsInterface,
+    required NotificationsInterface notificationsInterface,
+    required GroupsBloc groupsBloc,
   }) : super(const SessionsState()) {
     _sessionsInterface = sessionsInterface;
+    _notificationsInterface = notificationsInterface;
+    _groupsBloc = groupsBloc;
     on<SessionsEventInitialize>(_initialize);
-    on<SessionsEventSessionAdded>(_sessionAdded);
-    on<SessionsEventSessionUpdated>(_sessionUpdated);
-    on<SessionsEventSessionRemoved>(_sessionRemoved);
+    on<SessionsEventSessionsChanged>(_sessionsChanged);
     on<SessionsEventAddSession>(_addSession);
     on<SessionsEventRemoveSession>(_removeSession);
     on<SessionsEventUpdateSession>(_updateSession);
@@ -30,54 +42,36 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   ) {
     _sessionsSubscription = _sessionsInterface.getSessionsSnapshots().listen(
       (sessions) {
-        for (final session in sessions) {
-          switch (session.changeType) {
-            case DbDocChangeType.added:
-              add(SessionsEventSessionAdded(session: session.doc));
-              break;
-            case DbDocChangeType.updated:
-              add(SessionsEventSessionUpdated(session: session.doc));
-              break;
-            case DbDocChangeType.removed:
-              add(SessionsEventSessionRemoved(sessionId: session.doc.id));
-              break;
-          }
-        }
+        final GroupedDbDocuments<Session> groupedDocuments =
+            groupDbDocuments<Session>(sessions);
+        add(SessionsEventSessionsChanged(
+          addedSessions: groupedDocuments.addedDocuments,
+          updatedSessions: groupedDocuments.updatedDocuments,
+          deletedSessions: groupedDocuments.removedDocuments,
+        ));
       },
     );
   }
 
-  void _sessionAdded(
-    SessionsEventSessionAdded event,
+  void _sessionsChanged(
+    SessionsEventSessionsChanged event,
     Emitter<SessionsState> emit,
   ) {
+    final List<Session> newSessions = [...state.allSessions];
+    newSessions.addAll(event.addedSessions);
+    for (final updatedSession in event.updatedSessions) {
+      final int index = newSessions.indexWhere(
+        (session) => session.id == updatedSession.id,
+      );
+      newSessions[index] = updatedSession;
+    }
+    for (final deletedSession in event.deletedSessions) {
+      newSessions.removeWhere((session) => session.id == deletedSession.id);
+    }
     emit(state.copyWith(
-      allSessions: [
-        ...state.allSessions,
-        event.session,
-      ],
+      allSessions: newSessions,
+      initializationStatus: InitializationStatus.ready,
     ));
-  }
-
-  void _sessionUpdated(
-    SessionsEventSessionUpdated event,
-    Emitter<SessionsState> emit,
-  ) {
-    final List<Session> allSessions = [...state.allSessions];
-    final int index = allSessions.indexWhere(
-      (session) => session.id == event.session.id,
-    );
-    allSessions[index] = event.session;
-    emit(state.copyWith(allSessions: allSessions));
-  }
-
-  void _sessionRemoved(
-    SessionsEventSessionRemoved event,
-    Emitter<SessionsState> emit,
-  ) {
-    final List<Session> allSessions = [...state.allSessions];
-    allSessions.removeWhere((session) => session.id == event.sessionId);
-    emit(state.copyWith(allSessions: allSessions));
   }
 
   Future<void> _addSession(
@@ -86,8 +80,26 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   ) async {
     try {
       emit(state.copyWith(status: SessionsStatusLoading()));
-      await _sessionsInterface.addNewSession(event.session);
-      emit(state.copyWith(status: SessionsStatusSessionAdded()));
+      final String? groupName = _groupsBloc.state.getGroupNameById(
+        event.session.groupId,
+      );
+      if (groupName != null) {
+        final String id = await _sessionsInterface.addNewSession(event.session);
+        await _setNotification(
+          sessionId: id,
+          groupName: groupName,
+          startTime: event.session.time,
+          date: event.session.date,
+          notificationTime: event.session.notificationTime,
+        );
+        emit(state.copyWith(status: SessionsStatusSessionAdded()));
+      } else {
+        emit(state.copyWith(
+          status: const SessionsStatusError(
+            message: 'Cannot find appropriate group',
+          ),
+        ));
+      }
     } catch (error) {
       emit(state.copyWith(
         status: SessionsStatusError(message: error.toString()),
@@ -131,6 +143,29 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       emit(state.copyWith(
         status: SessionsStatusError(message: error.toString()),
       ));
+    }
+  }
+
+  Future<void> _setNotification({
+    required String sessionId,
+    required String groupName,
+    required DateTime date,
+    required TimeOfDay startTime,
+    required TimeOfDay? notificationTime,
+  }) async {
+    if (notificationTime != null) {
+      await _notificationsInterface.setSessionNotification(
+        sessionId: sessionId,
+        groupName: groupName,
+        startTime: startTime,
+        date: DateTime(
+          date.year,
+          date.month,
+          date.day,
+          notificationTime.hour,
+          notificationTime.minute,
+        ),
+      );
     }
   }
 

@@ -1,11 +1,16 @@
 import 'dart:async';
-import 'package:fiszkomaniak/core/courses/courses_event.dart';
-import 'package:fiszkomaniak/core/courses/courses_state.dart';
-import 'package:fiszkomaniak/core/courses/courses_status.dart';
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/changed_document.dart';
+import '../initialization_status.dart';
+
+part 'courses_event.dart';
+
+part 'courses_state.dart';
+
+part 'courses_status.dart';
 
 class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   late final CoursesInterface _coursesInterface;
@@ -16,32 +21,51 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   }) : super(CoursesState()) {
     _coursesInterface = coursesInterface;
     on<CoursesEventInitialize>(_initialize);
+    on<CoursesEventCoursesChanged>(_coursesChanged);
     on<CoursesEventAddNewCourse>(_addNewCourse);
     on<CoursesEventUpdateCourseName>(_updateCourseName);
     on<CoursesEventRemoveCourse>(_removeCourse);
-    on<CoursesEventCourseAdded>(_onCourseAdded);
-    on<CoursesEventCourseModified>(_onCourseModified);
-    on<CoursesEventCourseRemoved>(_onCourseRemoved);
+  }
+
+  @override
+  Future<void> close() {
+    _coursesSubscription?.cancel();
+    return super.close();
   }
 
   void _initialize(CoursesEventInitialize event, Emitter<CoursesState> emit) {
-    _coursesSubscription = _coursesInterface.getCoursesSnapshots().listen(
+    _coursesSubscription ??= _coursesInterface.getCoursesSnapshots().listen(
       (courses) {
-        for (final course in courses) {
-          switch (course.changeType) {
-            case DbDocChangeType.added:
-              add(CoursesEventCourseAdded(course: course.doc));
-              break;
-            case DbDocChangeType.updated:
-              add(CoursesEventCourseModified(course: course.doc));
-              break;
-            case DbDocChangeType.removed:
-              add(CoursesEventCourseRemoved(courseId: course.doc.id));
-              break;
-          }
-        }
+        final GroupedDbDocuments<Course> groupedDocuments =
+            groupDbDocuments<Course>(courses);
+        add(CoursesEventCoursesChanged(
+          addedCourses: groupedDocuments.addedDocuments,
+          updatedCourses: groupedDocuments.updatedDocuments,
+          deletedCourses: groupedDocuments.removedDocuments,
+        ));
       },
     );
+  }
+
+  void _coursesChanged(
+    CoursesEventCoursesChanged event,
+    Emitter<CoursesState> emit,
+  ) {
+    final List<Course> newCourses = [...state.allCourses];
+    newCourses.addAll(event.addedCourses);
+    for (final updatedCourse in event.updatedCourses) {
+      final int index = newCourses.indexWhere(
+        (course) => course.id == updatedCourse.id,
+      );
+      newCourses[index] = updatedCourse;
+    }
+    for (final deletedCourse in event.deletedCourses) {
+      newCourses.removeWhere((course) => course.id == deletedCourse.id);
+    }
+    emit(state.copyWith(
+      allCourses: newCourses,
+      initializationStatus: InitializationStatus.ready,
+    ));
   }
 
   Future<void> _addNewCourse(
@@ -90,42 +114,5 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
         state.copyWith(status: CoursesStatusError(message: error.toString())),
       );
     }
-  }
-
-  void _onCourseAdded(
-    CoursesEventCourseAdded event,
-    Emitter<CoursesState> emit,
-  ) {
-    emit(state.copyWith(allCourses: [
-      ...state.allCourses,
-      event.course,
-    ]));
-  }
-
-  void _onCourseModified(
-    CoursesEventCourseModified event,
-    Emitter<CoursesState> emit,
-  ) {
-    List<Course> allCourses = [...state.allCourses];
-    final modifiedCourseIndex = allCourses.indexWhere(
-      (course) => course.id == event.course.id,
-    );
-    allCourses[modifiedCourseIndex] = event.course;
-    emit(state.copyWith(allCourses: allCourses));
-  }
-
-  void _onCourseRemoved(
-    CoursesEventCourseRemoved event,
-    Emitter<CoursesState> emit,
-  ) {
-    List<Course> allCourses = [...state.allCourses];
-    allCourses.removeWhere((course) => course.id == event.courseId);
-    emit(state.copyWith(allCourses: allCourses));
-  }
-
-  @override
-  Future<void> close() {
-    _coursesSubscription?.cancel();
-    return super.close();
   }
 }

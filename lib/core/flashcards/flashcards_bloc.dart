@@ -1,11 +1,15 @@
 import 'dart:async';
-import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_status.dart';
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../models/flashcard_model.dart';
+
+part 'flashcards_event.dart';
+
+part 'flashcards_state.dart';
+
+part 'flashcards_status.dart';
 
 class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
   late final FlashcardsInterface _flashcardsInterface;
@@ -29,6 +33,7 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
     FlashcardsEventInitialize event,
     Emitter<FlashcardsState> emit,
   ) {
+    add(FlashcardsEventGroupsStateUpdated(newGroupsState: _groupsBloc.state));
     _groupsStateSubscription = _groupsBloc.stream.listen((state) {
       add(FlashcardsEventGroupsStateUpdated(newGroupsState: state));
     });

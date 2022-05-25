@@ -1,15 +1,12 @@
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/flashcards/flashcards_status.dart';
 
 class FlashcardsBlocListener
     extends BlocListener<FlashcardsBloc, FlashcardsState> {
-  FlashcardsBlocListener({Key? key})
+  FlashcardsBlocListener({super.key})
       : super(
-          key: key,
           listener: (BuildContext context, FlashcardsState state) {
             final FlashcardsStatus status = state.status;
             void closeLoadingDialog() {

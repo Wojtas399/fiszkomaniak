@@ -1,10 +1,8 @@
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/sessions/sessions_status.dart';
 
 class SessionsBlocListener extends BlocListener<SessionsBloc, SessionsState> {
   final Function(int pageIndex) onHomePageChanged;

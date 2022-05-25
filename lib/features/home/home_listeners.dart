@@ -8,6 +8,7 @@ import 'package:fiszkomaniak/features/home/listeners/user_bloc_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../components/dialogs/dialogs.dart';
+import 'listeners/notifications_listener.dart';
 
 class HomeListeners extends StatelessWidget {
   final Widget child;
@@ -15,10 +16,10 @@ class HomeListeners extends StatelessWidget {
   final Dialogs dialogs = Dialogs();
 
   HomeListeners({
-    Key? key,
+    super.key,
     required this.child,
     required this.pageController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +32,7 @@ class HomeListeners extends StatelessWidget {
         GroupsBlocListener(onHomePageChanged: _animateToPage),
         FlashcardsBlocListener(),
         SessionsBlocListener(onHomePageChanged: _animateToPage),
+        NotificationsListener(),
       ],
       child: child,
     );

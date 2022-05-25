@@ -8,7 +8,6 @@ import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.d
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/flashcards/flashcards_event.dart';
 
 class FlashcardsEditorBloc
     extends Bloc<FlashcardsEditorEvent, FlashcardsEditorState> {

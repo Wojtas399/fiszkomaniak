@@ -1,11 +1,16 @@
 import 'dart:async';
-import 'package:fiszkomaniak/core/groups/groups_event.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
-import 'package:fiszkomaniak/core/groups/groups_status.dart';
+import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+part 'groups_event.dart';
+
+part 'groups_state.dart';
+
+part 'groups_status.dart';
 
 class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
   late final GroupsInterface _groupsInterface;
@@ -16,9 +21,7 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
   }) : super(const GroupsState()) {
     _groupsInterface = groupsInterface;
     on<GroupsEventInitialize>(_initialize);
-    on<GroupsEventGroupAdded>(_groupAdded);
-    on<GroupsEventGroupUpdated>(_groupUpdated);
-    on<GroupsEventGroupRemoved>(_groupRemoved);
+    on<GroupsEventGroupsChanged>(_groupsChanged);
     on<GroupsEventAddGroup>(_addGroup);
     on<GroupsEventUpdateGroup>(_updateGroup);
     on<GroupsEventRemoveGroup>(_removeGroup);
@@ -30,51 +33,36 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
   ) {
     _groupsSubscription = _groupsInterface.getGroupsSnapshots().listen(
       (groups) {
-        for (final group in groups) {
-          switch (group.changeType) {
-            case DbDocChangeType.added:
-              add(GroupsEventGroupAdded(group: group.doc));
-              break;
-            case DbDocChangeType.updated:
-              add(GroupsEventGroupUpdated(group: group.doc));
-              break;
-            case DbDocChangeType.removed:
-              add(GroupsEventGroupRemoved(groupId: group.doc.id));
-              break;
-          }
-        }
+        final GroupedDbDocuments<Group> groupedDocuments =
+            groupDbDocuments<Group>(groups);
+        add(GroupsEventGroupsChanged(
+          addedGroups: groupedDocuments.addedDocuments,
+          updatedGroups: groupedDocuments.updatedDocuments,
+          deletedGroups: groupedDocuments.removedDocuments,
+        ));
       },
     );
   }
 
-  void _groupAdded(
-    GroupsEventGroupAdded event,
+  void _groupsChanged(
+    GroupsEventGroupsChanged event,
     Emitter<GroupsState> emit,
   ) {
+    final List<Group> newGroups = [...state.allGroups];
+    newGroups.addAll(event.addedGroups);
+    for (final updatedGroup in event.updatedGroups) {
+      final index = newGroups.indexWhere(
+        (group) => group.id == updatedGroup.id,
+      );
+      newGroups[index] = updatedGroup;
+    }
+    for (final deletedGroup in event.deletedGroups) {
+      newGroups.removeWhere((group) => group.id == deletedGroup.id);
+    }
     emit(state.copyWith(
-      allGroups: [...state.allGroups, event.group],
+      allGroups: newGroups,
+      initializationStatus: InitializationStatus.ready,
     ));
-  }
-
-  void _groupUpdated(
-    GroupsEventGroupUpdated event,
-    Emitter<GroupsState> emit,
-  ) {
-    List<Group> allGroups = [...state.allGroups];
-    final indexOfUpdatedGroup = allGroups.indexWhere(
-      (group) => group.id == event.group.id,
-    );
-    allGroups[indexOfUpdatedGroup] = event.group;
-    emit(state.copyWith(allGroups: allGroups));
-  }
-
-  void _groupRemoved(
-    GroupsEventGroupRemoved event,
-    Emitter<GroupsState> emit,
-  ) {
-    List<Group> allGroups = [...state.allGroups];
-    allGroups.removeWhere((group) => group.id == event.groupId);
-    emit(state.copyWith(allGroups: allGroups));
   }
 
   Future<void> _addGroup(

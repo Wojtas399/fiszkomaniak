@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/core/sessions/sessions_state.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_status.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -15,8 +15,19 @@ void main() {
   });
 
   test('initial state', () {
+    expect(state.initializationStatus, InitializationStatus.loading);
     expect(state.allSessions, []);
     expect(state.status, const SessionsStatusInitial());
+  });
+
+  test('copy with initialization status', () {
+    const InitializationStatus status = InitializationStatus.ready;
+
+    final SessionsState state2 = state.copyWith(initializationStatus: status);
+    final SessionsState state3 = state2.copyWith();
+
+    expect(state2.initializationStatus, status);
+    expect(state3.initializationStatus, status);
   });
 
   test('copy with all sessions', () {

@@ -1,8 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
+import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
 import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';

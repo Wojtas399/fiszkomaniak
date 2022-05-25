@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/utils/date_utils.dart';
-import 'package:flutter/material.dart' as material;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -66,49 +65,60 @@ void main() {
     expect(result, 0);
   });
 
-  test('compare times, hour of time1 is higher', () {
-    const material.TimeOfDay time1 = material.TimeOfDay(hour: 2, minute: 1);
-    const material.TimeOfDay time2 = material.TimeOfDay(hour: 1, minute: 1);
+  test('is past date, date as null', () {
+    const DateTime? date = null;
 
-    final int result = DateUtils.compareTimes(time1, time2);
+    final bool isPastDate = DateUtils.isPastDate(date);
 
-    expect(result, 1);
+    expect(isPastDate, false);
   });
 
-  test('compare times, hour of time2 is higher', () {
-    const material.TimeOfDay time1 = material.TimeOfDay(hour: 1, minute: 1);
-    const material.TimeOfDay time2 = material.TimeOfDay(hour: 2, minute: 1);
+  test('is past date, date from the past', () {
+    final DateTime date = DateTime(2022, 1, 1);
 
-    final int result = DateUtils.compareTimes(time1, time2);
+    final bool isPastDate = DateUtils.isPastDate(date);
 
-    expect(result, -1);
+    expect(isPastDate, true);
   });
 
-  test('compare times, hours equal, minute of time1 is higher', () {
-    const material.TimeOfDay time1 = material.TimeOfDay(hour: 2, minute: 2);
-    const material.TimeOfDay time2 = material.TimeOfDay(hour: 2, minute: 1);
+  test('is past date, date from the future', () {
+    final DateTime date = DateTime.now().add(const Duration(days: 2));
 
-    final int result = DateUtils.compareTimes(time1, time2);
+    final bool isPastDate = DateUtils.isPastDate(date);
 
-    expect(result, 1);
+    expect(isPastDate, false);
   });
 
-  test('compare times, hours equal, minute of time2 is higher', () {
-    const material.TimeOfDay time1 = material.TimeOfDay(hour: 2, minute: 1);
-    const material.TimeOfDay time2 = material.TimeOfDay(hour: 2, minute: 2);
+  test('is today date, date as null', () {
+    const DateTime? date = null;
 
-    final int result = DateUtils.compareTimes(time1, time2);
+    final bool isTodayDate = DateUtils.isTodayDate(date);
 
-    expect(result, -1);
+    expect(isTodayDate, false);
   });
 
-  test('compare times, hours equal, minutes equal', () {
-    const material.TimeOfDay time1 = material.TimeOfDay(hour: 2, minute: 2);
-    const material.TimeOfDay time2 = material.TimeOfDay(hour: 2, minute: 2);
+  test('is today date, today date', () {
+    final DateTime date = DateTime.now();
 
-    final int result = DateUtils.compareTimes(time1, time2);
+    final bool isTodayDate = DateUtils.isTodayDate(date);
 
-    expect(result, 0);
+    expect(isTodayDate, true);
+  });
+
+  test('is today date, date from the past', () {
+    final DateTime date = DateTime(2022, 1, 1);
+
+    final bool isTodayDate = DateUtils.isTodayDate(date);
+
+    expect(isTodayDate, false);
+  });
+
+  test('is today date, date from the future', () {
+    final DateTime date = DateTime.now().add(const Duration(days: 2));
+
+    final bool isTodayDate = DateUtils.isTodayDate(date);
+
+    expect(isTodayDate, false);
   });
 
   test('get days in a row, only current day', () {

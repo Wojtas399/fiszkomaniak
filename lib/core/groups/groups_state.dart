@@ -1,10 +1,22 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
-import 'groups_status.dart';
+part of 'groups_bloc.dart';
 
 class GroupsState extends Equatable {
+  final InitializationStatus initializationStatus;
   final List<Group> allGroups;
   final GroupsStatus status;
+
+  const GroupsState({
+    this.initializationStatus = InitializationStatus.loading,
+    this.allGroups = const [],
+    this.status = const GroupsStatusInitial(),
+  });
+
+  @override
+  List<Object> get props => [
+        initializationStatus,
+        allGroups,
+        status,
+      ];
 
   List<Group> get sortedGroups {
     List<Group> sortedGroups = [...allGroups];
@@ -12,16 +24,13 @@ class GroupsState extends Equatable {
     return sortedGroups;
   }
 
-  const GroupsState({
-    this.allGroups = const [],
-    this.status = const GroupsStatusInitial(),
-  });
-
   GroupsState copyWith({
+    InitializationStatus? initializationStatus,
     List<Group>? allGroups,
     GroupsStatus? status,
   }) {
     return GroupsState(
+      initializationStatus: initializationStatus ?? this.initializationStatus,
       allGroups: allGroups ?? this.allGroups,
       status: status ?? GroupsStatusLoaded(),
     );
@@ -58,10 +67,4 @@ class GroupsState extends Equatable {
     );
     return matchingGroup != null;
   }
-
-  @override
-  List<Object> get props => [
-        allGroups,
-        status,
-      ];
 }

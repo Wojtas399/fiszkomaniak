@@ -33,6 +33,29 @@ class Session extends Equatable {
         duration ?? '',
         notificationTime ?? '',
       ];
+
+  Session copyWith({
+    String? id,
+    String? groupId,
+    FlashcardsType? flashcardsType,
+    bool? areQuestionsAndAnswersSwapped,
+    DateTime? date,
+    TimeOfDay? time,
+    Duration? duration,
+    TimeOfDay? notificationTime,
+  }) {
+    return Session(
+      id: id ?? this.id,
+      groupId: groupId ?? this.groupId,
+      flashcardsType: flashcardsType ?? this.flashcardsType,
+      areQuestionsAndAnswersSwapped:
+          areQuestionsAndAnswersSwapped ?? this.areQuestionsAndAnswersSwapped,
+      date: date ?? this.date,
+      time: time ?? this.time,
+      duration: duration ?? this.duration,
+      notificationTime: notificationTime ?? this.notificationTime,
+    );
+  }
 }
 
 enum FlashcardsType {

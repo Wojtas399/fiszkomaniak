@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:fiszkomaniak/models/day_model.dart';
@@ -37,6 +38,7 @@ void main() {
     ),
     expect: () => [
       UserState(
+        initializationStatus: InitializationStatus.ready,
         status: UserStatusLoaded(),
         loggedUser: createUser(days: [
           createDay(date: DateTime(2022, 5, 11)),

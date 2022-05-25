@@ -1,24 +1,23 @@
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_event.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/courses/courses_event.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/core/notifications/notifications_bloc.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
+import 'package:fiszkomaniak/injections/notifications_provider.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
+import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/groups/groups_event.dart';
 import '../../injections/firebase_provider.dart';
 
 class HomeProviders extends StatelessWidget {
@@ -45,6 +44,7 @@ class HomeProviders extends StatelessWidget {
         RepositoryProvider(
           create: (_) => FirebaseProvider.provideSessionsInterface(),
         ),
+        RepositoryProvider(create: (_) => NotificationsProvider.provide()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -82,7 +82,14 @@ class HomeProviders extends StatelessWidget {
           BlocProvider(
             create: (BuildContext context) => SessionsBloc(
               sessionsInterface: context.read<SessionsInterface>(),
+              notificationsInterface: context.read<NotificationsInterface>(),
+              groupsBloc: context.read<GroupsBloc>(),
             )..add(SessionsEventInitialize()),
+          ),
+          BlocProvider(
+            create: (BuildContext context) => NotificationsBloc(
+              notificationsInterface: context.read<NotificationsInterface>(),
+            )..add(NotificationsEventInitialize()),
           ),
         ],
         child: child,

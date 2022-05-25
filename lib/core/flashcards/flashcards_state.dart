@@ -1,7 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_status.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+part of 'flashcards_bloc.dart';
 
 class FlashcardsState extends Equatable {
   final GroupsState groupsState;

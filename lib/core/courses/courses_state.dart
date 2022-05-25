@@ -1,10 +1,24 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/courses/courses_status.dart';
-import '../../models/course_model.dart';
+part of 'courses_bloc.dart';
 
 class CoursesState extends Equatable {
+  final InitializationStatus initializationStatus;
   late final List<Course> _allCourses;
   final CoursesStatus status;
+
+  CoursesState({
+    this.initializationStatus = InitializationStatus.loading,
+    List<Course> allCourses = const [],
+    this.status = const CoursesStatusInitial(),
+  }) {
+    _allCourses = allCourses;
+  }
+
+  @override
+  List<Object> get props => [
+        initializationStatus,
+        allCourses,
+        status,
+      ];
 
   List<Course> get allCourses {
     List<Course> sortedCourses = [..._allCourses];
@@ -14,18 +28,13 @@ class CoursesState extends Equatable {
     return sortedCourses;
   }
 
-  CoursesState({
-    List<Course> allCourses = const [],
-    this.status = const CoursesStatusInitial(),
-  }) {
-    _allCourses = allCourses;
-  }
-
   CoursesState copyWith({
+    InitializationStatus? initializationStatus,
     List<Course>? allCourses,
     CoursesStatus? status,
   }) {
     return CoursesState(
+      initializationStatus: initializationStatus ?? this.initializationStatus,
       allCourses: allCourses ?? this.allCourses,
       status: status ?? const CoursesStatusLoaded(),
     );
@@ -59,10 +68,4 @@ class CoursesState extends Equatable {
     );
     return matchingCourse != null;
   }
-
-  @override
-  List<Object> get props => [
-        allCourses,
-        status,
-      ];
 }

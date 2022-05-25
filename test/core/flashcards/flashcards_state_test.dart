@@ -1,6 +1,5 @@
-import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_status.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
+import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_test/flutter_test.dart';

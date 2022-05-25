@@ -31,8 +31,8 @@ class SessionsRepository implements SessionsInterface {
   }
 
   @override
-  Future<void> addNewSession(Session session) async {
-    await _fireSessionsService.addNewSession(SessionDbModel(
+  Future<String> addNewSession(Session session) async {
+    final id = await _fireSessionsService.addNewSession(SessionDbModel(
       groupId: session.groupId,
       flashcardsType:
           FireConverters.convertFlashcardsTypeToString(session.flashcardsType),
@@ -43,6 +43,7 @@ class SessionsRepository implements SessionsInterface {
       notificationTime:
           FireConverters.convertTimeOfDayToString(session.notificationTime),
     ));
+    return id;
   }
 
   @override

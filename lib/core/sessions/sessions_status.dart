@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'sessions_bloc.dart';
 
 abstract class SessionsStatus extends Equatable {
   const SessionsStatus();

@@ -1,21 +1,30 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_status.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
+part of 'sessions_bloc.dart';
 
 class SessionsState extends Equatable {
+  final InitializationStatus initializationStatus;
   final List<Session> allSessions;
   final SessionsStatus status;
 
   const SessionsState({
+    this.initializationStatus = InitializationStatus.loading,
     this.allSessions = const [],
     this.status = const SessionsStatusInitial(),
   });
 
+  @override
+  List<Object> get props => [
+        initializationStatus,
+        allSessions,
+        status,
+      ];
+
   SessionsState copyWith({
+    InitializationStatus? initializationStatus,
     List<Session>? allSessions,
     SessionsStatus? status,
   }) {
     return SessionsState(
+      initializationStatus: initializationStatus ?? this.initializationStatus,
       allSessions: allSessions ?? this.allSessions,
       status: status ?? SessionsStatusLoaded(),
     );
@@ -28,10 +37,4 @@ class SessionsState extends Equatable {
       orElse: () => null,
     );
   }
-
-  @override
-  List<Object> get props => [
-        allSessions,
-        status,
-      ];
 }

@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'groups_bloc.dart';
 
 abstract class GroupsStatus extends Equatable {
   const GroupsStatus();

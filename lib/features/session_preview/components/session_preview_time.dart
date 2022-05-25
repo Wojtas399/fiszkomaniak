@@ -33,6 +33,7 @@ class SessionPreviewTime extends StatelessWidget {
                 TimePicker(
                   icon: MdiIcons.clockOutline,
                   label: 'Czas trwania',
+                  helpText: 'WYBIERZ CZAS TRWANIA',
                   value: convertDurationToViewFormat(state.duration),
                   initialTime: TimeOfDay(
                     hour: state.duration?.inHours ?? 0,

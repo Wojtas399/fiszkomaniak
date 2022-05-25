@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:fiszkomaniak/models/user_model.dart';
 import 'package:fiszkomaniak/utils/date_utils.dart';
@@ -40,7 +41,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     UserEventLoggedUserUpdated event,
     Emitter<UserState> emit,
   ) {
-    emit(state.copyWith(loggedUser: event.updatedLoggedUser));
+    emit(state.copyWith(
+      loggedUser: event.updatedLoggedUser,
+      initializationStatus: InitializationStatus.ready,
+    ));
   }
 
   Future<void> _saveNewAvatar(

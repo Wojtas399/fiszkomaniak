@@ -1,8 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/courses/courses_event.dart';
-import 'package:fiszkomaniak/core/courses/courses_state.dart';
-import 'package:fiszkomaniak/core/courses/courses_status.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
@@ -55,35 +53,7 @@ void main() {
     act: (_) => coursesBloc.add(CoursesEventInitialize()),
     expect: () => [
       CoursesState(
-        allCourses: [
-          createCourse(id: 'c1'),
-        ],
-        status: const CoursesStatusLoaded(),
-      ),
-      CoursesState(
-        allCourses: [
-          createCourse(id: 'c1'),
-          createCourse(id: 'c2'),
-        ],
-        status: const CoursesStatusLoaded(),
-      ),
-      CoursesState(
-        allCourses: [
-          createCourse(id: 'c1'),
-          createCourse(id: 'c2'),
-          createCourse(id: 'c3', name: 'course 3'),
-        ],
-        status: const CoursesStatusLoaded(),
-      ),
-      CoursesState(
-        allCourses: [
-          createCourse(id: 'c1'),
-          createCourse(id: 'c2'),
-          createCourse(id: 'c3', name: 'course 123'),
-        ],
-        status: const CoursesStatusLoaded(),
-      ),
-      CoursesState(
+        initializationStatus: InitializationStatus.ready,
         allCourses: [
           createCourse(id: 'c1'),
           createCourse(id: 'c2'),
@@ -228,61 +198,5 @@ void main() {
     verify: (_) {
       verify(() => coursesInterface.removeCourse('c1')).called(1);
     },
-  );
-
-  blocTest(
-    'on course added',
-    build: () => coursesBloc,
-    act: (_) => coursesBloc.add(
-      CoursesEventCourseAdded(course: createCourse(id: 'c1')),
-    ),
-    expect: () => [
-      CoursesState(
-        allCourses: [createCourse(id: 'c1')],
-        status: const CoursesStatusLoaded(),
-      )
-    ],
-  );
-
-  blocTest(
-    'on course modified',
-    build: () => coursesBloc,
-    act: (_) {
-      coursesBloc.add(CoursesEventCourseAdded(
-        course: createCourse(id: 'c1', name: 'course 1'),
-      ));
-      coursesBloc.add(CoursesEventCourseModified(
-        course: createCourse(id: 'c1', name: 'course 1234'),
-      ));
-    },
-    expect: () => [
-      CoursesState(
-        allCourses: [createCourse(id: 'c1', name: 'course 1')],
-        status: const CoursesStatusLoaded(),
-      ),
-      CoursesState(
-        allCourses: [createCourse(id: 'c1', name: 'course 1234')],
-        status: const CoursesStatusLoaded(),
-      ),
-    ],
-  );
-
-  blocTest(
-    'on course removed',
-    build: () => coursesBloc,
-    act: (_) {
-      coursesBloc.add(CoursesEventCourseAdded(course: createCourse(id: 'c1')));
-      coursesBloc.add(CoursesEventCourseRemoved(courseId: 'c1'));
-    },
-    expect: () => [
-      CoursesState(
-        allCourses: [createCourse(id: 'c1')],
-        status: const CoursesStatusLoaded(),
-      ),
-      CoursesState(
-        allCourses: const [],
-        status: const CoursesStatusLoaded(),
-      ),
-    ],
   );
 }

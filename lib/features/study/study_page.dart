@@ -3,14 +3,11 @@ import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/components/group_item/group_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../core/courses/courses_state.dart';
 
 class StudyPage extends StatelessWidget {
   const StudyPage({Key? key}) : super(key: key);

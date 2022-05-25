@@ -1,10 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_event.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';

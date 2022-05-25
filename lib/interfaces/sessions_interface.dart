@@ -5,7 +5,7 @@ import '../models/changed_document.dart';
 abstract class SessionsInterface {
   Stream<List<ChangedDocument<Session>>> getSessionsSnapshots();
 
-  Future<void> addNewSession(Session session);
+  Future<String> addNewSession(Session session);
 
   Future<void> updateSession({
     required String sessionId,

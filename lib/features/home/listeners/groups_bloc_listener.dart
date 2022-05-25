@@ -1,10 +1,8 @@
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/dialogs/dialogs.dart';
 import '../../../config/navigation.dart';
-import '../../../core/groups/groups_status.dart';
 
 class GroupsBlocListener extends BlocListener<GroupsBloc, GroupsState> {
   final Function(int pageIndex) onHomePageChanged;

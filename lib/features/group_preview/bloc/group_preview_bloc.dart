@@ -8,7 +8,6 @@ import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dar
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../config/navigation.dart';
-import '../../../core/groups/groups_event.dart';
 import '../../../models/group_model.dart';
 import '../../group_creator/bloc/group_creator_mode.dart';
 

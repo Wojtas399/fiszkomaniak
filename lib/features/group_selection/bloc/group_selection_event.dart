@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
+import '../../../core/groups/groups_bloc.dart';
 
 abstract class GroupSelectionEvent {}
 
