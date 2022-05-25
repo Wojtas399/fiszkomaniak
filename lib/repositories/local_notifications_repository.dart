@@ -1,22 +1,22 @@
-import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
+import 'package:fiszkomaniak/interfaces/local_notifications_interface.dart';
+import 'package:fiszkomaniak/local_notifications/local_notifications_service.dart';
 import 'package:fiszkomaniak/models/notification_model.dart';
-import 'package:fiszkomaniak/notifications/notifications_service.dart';
 import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 
-class NotificationsRepository implements NotificationsInterface {
-  late final NotificationsService _notificationsService;
+class LocalNotificationsRepository implements LocalNotificationsInterface {
+  late final LocalNotificationsService _localNotificationsService;
 
-  NotificationsRepository({
-    required NotificationsService notificationsService,
+  LocalNotificationsRepository({
+    required LocalNotificationsService localNotificationsService,
   }) {
-    _notificationsService = notificationsService;
+    _localNotificationsService = localNotificationsService;
   }
 
   @override
   Future<NotificationType?> didNotificationLaunchApp() async {
     try {
-      final details = await _notificationsService.getLaunchDetails();
+      final details = await _localNotificationsService.getLaunchDetails();
       final notification = _getNotificationType(details?.payload);
       if (details != null &&
           details.didNotificationLaunchApp &&
@@ -34,7 +34,7 @@ class NotificationsRepository implements NotificationsInterface {
     required Function(NotificationType type) onNotificationSelected,
   }) async {
     try {
-      await _notificationsService.initializeSettings(
+      await _localNotificationsService.initializeSettings(
         onNotificationSelected: (String? payload) {
           final NotificationType? notification = _getNotificationType(payload);
           if (notification != null) {
@@ -57,7 +57,7 @@ class NotificationsRepository implements NotificationsInterface {
     try {
       final String hour = Utils.twoDigits(startTime.hour);
       final String minute = Utils.twoDigits(startTime.minute);
-      await _notificationsService.setNotification(
+      await _localNotificationsService.addNotification(
         id: sessionId.hashCode,
         body:
             'Masz zaplanowaną sesję z grupy $groupName na godzinę $hour:$minute',

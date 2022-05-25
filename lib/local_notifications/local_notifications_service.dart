@@ -2,7 +2,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-class NotificationsService {
+class LocalNotificationsService {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -33,7 +33,7 @@ class NotificationsService {
     );
   }
 
-  Future<void> setNotification({
+  Future<void> addNotification({
     required int id,
     required String body,
     required DateTime date,

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/initialization_status.dart';
-import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
+import 'package:fiszkomaniak/interfaces/local_notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +17,17 @@ part 'sessions_status.dart';
 
 class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   late final SessionsInterface _sessionsInterface;
-  late final NotificationsInterface _notificationsInterface;
+  late final LocalNotificationsInterface _localNotificationsInterface;
   late final GroupsBloc _groupsBloc;
   StreamSubscription? _sessionsSubscription;
 
   SessionsBloc({
     required SessionsInterface sessionsInterface,
-    required NotificationsInterface notificationsInterface,
+    required LocalNotificationsInterface localNotificationsInterface,
     required GroupsBloc groupsBloc,
   }) : super(const SessionsState()) {
     _sessionsInterface = sessionsInterface;
-    _notificationsInterface = notificationsInterface;
+    _localNotificationsInterface = localNotificationsInterface;
     _groupsBloc = groupsBloc;
     on<SessionsEventInitialize>(_initialize);
     on<SessionsEventSessionsChanged>(_sessionsChanged);
@@ -154,7 +154,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     required TimeOfDay? notificationTime,
   }) async {
     if (notificationTime != null) {
-      await _notificationsInterface.setSessionNotification(
+      await _localNotificationsInterface.setSessionNotification(
         sessionId: sessionId,
         groupName: groupName,
         startTime: startTime,

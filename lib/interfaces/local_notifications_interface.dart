@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/notification_model.dart';
 
-abstract class NotificationsInterface {
+abstract class LocalNotificationsInterface {
   Future<NotificationType?> didNotificationLaunchApp();
 
   Future<void> initializeSettings({

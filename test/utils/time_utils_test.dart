@@ -58,7 +58,7 @@ void main() {
   });
 
   test('is past time, current date, past time', () {
-    final time = material.TimeOfDay.now().subtract(hours: 1);
+    final time = material.TimeOfDay.now().subtract(minutes: 10);
     final date = DateTime.now();
 
     final bool isPastTime = TimeUtils.isPastTime(time, date);

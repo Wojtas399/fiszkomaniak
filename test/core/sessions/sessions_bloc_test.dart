@@ -2,7 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
+import 'package:fiszkomaniak/interfaces/local_notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
@@ -13,8 +13,8 @@ import 'package:mocktail/mocktail.dart';
 
 class MockSessionsInterface extends Mock implements SessionsInterface {}
 
-class MockNotificationsInterface extends Mock
-    implements NotificationsInterface {}
+class MockLocalNotificationsInterface extends Mock
+    implements LocalNotificationsInterface {}
 
 class MockGroupsBloc extends Mock implements GroupsBloc {}
 
@@ -24,8 +24,8 @@ class FakeTimeOfDay extends Fake implements TimeOfDay {}
 
 void main() {
   final SessionsInterface sessionsInterface = MockSessionsInterface();
-  final NotificationsInterface notificationsInterface =
-      MockNotificationsInterface();
+  final LocalNotificationsInterface localNotificationsInterface =
+      MockLocalNotificationsInterface();
   final GroupsBloc groupsBloc = MockGroupsBloc();
   late SessionsBloc bloc;
   final List<ChangedDocument<Session>> snapshots = [
@@ -54,7 +54,7 @@ void main() {
   setUp(() {
     bloc = SessionsBloc(
       sessionsInterface: sessionsInterface,
-      notificationsInterface: notificationsInterface,
+      localNotificationsInterface: localNotificationsInterface,
       groupsBloc: groupsBloc,
     );
   });
@@ -66,7 +66,7 @@ void main() {
 
   tearDown(() {
     reset(sessionsInterface);
-    reset(notificationsInterface);
+    reset(localNotificationsInterface);
     reset(groupsBloc);
   });
 
@@ -106,7 +106,7 @@ void main() {
           allGroups: [createGroup(id: 'g1', name: 'group name')],
         ));
         when(
-          () => notificationsInterface.setSessionNotification(
+          () => localNotificationsInterface.setSessionNotification(
             sessionId: 's4',
             groupName: 'group name',
             startTime: newSession.time,
@@ -122,7 +122,7 @@ void main() {
       verify: (_) {
         verify(() => sessionsInterface.addNewSession(newSession)).called(1);
         verify(
-          () => notificationsInterface.setSessionNotification(
+          () => localNotificationsInterface.setSessionNotification(
             sessionId: 's4',
             groupName: 'group name',
             startTime: newSession.time,
@@ -142,7 +142,7 @@ void main() {
           allGroups: [createGroup(id: 'g3', name: 'group name')],
         ));
         when(
-          () => notificationsInterface.setSessionNotification(
+          () => localNotificationsInterface.setSessionNotification(
             sessionId: 's4',
             groupName: 'group name',
             startTime: newSession.time,
@@ -160,7 +160,7 @@ void main() {
       verify: (_) {
         verifyNever(() => sessionsInterface.addNewSession(any()));
         verifyNever(
-          () => notificationsInterface.setSessionNotification(
+          () => localNotificationsInterface.setSessionNotification(
             sessionId: any(named: 'sessionId'),
             groupName: any(named: 'groupName'),
             startTime: any(named: 'startTime'),
@@ -180,7 +180,7 @@ void main() {
           allGroups: [createGroup(id: 'g1', name: 'group name')],
         ));
         when(
-          () => notificationsInterface.setSessionNotification(
+          () => localNotificationsInterface.setSessionNotification(
             sessionId: 's4',
             groupName: 'group name',
             startTime: newSession.time,
@@ -196,7 +196,7 @@ void main() {
       verify: (_) {
         verify(() => sessionsInterface.addNewSession(newSession)).called(1);
         verifyNever(
-          () => notificationsInterface.setSessionNotification(
+          () => localNotificationsInterface.setSessionNotification(
             sessionId: any(named: 'sessionId'),
             groupName: any(named: 'groupName'),
             startTime: any(named: 'startTime'),
@@ -216,7 +216,7 @@ void main() {
           allGroups: [createGroup(id: 'g1', name: 'group name')],
         ));
         when(
-          () => notificationsInterface.setSessionNotification(
+          () => localNotificationsInterface.setSessionNotification(
             sessionId: 's4',
             groupName: 'group name',
             startTime: newSession.time,
@@ -232,7 +232,7 @@ void main() {
       verify: (_) {
         verify(() => sessionsInterface.addNewSession(newSession)).called(1);
         verify(
-          () => notificationsInterface.setSessionNotification(
+          () => localNotificationsInterface.setSessionNotification(
             sessionId: 's4',
             groupName: 'group name',
             startTime: newSession.time,
@@ -265,7 +265,7 @@ void main() {
         () => sessionsInterface.addNewSession(createSession(groupId: 'g1')),
       ).called(1);
       verifyNever(
-        () => notificationsInterface.setSessionNotification(
+        () => localNotificationsInterface.setSessionNotification(
           sessionId: any(named: 'sessionId'),
           groupName: any(named: 'groupName'),
           startTime: any(named: 'startTime'),
