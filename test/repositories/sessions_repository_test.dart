@@ -1,9 +1,10 @@
 import 'package:fiszkomaniak/firebase/models/fire_doc_model.dart';
 import 'package:fiszkomaniak/firebase/models/session_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:fiszkomaniak/repositories/sessions_repository.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -30,6 +31,7 @@ void main() {
       time: '12:30',
       duration: '00:30',
       notificationTime: null,
+      notificationStatus: null,
     );
     when(() => fireSessionsService.addNewSession(expectedDataToCall))
         .thenAnswer((_) async => '');
@@ -38,8 +40,8 @@ void main() {
       groupId: 'g1',
       flashcardsType: FlashcardsType.remembered,
       areQuestionsAndAnswersSwapped: true,
-      date: DateTime(2022, 4, 19),
-      time: const TimeOfDay(hour: 12, minute: 30),
+      date: createDate(year: 2022, month: 4, day: 19),
+      time: createTime(hour: 12, minute: 30),
       duration: const Duration(minutes: 30),
       notificationTime: null,
     ));
@@ -51,7 +53,7 @@ void main() {
 
   test('update session', () async {
     const String newGroupId = 'g2';
-    final DateTime newDate = DateTime(2022, 1, 1);
+    final Date newDate = createDate(year: 2022, month: 1, day: 1);
     const Duration newDuration = Duration(minutes: 45);
     const FireDoc<SessionDbModel> fireDoc = FireDoc(
       id: 's1',
@@ -63,6 +65,7 @@ void main() {
         time: null,
         duration: '00:45',
         notificationTime: null,
+        notificationStatus: null,
       ),
     );
     when(() => fireSessionsService.updateSession(fireDoc))

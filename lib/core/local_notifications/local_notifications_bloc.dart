@@ -32,13 +32,13 @@ class LocalNotificationsBloc
     Emitter<LocalNotificationsState> emit,
   ) async {
     try {
-      final NotificationType? notification =
+      final Notification? notification =
           await _localNotificationsInterface.didNotificationLaunchApp();
       if (notification != null) {
         add(LocalNotificationsEventNotificationSelected(type: notification));
       }
       await _localNotificationsInterface.initializeSettings(
-        onNotificationSelected: (NotificationType type) {
+        onNotificationSelected: (Notification type) {
           add(LocalNotificationsEventNotificationSelected(type: type));
         },
       );
@@ -52,10 +52,10 @@ class LocalNotificationsBloc
     LocalNotificationsEventNotificationSelected event,
     Emitter<LocalNotificationsState> emit,
   ) {
-    final NotificationType type = event.type;
-    if (type is NotificationTypeSession) {
+    final Notification type = event.type;
+    if (type is SessionNotification) {
       emit(LocalNotificationsStateSessionSelected(sessionId: type.sessionId));
-    } else if (type is NotificationTypeDayStreakLose) {
+    } else if (type is DayStreakLoseNotification) {
       //TODO
     }
   }

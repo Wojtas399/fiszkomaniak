@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/initialization_status.dart';
-import 'package:fiszkomaniak/interfaces/local_notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/changed_document.dart';
+import '../../models/time_model.dart';
 
 part 'sessions_event.dart';
 
@@ -17,17 +17,14 @@ part 'sessions_status.dart';
 
 class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   late final SessionsInterface _sessionsInterface;
-  late final LocalNotificationsInterface _localNotificationsInterface;
   late final GroupsBloc _groupsBloc;
   StreamSubscription? _sessionsSubscription;
 
   SessionsBloc({
     required SessionsInterface sessionsInterface,
-    required LocalNotificationsInterface localNotificationsInterface,
     required GroupsBloc groupsBloc,
   }) : super(const SessionsState()) {
     _sessionsInterface = sessionsInterface;
-    _localNotificationsInterface = localNotificationsInterface;
     _groupsBloc = groupsBloc;
     on<SessionsEventInitialize>(_initialize);
     on<SessionsEventSessionsChanged>(_sessionsChanged);
@@ -85,13 +82,6 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       );
       if (groupName != null) {
         final String id = await _sessionsInterface.addNewSession(event.session);
-        await _setNotification(
-          sessionId: id,
-          groupName: groupName,
-          startTime: event.session.time,
-          date: event.session.date,
-          notificationTime: event.session.notificationTime,
-        );
         emit(state.copyWith(status: SessionsStatusSessionAdded()));
       } else {
         emit(state.copyWith(
@@ -122,6 +112,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         time: event.time,
         duration: event.duration,
         notificationTime: event.notificationTime,
+        notificationStatus: event.notificationStatus,
       );
       emit(state.copyWith(status: SessionsStatusSessionUpdated()));
     } catch (error) {
@@ -143,29 +134,6 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       emit(state.copyWith(
         status: SessionsStatusError(message: error.toString()),
       ));
-    }
-  }
-
-  Future<void> _setNotification({
-    required String sessionId,
-    required String groupName,
-    required DateTime date,
-    required TimeOfDay startTime,
-    required TimeOfDay? notificationTime,
-  }) async {
-    if (notificationTime != null) {
-      await _localNotificationsInterface.setSessionNotification(
-        sessionId: sessionId,
-        groupName: groupName,
-        startTime: startTime,
-        date: DateTime(
-          date.year,
-          date.month,
-          date.day,
-          notificationTime.hour,
-          notificationTime.minute,
-        ),
-      );
     }
   }
 

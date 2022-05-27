@@ -1,17 +1,17 @@
 import 'package:equatable/equatable.dart';
 
-abstract class NotificationType extends Equatable {
+abstract class Notification extends Equatable {
   @override
   List<Object> get props => [];
 }
 
-class NotificationTypeSession extends NotificationType {
+class SessionNotification extends Notification {
   final String sessionId;
 
-  NotificationTypeSession({required this.sessionId});
+  SessionNotification({required this.sessionId});
 
   @override
   List<Object> get props => [sessionId];
 }
 
-class NotificationTypeDayStreakLose extends NotificationType {}
+class DayStreakLoseNotification extends Notification {}

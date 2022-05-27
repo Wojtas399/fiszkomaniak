@@ -23,7 +23,7 @@ import '../../injections/firebase_provider.dart';
 class HomeProviders extends StatelessWidget {
   final Widget child;
 
-  const HomeProviders({Key? key, required this.child}) : super(key: key);
+  const HomeProviders({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +82,6 @@ class HomeProviders extends StatelessWidget {
           BlocProvider(
             create: (BuildContext context) => SessionsBloc(
               sessionsInterface: context.read<SessionsInterface>(),
-              localNotificationsInterface:
-                  context.read<LocalNotificationsInterface>(),
               groupsBloc: context.read<GroupsBloc>(),
             )..add(SessionsEventInitialize()),
           ),

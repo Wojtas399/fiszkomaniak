@@ -1,15 +1,17 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'time_model.dart';
+import 'date_model.dart';
 
 class Session extends Equatable {
   final String id;
   final String groupId;
   final FlashcardsType flashcardsType;
   final bool areQuestionsAndAnswersSwapped;
-  final DateTime date;
-  final TimeOfDay time;
+  final Date date;
+  final Time time;
   final Duration? duration;
-  final TimeOfDay? notificationTime;
+  final Time? notificationTime;
+  final NotificationStatus? notificationStatus;
 
   const Session({
     required this.id,
@@ -20,6 +22,7 @@ class Session extends Equatable {
     required this.time,
     required this.duration,
     required this.notificationTime,
+    required this.notificationStatus,
   });
 
   @override
@@ -32,6 +35,7 @@ class Session extends Equatable {
         time,
         duration ?? '',
         notificationTime ?? '',
+        notificationStatus ?? '',
       ];
 
   Session copyWith({
@@ -39,10 +43,11 @@ class Session extends Equatable {
     String? groupId,
     FlashcardsType? flashcardsType,
     bool? areQuestionsAndAnswersSwapped,
-    DateTime? date,
-    TimeOfDay? time,
+    Date? date,
+    Time? time,
     Duration? duration,
-    TimeOfDay? notificationTime,
+    Time? notificationTime,
+    NotificationStatus? notificationStatus,
   }) {
     return Session(
       id: id ?? this.id,
@@ -54,6 +59,7 @@ class Session extends Equatable {
       time: time ?? this.time,
       duration: duration ?? this.duration,
       notificationTime: notificationTime ?? this.notificationTime,
+      notificationStatus: notificationStatus ?? this.notificationStatus,
     );
   }
 }
@@ -64,24 +70,33 @@ enum FlashcardsType {
   notRemembered,
 }
 
+enum NotificationStatus {
+  incoming,
+  received,
+  opened,
+  removed,
+}
+
 Session createSession({
   String? id,
   String? groupId,
   FlashcardsType? flashcardsType,
   bool? areQuestionsAndAnswersSwapped,
-  DateTime? date,
-  TimeOfDay? time,
+  Date? date,
+  Time? time,
   Duration? duration,
-  TimeOfDay? notificationTime,
+  Time? notificationTime,
+  NotificationStatus? notificationStatus,
 }) {
   return Session(
     id: id ?? '',
     groupId: groupId ?? '',
     flashcardsType: flashcardsType ?? FlashcardsType.all,
     areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped ?? false,
-    date: date ?? DateTime(2022),
-    time: time ?? const TimeOfDay(hour: 12, minute: 0),
+    date: date ?? const Date(year: 2022, month: 1, day: 1),
+    time: time ?? const Time(hour: 1, minute: 1),
     duration: duration,
     notificationTime: notificationTime,
+    notificationStatus: notificationStatus,
   );
 }

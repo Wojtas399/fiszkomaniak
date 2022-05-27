@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/models/session_model.dart';
-import 'package:flutter/material.dart';
 import '../models/changed_document.dart';
+import '../models/date_model.dart';
+import '../models/time_model.dart';
 
 abstract class SessionsInterface {
   Stream<List<ChangedDocument<Session>>> getSessionsSnapshots();
@@ -12,10 +13,11 @@ abstract class SessionsInterface {
     String? groupId,
     FlashcardsType? flashcardsType,
     bool? areQuestionsAndAnswersSwapped,
-    DateTime? date,
-    TimeOfDay? time,
+    Date? date,
+    Time? time,
     Duration? duration,
-    TimeOfDay? notificationTime,
+    Time? notificationTime,
+    NotificationStatus? notificationStatus,
   });
 
   Future<void> removeSession(String sessionId);

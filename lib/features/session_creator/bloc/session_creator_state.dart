@@ -3,8 +3,9 @@ import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_status.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:fiszkomaniak/utils/group_utils.dart';
-import 'package:flutter/material.dart';
+import '../../../models/date_model.dart';
 import '../../../models/session_model.dart';
 
 class SessionCreatorState extends Equatable {
@@ -16,10 +17,10 @@ class SessionCreatorState extends Equatable {
   final Group? selectedGroup;
   final FlashcardsType flashcardsType;
   final bool areQuestionsAndAnswersSwapped;
-  final DateTime? date;
-  final TimeOfDay? time;
+  final Date? date;
+  final Time? time;
   final Duration? duration;
-  final TimeOfDay? notificationTime;
+  final Time? notificationTime;
 
   const SessionCreatorState({
     this.mode = const SessionCreatorCreateMode(),
@@ -80,10 +81,10 @@ class SessionCreatorState extends Equatable {
     Group? selectedGroup,
     FlashcardsType? flashcardsType,
     bool? areQuestionsAndAnswersSwapped,
-    DateTime? date,
-    TimeOfDay? time,
+    Date? date,
+    Time? time,
     Duration? duration,
-    TimeOfDay? notificationTime,
+    Time? notificationTime,
   }) {
     return SessionCreatorState(
       mode: mode ?? this.mode,

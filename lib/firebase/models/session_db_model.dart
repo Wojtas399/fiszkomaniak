@@ -8,6 +8,7 @@ class SessionDbModel extends Equatable {
   final String? time;
   final String? duration;
   final String? notificationTime;
+  final String? notificationStatus;
 
   const SessionDbModel({
     required this.groupId,
@@ -17,6 +18,7 @@ class SessionDbModel extends Equatable {
     required this.time,
     required this.duration,
     required this.notificationTime,
+    required this.notificationStatus,
   });
 
   SessionDbModel.fromJson(Map<String, Object?> json)
@@ -29,6 +31,7 @@ class SessionDbModel extends Equatable {
           time: json['time']! as String,
           duration: json['duration'] as String?,
           notificationTime: json['notificationTime'] as String?,
+          notificationStatus: json['notificationStatus'] as String?,
         );
 
   Map<String, Object?> toJson() {
@@ -40,6 +43,7 @@ class SessionDbModel extends Equatable {
       'time': time,
       'duration': duration,
       'notificationTime': notificationTime,
+      'notificationStatus': notificationStatus,
     };
   }
 
@@ -52,5 +56,6 @@ class SessionDbModel extends Equatable {
         time ?? '',
         duration ?? '',
         notificationTime ?? '',
+        notificationStatus ?? '',
       ];
 }

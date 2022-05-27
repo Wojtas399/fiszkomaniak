@@ -8,9 +8,11 @@ import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -34,7 +36,7 @@ void main() {
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final SessionsBloc sessionsBloc = MockSessionsBloc();
   late SessionCreatorBloc bloc;
-  final DateTime now = DateTime.now();
+  final Date now = Date.now();
   final CoursesState coursesState = CoursesState(
     allCourses: [
       createCourse(id: 'c1'),
@@ -54,10 +56,11 @@ void main() {
     groupId: 'g1',
     flashcardsType: FlashcardsType.remembered,
     areQuestionsAndAnswersSwapped: true,
-    date: DateTime(2022, 1, 1),
-    time: const TimeOfDay(hour: 20, minute: 00),
+    date: const Date(year: 2022, month: 1, day: 1),
+    time: const Time(hour: 20, minute: 00),
     duration: const Duration(minutes: 30),
-    notificationTime: const TimeOfDay(hour: 10, minute: 0),
+    notificationTime: const Time(hour: 10, minute: 0),
+    notificationStatus: NotificationStatus.incoming,
   );
   final SessionCreatorState initialEditModeState = SessionCreatorState(
     mode: SessionCreatorEditMode(session: session),
@@ -262,11 +265,11 @@ void main() {
   blocTest(
     'date selected',
     build: () => bloc,
-    act: (_) => bloc.add(SessionCreatorEventDateSelected(date: DateTime(2022))),
+    act: (_) => bloc.add(SessionCreatorEventDateSelected(date: createDate())),
     expect: () => [
       SessionCreatorState(
         status: SessionCreatorStatusLoaded(),
-        date: DateTime(2022),
+        date: createDate(),
       ),
     ],
   );
@@ -282,7 +285,7 @@ void main() {
       );
       bloc.add(
         SessionCreatorEventTimeSelected(
-          time: const TimeOfDay(hour: 12, minute: 0),
+          time: const Time(hour: 12, minute: 0),
         ),
       );
     },
@@ -301,29 +304,27 @@ void main() {
       bloc.add(
         SessionCreatorEventInitialize(
           mode: SessionCreatorEditMode(
-            session: session.copyWith(date: now.add(const Duration(days: 2))),
+            session: session.copyWith(date: now.addDays(2)),
           ),
         ),
       );
       bloc.add(
-        SessionCreatorEventTimeSelected(
-          time: const TimeOfDay(hour: 9, minute: 0),
-        ),
+        SessionCreatorEventTimeSelected(time: const Time(hour: 9, minute: 0)),
       );
     },
     expect: () => [
       initialEditModeState.copyWith(
         mode: SessionCreatorEditMode(
-          session: session.copyWith(date: now.add(const Duration(days: 2))),
+          session: session.copyWith(date: now.addDays(2)),
         ),
-        date: now.add(const Duration(days: 2)),
+        date: now.addDays(2),
       ),
       initialEditModeState.copyWith(
         mode: SessionCreatorEditMode(
-          session: session.copyWith(date: now.add(const Duration(days: 2))),
+          session: session.copyWith(date: now.addDays(2)),
         ),
         status: SessionCreatorStatusStartTimeEarlierThanNotificationTime(),
-        date: now.add(const Duration(days: 2)),
+        date: now.addDays(2),
       ),
     ],
   );
@@ -335,35 +336,27 @@ void main() {
       bloc.add(
         SessionCreatorEventInitialize(
           mode: SessionCreatorEditMode(
-            session: session.copyWith(
-              date: now.add(const Duration(days: 2)),
-            ),
+            session: session.copyWith(date: now.addDays(2)),
           ),
         ),
       );
       bloc.add(
-        SessionCreatorEventTimeSelected(
-          time: const TimeOfDay(hour: 12, minute: 0),
-        ),
+        SessionCreatorEventTimeSelected(time: const Time(hour: 12, minute: 0)),
       );
     },
     expect: () => [
       initialEditModeState.copyWith(
         mode: SessionCreatorEditMode(
-          session: session.copyWith(
-            date: now.add(const Duration(days: 2)),
-          ),
+          session: session.copyWith(date: now.addDays(2)),
         ),
-        date: now.add(const Duration(days: 2)),
+        date: now.addDays(2),
       ),
       initialEditModeState.copyWith(
         mode: SessionCreatorEditMode(
-          session: session.copyWith(
-            date: now.add(const Duration(days: 2)),
-          ),
+          session: session.copyWith(date: now.addDays(2)),
         ),
-        date: now.add(const Duration(days: 2)),
-        time: const TimeOfDay(hour: 12, minute: 0),
+        date: now.addDays(2),
+        time: const Time(hour: 12, minute: 0),
       ),
     ],
   );
@@ -395,7 +388,7 @@ void main() {
       );
       bloc.add(
         SessionCreatorEventNotificationTimeSelected(
-          notificationTime: const TimeOfDay(hour: 12, minute: 0),
+          notificationTime: const Time(hour: 12, minute: 0),
         ),
       );
     },
@@ -414,29 +407,29 @@ void main() {
       bloc.add(
         SessionCreatorEventInitialize(
           mode: SessionCreatorEditMode(
-            session: session.copyWith(date: now.add(const Duration(days: 2))),
+            session: session.copyWith(date: now.addDays(2)),
           ),
         ),
       );
       bloc.add(
         SessionCreatorEventNotificationTimeSelected(
-          notificationTime: const TimeOfDay(hour: 21, minute: 0),
+          notificationTime: const Time(hour: 21, minute: 0),
         ),
       );
     },
     expect: () => [
       initialEditModeState.copyWith(
         mode: SessionCreatorEditMode(
-          session: session.copyWith(date: now.add(const Duration(days: 2))),
+          session: session.copyWith(date: now.addDays(2)),
         ),
-        date: now.add(const Duration(days: 2)),
+        date: now.addDays(2),
       ),
       initialEditModeState.copyWith(
         mode: SessionCreatorEditMode(
-          session: session.copyWith(date: now.add(const Duration(days: 2))),
+          session: session.copyWith(date: now.addDays(2)),
         ),
         status: SessionCreatorStatusNotificationTimeLaterThanStartTime(),
-        date: now.add(const Duration(days: 2)),
+        date: now.addDays(2),
       ),
     ],
   );
@@ -448,35 +441,29 @@ void main() {
       bloc.add(
         SessionCreatorEventInitialize(
           mode: SessionCreatorEditMode(
-            session: session.copyWith(
-              date: now.add(const Duration(days: 2)),
-            ),
+            session: session.copyWith(date: now.addDays(2)),
           ),
         ),
       );
       bloc.add(
         SessionCreatorEventNotificationTimeSelected(
-          notificationTime: const TimeOfDay(hour: 12, minute: 0),
+          notificationTime: const Time(hour: 12, minute: 0),
         ),
       );
     },
     expect: () => [
       initialEditModeState.copyWith(
         mode: SessionCreatorEditMode(
-          session: session.copyWith(
-            date: now.add(const Duration(days: 2)),
-          ),
+          session: session.copyWith(date: now.addDays(2)),
         ),
-        date: now.add(const Duration(days: 2)),
+        date: now.addDays(2),
       ),
       initialEditModeState.copyWith(
         mode: SessionCreatorEditMode(
-          session: session.copyWith(
-            date: now.add(const Duration(days: 2)),
-          ),
+          session: session.copyWith(date: now.addDays(2)),
         ),
-        date: now.add(const Duration(days: 2)),
-        notificationTime: const TimeOfDay(hour: 12, minute: 0),
+        date: now.addDays(2),
+        notificationTime: const Time(hour: 12, minute: 0),
       ),
     ],
   );
@@ -507,14 +494,14 @@ void main() {
     build: () => bloc,
     act: (_) {
       bloc.add(SessionCreatorEventNotificationTimeSelected(
-        notificationTime: const TimeOfDay(hour: 12, minute: 30),
+        notificationTime: const Time(hour: 12, minute: 30),
       ));
       bloc.add(SessionCreatorEventCleanNotificationTime());
     },
     expect: () => [
       SessionCreatorState(
         status: SessionCreatorStatusLoaded(),
-        notificationTime: const TimeOfDay(hour: 12, minute: 30),
+        notificationTime: const Time(hour: 12, minute: 30),
       ),
       SessionCreatorState(
         status: SessionCreatorStatusLoaded(),
@@ -528,10 +515,11 @@ void main() {
       groupId: 'g1',
       flashcardsType: FlashcardsType.all,
       areQuestionsAndAnswersSwapped: false,
-      date: DateTime.now(),
-      time: TimeOfDay.now(),
+      date: Date.now().addDays(2),
+      time: Time.now().addMinutes(30),
       duration: const Duration(minutes: 30),
-      notificationTime: TimeOfDay.now(),
+      notificationTime: Time.now().addMinutes(5),
+      notificationStatus: NotificationStatus.incoming,
     );
 
     setUpAll(() {
@@ -648,6 +636,7 @@ void main() {
                 time: session.time,
                 duration: null,
                 notificationTime: session.notificationTime,
+                notificationStatus: session.notificationStatus,
               ),
             ),
           ),
@@ -680,6 +669,7 @@ void main() {
                 time: session.time,
                 duration: session.duration,
                 notificationTime: null,
+                notificationStatus: null,
               ),
             ),
           ),
@@ -687,4 +677,151 @@ void main() {
       },
     );
   });
+
+  blocTest(
+    'submit edit mode, notification as null',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(
+        SessionCreatorEventInitialize(
+          mode: SessionCreatorEditMode(session: session),
+        ),
+      );
+      bloc.add(SessionCreatorEventCleanNotificationTime());
+      bloc.add(SessionCreatorEventSubmit());
+    },
+    verify: (_) {
+      verify(
+        () => sessionsBloc.add(
+          SessionsEventUpdateSession(
+            sessionId: session.id,
+            groupId: session.groupId,
+            date: session.date,
+            time: session.time,
+            duration: session.duration,
+            flashcardsType: session.flashcardsType,
+            areQuestionsAndFlashcardsSwapped:
+                session.areQuestionsAndAnswersSwapped,
+            notificationTime: null,
+            notificationStatus: null,
+          ),
+        ),
+      );
+    },
+  );
+
+  blocTest(
+    'submit edit mode, notification time changed to null',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(
+        SessionCreatorEventInitialize(
+          mode: SessionCreatorEditMode(session: session),
+        ),
+      );
+      bloc.add(SessionCreatorEventCleanNotificationTime());
+      bloc.add(SessionCreatorEventSubmit());
+    },
+    verify: (_) {
+      verify(
+        () => sessionsBloc.add(
+          SessionsEventUpdateSession(
+            sessionId: session.id,
+            groupId: session.groupId,
+            date: session.date,
+            time: session.time,
+            duration: session.duration,
+            flashcardsType: session.flashcardsType,
+            areQuestionsAndFlashcardsSwapped:
+                session.areQuestionsAndAnswersSwapped,
+            notificationTime: null,
+            notificationStatus: null,
+          ),
+        ),
+      );
+    },
+  );
+
+  blocTest(
+    'submit edit mode, notification time changed to new value',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(
+        SessionCreatorEventInitialize(
+          mode: SessionCreatorEditMode(
+            session: session.copyWith(
+              date: Date.now().addDays(2),
+              notificationStatus: NotificationStatus.opened,
+            ),
+          ),
+        ),
+      );
+      bloc.add(
+        SessionCreatorEventNotificationTimeSelected(
+          notificationTime: const Time(hour: 12, minute: 0),
+        ),
+      );
+      bloc.add(SessionCreatorEventSubmit());
+    },
+    verify: (_) {
+      verify(
+        () => sessionsBloc.add(
+          SessionsEventUpdateSession(
+            sessionId: session.id,
+            groupId: session.groupId,
+            date: Date.now().addDays(2),
+            time: session.time,
+            duration: session.duration,
+            flashcardsType: session.flashcardsType,
+            areQuestionsAndFlashcardsSwapped:
+                session.areQuestionsAndAnswersSwapped,
+            notificationTime: const Time(hour: 12, minute: 0),
+            notificationStatus: NotificationStatus.opened,
+          ),
+        ),
+      );
+    },
+  );
+
+  blocTest(
+    'submit edit mode, notification time changed from null to new value',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(
+        SessionCreatorEventInitialize(
+          mode: SessionCreatorEditMode(
+            session: session.copyWith(
+              date: Date.now().addDays(2),
+              notificationTime: null,
+              notificationStatus: null,
+            ),
+          ),
+        ),
+      );
+      bloc.add(
+        SessionCreatorEventNotificationTimeSelected(
+          notificationTime: const Time(hour: 12, minute: 0),
+        ),
+      );
+      bloc.add(SessionCreatorEventSubmit());
+    },
+    verify: (_) {
+      verify(
+        () => sessionsBloc.add(
+          SessionsEventUpdateSession(
+            sessionId: session.id,
+            groupId: session.groupId,
+            date: Date.now().addDays(2),
+            time: session.time,
+            duration: session.duration,
+            flashcardsType: session.flashcardsType,
+            areQuestionsAndFlashcardsSwapped:
+                session.areQuestionsAndAnswersSwapped,
+            notificationTime: const Time(hour: 12, minute: 0),
+            notificationStatus: NotificationStatus.incoming,
+          ),
+        ),
+      );
+    },
+  );
 }

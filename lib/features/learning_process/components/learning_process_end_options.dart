@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/components/buttons/button.dart';
-import 'package:fiszkomaniak/converters/flashcards_type_converters.dart';
+import 'package:fiszkomaniak/ui_extensions/flashcards_type_converters.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LearningProcessEndOptions extends StatelessWidget {
-  const LearningProcessEndOptions({Key? key}) : super(key: key);
+  const LearningProcessEndOptions({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class LearningProcessEndOptions extends StatelessWidget {
 }
 
 class _ResetButton extends StatelessWidget {
-  const _ResetButton({Key? key}) : super(key: key);
+  const _ResetButton();
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class _ResetButton extends StatelessWidget {
 }
 
 class _FlashcardsTypeOptions extends StatelessWidget {
-  const _FlashcardsTypeOptions({Key? key}) : super(key: key);
+  const _FlashcardsTypeOptions();
 
   @override
   Widget build(BuildContext context) {

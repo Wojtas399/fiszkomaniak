@@ -6,6 +6,7 @@ import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
 import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';
 import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/day_model.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
@@ -35,14 +36,15 @@ void main() {
   final ProfileDialogs profileDialogs = MockProfileDialogs();
   final ImagePicker imagePicker = MockImagePicker();
   late ProfileBloc bloc;
+  final Date now = Date.now();
   final User loggedUser = createUser(
     username: 'username',
     avatarUrl: 'avatar/url',
     days: [
-      createDay(date: DateTime.now()),
-      createDay(date: DateTime.now().subtract(const Duration(days: 1))),
-      createDay(date: DateTime.now().subtract(const Duration(days: 2))),
-      createDay(date: DateTime.now().subtract(const Duration(days: 3))),
+      createDay(date: now),
+      createDay(date: now.subtractDays(1)),
+      createDay(date: now.subtractDays(2)),
+      createDay(date: now.subtractDays(3)),
     ],
   );
   final FlashcardsState flashcardsState = FlashcardsState(

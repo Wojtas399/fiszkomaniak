@@ -2,19 +2,17 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/interfaces/local_notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockSessionsInterface extends Mock implements SessionsInterface {}
-
-class MockLocalNotificationsInterface extends Mock
-    implements LocalNotificationsInterface {}
 
 class MockGroupsBloc extends Mock implements GroupsBloc {}
 
@@ -24,8 +22,6 @@ class FakeTimeOfDay extends Fake implements TimeOfDay {}
 
 void main() {
   final SessionsInterface sessionsInterface = MockSessionsInterface();
-  final LocalNotificationsInterface localNotificationsInterface =
-      MockLocalNotificationsInterface();
   final GroupsBloc groupsBloc = MockGroupsBloc();
   late SessionsBloc bloc;
   final List<ChangedDocument<Session>> snapshots = [
@@ -39,11 +35,11 @@ void main() {
     ),
     ChangedDocument(
       changeType: DbDocChangeType.added,
-      doc: createSession(id: 's3', time: const TimeOfDay(hour: 12, minute: 30)),
+      doc: createSession(id: 's3', time: const Time(hour: 12, minute: 30)),
     ),
     ChangedDocument(
       changeType: DbDocChangeType.updated,
-      doc: createSession(id: 's3', time: const TimeOfDay(hour: 13, minute: 30)),
+      doc: createSession(id: 's3', time: const Time(hour: 13, minute: 30)),
     ),
     ChangedDocument(
       changeType: DbDocChangeType.removed,
@@ -54,7 +50,6 @@ void main() {
   setUp(() {
     bloc = SessionsBloc(
       sessionsInterface: sessionsInterface,
-      localNotificationsInterface: localNotificationsInterface,
       groupsBloc: groupsBloc,
     );
   });
@@ -66,7 +61,6 @@ void main() {
 
   tearDown(() {
     reset(sessionsInterface);
-    reset(localNotificationsInterface);
     reset(groupsBloc);
   });
 
@@ -91,9 +85,9 @@ void main() {
   group('add session with notification time', () {
     final Session newSession = createSession(
       groupId: 'g1',
-      time: const TimeOfDay(hour: 12, minute: 20),
-      date: DateTime(2022, 5, 20),
-      notificationTime: const TimeOfDay(hour: 9, minute: 0),
+      time: const Time(hour: 12, minute: 20),
+      date: const Date(year: 2022, month: 5, day: 20),
+      notificationTime: const Time(hour: 9, minute: 0),
     );
 
     blocTest(
@@ -105,14 +99,6 @@ void main() {
         when(() => groupsBloc.state).thenReturn(GroupsState(
           allGroups: [createGroup(id: 'g1', name: 'group name')],
         ));
-        when(
-          () => localNotificationsInterface.setSessionNotification(
-            sessionId: 's4',
-            groupName: 'group name',
-            startTime: newSession.time,
-            date: DateTime(2022, 5, 20, 9, 0),
-          ),
-        ).thenAnswer((_) async => '');
       },
       act: (_) => bloc.add(SessionsEventAddSession(session: newSession)),
       expect: () => [
@@ -121,14 +107,6 @@ void main() {
       ],
       verify: (_) {
         verify(() => sessionsInterface.addNewSession(newSession)).called(1);
-        verify(
-          () => localNotificationsInterface.setSessionNotification(
-            sessionId: 's4',
-            groupName: 'group name',
-            startTime: newSession.time,
-            date: DateTime(2022, 5, 20, 9, 0),
-          ),
-        ).called(1);
       },
     );
 
@@ -141,14 +119,6 @@ void main() {
         when(() => groupsBloc.state).thenReturn(GroupsState(
           allGroups: [createGroup(id: 'g3', name: 'group name')],
         ));
-        when(
-          () => localNotificationsInterface.setSessionNotification(
-            sessionId: 's4',
-            groupName: 'group name',
-            startTime: newSession.time,
-            date: DateTime(2022, 5, 20, 9, 0),
-          ),
-        ).thenAnswer((_) async => '');
       },
       act: (_) => bloc.add(SessionsEventAddSession(session: newSession)),
       expect: () => [
@@ -159,19 +129,11 @@ void main() {
       ],
       verify: (_) {
         verifyNever(() => sessionsInterface.addNewSession(any()));
-        verifyNever(
-          () => localNotificationsInterface.setSessionNotification(
-            sessionId: any(named: 'sessionId'),
-            groupName: any(named: 'groupName'),
-            startTime: any(named: 'startTime'),
-            date: any(named: 'date'),
-          ),
-        );
       },
     );
 
     blocTest(
-      'add session, add new session failure',
+      'add session, failure',
       build: () => bloc,
       setUp: () {
         when(() => sessionsInterface.addNewSession(newSession))
@@ -179,14 +141,6 @@ void main() {
         when(() => groupsBloc.state).thenReturn(GroupsState(
           allGroups: [createGroup(id: 'g1', name: 'group name')],
         ));
-        when(
-          () => localNotificationsInterface.setSessionNotification(
-            sessionId: 's4',
-            groupName: 'group name',
-            startTime: newSession.time,
-            date: DateTime(2022, 5, 20, 9, 0),
-          ),
-        ).thenAnswer((_) async => '');
       },
       act: (_) => bloc.add(SessionsEventAddSession(session: newSession)),
       expect: () => [
@@ -195,50 +149,6 @@ void main() {
       ],
       verify: (_) {
         verify(() => sessionsInterface.addNewSession(newSession)).called(1);
-        verifyNever(
-          () => localNotificationsInterface.setSessionNotification(
-            sessionId: any(named: 'sessionId'),
-            groupName: any(named: 'groupName'),
-            startTime: any(named: 'startTime'),
-            date: any(named: 'date'),
-          ),
-        );
-      },
-    );
-
-    blocTest(
-      'add session, set session notification failure',
-      build: () => bloc,
-      setUp: () {
-        when(() => sessionsInterface.addNewSession(newSession))
-            .thenAnswer((_) async => 's4');
-        when(() => groupsBloc.state).thenReturn(GroupsState(
-          allGroups: [createGroup(id: 'g1', name: 'group name')],
-        ));
-        when(
-          () => localNotificationsInterface.setSessionNotification(
-            sessionId: 's4',
-            groupName: 'group name',
-            startTime: newSession.time,
-            date: DateTime(2022, 5, 20, 9, 0),
-          ),
-        ).thenThrow('Error...');
-      },
-      act: (_) => bloc.add(SessionsEventAddSession(session: newSession)),
-      expect: () => [
-        SessionsState(status: SessionsStatusLoading()),
-        const SessionsState(status: SessionsStatusError(message: 'Error...')),
-      ],
-      verify: (_) {
-        verify(() => sessionsInterface.addNewSession(newSession)).called(1);
-        verify(
-          () => localNotificationsInterface.setSessionNotification(
-            sessionId: 's4',
-            groupName: 'group name',
-            startTime: newSession.time,
-            date: DateTime(2022, 5, 20, 9, 0),
-          ),
-        ).called(1);
       },
     );
   });
@@ -264,14 +174,6 @@ void main() {
       verify(
         () => sessionsInterface.addNewSession(createSession(groupId: 'g1')),
       ).called(1);
-      verifyNever(
-        () => localNotificationsInterface.setSessionNotification(
-          sessionId: any(named: 'sessionId'),
-          groupName: any(named: 'groupName'),
-          startTime: any(named: 'startTime'),
-          date: any(named: 'date'),
-        ),
-      );
     },
   );
 
@@ -282,14 +184,14 @@ void main() {
       when(
         () => sessionsInterface.updateSession(
           sessionId: 's1',
-          date: DateTime(2022, 1, 1),
+          date: const Date(year: 2022, month: 1, day: 1),
           flashcardsType: FlashcardsType.remembered,
         ),
       ).thenAnswer((_) async => '');
     },
     act: (_) => bloc.add(SessionsEventUpdateSession(
       sessionId: 's1',
-      date: DateTime(2022, 1, 1),
+      date: const Date(year: 2022, month: 1, day: 1),
       flashcardsType: FlashcardsType.remembered,
     )),
     expect: () => [
@@ -300,7 +202,7 @@ void main() {
       verify(
         () => sessionsInterface.updateSession(
           sessionId: 's1',
-          date: DateTime(2022, 1, 1),
+          date: const Date(year: 2022, month: 1, day: 1),
           flashcardsType: FlashcardsType.remembered,
         ),
       ).called(1);
@@ -314,14 +216,14 @@ void main() {
       when(
         () => sessionsInterface.updateSession(
           sessionId: 's1',
-          date: DateTime(2022, 1, 1),
+          date: const Date(year: 2022, month: 1, day: 1),
           flashcardsType: FlashcardsType.remembered,
         ),
       ).thenThrow('Error...');
     },
     act: (_) => bloc.add(SessionsEventUpdateSession(
       sessionId: 's1',
-      date: DateTime(2022, 1, 1),
+      date: const Date(year: 2022, month: 1, day: 1),
       flashcardsType: FlashcardsType.remembered,
     )),
     expect: () => [
@@ -332,7 +234,7 @@ void main() {
       verify(
         () => sessionsInterface.updateSession(
           sessionId: 's1',
-          date: DateTime(2022, 1, 1),
+          date: const Date(year: 2022, month: 1, day: 1),
           flashcardsType: FlashcardsType.remembered,
         ),
       ).called(1);

@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:flutter/material.dart';
+import 'package:fiszkomaniak/models/time_model.dart';
+import '../../../models/date_model.dart';
 import '../../../models/session_model.dart';
 
 abstract class SessionCreatorEvent {}
@@ -31,13 +32,13 @@ class SessionCreatorEventFlashcardsTypeSelected extends SessionCreatorEvent {
 class SessionCreatorEventSwapQuestionsWithAnswers extends SessionCreatorEvent {}
 
 class SessionCreatorEventDateSelected extends SessionCreatorEvent {
-  final DateTime date;
+  final Date date;
 
   SessionCreatorEventDateSelected({required this.date});
 }
 
 class SessionCreatorEventTimeSelected extends SessionCreatorEvent {
-  final TimeOfDay time;
+  final Time time;
 
   SessionCreatorEventTimeSelected({required this.time});
 }
@@ -49,7 +50,7 @@ class SessionCreatorEventDurationSelected extends SessionCreatorEvent {
 }
 
 class SessionCreatorEventNotificationTimeSelected extends SessionCreatorEvent {
-  final TimeOfDay notificationTime;
+  final Time notificationTime;
 
   SessionCreatorEventNotificationTimeSelected({required this.notificationTime});
 }

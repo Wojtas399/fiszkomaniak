@@ -38,10 +38,11 @@ class SessionsEventAddSession extends SessionsEvent {
 class SessionsEventUpdateSession extends SessionsEvent {
   final String sessionId;
   final String? groupId;
-  final DateTime? date;
-  final TimeOfDay? time;
+  final Date? date;
+  final Time? time;
   final Duration? duration;
-  final TimeOfDay? notificationTime;
+  final Time? notificationTime;
+  final NotificationStatus? notificationStatus;
   final FlashcardsType? flashcardsType;
   final bool? areQuestionsAndFlashcardsSwapped;
 
@@ -52,6 +53,7 @@ class SessionsEventUpdateSession extends SessionsEvent {
     this.time,
     this.duration,
     this.notificationTime,
+    this.notificationStatus,
     this.flashcardsType,
     this.areQuestionsAndFlashcardsSwapped,
   });
@@ -64,6 +66,7 @@ class SessionsEventUpdateSession extends SessionsEvent {
         time ?? '',
         duration ?? '',
         notificationTime ?? '',
+        notificationStatus ?? '',
         flashcardsType ?? '',
         areQuestionsAndFlashcardsSwapped ?? '',
       ];

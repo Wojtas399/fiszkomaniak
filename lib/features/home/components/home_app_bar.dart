@@ -11,7 +11,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final int displayingPageNumber;
   final List<String> _pageNames = ['Nauka', 'Sesje', 'Kursy', 'Profil'];
 
-  HomeAppBar({Key? key, required this.displayingPageNumber}) : super(key: key);
+  HomeAppBar({super.key, required this.displayingPageNumber});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -45,7 +45,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class _AvatarAndDays extends StatelessWidget {
-  const _AvatarAndDays({Key? key}) : super(key: key);
+  const _AvatarAndDays();
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,7 @@ class _AvatarAndDays extends StatelessWidget {
 }
 
 class _LoggedUserAvatar extends StatelessWidget {
-  const _LoggedUserAvatar({Key? key}) : super(key: key);
+  const _LoggedUserAvatar();
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +86,7 @@ class _LoggedUserAvatar extends StatelessWidget {
 }
 
 class _DaysInARow extends StatelessWidget {
-  const _DaysInARow({Key? key}) : super(key: key);
+  const _DaysInARow();
 
   @override
   Widget build(BuildContext context) {

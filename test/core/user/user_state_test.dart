@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/day_model.dart';
 import 'package:fiszkomaniak/models/user_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,7 +39,7 @@ void main() {
   test('copy with logged user', () {
     final User loggedUser = createUser(
       avatarUrl: 'avatar/url/image.jpg',
-      days: [createDay(date: DateTime(2022))],
+      days: [createDay(date: createDate(year: 2022))],
     );
 
     final UserState state2 = state.copyWith(loggedUser: loggedUser);
@@ -53,10 +54,11 @@ void main() {
   });
 
   test('amount of days in a row, user is not null', () {
+    final now = Date.now();
     final User loggedUser = createUser(days: [
-      createDay(date: DateTime.now()),
-      createDay(date: DateTime.now().subtract(const Duration(days: 1))),
-      createDay(date: DateTime.now().subtract(const Duration(days: 2))),
+      createDay(date: now),
+      createDay(date: now.subtractDays(1)),
+      createDay(date: now.subtractDays(2)),
     ]);
 
     state = state.copyWith(loggedUser: loggedUser);

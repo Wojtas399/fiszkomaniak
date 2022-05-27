@@ -3,15 +3,17 @@ import 'package:fiszkomaniak/components/section.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
 import 'package:fiszkomaniak/features/session_creator/components/session_creator_date_picker.dart';
+import 'package:fiszkomaniak/ui_extensions/ui_duration_extensions.dart';
+import 'package:fiszkomaniak/ui_extensions/ui_time_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/time_picker.dart';
-import '../../../converters/time_converters.dart';
+import '../../../models/time_model.dart';
 import '../bloc/session_creator_event.dart';
 
 class SessionCreatorDateAndTime extends StatelessWidget {
-  const SessionCreatorDateAndTime({Key? key}) : super(key: key);
+  const SessionCreatorDateAndTime({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,26 +27,26 @@ class SessionCreatorDateAndTime extends StatelessWidget {
               TimePicker(
                 icon: MdiIcons.clockStart,
                 label: 'Godzina rozpoczęcia',
-                value: convertTimeToViewFormat(state.time),
+                value: state.time.toUIFormat(),
                 paddingLeft: 8.0,
                 paddingRight: 8.0,
                 helpText: 'WYBIERZ GODZINĘ ROZPOCZĘCIA',
-                onSelect: (TimeOfDay time) => _timeSelected(context, time),
+                onSelect: (Time time) => _timeSelected(context, time),
               ),
               Stack(
                 children: [
                   TimePicker(
                     icon: MdiIcons.clockOutline,
                     label: 'Czas trwania (opcjonalnie)',
-                    value: convertDurationToViewFormat(state.duration),
-                    initialTime: TimeOfDay(
+                    value: state.duration.toUIFormat(),
+                    initialTime: Time(
                       hour: state.duration?.inHours ?? 0,
                       minute: state.duration?.inMinutes.remainder(60) ?? 0,
                     ),
                     paddingLeft: 8.0,
                     paddingRight: 8.0,
                     helpText: 'WYBIERZ CZAS TRWANIA',
-                    onSelect: (TimeOfDay duration) => _durationSelected(
+                    onSelect: (Time duration) => _durationSelected(
                       context,
                       duration,
                     ),
@@ -65,14 +67,14 @@ class SessionCreatorDateAndTime extends StatelessWidget {
                 children: [
                   TimePicker(
                     icon: MdiIcons.bellRingOutline,
-                    label: 'Godzina przypomnienia (opcjonalnie)',
-                    value: convertTimeToViewFormat(state.notificationTime),
+                    label: 'Godzina powiadomienia (opcjonalnie)',
+                    value: state.notificationTime.toUIFormat(),
                     initialTime: state.notificationTime ??
-                        const TimeOfDay(hour: 0, minute: 0),
+                        const Time(hour: 0, minute: 0),
                     paddingLeft: 8.0,
                     paddingRight: 8.0,
                     helpText: 'WYBIERZ GODZINĘ PRZYPOMNIENIA',
-                    onSelect: (TimeOfDay notificationTime) =>
+                    onSelect: (Time notificationTime) =>
                         _notificationTimeSelected(context, notificationTime),
                   ),
                   state.notificationTime != null
@@ -94,13 +96,13 @@ class SessionCreatorDateAndTime extends StatelessWidget {
     );
   }
 
-  void _timeSelected(BuildContext context, TimeOfDay time) {
+  void _timeSelected(BuildContext context, Time time) {
     context
         .read<SessionCreatorBloc>()
         .add(SessionCreatorEventTimeSelected(time: time));
   }
 
-  void _durationSelected(BuildContext context, TimeOfDay duration) {
+  void _durationSelected(BuildContext context, Time duration) {
     context.read<SessionCreatorBloc>().add(SessionCreatorEventDurationSelected(
           duration: Duration(hours: duration.hour, minutes: duration.minute),
         ));
@@ -114,7 +116,7 @@ class SessionCreatorDateAndTime extends StatelessWidget {
 
   void _notificationTimeSelected(
     BuildContext context,
-    TimeOfDay notificationTime,
+    Time notificationTime,
   ) {
     context
         .read<SessionCreatorBloc>()

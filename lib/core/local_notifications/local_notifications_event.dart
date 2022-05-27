@@ -28,7 +28,7 @@ class LocalNotificationsEventSetNotification extends LocalNotificationsEvent {
 
 class LocalNotificationsEventNotificationSelected
     extends LocalNotificationsEvent {
-  final NotificationType type;
+  final Notification type;
 
   LocalNotificationsEventNotificationSelected({required this.type});
 

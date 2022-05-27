@@ -1,11 +1,11 @@
-import 'package:fiszkomaniak/converters/flashcards_type_converters.dart';
+import 'package:fiszkomaniak/ui_extensions/flashcards_type_converters.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LearningProcessHeader extends StatelessWidget {
-  const LearningProcessHeader({Key? key}) : super(key: key);
+  const LearningProcessHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class LearningProcessHeader extends StatelessWidget {
 }
 
 class _CourseName extends StatelessWidget {
-  const _CourseName({Key? key}) : super(key: key);
+  const _CourseName();
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class _CourseName extends StatelessWidget {
 }
 
 class _GroupName extends StatelessWidget {
-  const _GroupName({Key? key}) : super(key: key);
+  const _GroupName();
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class _GroupName extends StatelessWidget {
 }
 
 class _FlashcardsType extends StatelessWidget {
-  const _FlashcardsType({Key? key}) : super(key: key);
+  const _FlashcardsType();
 
   @override
   Widget build(BuildContext context) {

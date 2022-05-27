@@ -1,10 +1,11 @@
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/utils/date_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('compare dates, year of date1 is higher', () {
-    final DateTime date1 = DateTime(2022, 1, 1);
-    final DateTime date2 = DateTime(2021, 1, 1);
+    final Date date1 = createDate(year: 2022);
+    final Date date2 = createDate(year: 2021);
 
     final int result = DateUtils.compareDates(date1, date2);
 
@@ -12,8 +13,8 @@ void main() {
   });
 
   test('compare dates, year of date2 is higher', () {
-    final DateTime date1 = DateTime(2021, 1, 1);
-    final DateTime date2 = DateTime(2022, 1, 1);
+    final Date date1 = createDate(year: 2021);
+    final Date date2 = createDate(year: 2022);
 
     final int result = DateUtils.compareDates(date1, date2);
 
@@ -21,8 +22,8 @@ void main() {
   });
 
   test('compare dates, years equal, month of date1 is higher', () {
-    final DateTime date1 = DateTime(2022, 2, 1);
-    final DateTime date2 = DateTime(2022, 1, 1);
+    final Date date1 = createDate(month: 2);
+    final Date date2 = createDate(month: 1);
 
     final int result = DateUtils.compareDates(date1, date2);
 
@@ -30,8 +31,8 @@ void main() {
   });
 
   test('compare dates, years equal, month of date2 is higher', () {
-    final DateTime date1 = DateTime(2022, 1, 1);
-    final DateTime date2 = DateTime(2022, 2, 1);
+    final Date date1 = createDate(month: 1);
+    final Date date2 = createDate(month: 2);
 
     final int result = DateUtils.compareDates(date1, date2);
 
@@ -39,8 +40,8 @@ void main() {
   });
 
   test('compare dates, years equal, months equal, day of date1 is higher', () {
-    final DateTime date1 = DateTime(2022, 2, 2);
-    final DateTime date2 = DateTime(2022, 2, 1);
+    final Date date1 = createDate(day: 2);
+    final Date date2 = createDate(day: 1);
 
     final int result = DateUtils.compareDates(date1, date2);
 
@@ -48,8 +49,8 @@ void main() {
   });
 
   test('compare dates, years equal, months equal, day of date2 is higher', () {
-    final DateTime date1 = DateTime(2022, 2, 1);
-    final DateTime date2 = DateTime(2022, 2, 2);
+    final Date date1 = createDate(day: 1);
+    final Date date2 = createDate(day: 2);
 
     final int result = DateUtils.compareDates(date1, date2);
 
@@ -57,8 +58,8 @@ void main() {
   });
 
   test('compare dates, years equal, months equal, days equal', () {
-    final DateTime date1 = DateTime(2022, 2, 2);
-    final DateTime date2 = DateTime(2022, 2, 2);
+    final Date date1 = createDate();
+    final Date date2 = createDate();
 
     final int result = DateUtils.compareDates(date1, date2);
 
@@ -66,7 +67,7 @@ void main() {
   });
 
   test('is past date, date as null', () {
-    const DateTime? date = null;
+    const Date? date = null;
 
     final bool isPastDate = DateUtils.isPastDate(date);
 
@@ -74,7 +75,7 @@ void main() {
   });
 
   test('is past date, date from the past', () {
-    final DateTime date = DateTime(2022, 1, 1);
+    final Date date = createDate(year: 2022, month: 1, day: 1);
 
     final bool isPastDate = DateUtils.isPastDate(date);
 
@@ -82,7 +83,7 @@ void main() {
   });
 
   test('is past date, date from the future', () {
-    final DateTime date = DateTime.now().add(const Duration(days: 2));
+    final Date date = Date.now().addDays(4);
 
     final bool isPastDate = DateUtils.isPastDate(date);
 
@@ -90,7 +91,7 @@ void main() {
   });
 
   test('is today date, date as null', () {
-    const DateTime? date = null;
+    const Date? date = null;
 
     final bool isTodayDate = DateUtils.isTodayDate(date);
 
@@ -98,7 +99,7 @@ void main() {
   });
 
   test('is today date, today date', () {
-    final DateTime date = DateTime.now();
+    final Date date = Date.now();
 
     final bool isTodayDate = DateUtils.isTodayDate(date);
 
@@ -106,7 +107,7 @@ void main() {
   });
 
   test('is today date, date from the past', () {
-    final DateTime date = DateTime(2022, 1, 1);
+    final Date date = createDate(year: 2022, month: 1, day: 1);
 
     final bool isTodayDate = DateUtils.isTodayDate(date);
 
@@ -114,7 +115,7 @@ void main() {
   });
 
   test('is today date, date from the future', () {
-    final DateTime date = DateTime.now().add(const Duration(days: 2));
+    final Date date = Date.now().addDays(4);
 
     final bool isTodayDate = DateUtils.isTodayDate(date);
 
@@ -122,40 +123,40 @@ void main() {
   });
 
   test('get days in a row, only current day', () {
-    final DateTime fromDate = DateTime(2022, 1, 10);
-    final List<DateTime> dates = [
-      DateTime(2022, 1, 10),
-      DateTime(2022, 1, 8),
+    final Date fromDate = createDate(day: 10);
+    final List<Date> dates = [
+      createDate(day: 10),
+      createDate(day: 8),
     ];
 
-    final List<DateTime> days = DateUtils.getDaysInARow(fromDate, dates);
+    final List<Date> days = DateUtils.getDaysInARow(fromDate, dates);
 
     expect(days, [dates[0]]);
   });
 
   test('get days in a row, 0 days', () {
-    final DateTime fromDate = DateTime(2022, 1, 10);
-    final List<DateTime> dates = [
-      DateTime(2022, 1, 8),
-      DateTime(2022, 1, 4),
+    final Date fromDate = createDate(day: 10);
+    final List<Date> dates = [
+      createDate(day: 8),
+      createDate(day: 4),
     ];
 
-    final List<DateTime> days = DateUtils.getDaysInARow(fromDate, dates);
+    final List<Date> days = DateUtils.getDaysInARow(fromDate, dates);
 
     expect(days, []);
   });
 
   test('get days in a row, 5 days', () {
-    final DateTime fromDate = DateTime(2022, 1, 10);
-    final List<DateTime> dates = [
-      DateTime(2022, 1, 6),
-      DateTime(2022, 1, 9),
-      DateTime(2022, 1, 10),
-      DateTime(2022, 1, 7),
-      DateTime(2022, 1, 8),
+    final Date fromDate = createDate(day: 10);
+    final List<Date> dates = [
+      createDate(day: 6),
+      createDate(day: 9),
+      createDate(day: 10),
+      createDate(day: 7),
+      createDate(day: 8),
     ];
 
-    final List<DateTime> days = DateUtils.getDaysInARow(fromDate, dates);
+    final List<Date> days = DateUtils.getDaysInARow(fromDate, dates);
 
     expect(days, [
       dates[2],
@@ -167,18 +168,18 @@ void main() {
   });
 
   test('get days from week', () {
-    final List<DateTime> daysFromWeek = DateUtils.getDaysFromWeek(
-      DateTime(2022, 5, 14),
+    final List<Date> daysFromWeek = DateUtils.getDaysFromWeek(
+      createDate(month: 5, day: 14),
     );
 
     expect(daysFromWeek, [
-      DateTime(2022, 5, 9),
-      DateTime(2022, 5, 10),
-      DateTime(2022, 5, 11),
-      DateTime(2022, 5, 12),
-      DateTime(2022, 5, 13),
-      DateTime(2022, 5, 14),
-      DateTime(2022, 5, 15),
+      createDate(month: 5, day: 9),
+      createDate(month: 5, day: 10),
+      createDate(month: 5, day: 11),
+      createDate(month: 5, day: 12),
+      createDate(month: 5, day: 13),
+      createDate(month: 5, day: 14),
+      createDate(month: 5, day: 15),
     ]);
   });
 }

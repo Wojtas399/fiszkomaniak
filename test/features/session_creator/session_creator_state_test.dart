@@ -1,9 +1,10 @@
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
-import 'package:flutter/material.dart';
+import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -105,7 +106,7 @@ void main() {
   });
 
   test('copy with date', () {
-    final DateTime date = DateTime(2022);
+    final Date date = createDate(year: 2022);
 
     final SessionCreatorState state2 = state.copyWith(date: date);
     final SessionCreatorState state3 = state2.copyWith();
@@ -115,7 +116,7 @@ void main() {
   });
 
   test('copy with time', () {
-    const TimeOfDay time = TimeOfDay(hour: 18, minute: 0);
+    final Time time = createTime(hour: 18, minute: 0);
 
     final SessionCreatorState state2 = state.copyWith(time: time);
     final SessionCreatorState state3 = state2.copyWith();
@@ -135,7 +136,7 @@ void main() {
   });
 
   test('copy with notification time', () {
-    const TimeOfDay notificationTime = TimeOfDay(hour: 12, minute: 30);
+    final Time notificationTime = createTime(hour: 12, minute: 30);
 
     final SessionCreatorState state2 = state.copyWith(
       notificationTime: notificationTime,
@@ -169,7 +170,7 @@ void main() {
   });
 
   test('reset notification time', () {
-    const TimeOfDay notificationTime = TimeOfDay(hour: 12, minute: 30);
+    final Time notificationTime = createTime(hour: 12, minute: 30);
 
     final SessionCreatorState state2 = state.copyWith(
       notificationTime: notificationTime,
@@ -221,8 +222,8 @@ void main() {
   group('is button disabled', () {
     final Course selectedCourse = courses[0];
     final Group selectedGroup = groups[0];
-    final DateTime date = DateTime(2022);
-    const TimeOfDay time = TimeOfDay(hour: 18, minute: 0);
+    final Date date = createDate(year: 2022);
+    final Time time = createTime(hour: 18, minute: 0);
     const Duration duration = Duration(minutes: 30);
 
     test('selected course as null', () {

@@ -2,25 +2,22 @@ import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../converters/date_converters.dart';
+import '../../../ui_extensions/ui_date_extensions.dart';
 
 class SessionPreviewTitle extends StatelessWidget {
-  const SessionPreviewTitle({Key? key}) : super(key: key);
+  const SessionPreviewTitle({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SessionPreviewBloc, SessionPreviewState>(
       builder: (BuildContext context, SessionPreviewState state) {
-        final String dateAsString = convertDateToViewFormatWithDayAndMonthNames(
-          state.date,
-        );
         return SizedBox(
           width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                dateAsString,
+                state.date.toUIFormatWithDayAndMonthNames(),
                 style: Theme.of(context).textTheme.headline6,
               ),
               const SizedBox(height: 16.0),
