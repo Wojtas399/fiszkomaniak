@@ -234,9 +234,6 @@ class SessionCreatorBloc
             time: time,
             duration: state.duration,
             notificationTime: state.notificationTime,
-            notificationStatus: state.notificationTime != null
-                ? NotificationStatus.incoming
-                : null,
           ),
         ),
       );
@@ -254,9 +251,6 @@ class SessionCreatorBloc
         flashcardsType: state.flashcardsType,
         areQuestionsAndFlashcardsSwapped: state.areQuestionsAndAnswersSwapped,
         notificationTime: state.notificationTime,
-        notificationStatus: state.notificationTime != null
-            ? mode.session.notificationStatus ?? NotificationStatus.incoming
-            : null,
       ),
     );
   }

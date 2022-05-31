@@ -1,5 +1,7 @@
+import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/home/home_error_screen.dart';
 import 'package:fiszkomaniak/features/home/home_loading_screen.dart';
@@ -29,6 +31,12 @@ class _View extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final InitializationStatus appearanceSettingsStatus = context.select(
+      (AppearanceSettingsBloc bloc) => bloc.state.initializationStatus,
+    );
+    final InitializationStatus notificationsSettingsStatus = context.select(
+      (NotificationsSettingsBloc bloc) => bloc.state.initializationStatus,
+    );
     final InitializationStatus coursesInitializationStatus = context.select(
       (CoursesBloc bloc) => bloc.state.initializationStatus,
     );
@@ -42,6 +50,8 @@ class _View extends StatelessWidget {
       (UserBloc bloc) => bloc.state.initializationStatus,
     );
     final List<InitializationStatus> allStatuses = [
+      appearanceSettingsStatus,
+      notificationsSettingsStatus,
       coursesInitializationStatus,
       groupsInitializationStatus,
       sessionsInitializationStatus,

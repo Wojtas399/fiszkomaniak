@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'notifications_settings_bloc.dart';
 
 abstract class NotificationsSettingsEvent extends Equatable {
   @override
@@ -11,13 +11,13 @@ class NotificationsSettingsEventUpdate extends NotificationsSettingsEvent {
   final bool? areSessionsPlannedNotificationsOn;
   final bool? areSessionsDefaultNotificationsOn;
   final bool? areAchievementsNotificationsOn;
-  final bool? areLossOfDaysNotificationsOn;
+  final bool? areDaysStreakLoseNotificationsOn;
 
   NotificationsSettingsEventUpdate({
     this.areSessionsPlannedNotificationsOn,
     this.areSessionsDefaultNotificationsOn,
     this.areAchievementsNotificationsOn,
-    this.areLossOfDaysNotificationsOn,
+    this.areDaysStreakLoseNotificationsOn,
   });
 
   @override
@@ -25,6 +25,6 @@ class NotificationsSettingsEventUpdate extends NotificationsSettingsEvent {
         areSessionsPlannedNotificationsOn ?? false,
         areSessionsDefaultNotificationsOn ?? false,
         areAchievementsNotificationsOn ?? false,
-        areLossOfDaysNotificationsOn ?? false,
+        areDaysStreakLoseNotificationsOn ?? false,
       ];
 }

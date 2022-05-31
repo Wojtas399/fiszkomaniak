@@ -11,7 +11,6 @@ class Session extends Equatable {
   final Time time;
   final Duration? duration;
   final Time? notificationTime;
-  final NotificationStatus? notificationStatus;
 
   const Session({
     required this.id,
@@ -22,7 +21,6 @@ class Session extends Equatable {
     required this.time,
     required this.duration,
     required this.notificationTime,
-    required this.notificationStatus,
   });
 
   @override
@@ -35,7 +33,6 @@ class Session extends Equatable {
         time,
         duration ?? '',
         notificationTime ?? '',
-        notificationStatus ?? '',
       ];
 
   Session copyWith({
@@ -47,7 +44,6 @@ class Session extends Equatable {
     Time? time,
     Duration? duration,
     Time? notificationTime,
-    NotificationStatus? notificationStatus,
   }) {
     return Session(
       id: id ?? this.id,
@@ -59,7 +55,6 @@ class Session extends Equatable {
       time: time ?? this.time,
       duration: duration ?? this.duration,
       notificationTime: notificationTime ?? this.notificationTime,
-      notificationStatus: notificationStatus ?? this.notificationStatus,
     );
   }
 }
@@ -68,13 +63,6 @@ enum FlashcardsType {
   all,
   remembered,
   notRemembered,
-}
-
-enum NotificationStatus {
-  incoming,
-  received,
-  opened,
-  removed,
 }
 
 Session createSession({
@@ -86,7 +74,6 @@ Session createSession({
   Time? time,
   Duration? duration,
   Time? notificationTime,
-  NotificationStatus? notificationStatus,
 }) {
   return Session(
     id: id ?? '',
@@ -97,6 +84,5 @@ Session createSession({
     time: time ?? const Time(hour: 1, minute: 1),
     duration: duration,
     notificationTime: notificationTime,
-    notificationStatus: notificationStatus,
   );
 }

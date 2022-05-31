@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
+import 'package:fiszkomaniak/models/notification_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
 import '../models/changed_document.dart';
 import '../models/session_model.dart';
@@ -55,21 +56,6 @@ extension FireDurationExtensions on Duration {
   }
 }
 
-extension FireNotificationStatusExtensions on NotificationStatus {
-  String toDbString() {
-    switch (this) {
-      case NotificationStatus.incoming:
-        return 'incoming';
-      case NotificationStatus.received:
-        return 'received';
-      case NotificationStatus.opened:
-        return 'opened';
-      case NotificationStatus.removed:
-        return 'removed';
-    }
-  }
-}
-
 extension FireStringExtensions on String {
   FlashcardsType? toFlashcardsType() {
     switch (this) {
@@ -106,18 +92,14 @@ extension FireStringExtensions on String {
     return Duration(hours: hours, minutes: minutes);
   }
 
-  NotificationStatus? toNotificationStatus() {
-    switch (this) {
-      case 'incoming':
-        return NotificationStatus.incoming;
-      case 'received':
-        return NotificationStatus.received;
-      case 'opened':
-        return NotificationStatus.opened;
-      case 'removed':
-        return NotificationStatus.removed;
-      default:
-        return null;
+  Notification? convertToNotification() {
+    if (contains('session')) {
+      return SessionNotification(
+        sessionId: split(' ')[1],
+      );
+    } else if (this == 'daysStreakLose') {
+      return DaysStreakLoseNotification();
     }
+    return null;
   }
 }

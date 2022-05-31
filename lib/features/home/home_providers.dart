@@ -1,23 +1,23 @@
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
-import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_event.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/core/notifications/sessions_notifications/sessions_notifications_bloc.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
-import 'package:fiszkomaniak/injections/local_notifications_provider.dart';
+import 'package:fiszkomaniak/injections/notifications_provider.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/interfaces/local_notifications_interface.dart';
+import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
+import 'package:fiszkomaniak/interfaces/sessions_notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/local_notifications/local_notifications_bloc.dart';
+import '../../core/notifications/notifications_bloc.dart';
 import '../../injections/firebase_provider.dart';
 
 class HomeProviders extends StatelessWidget {
@@ -44,7 +44,13 @@ class HomeProviders extends StatelessWidget {
         RepositoryProvider(
           create: (_) => FirebaseProvider.provideSessionsInterface(),
         ),
-        RepositoryProvider(create: (_) => LocalNotificationsProvider.provide()),
+        RepositoryProvider(
+          create: (_) => NotificationsProvider.provideNotificationsInterface(),
+        ),
+        RepositoryProvider(
+          create: (_) =>
+              NotificationsProvider.provideSessionsNotificationsInterface(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -79,17 +85,25 @@ class HomeProviders extends StatelessWidget {
               groupsBloc: context.read<GroupsBloc>(),
             )..add(FlashcardsEventInitialize()),
           ),
-          BlocProvider(
+          BlocProvider<SessionsBloc>(
             create: (BuildContext context) => SessionsBloc(
               sessionsInterface: context.read<SessionsInterface>(),
-              groupsBloc: context.read<GroupsBloc>(),
             )..add(SessionsEventInitialize()),
           ),
-          BlocProvider(
-            create: (BuildContext context) => LocalNotificationsBloc(
-              localNotificationsInterface:
-                  context.read<LocalNotificationsInterface>(),
-            )..add(LocalNotificationsEventInitialize()),
+          BlocProvider<NotificationsBloc>(
+            create: (BuildContext context) => NotificationsBloc(
+              notificationsInterface: context.read<NotificationsInterface>(),
+              notificationsSettingsBloc:
+                  context.read<NotificationsSettingsBloc>(),
+              sessionsNotificationsBloc: SessionsNotificationsBloc(
+                sessionsNotificationsInterface:
+                    context.read<SessionsNotificationsInterface>(),
+                notificationsSettingsBloc:
+                    context.read<NotificationsSettingsBloc>(),
+                sessionsBloc: context.read<SessionsBloc>(),
+                groupsBloc: context.read<GroupsBloc>(),
+              ),
+            )..add(NotificationsEventInitialize()),
           ),
         ],
         child: child,

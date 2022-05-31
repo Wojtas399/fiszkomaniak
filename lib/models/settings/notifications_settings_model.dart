@@ -4,13 +4,13 @@ class NotificationsSettings extends Equatable {
   final bool areSessionsPlannedNotificationsOn;
   final bool areSessionsDefaultNotificationsOn;
   final bool areAchievementsNotificationsOn;
-  final bool areLossOfDaysNotificationsOn;
+  final bool areDaysStreakLoseNotificationsOn;
 
   const NotificationsSettings({
     required this.areSessionsPlannedNotificationsOn,
     required this.areSessionsDefaultNotificationsOn,
     required this.areAchievementsNotificationsOn,
-    required this.areLossOfDaysNotificationsOn,
+    required this.areDaysStreakLoseNotificationsOn,
   });
 
   @override
@@ -18,6 +18,6 @@ class NotificationsSettings extends Equatable {
         areSessionsPlannedNotificationsOn,
         areSessionsDefaultNotificationsOn,
         areAchievementsNotificationsOn,
-        areLossOfDaysNotificationsOn,
+        areDaysStreakLoseNotificationsOn,
       ];
 }

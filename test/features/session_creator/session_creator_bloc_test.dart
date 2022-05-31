@@ -60,7 +60,6 @@ void main() {
     time: const Time(hour: 20, minute: 00),
     duration: const Duration(minutes: 30),
     notificationTime: const Time(hour: 10, minute: 0),
-    notificationStatus: NotificationStatus.incoming,
   );
   final SessionCreatorState initialEditModeState = SessionCreatorState(
     mode: SessionCreatorEditMode(session: session),
@@ -519,7 +518,6 @@ void main() {
       time: Time.now().addMinutes(30),
       duration: const Duration(minutes: 30),
       notificationTime: Time.now().addMinutes(5),
-      notificationStatus: NotificationStatus.incoming,
     );
 
     setUpAll(() {
@@ -636,7 +634,6 @@ void main() {
                 time: session.time,
                 duration: null,
                 notificationTime: session.notificationTime,
-                notificationStatus: session.notificationStatus,
               ),
             ),
           ),
@@ -669,7 +666,6 @@ void main() {
                 time: session.time,
                 duration: session.duration,
                 notificationTime: null,
-                notificationStatus: null,
               ),
             ),
           ),
@@ -703,7 +699,6 @@ void main() {
             areQuestionsAndFlashcardsSwapped:
                 session.areQuestionsAndAnswersSwapped,
             notificationTime: null,
-            notificationStatus: null,
           ),
         ),
       );
@@ -735,7 +730,6 @@ void main() {
             areQuestionsAndFlashcardsSwapped:
                 session.areQuestionsAndAnswersSwapped,
             notificationTime: null,
-            notificationStatus: null,
           ),
         ),
       );
@@ -751,7 +745,6 @@ void main() {
           mode: SessionCreatorEditMode(
             session: session.copyWith(
               date: Date.now().addDays(2),
-              notificationStatus: NotificationStatus.opened,
             ),
           ),
         ),
@@ -776,7 +769,6 @@ void main() {
             areQuestionsAndFlashcardsSwapped:
                 session.areQuestionsAndAnswersSwapped,
             notificationTime: const Time(hour: 12, minute: 0),
-            notificationStatus: NotificationStatus.opened,
           ),
         ),
       );
@@ -793,7 +785,6 @@ void main() {
             session: session.copyWith(
               date: Date.now().addDays(2),
               notificationTime: null,
-              notificationStatus: null,
             ),
           ),
         ),
@@ -818,7 +809,6 @@ void main() {
             areQuestionsAndFlashcardsSwapped:
                 session.areQuestionsAndAnswersSwapped,
             notificationTime: const Time(hour: 12, minute: 0),
-            notificationStatus: NotificationStatus.incoming,
           ),
         ),
       );

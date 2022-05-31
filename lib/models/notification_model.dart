@@ -14,4 +14,4 @@ class SessionNotification extends Notification {
   List<Object> get props => [sessionId];
 }
 
-class DayStreakLoseNotification extends Notification {}
+class DaysStreakLoseNotification extends Notification {}

@@ -42,7 +42,6 @@ class SessionsEventUpdateSession extends SessionsEvent {
   final Time? time;
   final Duration? duration;
   final Time? notificationTime;
-  final NotificationStatus? notificationStatus;
   final FlashcardsType? flashcardsType;
   final bool? areQuestionsAndFlashcardsSwapped;
 
@@ -53,7 +52,6 @@ class SessionsEventUpdateSession extends SessionsEvent {
     this.time,
     this.duration,
     this.notificationTime,
-    this.notificationStatus,
     this.flashcardsType,
     this.areQuestionsAndFlashcardsSwapped,
   });
@@ -66,7 +64,6 @@ class SessionsEventUpdateSession extends SessionsEvent {
         time ?? '',
         duration ?? '',
         notificationTime ?? '',
-        notificationStatus ?? '',
         flashcardsType ?? '',
         areQuestionsAndFlashcardsSwapped ?? '',
       ];

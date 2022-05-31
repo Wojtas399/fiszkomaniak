@@ -19,13 +19,13 @@ class SettingsEventNotificationsSettingsChanged extends SettingsEvent {
   final bool? areSessionsPlannedNotificationsOn;
   final bool? areSessionsDefaultNotificationsOn;
   final bool? areAchievementsNotificationsOn;
-  final bool? areLossOfDaysNotificationsOn;
+  final bool? areDaysStreakLoseNotificationsOn;
 
   SettingsEventNotificationsSettingsChanged({
     this.areSessionsPlannedNotificationsOn,
     this.areSessionsDefaultNotificationsOn,
     this.areAchievementsNotificationsOn,
-    this.areLossOfDaysNotificationsOn,
+    this.areDaysStreakLoseNotificationsOn,
   });
 }
 

@@ -24,6 +24,10 @@ class TimeUtils {
             );
   }
 
+  static bool isNow(Time time, Date date) {
+    return date == Date.now() && time == Time.now();
+  }
+
   static bool isTime1EarlierThanTime2({
     required Time time1,
     required Time time2,

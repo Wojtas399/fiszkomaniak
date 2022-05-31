@@ -15,11 +15,32 @@ class SessionsStatusLoaded extends SessionsStatus {}
 
 class SessionsStatusLoading extends SessionsStatus {}
 
-class SessionsStatusSessionAdded extends SessionsStatus {}
+class SessionsStatusSessionAdded extends SessionsStatus {
+  final String sessionId;
 
-class SessionsStatusSessionUpdated extends SessionsStatus {}
+  const SessionsStatusSessionAdded({required this.sessionId});
 
-class SessionsStatusSessionRemoved extends SessionsStatus {}
+  @override
+  List<Object> get props => [sessionId];
+}
+
+class SessionsStatusSessionUpdated extends SessionsStatus {
+  final String sessionId;
+
+  const SessionsStatusSessionUpdated({required this.sessionId});
+
+  @override
+  List<Object> get props => [sessionId];
+}
+
+class SessionsStatusSessionRemoved extends SessionsStatus {
+  final String sessionId;
+
+  const SessionsStatusSessionRemoved({required this.sessionId});
+
+  @override
+  List<Object> get props => [sessionId];
+}
 
 class SessionsStatusError extends SessionsStatus {
   final String message;

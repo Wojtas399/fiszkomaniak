@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
@@ -17,20 +16,23 @@ part 'sessions_status.dart';
 
 class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   late final SessionsInterface _sessionsInterface;
-  late final GroupsBloc _groupsBloc;
   StreamSubscription? _sessionsSubscription;
 
   SessionsBloc({
     required SessionsInterface sessionsInterface,
-    required GroupsBloc groupsBloc,
   }) : super(const SessionsState()) {
     _sessionsInterface = sessionsInterface;
-    _groupsBloc = groupsBloc;
     on<SessionsEventInitialize>(_initialize);
     on<SessionsEventSessionsChanged>(_sessionsChanged);
     on<SessionsEventAddSession>(_addSession);
     on<SessionsEventRemoveSession>(_removeSession);
     on<SessionsEventUpdateSession>(_updateSession);
+  }
+
+  @override
+  Future<void> close() {
+    _sessionsSubscription?.cancel();
+    return super.close();
   }
 
   void _initialize(
@@ -77,19 +79,8 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   ) async {
     try {
       emit(state.copyWith(status: SessionsStatusLoading()));
-      final String? groupName = _groupsBloc.state.getGroupNameById(
-        event.session.groupId,
-      );
-      if (groupName != null) {
-        final String id = await _sessionsInterface.addNewSession(event.session);
-        emit(state.copyWith(status: SessionsStatusSessionAdded()));
-      } else {
-        emit(state.copyWith(
-          status: const SessionsStatusError(
-            message: 'Cannot find appropriate group',
-          ),
-        ));
-      }
+      final String id = await _sessionsInterface.addNewSession(event.session);
+      emit(state.copyWith(status: SessionsStatusSessionAdded(sessionId: id)));
     } catch (error) {
       emit(state.copyWith(
         status: SessionsStatusError(message: error.toString()),
@@ -112,9 +103,10 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         time: event.time,
         duration: event.duration,
         notificationTime: event.notificationTime,
-        notificationStatus: event.notificationStatus,
       );
-      emit(state.copyWith(status: SessionsStatusSessionUpdated()));
+      emit(state.copyWith(
+        status: SessionsStatusSessionUpdated(sessionId: event.sessionId),
+      ));
     } catch (error) {
       emit(state.copyWith(
         status: SessionsStatusError(message: error.toString()),
@@ -129,17 +121,13 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     try {
       emit(state.copyWith(status: SessionsStatusLoading()));
       await _sessionsInterface.removeSession(event.sessionId);
-      emit(state.copyWith(status: SessionsStatusSessionRemoved()));
+      emit(state.copyWith(
+        status: SessionsStatusSessionRemoved(sessionId: event.sessionId),
+      ));
     } catch (error) {
       emit(state.copyWith(
         status: SessionsStatusError(message: error.toString()),
       ));
     }
-  }
-
-  @override
-  Future<void> close() {
-    _sessionsSubscription?.cancel();
-    return super.close();
   }
 }

@@ -17,7 +17,6 @@ abstract class SessionsInterface {
     Time? time,
     Duration? duration,
     Time? notificationTime,
-    NotificationStatus? notificationStatus,
   });
 
   Future<void> removeSession(String sessionId);

@@ -52,7 +52,7 @@ class GroupsState extends Equatable {
     return getGroupsByCourseId(courseId).map((group) => group.id).toList();
   }
 
-  String? getGroupNameById(String groupId) {
+  String? getGroupNameById(String? groupId) {
     return getGroupById(groupId)?.name;
   }
 

@@ -31,7 +31,6 @@ void main() {
       time: '12:30',
       duration: '00:30',
       notificationTime: null,
-      notificationStatus: null,
     );
     when(() => fireSessionsService.addNewSession(expectedDataToCall))
         .thenAnswer((_) async => '');
@@ -65,7 +64,6 @@ void main() {
         time: null,
         duration: '00:45',
         notificationTime: null,
-        notificationStatus: null,
       ),
     );
     when(() => fireSessionsService.updateSession(fireDoc))

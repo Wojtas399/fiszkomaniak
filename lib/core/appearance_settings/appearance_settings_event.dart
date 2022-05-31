@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'appearance_settings_bloc.dart';
 
 abstract class AppearanceSettingsEvent extends Equatable {
   @override

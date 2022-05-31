@@ -1,10 +1,11 @@
-import 'package:fiszkomaniak/models/http_status_model.dart';
-import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
+part of 'appearance_settings_bloc.dart';
 
 class AppearanceSettingsState extends AppearanceSettings {
+  final InitializationStatus initializationStatus;
   final HttpStatus httpStatus;
 
   const AppearanceSettingsState({
+    this.initializationStatus = InitializationStatus.loading,
     bool isDarkModeOn = false,
     bool isDarkModeCompatibilityWithSystemOn = false,
     bool isSessionTimerInvisibilityOn = false,
@@ -17,12 +18,14 @@ class AppearanceSettingsState extends AppearanceSettings {
         );
 
   AppearanceSettingsState copyWith({
+    InitializationStatus? initializationStatus,
     bool? isDarkModeOn,
     bool? isDarkModeCompatibilityWithSystemOn,
     bool? isSessionTimerInvisibilityOn,
     HttpStatus? httpStatus,
   }) {
     return AppearanceSettingsState(
+      initializationStatus: initializationStatus ?? this.initializationStatus,
       isDarkModeOn: isDarkModeOn ?? this.isDarkModeOn,
       isDarkModeCompatibilityWithSystemOn:
           isDarkModeCompatibilityWithSystemOn ??
@@ -35,6 +38,7 @@ class AppearanceSettingsState extends AppearanceSettings {
 
   @override
   List<Object> get props => [
+        initializationStatus,
         isDarkModeOn,
         isDarkModeCompatibilityWithSystemOn,
         isSessionTimerInvisibilityOn,

@@ -1,9 +1,5 @@
 import 'dart:async';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
-import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_event.dart';
-import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_state.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_state.dart';
 import 'package:fiszkomaniak/features/settings/bloc/settings_event.dart';
 import 'package:fiszkomaniak/features/settings/bloc/settings_state.dart';
 import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
@@ -36,8 +32,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
                   .state.areSessionsDefaultNotificationsOn,
               areAchievementsNotificationsOn: notificationsSettingsBloc
                   .state.areAchievementsNotificationsOn,
-              areLossOfDaysNotificationsOn:
-                  notificationsSettingsBloc.state.areLossOfDaysNotificationsOn,
+              areDaysStreakLoseNotificationsOn: notificationsSettingsBloc
+                  .state.areDaysStreakLoseNotificationsOn,
             ),
             areAllNotificationsOn: notificationsSettingsBloc
                     .state.areSessionsPlannedNotificationsOn &&
@@ -45,7 +41,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
                     .state.areSessionsDefaultNotificationsOn &&
                 notificationsSettingsBloc
                     .state.areAchievementsNotificationsOn &&
-                notificationsSettingsBloc.state.areLossOfDaysNotificationsOn,
+                notificationsSettingsBloc
+                    .state.areDaysStreakLoseNotificationsOn,
           ),
         ) {
     _appearanceSettingsBloc = appearanceSettingsBloc;
@@ -125,8 +122,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
                 currentNotificationsSettings.areSessionsDefaultNotificationsOn,
         areAchievementsNotificationsOn: event.areAchievementsNotificationsOn ??
             currentNotificationsSettings.areAchievementsNotificationsOn,
-        areLossOfDaysNotificationsOn: event.areLossOfDaysNotificationsOn ??
-            currentNotificationsSettings.areLossOfDaysNotificationsOn,
+        areDaysStreakLoseNotificationsOn:
+            event.areDaysStreakLoseNotificationsOn ??
+                currentNotificationsSettings.areDaysStreakLoseNotificationsOn,
       ),
     ));
     _notificationsSettingsBloc.add(NotificationsSettingsEventUpdate(
@@ -135,7 +133,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       areSessionsDefaultNotificationsOn:
           event.areSessionsDefaultNotificationsOn,
       areAchievementsNotificationsOn: event.areAchievementsNotificationsOn,
-      areLossOfDaysNotificationsOn: event.areLossOfDaysNotificationsOn,
+      areDaysStreakLoseNotificationsOn: event.areDaysStreakLoseNotificationsOn,
     ));
   }
 
@@ -164,7 +162,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     return settings.areSessionsPlannedNotificationsOn &&
         settings.areSessionsDefaultNotificationsOn &&
         settings.areAchievementsNotificationsOn &&
-        settings.areLossOfDaysNotificationsOn;
+        settings.areDaysStreakLoseNotificationsOn;
   }
 
   @override

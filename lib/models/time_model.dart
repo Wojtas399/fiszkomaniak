@@ -13,18 +13,22 @@ class Time extends Equatable {
   List<Object> get props => [hour, minute];
 
   Time addMinutes(int minutes) {
-    final int newMinute = minute + minutes;
+    final int allMinutes = hour * 60 + minute + minutes;
+    final int newHour = allMinutes ~/ 60;
+    final int newMinute = allMinutes - (newHour * 60);
     return Time(
-      hour: (hour + (newMinute ~/ 60)) % 24,
-      minute: (minute + minutes) % 60,
+      hour: newHour,
+      minute: newMinute,
     );
   }
 
   Time subtractMinutes(int minutes) {
-    final int newMinute = minute - minutes;
+    final int allMinutes = hour * 60 + minute - minutes;
+    final int newHour = allMinutes ~/ 60;
+    final int newMinute = allMinutes - (newHour * 60);
     return Time(
-      hour: (hour - (newMinute ~/ 60)) % 24,
-      minute: (minute - minutes) % 60,
+      hour: newHour,
+      minute: newMinute,
     );
   }
 

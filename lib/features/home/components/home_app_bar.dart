@@ -27,20 +27,18 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         leading: const _AvatarAndDays(),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(MdiIcons.bell),
-          ),
-          IconButton(
             padding: const EdgeInsets.all(0),
-            onPressed: () {
-              context.read<Navigation>().navigateToSettings();
-            },
+            onPressed: () => _onSettingsPressed(context),
             icon: const Icon(MdiIcons.cog),
           ),
           const SizedBox(width: 8)
         ],
       ),
     );
+  }
+
+  void _onSettingsPressed(BuildContext context) {
+    context.read<Navigation>().navigateToSettings();
   }
 }
 

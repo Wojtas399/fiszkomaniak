@@ -28,6 +28,7 @@ class SessionCreatorDateAndTime extends StatelessWidget {
                 icon: MdiIcons.clockStart,
                 label: 'Godzina rozpoczęcia',
                 value: state.time.toUIFormat(),
+                initialTime: state.time,
                 paddingLeft: 8.0,
                 paddingRight: 8.0,
                 helpText: 'WYBIERZ GODZINĘ ROZPOCZĘCIA',
@@ -69,8 +70,7 @@ class SessionCreatorDateAndTime extends StatelessWidget {
                     icon: MdiIcons.bellRingOutline,
                     label: 'Godzina powiadomienia (opcjonalnie)',
                     value: state.notificationTime.toUIFormat(),
-                    initialTime: state.notificationTime ??
-                        const Time(hour: 0, minute: 0),
+                    initialTime: state.notificationTime,
                     paddingLeft: 8.0,
                     paddingRight: 8.0,
                     helpText: 'WYBIERZ GODZINĘ PRZYPOMNIENIA',
@@ -103,9 +103,13 @@ class SessionCreatorDateAndTime extends StatelessWidget {
   }
 
   void _durationSelected(BuildContext context, Time duration) {
-    context.read<SessionCreatorBloc>().add(SessionCreatorEventDurationSelected(
-          duration: Duration(hours: duration.hour, minutes: duration.minute),
-        ));
+    if (duration.hour != 0 || duration.minute != 0) {
+      context
+          .read<SessionCreatorBloc>()
+          .add(SessionCreatorEventDurationSelected(
+            duration: Duration(hours: duration.hour, minutes: duration.minute),
+          ));
+    }
   }
 
   void _cleanDuration(BuildContext context) {

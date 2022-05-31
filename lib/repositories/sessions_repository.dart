@@ -41,7 +41,6 @@ class SessionsRepository implements SessionsInterface {
       time: session.time.toDbString(),
       duration: session.duration?.toDbString(),
       notificationTime: session.notificationTime?.toDbString(),
-      notificationStatus: session.notificationStatus?.toDbString(),
     ));
     return id;
   }
@@ -56,7 +55,6 @@ class SessionsRepository implements SessionsInterface {
     Time? time,
     Duration? duration,
     Time? notificationTime,
-    NotificationStatus? notificationStatus,
   }) async {
     await _fireSessionsService.updateSession(
       FireDoc(
@@ -69,7 +67,6 @@ class SessionsRepository implements SessionsInterface {
           time: time?.toDbString(),
           duration: duration?.toDbString(),
           notificationTime: notificationTime?.toDbString(),
-          notificationStatus: notificationStatus?.toDbString(),
         ),
       ),
     );
@@ -93,7 +90,6 @@ class SessionsRepository implements SessionsInterface {
     final String? timeStr = docData?.time;
     final String? durationStr = docData?.duration;
     final String? notificationTimeStr = docData?.notificationTime;
-    final String? notificationStatusStr = docData?.notificationStatus;
     if (groupId != null &&
         flashcardsType != null &&
         areQuestionsAndAnswersSwapped != null &&
@@ -110,7 +106,6 @@ class SessionsRepository implements SessionsInterface {
           time: timeStr.toTime(),
           duration: durationStr?.toDuration(),
           notificationTime: notificationTimeStr?.toTime(),
-          notificationStatus: notificationStatusStr?.toNotificationStatus(),
         ),
       );
     }

@@ -26,7 +26,7 @@ class SettingsNotificationsSection extends StatelessWidget {
                     areSessionsPlannedNotificationsOn: isSwitched,
                     areSessionsDefaultNotificationsOn: isSwitched,
                     areAchievementsNotificationsOn: isSwitched,
-                    areLossOfDaysNotificationsOn: isSwitched,
+                    areDaysStreakLoseNotificationsOn: isSwitched,
                   ));
             },
           ),
@@ -74,13 +74,13 @@ class SettingsNotificationsSection extends StatelessWidget {
               SwitchOptionItem(
                 icon: MdiIcons.medalOutline,
                 text: 'Możliwa utrata dni',
-                isSwitched:
-                    state.notificationsSettings.areLossOfDaysNotificationsOn,
+                isSwitched: state
+                    .notificationsSettings.areDaysStreakLoseNotificationsOn,
                 onSwitchChanged: (bool isSwitched) {
                   context
                       .read<SettingsBloc>()
                       .add(SettingsEventNotificationsSettingsChanged(
-                        areLossOfDaysNotificationsOn: isSwitched,
+                        areDaysStreakLoseNotificationsOn: isSwitched,
                       ));
                 },
               ),

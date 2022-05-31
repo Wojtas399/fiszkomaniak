@@ -36,7 +36,7 @@ class LocalNotificationsService {
   Future<void> addNotification({
     required int id,
     required String body,
-    required DateTime date,
+    required DateTime dateTime,
     required String payload,
   }) async {
     tz.initializeTimeZones();
@@ -52,12 +52,16 @@ class LocalNotificationsService {
       id,
       'Fiszkomaniak',
       body,
-      tz.TZDateTime.from(date, tz.local),
+      tz.TZDateTime.from(dateTime, tz.local),
       platformChannelSpecifics,
       payload: payload,
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
+  }
+
+  Future<void> cancelNotification({required int id}) async {
+    await _flutterLocalNotificationsPlugin.cancel(id);
   }
 }

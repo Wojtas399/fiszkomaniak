@@ -83,7 +83,7 @@ void main() {
     expect(settings.areSessionsPlannedNotificationsOn, true);
     expect(settings.areSessionsDefaultNotificationsOn, true);
     expect(settings.areAchievementsNotificationsOn, false);
-    expect(settings.areLossOfDaysNotificationsOn, false);
+    expect(settings.areDaysStreakLoseNotificationsOn, false);
   });
 
   test('load notifications settings, not all params given', () async {

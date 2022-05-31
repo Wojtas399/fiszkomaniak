@@ -76,6 +76,24 @@ void main() {
     expect(isPastTime, false);
   });
 
+  test('is now, true', () {
+    final Time time = Time.now();
+    final Date date = Date.now();
+
+    final bool result = TimeUtils.isNow(time, date);
+
+    expect(result, true);
+  });
+
+  test('is now, false', () {
+    final Time time = Time.now().addMinutes(30);
+    final Date date = Date.now();
+
+    final bool result = TimeUtils.isNow(time, date);
+
+    expect(result, false);
+  });
+
   test('is time 1 earlier than time 2, true', () {
     final Time time1 = createTime(hour: 10, minute: 0);
     final Time time2 = createTime(hour: 11, minute: 0);

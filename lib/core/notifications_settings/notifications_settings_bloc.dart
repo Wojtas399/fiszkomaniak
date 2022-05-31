@@ -1,16 +1,21 @@
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_state.dart';
+import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:fiszkomaniak/models/settings/notifications_settings_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+part 'notifications_settings_event.dart';
+
+part 'notifications_settings_state.dart';
+
 class NotificationsSettingsBloc
     extends Bloc<NotificationsSettingsEvent, NotificationsSettingsState> {
   late final SettingsInterface _interface;
 
-  NotificationsSettingsBloc({required SettingsInterface settingsInterface})
-      : super(const NotificationsSettingsState()) {
+  NotificationsSettingsBloc({
+    required SettingsInterface settingsInterface,
+  }) : super(const NotificationsSettingsState()) {
     _interface = settingsInterface;
     on<NotificationsSettingsEventLoad>(_load);
     on<NotificationsSettingsEventUpdate>(_update);
@@ -24,12 +29,14 @@ class NotificationsSettingsBloc
       final NotificationsSettings settings =
           await _interface.loadNotificationsSettings();
       emit(state.copyWith(
+        initializationStatus: InitializationStatus.ready,
         areSessionsPlannedNotificationsOn:
             settings.areSessionsPlannedNotificationsOn,
         areSessionsDefaultNotificationsOn:
             settings.areSessionsDefaultNotificationsOn,
         areAchievementsNotificationsOn: settings.areAchievementsNotificationsOn,
-        areLossOfDaysNotificationsOn: settings.areLossOfDaysNotificationsOn,
+        areDaysStreakLoseNotificationsOn:
+            settings.areDaysStreakLoseNotificationsOn,
         httpStatus: const HttpStatusSuccess(),
       ));
     } catch (error) {
@@ -51,7 +58,8 @@ class NotificationsSettingsBloc
         areSessionsDefaultNotificationsOn:
             event.areSessionsDefaultNotificationsOn,
         areAchievementsNotificationsOn: event.areAchievementsNotificationsOn,
-        areLossOfDaysNotificationsOn: event.areLossOfDaysNotificationsOn,
+        areDaysStreakLoseNotificationsOn:
+            event.areDaysStreakLoseNotificationsOn,
       ));
       await _interface.updateNotificationsSettings(
         areSessionsPlannedNotificationsOn:
@@ -59,7 +67,7 @@ class NotificationsSettingsBloc
         areSessionsDefaultNotificationsOn:
             event.areSessionsDefaultNotificationsOn,
         areAchievementsNotificationsOn: event.areAchievementsNotificationsOn,
-        areLossOfDaysNotificationsOn: event.areLossOfDaysNotificationsOn,
+        areLossOfDaysNotificationsOn: event.areDaysStreakLoseNotificationsOn,
       );
     } catch (error) {
       emit(state.copyWith(
@@ -69,7 +77,8 @@ class NotificationsSettingsBloc
             currentState.areSessionsDefaultNotificationsOn,
         areAchievementsNotificationsOn:
             currentState.areAchievementsNotificationsOn,
-        areLossOfDaysNotificationsOn: currentState.areLossOfDaysNotificationsOn,
+        areDaysStreakLoseNotificationsOn:
+            currentState.areDaysStreakLoseNotificationsOn,
         httpStatus: HttpStatusFailure(message: error.toString()),
       ));
     }
