@@ -14,27 +14,25 @@ class SessionsBlocListener extends BlocListener<SessionsBloc, SessionsState> {
           key: key,
           listener: (BuildContext context, SessionsState state) {
             final SessionsStatus status = state.status;
-            void closeLoadingDialog() {
-              Navigator.of(context, rootNavigator: true).pop();
-            }
-
             if (status is SessionsStatusLoading) {
               Dialogs.showLoadingDialog();
             } else if (status is SessionsStatusSessionAdded) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               context.read<Navigation>().backHome();
               Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową sesję');
               onHomePageChanged(1);
             } else if (status is SessionsStatusSessionUpdated) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Navigator.pop(context);
               Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano sesję');
             } else if (status is SessionsStatusSessionRemoved) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               context.read<Navigation>().backHome();
-              Dialogs.showSnackbarWithMessage('Pomyślnie usunięto sesję');
+              if (!status.hasSessionBeenRemovedAfterLearningProcess) {
+                Dialogs.showSnackbarWithMessage('Pomyślnie usunięto sesję');
+              }
             } else if (status is SessionsStatusError) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showErrorDialog(message: status.message);
             }
           },

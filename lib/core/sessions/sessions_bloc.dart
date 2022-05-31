@@ -122,7 +122,11 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       emit(state.copyWith(status: SessionsStatusLoading()));
       await _sessionsInterface.removeSession(event.sessionId);
       emit(state.copyWith(
-        status: SessionsStatusSessionRemoved(sessionId: event.sessionId),
+        status: SessionsStatusSessionRemoved(
+          sessionId: event.sessionId,
+          hasSessionBeenRemovedAfterLearningProcess:
+              event.removeAfterLearningProcess,
+        ),
       ));
     } catch (error) {
       emit(state.copyWith(

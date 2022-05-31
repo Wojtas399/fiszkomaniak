@@ -101,7 +101,8 @@ class _SideName extends StatelessWidget {
     String nameForQuestions,
     String nameForAnswers,
   ) {
-    if (status is FlashcardsStackStatusAnswer) {
+    if (status is FlashcardsStackStatusAnswer ||
+        status is FlashcardsStackStatusAnswerAgain) {
       return nameForAnswers;
     }
     return nameForQuestions;

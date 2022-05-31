@@ -13,26 +13,22 @@ class CoursesBlocListener extends BlocListener<CoursesBloc, CoursesState> {
   }) : super(
           listener: (BuildContext context, CoursesState state) {
             final CoursesStatus status = state.status;
-            void closeLoadingDialog() {
-              Navigator.of(context, rootNavigator: true).pop();
-            }
-
             if (status is CoursesStatusLoading) {
               Dialogs.showLoadingDialog();
             } else if (status is CoursesStatusCourseAdded) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               context.read<Navigation>().backHome();
               Dialogs.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
               onHomePageChanged(2);
             } else if (status is CoursesStatusCourseUpdated) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               context.read<Navigation>().backHome();
               Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano kurs');
             } else if (status is CoursesStatusCourseRemoved) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showSnackbarWithMessage('Pomyślnie usunięto kurs');
             } else if (status is CoursesStatusError) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showErrorDialog(message: status.message);
             }
           },

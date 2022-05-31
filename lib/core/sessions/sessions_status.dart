@@ -35,11 +35,18 @@ class SessionsStatusSessionUpdated extends SessionsStatus {
 
 class SessionsStatusSessionRemoved extends SessionsStatus {
   final String sessionId;
+  final bool hasSessionBeenRemovedAfterLearningProcess;
 
-  const SessionsStatusSessionRemoved({required this.sessionId});
+  const SessionsStatusSessionRemoved({
+    required this.sessionId,
+    required this.hasSessionBeenRemovedAfterLearningProcess,
+  });
 
   @override
-  List<Object> get props => [sessionId];
+  List<Object> get props => [
+        sessionId,
+        hasSessionBeenRemovedAfterLearningProcess,
+      ];
 }
 
 class SessionsStatusError extends SessionsStatus {

@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
@@ -23,6 +24,7 @@ class LearningProcessBloc
   late final UserBloc _userBloc;
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
+  late final SessionsBloc _sessionsBloc;
   late final LearningProcessDialogs _dialogs;
   late final Navigation _navigation;
 
@@ -30,12 +32,14 @@ class LearningProcessBloc
     required UserBloc userBloc,
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
+    required SessionsBloc sessionsBloc,
     required LearningProcessDialogs learningProcessDialogs,
     required Navigation navigation,
   }) : super(const LearningProcessState()) {
     _userBloc = userBloc;
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
+    _sessionsBloc = sessionsBloc;
     _dialogs = learningProcessDialogs;
     _navigation = navigation;
     on<LearningProcessEventInitialize>(_initialize);
@@ -66,6 +70,7 @@ class LearningProcessBloc
       final List<int> indexesOfNotRememberedFlashcards =
           FlashcardsUtils.getIndexesOfNotRememberedFlashcards(group.flashcards);
       emit(state.copyWith(
+        sessionId: event.data.sessionId,
         courseName: courseName,
         group: group,
         duration: event.data.duration,
@@ -154,7 +159,8 @@ class LearningProcessBloc
     if (decision) {
       emit(state.copyWith(removedDuration: true));
     } else {
-      await _saveFlashcards();
+      _saveFlashcards();
+      _removeSession();
       _navigation.moveBack();
     }
   }
@@ -163,7 +169,8 @@ class LearningProcessBloc
     LearningProcessEventEndSession event,
     Emitter<LearningProcessState> emit,
   ) async {
-    await _saveFlashcards();
+    _saveFlashcards();
+    _removeSession();
     _navigation.moveBack();
   }
 
@@ -173,17 +180,27 @@ class LearningProcessBloc
   ) async {
     final bool confirmation = await _dialogs.askForSaveConfirmation();
     if (confirmation) {
-      await _saveFlashcards();
+      _saveFlashcards();
     }
     _navigation.moveBack();
   }
 
-  Future<void> _saveFlashcards() async {
+  void _saveFlashcards() {
     final String? groupId = state.group?.id;
     if (groupId != null) {
       _userBloc.add(UserEventSaveNewRememberedFlashcards(
         groupId: groupId,
         rememberedFlashcardsIndexes: state.indexesOfRememberedFlashcards,
+      ));
+    }
+  }
+
+  Future<void> _removeSession() async {
+    final String? sessionId = state.sessionId;
+    if (sessionId != null) {
+      _sessionsBloc.add(SessionsEventRemoveSession(
+        sessionId: sessionId,
+        removeAfterLearningProcess: true,
       ));
     }
   }

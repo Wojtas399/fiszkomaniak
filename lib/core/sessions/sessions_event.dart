@@ -71,9 +71,16 @@ class SessionsEventUpdateSession extends SessionsEvent {
 
 class SessionsEventRemoveSession extends SessionsEvent {
   final String sessionId;
+  final bool removeAfterLearningProcess;
 
-  SessionsEventRemoveSession({required this.sessionId});
+  SessionsEventRemoveSession({
+    required this.sessionId,
+    this.removeAfterLearningProcess = false,
+  });
 
   @override
-  List<Object> get props => [sessionId];
+  List<Object> get props => [
+        sessionId,
+        removeAfterLearningProcess,
+      ];
 }

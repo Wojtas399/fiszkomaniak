@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_data.dart';
@@ -19,6 +20,8 @@ class MockCoursesBloc extends Mock implements CoursesBloc {}
 
 class MockGroupsBloc extends Mock implements GroupsBloc {}
 
+class MockSessionsBloc extends Mock implements SessionsBloc {}
+
 class MockLearningProcessDialogs extends Mock
     implements LearningProcessDialogs {}
 
@@ -28,6 +31,7 @@ void main() {
   final UserBloc userBloc = MockUserBloc();
   final CoursesBloc coursesBloc = MockCoursesBloc();
   final GroupsBloc groupsBloc = MockGroupsBloc();
+  final SessionsBloc sessionsBloc = MockSessionsBloc();
   final LearningProcessDialogs learningProcessDialogs =
       MockLearningProcessDialogs();
   final Navigation navigation = MockNavigation();
@@ -62,12 +66,14 @@ void main() {
     ],
   );
   const LearningProcessData data = LearningProcessData(
+    sessionId: 's1',
     groupId: 'g1',
     flashcardsType: FlashcardsType.all,
     areQuestionsAndAnswersSwapped: true,
     duration: Duration(minutes: 10),
   );
   final LearningProcessState initialState = LearningProcessState(
+    sessionId: 's1',
     courseName: coursesState.allCourses[0].name,
     group: groupsState.allGroups[0],
     duration: const Duration(minutes: 10),
@@ -83,6 +89,7 @@ void main() {
       userBloc: userBloc,
       coursesBloc: coursesBloc,
       groupsBloc: groupsBloc,
+      sessionsBloc: sessionsBloc,
       learningProcessDialogs: learningProcessDialogs,
       navigation: navigation,
     );
@@ -93,6 +100,9 @@ void main() {
   tearDown(() {
     reset(coursesBloc);
     reset(groupsBloc);
+    reset(sessionsBloc);
+    reset(learningProcessDialogs);
+    reset(navigation);
   });
 
   blocTest(
@@ -224,7 +234,40 @@ void main() {
   );
 
   blocTest(
-    'time finished, continuing cancelled',
+    'time finished, continuing cancelled, session with id',
+    build: () => bloc,
+    setUp: () {
+      when(() => learningProcessDialogs.askForContinuing())
+          .thenAnswer((_) async => false);
+    },
+    act: (_) {
+      bloc.add(LearningProcessEventInitialize(
+        data: createLearningProcessData(sessionId: 's1', groupId: 'g1'),
+      ));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 1));
+      bloc.add(LearningProcessEventTimeFinished());
+    },
+    verify: (_) {
+      verify(() => learningProcessDialogs.askForContinuing()).called(1);
+      verify(
+        () => userBloc.add(UserEventSaveNewRememberedFlashcards(
+          groupId: 'g1',
+          rememberedFlashcardsIndexes: const [0, 1],
+        )),
+      ).called(1);
+      verify(
+        () => sessionsBloc.add(SessionsEventRemoveSession(
+          sessionId: 's1',
+          removeAfterLearningProcess: true,
+        )),
+      ).called(1);
+      verify(() => navigation.moveBack()).called(1);
+    },
+  );
+
+  blocTest(
+    'time finished, continuing cancelled, session without id',
     build: () => bloc,
     setUp: () {
       when(() => learningProcessDialogs.askForContinuing())
@@ -246,12 +289,46 @@ void main() {
           rememberedFlashcardsIndexes: const [0, 1],
         )),
       ).called(1);
+      verifyNever(
+        () => sessionsBloc.add(SessionsEventRemoveSession(
+          sessionId: '',
+          removeAfterLearningProcess: true,
+        )),
+      );
       verify(() => navigation.moveBack()).called(1);
     },
   );
 
   blocTest(
-    'end session',
+    'end session with id',
+    build: () => bloc,
+    act: (_) {
+      bloc.add(LearningProcessEventInitialize(
+        data: createLearningProcessData(sessionId: 's1', groupId: 'g1'),
+      ));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
+      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 1));
+      bloc.add(LearningProcessEventEndSession());
+    },
+    verify: (_) {
+      verify(
+        () => userBloc.add(UserEventSaveNewRememberedFlashcards(
+          groupId: 'g1',
+          rememberedFlashcardsIndexes: const [0, 1],
+        )),
+      ).called(1);
+      verify(
+        () => sessionsBloc.add(SessionsEventRemoveSession(
+          sessionId: 's1',
+          removeAfterLearningProcess: true,
+        )),
+      ).called(1);
+      verify(() => navigation.moveBack()).called(1);
+    },
+  );
+
+  blocTest(
+    'end session without id',
     build: () => bloc,
     act: (_) {
       bloc.add(LearningProcessEventInitialize(
@@ -268,6 +345,12 @@ void main() {
           rememberedFlashcardsIndexes: const [0, 1],
         )),
       ).called(1);
+      verifyNever(
+        () => sessionsBloc.add(SessionsEventRemoveSession(
+          sessionId: '',
+          removeAfterLearningProcess: true,
+        )),
+      );
       verify(() => navigation.moveBack()).called(1);
     },
   );
@@ -281,7 +364,7 @@ void main() {
     },
     act: (_) {
       bloc.add(LearningProcessEventInitialize(
-        data: createLearningProcessData(groupId: 'g1'),
+        data: createLearningProcessData(sessionId: 's1', groupId: 'g1'),
       ));
       bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
       bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 1));
@@ -295,6 +378,12 @@ void main() {
           rememberedFlashcardsIndexes: const [0, 1],
         )),
       ).called(1);
+      verifyNever(
+        () => sessionsBloc.add(SessionsEventRemoveSession(
+          sessionId: 's1',
+          removeAfterLearningProcess: true,
+        )),
+      );
       verify(() => navigation.moveBack()).called(1);
     },
   );
@@ -321,6 +410,9 @@ void main() {
           groupId: 'g1',
           rememberedFlashcardsIndexes: const [0, 1],
         )),
+      );
+      verifyNever(
+        () => sessionsBloc.add(SessionsEventRemoveSession(sessionId: 's1')),
       );
       verify(() => navigation.moveBack()).called(1);
     },

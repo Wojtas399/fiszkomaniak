@@ -10,18 +10,12 @@ class NotificationsListener
   NotificationsListener({super.key})
       : super(
           listener: (BuildContext context, NotificationsState state) {
-            void _closeLoadingDialog() {
-              Navigator.of(context, rootNavigator: true).pop();
-            }
-
             if (state is NotificationsStateSessionSelected) {
               context.read<Navigation>().navigateToSessionPreview(
                     SessionPreviewModeNormal(sessionId: state.sessionId),
                   );
             } else if (state is NotificationsStateError) {
-              if (Dialogs.isLoadingDialogOpened) {
-                _closeLoadingDialog();
-              }
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showErrorDialog(message: state.message);
             }
           },

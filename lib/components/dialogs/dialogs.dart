@@ -27,6 +27,12 @@ class Dialogs {
     }
   }
 
+  static void closeLoadingDialog(BuildContext context) {
+    if (isLoadingDialogOpened) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+  }
+
   static Future<void> showDialogWithMessage({
     required String title,
     required String message,
@@ -80,6 +86,7 @@ class Dialogs {
   }) async {
     final BuildContext? context = navigatorKey.currentContext;
     if (context != null) {
+      hideSnackbar();
       return await Navigator.of(context).push(SlideUpRouteAnimation(
         page: ImageConfirmationDialog(imageFile: imageFile),
       ));
@@ -100,6 +107,7 @@ class Dialogs {
   }) async {
     final BuildContext? context = navigatorKey.currentContext;
     if (context != null) {
+      hideSnackbar();
       return await Navigator.of(context).push(
         SlideUpRouteAnimation(
           page: SingleInputDialog(
@@ -126,6 +134,13 @@ class Dialogs {
         content: Text(message),
         behavior: SnackBarBehavior.floating,
       ));
+    }
+  }
+
+  static void hideSnackbar() {
+    final BuildContext? context = navigatorKey.currentContext;
+    if (context != null) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
     }
   }
 }

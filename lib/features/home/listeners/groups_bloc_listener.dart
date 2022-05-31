@@ -14,29 +14,25 @@ class GroupsBlocListener extends BlocListener<GroupsBloc, GroupsState> {
           key: key,
           listener: (BuildContext context, GroupsState state) {
             final GroupsStatus status = state.status;
-            void closeLoadingDialog() {
-              Navigator.of(context, rootNavigator: true).pop();
-            }
-
             if (status is GroupsStatusLoading) {
               Dialogs.showLoadingDialog();
             } else if (status is GroupsStatusGroupAdded) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               context.read<Navigation>().backHome();
               Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę');
               onHomePageChanged(0);
             } else if (status is GroupsStatusGroupUpdated) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Navigator.pop(context);
               Dialogs.showSnackbarWithMessage(
                 'Pomyślnie zaktualizowano grupę',
               );
             } else if (status is GroupsStatusGroupRemoved) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               context.read<Navigation>().backHome();
               Dialogs.showSnackbarWithMessage('Pomyślnie usunięto grupę');
             } else if (status is GroupsStatusError) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showErrorDialog(message: status.message);
             }
           },

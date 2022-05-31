@@ -176,7 +176,10 @@ void main() {
     expect: () => [
       SessionsState(status: SessionsStatusLoading()),
       const SessionsState(
-        status: SessionsStatusSessionRemoved(sessionId: 's1'),
+        status: SessionsStatusSessionRemoved(
+          sessionId: 's1',
+          hasSessionBeenRemovedAfterLearningProcess: false,
+        ),
       ),
     ],
     verify: (_) {

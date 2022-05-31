@@ -28,10 +28,13 @@ class _NoGroupsInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SafeArea(
-      child: EmptyContentInfo(
-        icon: MdiIcons.folder,
-        title: 'Brak grup w kursie',
-        subtitle: 'Utwórz grupy dla tego kursu aby móc je przeglądać',
+      child: Padding(
+        padding: EdgeInsets.all(24.0),
+        child: EmptyContentInfo(
+          icon: MdiIcons.folder,
+          title: 'Brak grup w kursie',
+          subtitle: 'Utwórz grupy dla tego kursu aby móc je przeglądać',
+        ),
       ),
     );
   }

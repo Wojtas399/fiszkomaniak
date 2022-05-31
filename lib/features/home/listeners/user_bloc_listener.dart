@@ -9,32 +9,28 @@ class UserBlocListener extends BlocListener<UserBloc, UserState> {
           key: key,
           listener: (BuildContext context, UserState state) {
             final UserStatus status = state.status;
-            void closeLoadingDialog() {
-              Navigator.of(context, rootNavigator: true).pop();
-            }
-
             if (status is UserStatusLoading) {
               Dialogs.showLoadingDialog();
             } else if (status is UserStatusNewAvatarSaved) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showSnackbarWithMessage(
                 'Pomyślnie zapisano nowe zdjęcie profilowe',
               );
             } else if (status is UserStatusAvatarRemoved) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showSnackbarWithMessage(
                 'Pomyślnie usunięto zdjęcie profilowe',
               );
             } else if (status is UserStatusUsernameUpdated) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showSnackbarWithMessage(
                 'Pomyślnie zmieniono nazwę użytkownika',
               );
             } else if (status is UserStatusNewRememberedFlashcardsSaved) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
             } else if (status is UserStatusError) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showErrorDialog(message: status.message);
             }
           },

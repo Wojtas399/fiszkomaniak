@@ -14,6 +14,7 @@ void main() {
 
   test('initial state', () {
     expect(state.status, const LearningProcessStatusInitial());
+    expect(state.sessionId, null);
     expect(state.courseName, '');
     expect(state.group, null);
     expect(state.duration, null);
@@ -34,6 +35,16 @@ void main() {
 
     expect(state2.status, expectedStatus);
     expect(state3.status, expectedStatus);
+  });
+
+  test('copy with session id', () {
+    const String sessionId = 'session id 1';
+
+    final LearningProcessState state2 = state.copyWith(sessionId: sessionId);
+    final LearningProcessState state3 = state2.copyWith();
+
+    expect(state2.sessionId, sessionId);
+    expect(state3.sessionId, sessionId);
   });
 
   test('copy with courseName', () {

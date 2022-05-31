@@ -2,6 +2,7 @@ part of 'learning_process_bloc.dart';
 
 class LearningProcessState extends Equatable {
   final LearningProcessStatus status;
+  final String? sessionId;
   final String courseName;
   final Group? group;
   final Duration? duration;
@@ -14,6 +15,7 @@ class LearningProcessState extends Equatable {
 
   const LearningProcessState({
     this.status = const LearningProcessStatusInitial(),
+    this.sessionId,
     this.courseName = '',
     this.group,
     this.duration,
@@ -70,6 +72,7 @@ class LearningProcessState extends Equatable {
   }
 
   LearningProcessState copyWith({
+    String? sessionId,
     LearningProcessStatus? status,
     String? courseName,
     Group? group,
@@ -83,6 +86,7 @@ class LearningProcessState extends Equatable {
     bool removedDuration = false,
   }) {
     return LearningProcessState(
+      sessionId: sessionId ?? this.sessionId,
       status: status ?? this.status,
       courseName: courseName ?? this.courseName,
       group: group ?? this.group,
@@ -133,6 +137,7 @@ class LearningProcessState extends Equatable {
 
   @override
   List<Object> get props => [
+        sessionId ?? '',
         status,
         courseName,
         group ?? '',

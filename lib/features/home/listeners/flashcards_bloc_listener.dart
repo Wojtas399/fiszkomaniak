@@ -9,29 +9,25 @@ class FlashcardsBlocListener
       : super(
           listener: (BuildContext context, FlashcardsState state) {
             final FlashcardsStatus status = state.status;
-            void closeLoadingDialog() {
-              Navigator.of(context, rootNavigator: true).pop();
-            }
-
             if (status is FlashcardsStatusLoading) {
               Dialogs.showLoadingDialog();
             } else if (status is FlashcardsStatusFlashcardsAdded) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Navigator.pop(context);
               Dialogs.showSnackbarWithMessage('Pomyślnie dodano nowe fiszki');
             } else if (status is FlashcardsStatusFlashcardUpdated) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
             } else if (status is FlashcardsStatusFlashcardRemoved) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Navigator.pop(context);
               Dialogs.showSnackbarWithMessage('Pomyślnie usunięto fiszkę');
             } else if (status is FlashcardsStatusFlashcardsSaved) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Navigator.of(context).pop();
               Dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
             } else if (status is FlashcardsStatusError) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showErrorDialog(message: status.message);
             }
           },
