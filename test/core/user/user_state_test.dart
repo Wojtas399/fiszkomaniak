@@ -48,21 +48,4 @@ void main() {
     expect(state2.loggedUser, loggedUser);
     expect(state3.loggedUser, loggedUser);
   });
-
-  test('amount of days in a row, user is null', () {
-    expect(state.amountOfDaysInARow, 0);
-  });
-
-  test('amount of days in a row, user is not null', () {
-    final now = Date.now();
-    final User loggedUser = createUser(days: [
-      createDay(date: now),
-      createDay(date: now.subtractDays(1)),
-      createDay(date: now.subtractDays(2)),
-    ]);
-
-    state = state.copyWith(loggedUser: loggedUser);
-
-    expect(state.amountOfDaysInARow, 3);
-  });
 }

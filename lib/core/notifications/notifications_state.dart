@@ -1,32 +1,40 @@
 part of 'notifications_bloc.dart';
 
-abstract class NotificationsState extends Equatable {
-  const NotificationsState();
+class NotificationsState extends Equatable {
+  final NotificationsStatus status;
+  final bool areScheduledNotificationsOn;
+  final bool areDefaultNotificationsOn;
+  final bool areDaysStreakLoseNotificationsOn;
+
+  const NotificationsState({
+    this.status = const NotificationsStatusInitial(),
+    this.areScheduledNotificationsOn = false,
+    this.areDefaultNotificationsOn = false,
+    this.areDaysStreakLoseNotificationsOn = false,
+  });
 
   @override
-  List<Object> get props => [];
-}
+  List<Object> get props => [
+        status,
+        areScheduledNotificationsOn,
+        areDefaultNotificationsOn,
+        areDaysStreakLoseNotificationsOn,
+      ];
 
-class NotificationsStateInitial extends NotificationsState {
-  const NotificationsStateInitial();
-}
-
-class NotificationsStateLoaded extends NotificationsState {}
-
-class NotificationsStateSessionSelected extends NotificationsState {
-  final String sessionId;
-
-  const NotificationsStateSessionSelected({required this.sessionId});
-
-  @override
-  List<Object> get props => [sessionId];
-}
-
-class NotificationsStateError extends NotificationsState {
-  final String message;
-
-  const NotificationsStateError({required this.message});
-
-  @override
-  List<Object> get props => [message];
+  NotificationsState copyWith({
+    NotificationsStatus? status,
+    bool? areScheduledNotificationsOn,
+    bool? areDefaultNotificationsOn,
+    bool? areDaysStreakLoseNotificationsOn,
+  }) {
+    return NotificationsState(
+      status: status ?? NotificationsStatusLoaded(),
+      areScheduledNotificationsOn:
+          areScheduledNotificationsOn ?? this.areScheduledNotificationsOn,
+      areDefaultNotificationsOn:
+          areDefaultNotificationsOn ?? this.areDefaultNotificationsOn,
+      areDaysStreakLoseNotificationsOn: areDaysStreakLoseNotificationsOn ??
+          this.areDaysStreakLoseNotificationsOn,
+    );
+  }
 }

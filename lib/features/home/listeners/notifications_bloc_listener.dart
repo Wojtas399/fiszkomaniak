@@ -5,18 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/notifications/notifications_bloc.dart';
 
-class NotificationsListener
+class NotificationsBlocListener
     extends BlocListener<NotificationsBloc, NotificationsState> {
-  NotificationsListener({super.key})
+  NotificationsBlocListener({super.key})
       : super(
           listener: (BuildContext context, NotificationsState state) {
-            if (state is NotificationsStateSessionSelected) {
+            final NotificationsStatus status = state.status;
+            if (status is NotificationsStatusSessionSelected) {
               context.read<Navigation>().navigateToSessionPreview(
-                    SessionPreviewModeNormal(sessionId: state.sessionId),
+                    SessionPreviewModeNormal(sessionId: status.sessionId),
                   );
-            } else if (state is NotificationsStateError) {
+            } else if (status is NotificationsStatusError) {
               Dialogs.closeLoadingDialog(context);
-              Dialogs.showErrorDialog(message: state.message);
+              Dialogs.showErrorDialog(message: status.message);
             }
           },
         );

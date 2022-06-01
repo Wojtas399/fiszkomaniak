@@ -2,11 +2,11 @@ import 'dart:async';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
 import 'package:fiszkomaniak/interfaces/sessions_notifications_interface.dart';
 import 'package:rxdart/rxdart.dart';
-import '../../../models/date_model.dart';
-import '../../../models/session_model.dart';
-import '../../../models/time_model.dart';
-import '../../groups/groups_bloc.dart';
-import '../../sessions/sessions_bloc.dart';
+import '../../models/date_model.dart';
+import '../../models/session_model.dart';
+import '../../models/time_model.dart';
+import '../groups/groups_bloc.dart';
+import '../sessions/sessions_bloc.dart';
 
 class SessionsNotificationsBloc {
   late final SessionsNotificationsInterface _sessionsNotificationsInterface;

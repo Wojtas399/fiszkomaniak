@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/features/home/listeners/achievements_bloc_listener.dart';
 import 'package:fiszkomaniak/features/home/listeners/appearance_settings_bloc_listener.dart';
 import 'package:fiszkomaniak/features/home/listeners/auth_bloc_listener.dart';
 import 'package:fiszkomaniak/features/home/listeners/courses_bloc_listener.dart';
@@ -8,7 +9,7 @@ import 'package:fiszkomaniak/features/home/listeners/user_bloc_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../components/dialogs/dialogs.dart';
-import 'listeners/notifications_listener.dart';
+import 'listeners/notifications_bloc_listener.dart';
 
 class HomeListeners extends StatelessWidget {
   final Widget child;
@@ -32,7 +33,8 @@ class HomeListeners extends StatelessWidget {
         GroupsBlocListener(onHomePageChanged: _animateToPage),
         FlashcardsBlocListener(),
         SessionsBlocListener(onHomePageChanged: _animateToPage),
-        NotificationsListener(),
+        NotificationsBlocListener(),
+        AchievementsBlocListener(),
       ],
       child: child,
     );

@@ -18,16 +18,6 @@ class UserState extends Equatable {
         loggedUser ?? '',
       ];
 
-  List<Date> get _daysInARow {
-    final List<Date>? dates = loggedUser?.days.map((day) => day.date).toList();
-    if (dates != null) {
-      return DateUtils.getDaysInARow(Date.now(), dates);
-    }
-    return [];
-  }
-
-  int get amountOfDaysInARow => _daysInARow.length;
-
   UserState copyWith({
     InitializationStatus? initializationStatus,
     UserStatus? status,

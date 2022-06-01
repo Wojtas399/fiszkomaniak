@@ -2,6 +2,7 @@ import 'package:fiszkomaniak/components/avatar/avatar.dart';
 import 'package:fiszkomaniak/components/avatar/avatar_image_type.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/config/theme/global_theme.dart';
+import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -88,17 +89,17 @@ class _DaysInARow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int amountOfDaysInARow = context.select(
-      (UserBloc bloc) => bloc.state.amountOfDaysInARow,
+    final int daysStreak = context.select(
+      (AchievementsBloc bloc) => bloc.state.daysStreak,
     );
     return Text(
-      _getAmountAsString(amountOfDaysInARow),
+      _convertStreakToString(daysStreak),
       style: Theme.of(context).textTheme.subtitle1,
       overflow: TextOverflow.ellipsis,
     );
   }
 
-  String _getAmountAsString(int value) {
+  String _convertStreakToString(int value) {
     if (value >= 1000) {
       return '999+';
     }

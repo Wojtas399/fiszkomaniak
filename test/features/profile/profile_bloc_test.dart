@@ -1,15 +1,12 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
 import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';
 import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/day_model.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/user_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,7 +20,7 @@ class MockAuthBloc extends Mock implements AuthBloc {}
 
 class MockAuthEvent extends Mock implements AuthEvent {}
 
-class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
+class MockAchievementsBloc extends Mock implements AchievementsBloc {}
 
 class MockProfileDialogs extends Mock implements ProfileDialogs {}
 
@@ -32,7 +29,7 @@ class MockImagePicker extends Mock implements ImagePicker {}
 void main() {
   final UserBloc userBloc = MockUserBloc();
   final AuthBloc authBloc = MockAuthBloc();
-  final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
+  final AchievementsBloc achievementsBloc = MockAchievementsBloc();
   final ProfileDialogs profileDialogs = MockProfileDialogs();
   final ImagePicker imagePicker = MockImagePicker();
   late ProfileBloc bloc;
@@ -47,36 +44,25 @@ void main() {
       createDay(date: now.subtractDays(3)),
     ],
   );
-  final FlashcardsState flashcardsState = FlashcardsState(
-    groupsState: GroupsState(
-      allGroups: [
-        createGroup(flashcards: [
-          createFlashcard(index: 0),
-          createFlashcard(index: 1),
-          createFlashcard(index: 2),
-        ]),
-        createGroup(flashcards: [
-          createFlashcard(index: 0),
-          createFlashcard(index: 1),
-        ]),
-      ],
-    ),
+  const AchievementsState achievementsState = AchievementsState(
+    daysStreak: 5,
+    allFlashcardsAmount: 200,
   );
 
   setUp(() {
     bloc = ProfileBloc(
       userBloc: userBloc,
       authBloc: authBloc,
-      flashcardsBloc: flashcardsBloc,
+      achievementsBloc: achievementsBloc,
       profileDialogs: profileDialogs,
       imagePicker: imagePicker,
     );
     when(() => userBloc.state).thenReturn(UserState(
       loggedUser: loggedUser,
     ));
-    when(() => flashcardsBloc.state).thenReturn(flashcardsState);
+    when(() => achievementsBloc.state).thenReturn(achievementsState);
     when(() => userBloc.stream).thenAnswer((_) => const Stream.empty());
-    when(() => flashcardsBloc.stream).thenAnswer((_) => const Stream.empty());
+    when(() => achievementsBloc.stream).thenAnswer((_) => const Stream.empty());
     registerFallbackValue(MockUserEvent());
     registerFallbackValue(MockAuthEvent());
   });
@@ -84,7 +70,7 @@ void main() {
   tearDown(() {
     reset(userBloc);
     reset(authBloc);
-    reset(flashcardsBloc);
+    reset(achievementsBloc);
     reset(profileDialogs);
     reset(imagePicker);
   });
@@ -96,35 +82,28 @@ void main() {
     expect: () => [
       ProfileState(
         loggedUserData: loggedUser,
-        amountOfDaysInARow: 4,
-        amountOfAllFlashcards: 5,
+        amountOfDaysInARow: 5,
+        amountOfAllFlashcards: 200,
       ),
     ],
   );
 
   blocTest(
-    'user updated',
+    'user state updated',
     build: () => bloc,
-    act: (_) => bloc.add(ProfileEventUserUpdated(
-      newUserData: loggedUser,
-      amountOfDaysInARow: 3,
-    )),
-    expect: () => [
-      ProfileState(
-        loggedUserData: loggedUser,
-        amountOfDaysInARow: 3,
-      )
-    ],
+    act: (_) => bloc.add(ProfileEventUserStateUpdated(newUserData: loggedUser)),
+    expect: () => [ProfileState(loggedUserData: loggedUser)],
   );
 
   blocTest(
-    'flashcards state updated',
+    'achievements state updated',
     build: () => bloc,
-    act: (_) => bloc.add(ProfileEventFlashcardsStateUpdated(
-      amountOfAllFlashcards: 4,
+    act: (_) => bloc.add(ProfileEventAchievementsStateUpdated(
+      daysStreak: 6,
+      allFlashcardsAmount: 250,
     )),
     expect: () => [
-      const ProfileState(amountOfAllFlashcards: 4),
+      const ProfileState(amountOfDaysInARow: 6, amountOfAllFlashcards: 250),
     ],
   );
 
@@ -133,7 +112,7 @@ void main() {
     build: () => ProfileBloc(
       userBloc: userBloc,
       authBloc: authBloc,
-      flashcardsBloc: flashcardsBloc,
+      achievementsBloc: achievementsBloc,
       profileDialogs: profileDialogs,
       imagePicker: imagePicker,
     ),

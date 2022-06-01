@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/notifications/sessions_notifications/sessions_notifications_bloc.dart';
+import 'package:fiszkomaniak/core/notifications/sessions_notifications_bloc.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/interfaces/sessions_notifications_interface.dart';

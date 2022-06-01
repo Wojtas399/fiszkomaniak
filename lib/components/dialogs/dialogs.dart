@@ -6,6 +6,7 @@ import 'package:fiszkomaniak/components/dialogs/single_input_dialog/single_input
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:flutter/material.dart';
 import '../../config/slide_up_route_animation.dart';
+import 'days_streak_dialog.dart';
 import 'image_confirmation_dialog.dart';
 
 class Dialogs {
@@ -142,5 +143,16 @@ class Dialogs {
     if (context != null) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
     }
+  }
+
+  static Future<void> showDaysStreakDialog(
+    BuildContext context,
+    int daysStreak,
+  ) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => DaysStreakDialog(daysStreak: daysStreak),
+    );
   }
 }

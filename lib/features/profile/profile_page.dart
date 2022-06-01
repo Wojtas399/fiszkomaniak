@@ -1,6 +1,6 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
+import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
 import 'package:fiszkomaniak/features/profile/components/profile_account_options.dart';
@@ -51,7 +51,7 @@ class _ProfileBlocProvider extends StatelessWidget {
       create: (_) => ProfileBloc(
         userBloc: context.read<UserBloc>(),
         authBloc: context.read<AuthBloc>(),
-        flashcardsBloc: context.read<FlashcardsBloc>(),
+        achievementsBloc: context.read<AchievementsBloc>(),
         profileDialogs: ProfileDialogs(),
         imagePicker: ImagePicker(),
       )..add(ProfileEventInitialize()),
