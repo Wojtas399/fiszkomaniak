@@ -21,7 +21,7 @@ class SignUpForm extends StatelessWidget {
           _Header(),
           SizedBox(height: 24),
           SignUpInputs(),
-          SizedBox(height: 8),
+          SizedBox(height: 16),
           _SubmitButton(),
           SizedBox(height: 16),
           _AlternativeOption(),

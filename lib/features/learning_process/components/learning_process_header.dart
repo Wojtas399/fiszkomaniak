@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/providers/theme_provider.dart';
 import 'package:fiszkomaniak/ui_extensions/flashcards_type_converters.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
@@ -61,9 +62,13 @@ class _FlashcardsType extends StatelessWidget {
     final FlashcardsType? type = context.select(
       (LearningProcessBloc bloc) => bloc.state.flashcardsType,
     );
+    final ThemeProvider themeProvider = context.read<ThemeProvider>();
+    final Color color = themeProvider.isDarkMode
+        ? Colors.white.withOpacity(0.6)
+        : Colors.black.withOpacity(0.6);
     return Text(
       convertFlashcardsTypeToViewFormat(type),
-      style: TextStyle(color: Colors.black.withOpacity(0.60)),
+      style: TextStyle(color: color),
     );
   }
 }
