@@ -17,12 +17,62 @@ class AchievementsEventUserStateUpdated extends AchievementsEvent {
 }
 
 class AchievementsEventFlashcardsStateUpdated extends AchievementsEvent {
-  final int newAmountOfAllFlashcards;
+  final int amountOfAllFlashcards;
 
   AchievementsEventFlashcardsStateUpdated({
-    required this.newAmountOfAllFlashcards,
+    required this.amountOfAllFlashcards,
   });
 
   @override
-  List<Object> get props => [newAmountOfAllFlashcards];
+  List<Object> get props => [
+        amountOfAllFlashcards,
+      ];
+}
+
+class AchievementsEventNewConditionAchieved extends AchievementsEvent {
+  final AchievementType achievementType;
+  final int completedConditionValue;
+
+  AchievementsEventNewConditionAchieved({
+    required this.achievementType,
+    required this.completedConditionValue,
+  });
+
+  @override
+  List<Object> get props => [achievementType, completedConditionValue];
+}
+
+class AchievementsEventAddNewFlashcards extends AchievementsEvent {
+  final String groupId;
+  final List<int> flashcardsIndexes;
+
+  AchievementsEventAddNewFlashcards({
+    required this.groupId,
+    required this.flashcardsIndexes,
+  });
+
+  @override
+  List<Object> get props => [groupId, flashcardsIndexes];
+}
+
+class AchievementsEventAddRememberedFlashcards extends AchievementsEvent {
+  final String groupId;
+  final List<int> rememberedFlashcardsIndexes;
+
+  AchievementsEventAddRememberedFlashcards({
+    required this.groupId,
+    required this.rememberedFlashcardsIndexes,
+  });
+
+  @override
+  List<Object> get props => [groupId, rememberedFlashcardsIndexes];
+}
+
+class AchievementsEventAddSession extends AchievementsEvent {
+  final String? sessionId;
+
+  AchievementsEventAddSession({required this.sessionId});
+
+  @override
+  List<Object> get props => [sessionId ?? ''];
 }

@@ -1,5 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
+import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
@@ -22,16 +23,23 @@ class MockGroupsBloc extends Mock implements GroupsBloc {}
 
 class MockSessionsBloc extends Mock implements SessionsBloc {}
 
+class MockAchievementsBloc extends Mock implements AchievementsBloc {}
+
 class MockLearningProcessDialogs extends Mock
     implements LearningProcessDialogs {}
 
 class MockNavigation extends Mock implements Navigation {}
+
+class FakeUserEvent extends Fake implements UserEvent {}
+
+class FakeSessionsEvent extends Fake implements SessionsEvent {}
 
 void main() {
   final UserBloc userBloc = MockUserBloc();
   final CoursesBloc coursesBloc = MockCoursesBloc();
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final SessionsBloc sessionsBloc = MockSessionsBloc();
+  final AchievementsBloc achievementsBloc = MockAchievementsBloc();
   final LearningProcessDialogs learningProcessDialogs =
       MockLearningProcessDialogs();
   final Navigation navigation = MockNavigation();
@@ -84,12 +92,18 @@ void main() {
     amountOfFlashcardsInStack: 2,
   );
 
+  setUpAll(() {
+    registerFallbackValue(FakeUserEvent());
+    registerFallbackValue(FakeSessionsEvent());
+  });
+
   setUp(() {
     bloc = LearningProcessBloc(
       userBloc: userBloc,
       coursesBloc: coursesBloc,
       groupsBloc: groupsBloc,
       sessionsBloc: sessionsBloc,
+      achievementsBloc: achievementsBloc,
       learningProcessDialogs: learningProcessDialogs,
       navigation: navigation,
     );
@@ -101,6 +115,7 @@ void main() {
     reset(coursesBloc);
     reset(groupsBloc);
     reset(sessionsBloc);
+    reset(achievementsBloc);
     reset(learningProcessDialogs);
     reset(navigation);
   });
@@ -257,6 +272,17 @@ void main() {
         )),
       ).called(1);
       verify(
+        () => achievementsBloc.add(AchievementsEventAddRememberedFlashcards(
+          groupId: 'g1',
+          rememberedFlashcardsIndexes: const [0, 1],
+        )),
+      ).called(1);
+      verify(
+        () => achievementsBloc.add(
+          AchievementsEventAddSession(sessionId: 's1'),
+        ),
+      ).called(1);
+      verify(
         () => sessionsBloc.add(SessionsEventRemoveSession(
           sessionId: 's1',
           removeAfterLearningProcess: true,
@@ -289,12 +315,16 @@ void main() {
           rememberedFlashcardsIndexes: const [0, 1],
         )),
       ).called(1);
-      verifyNever(
-        () => sessionsBloc.add(SessionsEventRemoveSession(
-          sessionId: '',
-          removeAfterLearningProcess: true,
+      verify(
+        () => achievementsBloc.add(AchievementsEventAddRememberedFlashcards(
+          groupId: 'g1',
+          rememberedFlashcardsIndexes: const [0, 1],
         )),
-      );
+      ).called(1);
+      verify(
+        () => achievementsBloc.add(AchievementsEventAddSession(sessionId: '')),
+      ).called(1);
+      verifyNever(() => sessionsBloc.add(any()));
       verify(() => navigation.moveBack()).called(1);
     },
   );
@@ -316,6 +346,17 @@ void main() {
           groupId: 'g1',
           rememberedFlashcardsIndexes: const [0, 1],
         )),
+      ).called(1);
+      verify(
+        () => achievementsBloc.add(AchievementsEventAddRememberedFlashcards(
+          groupId: 'g1',
+          rememberedFlashcardsIndexes: const [0, 1],
+        )),
+      ).called(1);
+      verify(
+        () => achievementsBloc.add(
+          AchievementsEventAddSession(sessionId: 's1'),
+        ),
       ).called(1);
       verify(
         () => sessionsBloc.add(SessionsEventRemoveSession(
@@ -345,12 +386,16 @@ void main() {
           rememberedFlashcardsIndexes: const [0, 1],
         )),
       ).called(1);
-      verifyNever(
-        () => sessionsBloc.add(SessionsEventRemoveSession(
-          sessionId: '',
-          removeAfterLearningProcess: true,
+      verify(
+        () => achievementsBloc.add(AchievementsEventAddRememberedFlashcards(
+          groupId: 'g1',
+          rememberedFlashcardsIndexes: const [0, 1],
         )),
-      );
+      ).called(1);
+      verify(
+        () => achievementsBloc.add(AchievementsEventAddSession(sessionId: '')),
+      ).called(1);
+      verifyNever(() => sessionsBloc.add(any()));
       verify(() => navigation.moveBack()).called(1);
     },
   );
@@ -378,12 +423,13 @@ void main() {
           rememberedFlashcardsIndexes: const [0, 1],
         )),
       ).called(1);
-      verifyNever(
-        () => sessionsBloc.add(SessionsEventRemoveSession(
-          sessionId: 's1',
-          removeAfterLearningProcess: true,
+      verify(
+        () => achievementsBloc.add(AchievementsEventAddRememberedFlashcards(
+          groupId: 'g1',
+          rememberedFlashcardsIndexes: const [0, 1],
         )),
-      );
+      ).called(1);
+      verifyNever(() => sessionsBloc.add(any()));
       verify(() => navigation.moveBack()).called(1);
     },
   );
@@ -405,15 +451,8 @@ void main() {
     },
     verify: (_) {
       verify(() => learningProcessDialogs.askForSaveConfirmation()).called(1);
-      verifyNever(
-        () => userBloc.add(UserEventSaveNewRememberedFlashcards(
-          groupId: 'g1',
-          rememberedFlashcardsIndexes: const [0, 1],
-        )),
-      );
-      verifyNever(
-        () => sessionsBloc.add(SessionsEventRemoveSession(sessionId: 's1')),
-      );
+      verifyNever(() => userBloc.add(any()));
+      verifyNever(() => sessionsBloc.add(any()));
       verify(() => navigation.moveBack()).called(1);
     },
   );

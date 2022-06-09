@@ -1,6 +1,9 @@
+import 'package:fiszkomaniak/firebase/services/fire_achievements_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_avatar_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
+import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
+import 'package:fiszkomaniak/repositories/achievements_repository.dart';
 import 'package:fiszkomaniak/repositories/courses_repository.dart';
 import 'package:fiszkomaniak/repositories/sessions_repository.dart';
 import 'package:fiszkomaniak/repositories/settings_repository.dart';
@@ -29,6 +32,8 @@ class FirebaseProvider {
         fireUserService: FireUserService(),
         fireAvatarService: FireAvatarService(),
       ),
+      userInterface: provideUserInterface(),
+      achievementsInterface: provideAchievementsInterface(),
     );
   }
 
@@ -66,6 +71,12 @@ class FirebaseProvider {
   static SessionsInterface provideSessionsInterface() {
     return SessionsRepository(
       fireSessionsService: FireSessionsService(),
+    );
+  }
+
+  static AchievementsInterface provideAchievementsInterface() {
+    return AchievementsRepository(
+      fireAchievementsService: FireAchievementsService(),
     );
   }
 }

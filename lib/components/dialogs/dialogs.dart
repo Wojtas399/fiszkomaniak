@@ -6,7 +6,7 @@ import 'package:fiszkomaniak/components/dialogs/single_input_dialog/single_input
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:flutter/material.dart';
 import '../../config/slide_up_route_animation.dart';
-import 'days_streak_dialog.dart';
+import 'achievement_dialog.dart';
 import 'image_confirmation_dialog.dart';
 
 class Dialogs {
@@ -145,14 +145,24 @@ class Dialogs {
     }
   }
 
-  static Future<void> showDaysStreakDialog(
-    BuildContext context,
-    int daysStreak,
-  ) async {
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => DaysStreakDialog(daysStreak: daysStreak),
-    );
+  static Future<void> showAchievementDialog({
+    required int achievementValue,
+    required String title,
+    String? textBeforeAchievementValue,
+    String? textAfterAchievementValue,
+  }) async {
+    final BuildContext? context = navigatorKey.currentContext;
+    if (context != null) {
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => AchievementDialog(
+          achievementValue: achievementValue,
+          title: title,
+          textBeforeAchievementValue: textBeforeAchievementValue,
+          textAfterAchievementValue: textAfterAchievementValue,
+        ),
+      );
+    }
   }
 }

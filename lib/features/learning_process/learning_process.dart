@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/config/navigation.dart';
+import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
@@ -60,6 +61,7 @@ class _LearningProcessBlocProvider extends StatelessWidget {
         coursesBloc: context.read<CoursesBloc>(),
         groupsBloc: context.read<GroupsBloc>(),
         sessionsBloc: context.read<SessionsBloc>(),
+        achievementsBloc: context.read<AchievementsBloc>(),
         learningProcessDialogs: LearningProcessDialogs(),
         navigation: context.read<Navigation>(),
       )..add(LearningProcessEventInitialize(data: data)),

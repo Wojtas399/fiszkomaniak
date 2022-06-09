@@ -21,3 +21,16 @@ class AchievementsStatusDaysStreakUpdated extends AchievementsStatus {
   @override
   List<Object> get props => [newDaysStreak];
 }
+
+class AchievementsStatusNewConditionCompleted extends AchievementsStatus {
+  final AchievementType achievementType;
+  final int completedConditionValue;
+
+  const AchievementsStatusNewConditionCompleted({
+    required this.achievementType,
+    required this.completedConditionValue,
+  });
+
+  @override
+  List<Object> get props => [achievementType, completedConditionValue];
+}

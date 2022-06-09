@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:fiszkomaniak/core/auth/auth_exception_model.dart';
+import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
+import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:fiszkomaniak/repositories/auth_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_auth_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,17 +10,30 @@ import 'package:mocktail/mocktail.dart';
 
 class MockFireAuthService extends Mock implements FireAuthService {}
 
+class MockUserInterface extends Mock implements UserInterface {}
+
+class MockAchievementsInterface extends Mock implements AchievementsInterface {}
+
 void main() {
   final FireAuthService fireAuthService = MockFireAuthService();
+  final UserInterface userInterface = MockUserInterface();
+  final AchievementsInterface achievementsInterface =
+      MockAchievementsInterface();
   FirebaseAuth auth = MockFirebaseAuth(signedIn: true);
   late AuthRepository repository;
 
   setUp(() {
-    repository = AuthRepository(fireAuthService: fireAuthService);
+    repository = AuthRepository(
+      fireAuthService: fireAuthService,
+      userInterface: userInterface,
+      achievementsInterface: achievementsInterface,
+    );
   });
 
   tearDown(() {
     reset(fireAuthService);
+    reset(userInterface);
+    reset(achievementsInterface);
   });
 
   test('is logged user status, logged user exists', () async {
@@ -119,12 +134,12 @@ void main() {
 
   test('sign up, success', () async {
     when(
-      () => fireAuthService.signUp(
-        username: 'username',
-        email: 'email',
-        password: 'password',
-      ),
-    ).thenAnswer((_) async => '');
+      () => fireAuthService.signUp(email: 'email', password: 'password'),
+    ).thenAnswer((_) async => 'userId');
+    when(() => userInterface.addUser(userId: 'userId', username: 'username'))
+        .thenAnswer((_) async => '');
+    when(() => achievementsInterface.initializeAchievements())
+        .thenAnswer((_) async => '');
 
     await repository.signUp(
       username: 'username',
@@ -133,21 +148,17 @@ void main() {
     );
 
     verify(
-      () => fireAuthService.signUp(
-        username: 'username',
-        email: 'email',
-        password: 'password',
-      ),
+      () => fireAuthService.signUp(email: 'email', password: 'password'),
     ).called(1);
+    verify(
+      () => userInterface.addUser(userId: 'userId', username: 'username'),
+    ).called(1);
+    verify(() => achievementsInterface.initializeAchievements()).called(1);
   });
 
   test('sign up, email already in use', () async {
     when(
-      () => fireAuthService.signUp(
-        username: 'username',
-        email: 'email',
-        password: 'password',
-      ),
+      () => fireAuthService.signUp(email: 'email', password: 'password'),
     ).thenThrow(FirebaseAuthException(code: 'email-already-in-use'));
 
     try {
@@ -158,12 +169,15 @@ void main() {
       );
     } catch (error) {
       verify(
-        () => fireAuthService.signUp(
-          username: 'username',
-          email: 'email',
-          password: 'password',
-        ),
+        () => fireAuthService.signUp(email: 'email', password: 'password'),
       ).called(1);
+      verifyNever(
+        () => userInterface.addUser(
+          userId: any(named: 'userId'),
+          username: any(named: 'username'),
+        ),
+      );
+      verifyNever(() => achievementsInterface.initializeAchievements());
       expect(
         error,
         const AuthException(code: AuthErrorCode.emailAlreadyInUse),
@@ -173,11 +187,7 @@ void main() {
 
   test('sign up, unknown firebase exception', () async {
     when(
-      () => fireAuthService.signUp(
-        username: 'username',
-        email: 'email',
-        password: 'password',
-      ),
+      () => fireAuthService.signUp(email: 'email', password: 'password'),
     ).thenThrow(FirebaseAuthException(code: 'unknown-error'));
 
     try {
@@ -188,23 +198,22 @@ void main() {
       );
     } catch (error) {
       verify(
-        () => fireAuthService.signUp(
-          username: 'username',
-          email: 'email',
-          password: 'password',
-        ),
+        () => fireAuthService.signUp(email: 'email', password: 'password'),
       ).called(1);
+      verifyNever(
+        () => userInterface.addUser(
+          userId: any(named: 'userId'),
+          username: any(named: 'username'),
+        ),
+      );
+      verifyNever(() => achievementsInterface.initializeAchievements());
       expect(error, FirebaseAuthException(code: 'unknown-error'));
     }
   });
 
   test('sign up, unknown exception', () async {
     when(
-      () => fireAuthService.signUp(
-        username: 'username',
-        email: 'email',
-        password: 'password',
-      ),
+      () => fireAuthService.signUp(email: 'email', password: 'password'),
     ).thenThrow('Error...');
 
     try {
@@ -215,11 +224,7 @@ void main() {
       );
     } catch (error) {
       verify(
-        () => fireAuthService.signUp(
-          username: 'username',
-          email: 'email',
-          password: 'password',
-        ),
+        () => fireAuthService.signUp(email: 'email', password: 'password'),
       ).called(1);
       expect(error, 'Error...');
     }

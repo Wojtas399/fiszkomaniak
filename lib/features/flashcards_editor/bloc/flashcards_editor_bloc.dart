@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_dialogs.dart';
@@ -13,17 +14,20 @@ class FlashcardsEditorBloc
     extends Bloc<FlashcardsEditorEvent, FlashcardsEditorState> {
   late final GroupsBloc _groupsBloc;
   late final FlashcardsBloc _flashcardsBloc;
+  late final AchievementsBloc _achievementsBloc;
   late final FlashcardsEditorDialogs _flashcardsEditorDialogs;
   late final FlashcardsEditorUtils _flashcardsEditorUtils;
 
   FlashcardsEditorBloc({
     required GroupsBloc groupsBloc,
     required FlashcardsBloc flashcardsBloc,
+    required AchievementsBloc achievementsBloc,
     required FlashcardsEditorDialogs flashcardsEditorDialogs,
     required FlashcardsEditorUtils flashcardsEditorUtils,
   }) : super(const FlashcardsEditorState()) {
     _groupsBloc = groupsBloc;
     _flashcardsBloc = flashcardsBloc;
+    _achievementsBloc = achievementsBloc;
     _flashcardsEditorDialogs = flashcardsEditorDialogs;
     _flashcardsEditorUtils = flashcardsEditorUtils;
     on<FlashcardsEditorEventInitialize>(_initialize);
@@ -130,6 +134,11 @@ class FlashcardsEditorBloc
         groupId: group.id,
         flashcards: flashcardsToSave,
         justAddedFlashcards: mode is FlashcardsEditorAddMode,
+      ));
+      _achievementsBloc.add(AchievementsEventAddNewFlashcards(
+        groupId: group.id,
+        flashcardsIndexes:
+            flashcardsToSave.map((flashcard) => flashcard.index).toList(),
       ));
     }
   }

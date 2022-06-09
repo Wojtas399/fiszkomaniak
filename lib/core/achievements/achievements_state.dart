@@ -30,3 +30,9 @@ class AchievementsState extends Equatable {
     );
   }
 }
+
+enum AchievementType {
+  amountOfAllFlashcards,
+  amountOfRememberedFlashcards,
+  amountOfFinishedSessions,
+}

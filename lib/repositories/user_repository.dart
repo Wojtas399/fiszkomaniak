@@ -36,6 +36,14 @@ class UserRepository implements UserInterface {
   }
 
   @override
+  Future<void> addUser({
+    required String userId,
+    required String username,
+  }) async {
+    await _fireUserService.addUser(userId, username);
+  }
+
+  @override
   Future<void> saveNewAvatar({required String fullPath}) async {
     await _fireAvatarService.saveNewLoggedUserAvatar(fullPath);
   }

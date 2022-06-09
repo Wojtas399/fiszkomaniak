@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
+import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
@@ -25,6 +26,7 @@ class LearningProcessBloc
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
   late final SessionsBloc _sessionsBloc;
+  late final AchievementsBloc _achievementsBloc;
   late final LearningProcessDialogs _dialogs;
   late final Navigation _navigation;
 
@@ -33,6 +35,7 @@ class LearningProcessBloc
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
     required SessionsBloc sessionsBloc,
+    required AchievementsBloc achievementsBloc,
     required LearningProcessDialogs learningProcessDialogs,
     required Navigation navigation,
   }) : super(const LearningProcessState()) {
@@ -40,6 +43,7 @@ class LearningProcessBloc
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
     _sessionsBloc = sessionsBloc;
+    _achievementsBloc = achievementsBloc;
     _dialogs = learningProcessDialogs;
     _navigation = navigation;
     on<LearningProcessEventInitialize>(_initialize);
@@ -160,6 +164,7 @@ class LearningProcessBloc
       emit(state.copyWith(removedDuration: true));
     } else {
       _saveFlashcards();
+      _addSessionToAchievements();
       _removeSession();
       _navigation.moveBack();
     }
@@ -170,6 +175,7 @@ class LearningProcessBloc
     Emitter<LearningProcessState> emit,
   ) async {
     _saveFlashcards();
+    _addSessionToAchievements();
     _removeSession();
     _navigation.moveBack();
   }
@@ -192,12 +198,22 @@ class LearningProcessBloc
         groupId: groupId,
         rememberedFlashcardsIndexes: state.indexesOfRememberedFlashcards,
       ));
+      _achievementsBloc.add(AchievementsEventAddRememberedFlashcards(
+        groupId: groupId,
+        rememberedFlashcardsIndexes: state.indexesOfRememberedFlashcards,
+      ));
     }
   }
 
-  Future<void> _removeSession() async {
+  void _addSessionToAchievements() {
+    _achievementsBloc.add(
+      AchievementsEventAddSession(sessionId: state.sessionId),
+    );
+  }
+
+  void _removeSession() {
     final String? sessionId = state.sessionId;
-    if (sessionId != null) {
+    if (sessionId != null && sessionId.isNotEmpty) {
       _sessionsBloc.add(SessionsEventRemoveSession(
         sessionId: sessionId,
         removeAfterLearningProcess: true,

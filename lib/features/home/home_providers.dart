@@ -9,6 +9,7 @@ import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/injections/notifications_provider.dart';
+import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
 import 'package:fiszkomaniak/interfaces/achievements_notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
@@ -49,6 +50,9 @@ class HomeProviders extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (_) => NotificationsProvider.provideNotificationsInterface(),
+        ),
+        RepositoryProvider(
+          create: (_) => FirebaseProvider.provideAchievementsInterface(),
         ),
         RepositoryProvider(
           create: (_) =>
@@ -99,6 +103,7 @@ class HomeProviders extends StatelessWidget {
           ),
           BlocProvider<AchievementsBloc>(
             create: (BuildContext context) => AchievementsBloc(
+              achievementsInterface: context.read<AchievementsInterface>(),
               userBloc: context.read<UserBloc>(),
               flashcardsBloc: context.read<FlashcardsBloc>(),
             )..add(AchievementsEventInitialize()),

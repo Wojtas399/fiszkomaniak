@@ -22,11 +22,8 @@ class FlashcardsState extends Equatable {
   int get amountOfAllFlashcards {
     return groupsState.allGroups.isNotEmpty
         ? groupsState.allGroups
-            .map(
-              (group) => group.flashcards.length,
-            )
-            .reduce((sumOfAllFlashcards, amountOfFlashcardsInGroup) =>
-                sumOfAllFlashcards + amountOfFlashcardsInGroup)
+            .map((group) => group.flashcards.length)
+            .reduce(_sumFlashcardsFromGroups)
         : 0;
   }
 
@@ -49,6 +46,13 @@ class FlashcardsState extends Equatable {
       return null;
     }
     return groupsState.getGroupById(groupId)?.flashcards[flashcardIndex];
+  }
+
+  int _sumFlashcardsFromGroups(
+    int amountOfAllFlashcards,
+    int amountOfFlashcardsFromGroup,
+  ) {
+    return amountOfAllFlashcards + amountOfFlashcardsFromGroup;
   }
 
   @override

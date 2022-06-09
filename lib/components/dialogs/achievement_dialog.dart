@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 
-class DaysStreakDialog extends StatelessWidget {
-  final int daysStreak;
+class AchievementDialog extends StatelessWidget {
+  final int achievementValue;
+  final String title;
+  final String? textBeforeAchievementValue;
+  final String? textAfterAchievementValue;
 
-  const DaysStreakDialog({super.key, required this.daysStreak});
+  const AchievementDialog({
+    super.key,
+    required this.achievementValue,
+    required this.title,
+    this.textBeforeAchievementValue,
+    this.textAfterAchievementValue,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Dni nauki z rzędu'),
+      title: Text(title),
       contentPadding: const EdgeInsets.only(
         top: 16.0,
         left: 16.0,
@@ -20,16 +29,16 @@ class DaysStreakDialog extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Właśnie ukończyłeś'),
-          const SizedBox(height: 16.0),
+          Text(textBeforeAchievementValue ?? ''),
+          SizedBox(height: textBeforeAchievementValue != null ? 16.0 : 0.0),
           Text(
-            '$daysStreak',
+            '$achievementValue',
             style: Theme.of(context).textTheme.headline2?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                 ),
           ),
           const SizedBox(height: 16.0),
-          const Text('dni nauki z rzędu. Gratulacje!'),
+          Text(textAfterAchievementValue ?? ''),
         ],
       ),
       actions: [
