@@ -52,17 +52,17 @@ void main() {
   );
 
   blocTest(
-    'save flashcards, success',
+    'save edited flashcards, success',
     build: () => bloc,
     setUp: () {
       when(
-        () => flashcardsInterface.setFlashcards(
+        () => flashcardsInterface.saveEditedFlashcards(
           groupId: 'g1',
           flashcards: flashcards,
         ),
       ).thenAnswer((_) async => '');
     },
-    act: (_) => bloc.add(FlashcardsEventSaveFlashcards(
+    act: (_) => bloc.add(FlashcardsEventSaveEditedFlashcards(
       groupId: 'g1',
       flashcards: flashcards,
     )),
@@ -72,7 +72,7 @@ void main() {
     ],
     verify: (_) {
       verify(
-        () => flashcardsInterface.setFlashcards(
+        () => flashcardsInterface.saveEditedFlashcards(
           groupId: 'g1',
           flashcards: flashcards,
         ),
@@ -81,17 +81,17 @@ void main() {
   );
 
   blocTest(
-    'save flashcards, just added flashcards, success',
+    'save edited flashcards, just added flashcards, success',
     build: () => bloc,
     setUp: () {
       when(
-        () => flashcardsInterface.setFlashcards(
+        () => flashcardsInterface.saveEditedFlashcards(
           groupId: 'g1',
           flashcards: flashcards,
         ),
       ).thenAnswer((_) async => '');
     },
-    act: (_) => bloc.add(FlashcardsEventSaveFlashcards(
+    act: (_) => bloc.add(FlashcardsEventSaveEditedFlashcards(
       groupId: 'g1',
       flashcards: flashcards,
       justAddedFlashcards: true,
@@ -102,7 +102,7 @@ void main() {
     ],
     verify: (_) {
       verify(
-        () => flashcardsInterface.setFlashcards(
+        () => flashcardsInterface.saveEditedFlashcards(
           groupId: 'g1',
           flashcards: flashcards,
         ),
@@ -111,17 +111,17 @@ void main() {
   );
 
   blocTest(
-    'save flashcards, failure',
+    'save edited flashcards, failure',
     build: () => bloc,
     setUp: () {
       when(
-        () => flashcardsInterface.setFlashcards(
+        () => flashcardsInterface.saveEditedFlashcards(
           groupId: 'g1',
           flashcards: flashcards,
         ),
       ).thenThrow('Error...');
     },
-    act: (_) => bloc.add(FlashcardsEventSaveFlashcards(
+    act: (_) => bloc.add(FlashcardsEventSaveEditedFlashcards(
       groupId: 'g1',
       flashcards: flashcards,
     )),
@@ -131,9 +131,71 @@ void main() {
     ],
     verify: (_) {
       verify(
-        () => flashcardsInterface.setFlashcards(
+        () => flashcardsInterface.saveEditedFlashcards(
           groupId: 'g1',
           flashcards: flashcards,
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'save remembered flashcards, success',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => flashcardsInterface.saveRememberedFlashcards(
+          groupId: 'g1',
+          flashcardsIndexes: [0, 1, 2],
+        ),
+      ).thenAnswer((_) async => '');
+    },
+    act: (_) => bloc.add(
+      FlashcardsEventSaveRememberedFlashcards(
+        groupId: 'g1',
+        flashcardsIndexes: const [0, 1, 2],
+      ),
+    ),
+    expect: () => [
+      FlashcardsState(status: FlashcardsStatusLoading()),
+      FlashcardsState(status: FlashcardsStatusFlashcardsSaved()),
+    ],
+    verify: (_) {
+      verify(
+        () => flashcardsInterface.saveRememberedFlashcards(
+          groupId: 'g1',
+          flashcardsIndexes: [0, 1, 2],
+        ),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'save remembered flashcards, failure',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => flashcardsInterface.saveRememberedFlashcards(
+          groupId: 'g1',
+          flashcardsIndexes: [0, 1, 2],
+        ),
+      ).thenThrow('Error...');
+    },
+    act: (_) => bloc.add(
+      FlashcardsEventSaveRememberedFlashcards(
+        groupId: 'g1',
+        flashcardsIndexes: const [0, 1, 2],
+      ),
+    ),
+    expect: () => [
+      FlashcardsState(status: FlashcardsStatusLoading()),
+      const FlashcardsState(status: FlashcardsStatusError(message: 'Error...')),
+    ],
+    verify: (_) {
+      verify(
+        () => flashcardsInterface.saveRememberedFlashcards(
+          groupId: 'g1',
+          flashcardsIndexes: [0, 1, 2],
         ),
       ).called(1);
     },

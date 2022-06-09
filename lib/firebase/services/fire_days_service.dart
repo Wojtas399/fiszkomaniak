@@ -3,10 +3,27 @@ import 'package:fiszkomaniak/firebase/models/day_db_model.dart';
 import 'package:fiszkomaniak/firebase/models/user_db_model.dart';
 import 'package:fiszkomaniak/firebase/fire_extensions.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
+import '../fire_instances.dart';
 import '../models/day_flashcard_db_model.dart';
 
 class FireDaysService {
-  Future<Map<String, Object?>?> getUpdatedDays(
+  Future<void> saveRememberedFlashcardsToCurrentDay({
+    required String groupId,
+    required List<int> indexesOfRememberedFlashcards,
+  }) async {
+    final batch = FireInstances.firestore.batch();
+    final List<DayFlashcardDbModel> flashcards = _createDayFlashcards(
+      groupId,
+      indexesOfRememberedFlashcards,
+    );
+    final updatedDays = await _getUpdatedDaysWithNewFlashcards(flashcards);
+    if (updatedDays != null) {
+      batch.set(FireReferences.loggedUserRef, updatedDays);
+    }
+    await batch.commit();
+  }
+
+  Future<Map<String, Object?>?> _getUpdatedDaysWithNewFlashcards(
     List<DayFlashcardDbModel> flashcards,
   ) async {
     try {
@@ -15,7 +32,10 @@ class FireDaysService {
       if (userData != null) {
         final List<DayDbModel>? days = userData.days;
         if (days != null) {
-          final List<DayDbModel> updatedDays = _updateDays(days, flashcards);
+          final List<DayDbModel> updatedDays = _addFlashcardsToCurrentDay(
+            days,
+            flashcards,
+          );
           return userData.copyWith(days: updatedDays).toJson();
         } else {
           return userData.copyWith(
@@ -34,7 +54,7 @@ class FireDaysService {
     }
   }
 
-  List<DayDbModel> _updateDays(
+  List<DayDbModel> _addFlashcardsToCurrentDay(
     List<DayDbModel> existingDays,
     List<DayFlashcardDbModel> flashcardsToSave,
   ) {
@@ -60,5 +80,19 @@ class FireDaysService {
       ));
     }
     return updatedDays;
+  }
+
+  List<DayFlashcardDbModel> _createDayFlashcards(
+    String groupId,
+    List<int> indexesOfRememberedFlashcards,
+  ) {
+    return indexesOfRememberedFlashcards
+        .map(
+          (index) => DayFlashcardDbModel(
+            groupId: groupId,
+            flashcardIndex: index,
+          ),
+        )
+        .toList();
   }
 }

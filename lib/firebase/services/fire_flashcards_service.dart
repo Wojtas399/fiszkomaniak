@@ -3,6 +3,8 @@ import 'package:fiszkomaniak/firebase/fire_references.dart';
 import 'package:fiszkomaniak/firebase/models/flashcard_db_model.dart';
 import 'package:fiszkomaniak/firebase/models/group_db_model.dart';
 
+import '../fire_instances.dart';
+
 class FireFlashcardsService {
   Future<void> setFlashcards(
     String groupId,
@@ -15,6 +17,26 @@ class FireFlashcardsService {
     } catch (error) {
       rethrow;
     }
+  }
+
+  Future<void> markFlashcardsAsRemembered({
+    required String groupId,
+    required List<int> indexesOfRememberedFlashcards,
+  }) async {
+    final batch = FireInstances.firestore.batch();
+    final group =
+        await FireReferences.groupsRefWithConverter.doc(groupId).get();
+    final List<FlashcardDbModel> flashcardsFromGroup =
+        group.data()?.flashcards ?? [];
+    final List<FlashcardDbModel> updatedFlashcards = _updateFlashcardsStatuses(
+      flashcardsFromGroup,
+      indexesOfRememberedFlashcards,
+    );
+    batch.update(
+      FireReferences.groupsRef.doc(groupId),
+      GroupDbModel(flashcards: updatedFlashcards).toJson(),
+    );
+    await batch.commit();
   }
 
   Future<void> updateFlashcard(
@@ -48,5 +70,20 @@ class FireFlashcardsService {
     } catch (error) {
       rethrow;
     }
+  }
+
+  List<FlashcardDbModel> _updateFlashcardsStatuses(
+    List<FlashcardDbModel> flashcards,
+    List<int> indexesOfRememberedFlashcards,
+  ) {
+    return flashcards
+        .map(
+          (flashcard) => flashcard.copyWith(
+            status: indexesOfRememberedFlashcards.contains(flashcard.index)
+                ? 'remembered'
+                : 'notRemembered',
+          ),
+        )
+        .toList();
   }
 }

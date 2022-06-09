@@ -130,7 +130,7 @@ class FlashcardsEditorBloc
       final List<Flashcard> flashcardsToSave = mode is FlashcardsEditorEditMode
           ? state.flashcardsWithoutLastOne
           : [...group.flashcards, ...state.flashcardsWithoutLastOne];
-      _flashcardsBloc.add(FlashcardsEventSaveFlashcards(
+      _flashcardsBloc.add(FlashcardsEventSaveEditedFlashcards(
         groupId: group.id,
         flashcards: flashcardsToSave,
         justAddedFlashcards: mode is FlashcardsEditorAddMode,

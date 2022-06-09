@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/models/user_model.dart';
 
 abstract class UserInterface {
-  Stream<User> getLoggedUserSnapshots();
+  Stream<User> get loggedUser$;
 
   Future<void> addUser({
     required String userId,
@@ -13,9 +13,4 @@ abstract class UserInterface {
   Future<void> removeAvatar();
 
   Future<void> saveNewUsername({required String newUsername});
-
-  Future<void> saveNewRememberedFlashcardsInDays({
-    required String groupId,
-    required List<int> indexesOfFlashcards,
-  });
 }

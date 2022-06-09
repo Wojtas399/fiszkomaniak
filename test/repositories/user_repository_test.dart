@@ -53,19 +53,4 @@ void main() {
 
     verify(() => fireUserService.saveNewUsername('newUsername')).called(1);
   });
-
-  test('save new remembered flashcards in days', () async {
-    when(
-      () => fireUserService.saveNewRememberedFlashcards('g1', [0, 1]),
-    ).thenAnswer((_) async => '');
-
-    await repository.saveNewRememberedFlashcardsInDays(
-      groupId: 'g1',
-      indexesOfFlashcards: [0, 1],
-    );
-
-    verify(
-      () => fireUserService.saveNewRememberedFlashcards('g1', [0, 1]),
-    ).called(1);
-  });
 }

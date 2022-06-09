@@ -13,12 +13,12 @@ class FlashcardsEventGroupsStateUpdated extends FlashcardsEvent {
   FlashcardsEventGroupsStateUpdated({required this.newGroupsState});
 }
 
-class FlashcardsEventSaveFlashcards extends FlashcardsEvent {
+class FlashcardsEventSaveEditedFlashcards extends FlashcardsEvent {
   final String groupId;
   final List<Flashcard> flashcards;
   final bool justAddedFlashcards;
 
-  FlashcardsEventSaveFlashcards({
+  FlashcardsEventSaveEditedFlashcards({
     required this.groupId,
     required this.flashcards,
     this.justAddedFlashcards = false,
@@ -30,6 +30,19 @@ class FlashcardsEventSaveFlashcards extends FlashcardsEvent {
         flashcards,
         justAddedFlashcards,
       ];
+}
+
+class FlashcardsEventSaveRememberedFlashcards extends FlashcardsEvent {
+  final String groupId;
+  final List<int> flashcardsIndexes;
+
+  FlashcardsEventSaveRememberedFlashcards({
+    required this.groupId,
+    required this.flashcardsIndexes,
+  });
+
+  @override
+  List<Object> get props => [groupId, flashcardsIndexes];
 }
 
 class FlashcardsEventUpdateFlashcard extends FlashcardsEvent {

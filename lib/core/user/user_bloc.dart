@@ -24,14 +24,13 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UserEventSaveNewAvatar>(_saveNewAvatar);
     on<UserEventRemoveAvatar>(_removeAvatar);
     on<UserEventChangeUsername>(_changeUsername);
-    on<UserEventSaveNewRememberedFlashcards>(_saveNewRememberedFlashcards);
   }
 
   void _initialize(
     UserEventInitialize event,
     Emitter<UserState> emit,
   ) {
-    _userSubscription = _userInterface.getLoggedUserSnapshots().listen((user) {
+    _userSubscription = _userInterface.loggedUser$.listen((user) {
       add(UserEventLoggedUserUpdated(updatedLoggedUser: user));
     });
   }
@@ -84,26 +83,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(state.copyWith(status: UserStatusLoading()));
       await _userInterface.saveNewUsername(newUsername: event.newUsername);
       emit(state.copyWith(status: UserStatusUsernameUpdated()));
-    } catch (error) {
-      emit(state.copyWith(
-        status: UserStatusError(message: error.toString()),
-      ));
-    }
-  }
-
-  Future<void> _saveNewRememberedFlashcards(
-    UserEventSaveNewRememberedFlashcards event,
-    Emitter<UserState> emit,
-  ) async {
-    try {
-      emit(state.copyWith(status: UserStatusLoading()));
-      await _userInterface.saveNewRememberedFlashcardsInDays(
-        groupId: event.groupId,
-        indexesOfFlashcards: event.rememberedFlashcardsIndexes,
-      );
-      emit(state.copyWith(
-        status: UserStatusNewRememberedFlashcardsSaved(),
-      ));
     } catch (error) {
       emit(state.copyWith(
         status: UserStatusError(message: error.toString()),

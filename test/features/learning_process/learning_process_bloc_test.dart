@@ -2,9 +2,9 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_data.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
@@ -15,7 +15,7 @@ import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockUserBloc extends Mock implements UserBloc {}
+class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
 
 class MockCoursesBloc extends Mock implements CoursesBloc {}
 
@@ -30,12 +30,12 @@ class MockLearningProcessDialogs extends Mock
 
 class MockNavigation extends Mock implements Navigation {}
 
-class FakeUserEvent extends Fake implements UserEvent {}
+class FakeFlashcardsEvent extends Fake implements FlashcardsEvent {}
 
 class FakeSessionsEvent extends Fake implements SessionsEvent {}
 
 void main() {
-  final UserBloc userBloc = MockUserBloc();
+  final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
   final CoursesBloc coursesBloc = MockCoursesBloc();
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final SessionsBloc sessionsBloc = MockSessionsBloc();
@@ -93,13 +93,13 @@ void main() {
   );
 
   setUpAll(() {
-    registerFallbackValue(FakeUserEvent());
+    registerFallbackValue(FakeFlashcardsEvent());
     registerFallbackValue(FakeSessionsEvent());
   });
 
   setUp(() {
     bloc = LearningProcessBloc(
-      userBloc: userBloc,
+      flashcardsBloc: flashcardsBloc,
       coursesBloc: coursesBloc,
       groupsBloc: groupsBloc,
       sessionsBloc: sessionsBloc,
@@ -112,6 +112,7 @@ void main() {
   });
 
   tearDown(() {
+    reset(flashcardsBloc);
     reset(coursesBloc);
     reset(groupsBloc);
     reset(sessionsBloc);
@@ -266,9 +267,9 @@ void main() {
     verify: (_) {
       verify(() => learningProcessDialogs.askForContinuing()).called(1);
       verify(
-        () => userBloc.add(UserEventSaveNewRememberedFlashcards(
+        () => flashcardsBloc.add(FlashcardsEventSaveRememberedFlashcards(
           groupId: 'g1',
-          rememberedFlashcardsIndexes: const [0, 1],
+          flashcardsIndexes: const [0, 1],
         )),
       ).called(1);
       verify(
@@ -310,9 +311,9 @@ void main() {
     verify: (_) {
       verify(() => learningProcessDialogs.askForContinuing()).called(1);
       verify(
-        () => userBloc.add(UserEventSaveNewRememberedFlashcards(
+        () => flashcardsBloc.add(FlashcardsEventSaveRememberedFlashcards(
           groupId: 'g1',
-          rememberedFlashcardsIndexes: const [0, 1],
+          flashcardsIndexes: const [0, 1],
         )),
       ).called(1);
       verify(
@@ -342,9 +343,9 @@ void main() {
     },
     verify: (_) {
       verify(
-        () => userBloc.add(UserEventSaveNewRememberedFlashcards(
+        () => flashcardsBloc.add(FlashcardsEventSaveRememberedFlashcards(
           groupId: 'g1',
-          rememberedFlashcardsIndexes: const [0, 1],
+          flashcardsIndexes: const [0, 1],
         )),
       ).called(1);
       verify(
@@ -381,9 +382,9 @@ void main() {
     },
     verify: (_) {
       verify(
-        () => userBloc.add(UserEventSaveNewRememberedFlashcards(
+        () => flashcardsBloc.add(FlashcardsEventSaveRememberedFlashcards(
           groupId: 'g1',
-          rememberedFlashcardsIndexes: const [0, 1],
+          flashcardsIndexes: const [0, 1],
         )),
       ).called(1);
       verify(
@@ -418,9 +419,9 @@ void main() {
     verify: (_) {
       verify(() => learningProcessDialogs.askForSaveConfirmation()).called(1);
       verify(
-        () => userBloc.add(UserEventSaveNewRememberedFlashcards(
+        () => flashcardsBloc.add(FlashcardsEventSaveRememberedFlashcards(
           groupId: 'g1',
-          rememberedFlashcardsIndexes: const [0, 1],
+          flashcardsIndexes: const [0, 1],
         )),
       ).called(1);
       verify(
@@ -451,7 +452,7 @@ void main() {
     },
     verify: (_) {
       verify(() => learningProcessDialogs.askForSaveConfirmation()).called(1);
-      verifyNever(() => userBloc.add(any()));
+      verifyNever(() => flashcardsBloc.add(any()));
       verifyNever(() => sessionsBloc.add(any()));
       verify(() => navigation.moveBack()).called(1);
     },

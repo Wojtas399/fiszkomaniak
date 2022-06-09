@@ -25,15 +25,13 @@ class UserRepository implements UserInterface {
   }
 
   @override
-  Stream<User> getLoggedUserSnapshots() {
-    return Rx.combineLatest2(
-      _fireAvatarService.getLoggedUserAvatarSnapshots(),
-      _fireUserService.getLoggedUserSnapshots(),
-      (String? avatarUrl, DocumentSnapshot<UserDbModel> userDbModel) {
-        return _createUserModel(avatarUrl, userDbModel);
-      },
-    ).whereType<User>();
-  }
+  Stream<User> get loggedUser$ => Rx.combineLatest2(
+        _fireAvatarService.getLoggedUserAvatarSnapshots(),
+        _fireUserService.getLoggedUserSnapshots(),
+        (String? avatarUrl, DocumentSnapshot<UserDbModel> userDbModel) {
+          return _createUserModel(avatarUrl, userDbModel);
+        },
+      ).whereType<User>();
 
   @override
   Future<void> addUser({
@@ -56,17 +54,6 @@ class UserRepository implements UserInterface {
   @override
   Future<void> saveNewUsername({required String newUsername}) async {
     await _fireUserService.saveNewUsername(newUsername);
-  }
-
-  @override
-  Future<void> saveNewRememberedFlashcardsInDays({
-    required String groupId,
-    required List<int> indexesOfFlashcards,
-  }) async {
-    await _fireUserService.saveNewRememberedFlashcards(
-      groupId,
-      indexesOfFlashcards,
-    );
   }
 
   User? _createUserModel(

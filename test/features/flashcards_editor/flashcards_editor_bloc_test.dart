@@ -391,7 +391,7 @@ void main() {
             .called(1);
         verify(
           () => flashcardsBloc.add(
-            FlashcardsEventSaveFlashcards(
+            FlashcardsEventSaveEditedFlashcards(
               groupId: 'g1',
               flashcards: stateAfterInitialization.flashcardsWithoutLastOne,
             ),
@@ -437,7 +437,7 @@ void main() {
             .called(1);
         verify(
           () => flashcardsBloc.add(
-            FlashcardsEventSaveFlashcards(
+            FlashcardsEventSaveEditedFlashcards(
               groupId: 'g1',
               flashcards: stateAfterInitialization.flashcardsWithoutLastOne,
               justAddedFlashcards: true,

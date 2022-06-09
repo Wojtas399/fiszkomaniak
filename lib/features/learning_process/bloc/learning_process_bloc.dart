@@ -2,9 +2,9 @@ import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
+import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
@@ -22,7 +22,7 @@ part 'learning_process_status.dart';
 
 class LearningProcessBloc
     extends Bloc<LearningProcessEvent, LearningProcessState> {
-  late final UserBloc _userBloc;
+  late final FlashcardsBloc _flashcardsBloc;
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
   late final SessionsBloc _sessionsBloc;
@@ -31,7 +31,7 @@ class LearningProcessBloc
   late final Navigation _navigation;
 
   LearningProcessBloc({
-    required UserBloc userBloc,
+    required FlashcardsBloc flashcardsBloc,
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
     required SessionsBloc sessionsBloc,
@@ -39,7 +39,7 @@ class LearningProcessBloc
     required LearningProcessDialogs learningProcessDialogs,
     required Navigation navigation,
   }) : super(const LearningProcessState()) {
-    _userBloc = userBloc;
+    _flashcardsBloc = flashcardsBloc;
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
     _sessionsBloc = sessionsBloc;
@@ -194,9 +194,9 @@ class LearningProcessBloc
   void _saveFlashcards() {
     final String? groupId = state.group?.id;
     if (groupId != null) {
-      _userBloc.add(UserEventSaveNewRememberedFlashcards(
+      _flashcardsBloc.add(FlashcardsEventSaveRememberedFlashcards(
         groupId: groupId,
-        rememberedFlashcardsIndexes: state.indexesOfRememberedFlashcards,
+        flashcardsIndexes: state.indexesOfRememberedFlashcards,
       ));
       _achievementsBloc.add(AchievementsEventAddRememberedFlashcards(
         groupId: groupId,

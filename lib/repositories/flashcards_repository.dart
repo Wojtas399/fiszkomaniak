@@ -4,23 +4,43 @@ import 'package:fiszkomaniak/firebase/services/fire_flashcards_service.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 
+import '../firebase/services/fire_days_service.dart';
+
 class FlashcardsRepository implements FlashcardsInterface {
   late final FireFlashcardsService _fireFlashcardsService;
+  late final FireDaysService _fireDaysService;
 
   FlashcardsRepository({
     required FireFlashcardsService fireFlashcardsService,
+    required FireDaysService fireDaysService,
   }) {
     _fireFlashcardsService = fireFlashcardsService;
+    _fireDaysService = fireDaysService;
   }
 
   @override
-  Future<void> setFlashcards({
+  Future<void> saveEditedFlashcards({
     required String groupId,
     required List<Flashcard> flashcards,
   }) async {
     await _fireFlashcardsService.setFlashcards(
       groupId,
       flashcards.map(_convertFlashcardToDbModel).toList(),
+    );
+  }
+
+  @override
+  Future<void> saveRememberedFlashcards({
+    required String groupId,
+    required List<int> flashcardsIndexes,
+  }) async {
+    await _fireDaysService.saveRememberedFlashcardsToCurrentDay(
+      groupId: groupId,
+      indexesOfRememberedFlashcards: flashcardsIndexes,
+    );
+    await _fireFlashcardsService.markFlashcardsAsRemembered(
+      groupId: groupId,
+      indexesOfRememberedFlashcards: flashcardsIndexes,
     );
   }
 

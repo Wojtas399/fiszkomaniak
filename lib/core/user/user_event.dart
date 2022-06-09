@@ -35,19 +35,3 @@ class UserEventChangeUsername extends UserEvent {
   @override
   List<Object> get props => [newUsername];
 }
-
-class UserEventSaveNewRememberedFlashcards extends UserEvent {
-  final String groupId;
-  final List<int> rememberedFlashcardsIndexes;
-
-  UserEventSaveNewRememberedFlashcards({
-    required this.groupId,
-    required this.rememberedFlashcardsIndexes,
-  });
-
-  @override
-  List<Object> get props => [
-        groupId,
-        rememberedFlashcardsIndexes,
-      ];
-}

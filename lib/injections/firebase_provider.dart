@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/firebase/services/fire_achievements_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_avatar_service.dart';
+import 'package:fiszkomaniak/firebase/services/fire_days_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
 import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
@@ -26,12 +27,23 @@ import '../repositories/auth_repository.dart';
 import '../repositories/courses_repository.dart';
 
 class FirebaseProvider {
+  static final _fireUserService = FireUserService();
+  static final _fireAvatarService = FireAvatarService();
+  static final _fireAuthService = FireAuthService(
+    fireUserService: _fireUserService,
+    fireAvatarService: _fireAvatarService,
+  );
+  static final _fireSettingsService = FireSettingsService();
+  static final _fireCoursesService = FireCoursesService();
+  static final _fireGroupsService = FireGroupsService();
+  static final _fireFlashcardsService = FireFlashcardsService();
+  static final _fireDaysService = FireDaysService();
+  static final _fireSessionsService = FireSessionsService();
+  static final _fireAchievementsService = FireAchievementsService();
+
   static AuthInterface provideAuthInterface() {
     return AuthRepository(
-      fireAuthService: FireAuthService(
-        fireUserService: FireUserService(),
-        fireAvatarService: FireAvatarService(),
-      ),
+      fireAuthService: _fireAuthService,
       userInterface: provideUserInterface(),
       achievementsInterface: provideAchievementsInterface(),
     );
@@ -39,44 +51,37 @@ class FirebaseProvider {
 
   static UserInterface provideUserInterface() {
     return UserRepository(
-      fireUserService: FireUserService(),
-      fireAvatarService: FireAvatarService(),
+      fireUserService: _fireUserService,
+      fireAvatarService: _fireAvatarService,
     );
   }
 
   static SettingsInterface provideSettingsInterface() {
-    return SettingsRepository(
-      fireSettingsService: FireSettingsService(),
-    );
+    return SettingsRepository(fireSettingsService: _fireSettingsService);
   }
 
   static CoursesInterface provideCoursesInterface() {
-    return CoursesRepository(
-      fireCoursesService: FireCoursesService(),
-    );
+    return CoursesRepository(fireCoursesService: _fireCoursesService);
   }
 
   static GroupsInterface provideGroupsInterface() {
-    return GroupsRepository(
-      fireGroupsService: FireGroupsService(),
-    );
+    return GroupsRepository(fireGroupsService: _fireGroupsService);
   }
 
   static FlashcardsInterface provideFlashcardsInterface() {
     return FlashcardsRepository(
-      fireFlashcardsService: FireFlashcardsService(),
+      fireFlashcardsService: _fireFlashcardsService,
+      fireDaysService: _fireDaysService,
     );
   }
 
   static SessionsInterface provideSessionsInterface() {
-    return SessionsRepository(
-      fireSessionsService: FireSessionsService(),
-    );
+    return SessionsRepository(fireSessionsService: _fireSessionsService);
   }
 
   static AchievementsInterface provideAchievementsInterface() {
     return AchievementsRepository(
-      fireAchievementsService: FireAchievementsService(),
+      fireAchievementsService: _fireAchievementsService,
     );
   }
 }

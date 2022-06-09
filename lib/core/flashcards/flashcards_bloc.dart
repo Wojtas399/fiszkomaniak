@@ -24,7 +24,8 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
     _groupsBloc = groupsBloc;
     on<FlashcardsEventInitialize>(_initialize);
     on<FlashcardsEventGroupsStateUpdated>(_groupsStateUpdated);
-    on<FlashcardsEventSaveFlashcards>(_saveFlashcards);
+    on<FlashcardsEventSaveEditedFlashcards>(_saveEditedFlashcards);
+    on<FlashcardsEventSaveRememberedFlashcards>(_saveRememberedFlashcards);
     on<FlashcardsEventUpdateFlashcard>(_updateFlashcard);
     on<FlashcardsEventRemoveFlashcard>(_removeFlashcard);
   }
@@ -46,13 +47,13 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
     emit(state.copyWith(groupsState: event.newGroupsState));
   }
 
-  Future<void> _saveFlashcards(
-    FlashcardsEventSaveFlashcards event,
+  Future<void> _saveEditedFlashcards(
+    FlashcardsEventSaveEditedFlashcards event,
     Emitter<FlashcardsState> emit,
   ) async {
     try {
       emit(state.copyWith(status: FlashcardsStatusLoading()));
-      await _flashcardsInterface.setFlashcards(
+      await _flashcardsInterface.saveEditedFlashcards(
         groupId: event.groupId,
         flashcards: event.flashcards,
       );
@@ -61,6 +62,24 @@ class FlashcardsBloc extends Bloc<FlashcardsEvent, FlashcardsState> {
       } else {
         emit(state.copyWith(status: FlashcardsStatusFlashcardsSaved()));
       }
+    } catch (error) {
+      emit(state.copyWith(
+        status: FlashcardsStatusError(message: error.toString()),
+      ));
+    }
+  }
+
+  Future<void> _saveRememberedFlashcards(
+    FlashcardsEventSaveRememberedFlashcards event,
+    Emitter<FlashcardsState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: FlashcardsStatusLoading()));
+      await _flashcardsInterface.saveRememberedFlashcards(
+        groupId: event.groupId,
+        flashcardsIndexes: event.flashcardsIndexes,
+      );
+      emit(state.copyWith(status: FlashcardsStatusFlashcardsSaved()));
     } catch (error) {
       emit(state.copyWith(
         status: FlashcardsStatusError(message: error.toString()),

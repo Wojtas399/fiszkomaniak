@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/firebase/models/flashcard_db_model.dart';
+import 'package:fiszkomaniak/firebase/services/fire_days_service.dart';
 import 'package:fiszkomaniak/repositories/flashcards_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_flashcards_service.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
@@ -7,9 +8,11 @@ import 'package:mocktail/mocktail.dart';
 
 class MockFireFlashcardsService extends Mock implements FireFlashcardsService {}
 
+class MockFireDaysService extends Mock implements FireDaysService {}
+
 void main() {
-  final FireFlashcardsService fireFlashcardsService =
-      MockFireFlashcardsService();
+  final fireFlashcardsService = MockFireFlashcardsService();
+  final fireDaysService = MockFireDaysService();
   late FlashcardsRepository repository;
   final List<Flashcard> flashcards = [
     createFlashcard(
@@ -43,21 +46,61 @@ void main() {
   setUp(() {
     repository = FlashcardsRepository(
       fireFlashcardsService: fireFlashcardsService,
+      fireDaysService: fireDaysService,
     );
   });
 
   tearDown(() {
     reset(fireFlashcardsService);
+    reset(fireDaysService);
   });
 
-  test('set flashcards', () async {
+  test('save edited flashcards', () async {
     when(() => fireFlashcardsService.setFlashcards('g1', convertedFlashcards))
         .thenAnswer((_) async => '');
 
-    await repository.setFlashcards(groupId: 'g1', flashcards: flashcards);
+    await repository.saveEditedFlashcards(
+      groupId: 'g1',
+      flashcards: flashcards,
+    );
 
     verify(() => fireFlashcardsService.setFlashcards('g1', convertedFlashcards))
         .called(1);
+  });
+
+  test('save remembered flashcards', () async {
+    const String groupId = 'g1';
+    final List<int> flashcardsIndexes = [0, 1, 2];
+    when(
+      () => fireDaysService.saveRememberedFlashcardsToCurrentDay(
+        groupId: groupId,
+        indexesOfRememberedFlashcards: flashcardsIndexes,
+      ),
+    ).thenAnswer((_) async => '');
+    when(
+      () => fireFlashcardsService.markFlashcardsAsRemembered(
+        groupId: groupId,
+        indexesOfRememberedFlashcards: flashcardsIndexes,
+      ),
+    ).thenAnswer((_) async => '');
+
+    await repository.saveRememberedFlashcards(
+      groupId: groupId,
+      flashcardsIndexes: flashcardsIndexes,
+    );
+
+    verify(
+      () => fireDaysService.saveRememberedFlashcardsToCurrentDay(
+        groupId: groupId,
+        indexesOfRememberedFlashcards: flashcardsIndexes,
+      ),
+    ).called(1);
+    verify(
+      () => fireFlashcardsService.markFlashcardsAsRemembered(
+        groupId: groupId,
+        indexesOfRememberedFlashcards: flashcardsIndexes,
+      ),
+    ).called(1);
   });
 
   test('update flashcard', () async {
