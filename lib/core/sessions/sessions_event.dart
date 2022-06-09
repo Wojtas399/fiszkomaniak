@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
-import 'package:flutter/material.dart';
+part of 'sessions_bloc.dart';
 
 abstract class SessionsEvent extends Equatable {
   @override
@@ -9,22 +7,23 @@ abstract class SessionsEvent extends Equatable {
 
 class SessionsEventInitialize extends SessionsEvent {}
 
-class SessionsEventSessionAdded extends SessionsEvent {
-  final Session session;
+class SessionsEventSessionsChanged extends SessionsEvent {
+  final List<Session> addedSessions;
+  final List<Session> updatedSessions;
+  final List<Session> deletedSessions;
 
-  SessionsEventSessionAdded({required this.session});
-}
+  SessionsEventSessionsChanged({
+    required this.addedSessions,
+    required this.updatedSessions,
+    required this.deletedSessions,
+  });
 
-class SessionsEventSessionUpdated extends SessionsEvent {
-  final Session session;
-
-  SessionsEventSessionUpdated({required this.session});
-}
-
-class SessionsEventSessionRemoved extends SessionsEvent {
-  final String sessionId;
-
-  SessionsEventSessionRemoved({required this.sessionId});
+  @override
+  List<Object> get props => [
+        addedSessions,
+        updatedSessions,
+        deletedSessions,
+      ];
 }
 
 class SessionsEventAddSession extends SessionsEvent {
@@ -39,10 +38,10 @@ class SessionsEventAddSession extends SessionsEvent {
 class SessionsEventUpdateSession extends SessionsEvent {
   final String sessionId;
   final String? groupId;
-  final DateTime? date;
-  final TimeOfDay? time;
+  final Date? date;
+  final Time? time;
   final Duration? duration;
-  final TimeOfDay? notificationTime;
+  final Time? notificationTime;
   final FlashcardsType? flashcardsType;
   final bool? areQuestionsAndFlashcardsSwapped;
 
@@ -72,9 +71,16 @@ class SessionsEventUpdateSession extends SessionsEvent {
 
 class SessionsEventRemoveSession extends SessionsEvent {
   final String sessionId;
+  final bool removeAfterLearningProcess;
 
-  SessionsEventRemoveSession({required this.sessionId});
+  SessionsEventRemoveSession({
+    required this.sessionId,
+    this.removeAfterLearningProcess = false,
+  });
 
   @override
-  List<Object> get props => [sessionId];
+  List<Object> get props => [
+        sessionId,
+        removeAfterLearningProcess,
+      ];
 }

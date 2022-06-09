@@ -1,22 +1,23 @@
 import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:fiszkomaniak/components/learning_progress_chart/learning_progress_cubit.dart';
-import 'package:fiszkomaniak/converters/date_converters.dart';
+import 'package:fiszkomaniak/ui_extensions/ui_date_extensions.dart';
 import 'package:fiszkomaniak/models/day_model.dart';
 import 'package:fiszkomaniak/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import '../../models/date_model.dart';
 
 class LearningProgressChart extends StatelessWidget {
   final List<Day>? daysFromUser;
-  final DateTime initialDateOfWeek;
+  final Date initialDateOfWeek;
 
   const LearningProgressChart({
-    Key? key,
+    super.key,
     required this.daysFromUser,
     required this.initialDateOfWeek,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +39,14 @@ class LearningProgressChart extends StatelessWidget {
 
 class _CubitProvider extends StatelessWidget {
   final List<Day>? daysFromUser;
-  final DateTime initialDateOfWeek;
+  final Date initialDateOfWeek;
   final Widget child;
 
   const _CubitProvider({
-    Key? key,
     required this.daysFromUser,
     required this.initialDateOfWeek,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -67,11 +67,11 @@ class _CubitProvider extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({Key? key}) : super(key: key);
+  const _Header();
 
   @override
   Widget build(BuildContext context) {
-    final List<DateTime> dates = context.select(
+    final List<Date> dates = context.select(
       (LearningProgressCubit cubit) => cubit.onlyDates,
     );
     return Row(
@@ -93,14 +93,13 @@ class _Header extends StatelessWidget {
     );
   }
 
-  String _convertWeekToStr(List<DateTime> dates) {
-    DateTime now = DateTime.now();
-    now = DateTime(now.year, now.month, now.day);
+  String _convertWeekToStr(List<Date> dates) {
+    Date now = Date.now();
     if (dates.contains(now)) {
       return 'Obecny tydzień';
     }
-    final String firstDate = convertDateToViewFormat(dates.first);
-    final String lastDate = convertDateToViewFormat(dates.last);
+    final String firstDate = dates.first.toUIFormat();
+    final String lastDate = dates.last.toUIFormat();
     return '$firstDate - $lastDate';
   }
 
@@ -114,7 +113,7 @@ class _Header extends StatelessWidget {
 }
 
 class _Chart extends StatelessWidget {
-  const _Chart({Key? key}) : super(key: key);
+  const _Chart();
 
   @override
   Widget build(BuildContext context) {
@@ -143,9 +142,7 @@ class _Chart extends StatelessWidget {
         LineSeries<ChartDay, String>(
           color: Theme.of(context).colorScheme.primary,
           dataSource: days,
-          xValueMapper: (ChartDay day, _) => convertDateToWeekDayShortName(
-            day.date,
-          ),
+          xValueMapper: (ChartDay day, _) => day.date.toWeekDayShortName(),
           yValueMapper: (ChartDay day, _) => day.amountOfRememberedFlashcards,
           markerSettings: MarkerSettings(
             isVisible: true,

@@ -1,12 +1,11 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_state.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_status.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
-import 'package:flutter/material.dart';
+import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -26,11 +25,11 @@ void main() {
     ),
     ChangedDocument(
       changeType: DbDocChangeType.added,
-      doc: createSession(id: 's3', time: const TimeOfDay(hour: 12, minute: 30)),
+      doc: createSession(id: 's3', time: const Time(hour: 12, minute: 30)),
     ),
     ChangedDocument(
       changeType: DbDocChangeType.updated,
-      doc: createSession(id: 's3', time: const TimeOfDay(hour: 13, minute: 30)),
+      doc: createSession(id: 's3', time: const Time(hour: 13, minute: 30)),
     ),
     ChangedDocument(
       changeType: DbDocChangeType.removed,
@@ -39,7 +38,9 @@ void main() {
   ];
 
   setUp(() {
-    bloc = SessionsBloc(sessionsInterface: sessionsInterface);
+    bloc = SessionsBloc(
+      sessionsInterface: sessionsInterface,
+    );
   });
 
   tearDown(() {
@@ -57,73 +58,8 @@ void main() {
     act: (_) => bloc.add(SessionsEventInitialize()),
     expect: () => [
       SessionsState(
-        allSessions: [snapshots[0].doc],
-        status: SessionsStatusLoaded(),
-      ),
-      SessionsState(
+        initializationStatus: InitializationStatus.ready,
         allSessions: [snapshots[0].doc, snapshots[1].doc],
-        status: SessionsStatusLoaded(),
-      ),
-      SessionsState(
-        allSessions: [snapshots[0].doc, snapshots[1].doc, snapshots[2].doc],
-        status: SessionsStatusLoaded(),
-      ),
-      SessionsState(
-        allSessions: [snapshots[0].doc, snapshots[1].doc, snapshots[3].doc],
-        status: SessionsStatusLoaded(),
-      ),
-      SessionsState(
-        allSessions: [snapshots[0].doc, snapshots[1].doc],
-        status: SessionsStatusLoaded(),
-      ),
-    ],
-  );
-
-  blocTest(
-    'session added',
-    build: () => bloc,
-    act: (_) => bloc.add(SessionsEventSessionAdded(session: snapshots[0].doc)),
-    expect: () => [
-      SessionsState(
-        allSessions: [snapshots[0].doc],
-        status: SessionsStatusLoaded(),
-      ),
-    ],
-  );
-
-  blocTest(
-    'session updated',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(SessionsEventSessionAdded(session: snapshots[2].doc));
-      bloc.add(SessionsEventSessionUpdated(session: snapshots[3].doc));
-    },
-    expect: () => [
-      SessionsState(
-        allSessions: [snapshots[2].doc],
-        status: SessionsStatusLoaded(),
-      ),
-      SessionsState(
-        allSessions: [snapshots[3].doc],
-        status: SessionsStatusLoaded(),
-      ),
-    ],
-  );
-
-  blocTest(
-    'session removed',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(SessionsEventSessionAdded(session: snapshots[2].doc));
-      bloc.add(SessionsEventSessionRemoved(sessionId: snapshots[2].doc.id));
-    },
-    expect: () => [
-      SessionsState(
-        allSessions: [snapshots[2].doc],
-        status: SessionsStatusLoaded(),
-      ),
-      SessionsState(
-        allSessions: const [],
         status: SessionsStatusLoaded(),
       ),
     ],
@@ -133,16 +69,16 @@ void main() {
     'add session, success',
     build: () => bloc,
     setUp: () {
-      when(() => sessionsInterface.addNewSession(snapshots[0].doc))
-          .thenAnswer((_) async => '');
+      when(() => sessionsInterface.addNewSession(createSession()))
+          .thenAnswer((_) async => 's4');
     },
-    act: (_) => bloc.add(SessionsEventAddSession(session: snapshots[0].doc)),
+    act: (_) => bloc.add(SessionsEventAddSession(session: createSession())),
     expect: () => [
       SessionsState(status: SessionsStatusLoading()),
-      SessionsState(status: SessionsStatusSessionAdded()),
+      const SessionsState(status: SessionsStatusSessionAdded(sessionId: 's4')),
     ],
     verify: (_) {
-      verify(() => sessionsInterface.addNewSession(snapshots[0].doc)).called(1);
+      verify(() => sessionsInterface.addNewSession(createSession())).called(1);
     },
   );
 
@@ -150,16 +86,16 @@ void main() {
     'add session, failure',
     build: () => bloc,
     setUp: () {
-      when(() => sessionsInterface.addNewSession(snapshots[0].doc))
+      when(() => sessionsInterface.addNewSession(createSession()))
           .thenThrow('Error...');
     },
-    act: (_) => bloc.add(SessionsEventAddSession(session: snapshots[0].doc)),
+    act: (_) => bloc.add(SessionsEventAddSession(session: createSession())),
     expect: () => [
       SessionsState(status: SessionsStatusLoading()),
       const SessionsState(status: SessionsStatusError(message: 'Error...')),
     ],
     verify: (_) {
-      verify(() => sessionsInterface.addNewSession(snapshots[0].doc)).called(1);
+      verify(() => sessionsInterface.addNewSession(createSession())).called(1);
     },
   );
 
@@ -170,25 +106,27 @@ void main() {
       when(
         () => sessionsInterface.updateSession(
           sessionId: 's1',
-          date: DateTime(2022, 1, 1),
+          date: const Date(year: 2022, month: 1, day: 1),
           flashcardsType: FlashcardsType.remembered,
         ),
       ).thenAnswer((_) async => '');
     },
     act: (_) => bloc.add(SessionsEventUpdateSession(
       sessionId: 's1',
-      date: DateTime(2022, 1, 1),
+      date: const Date(year: 2022, month: 1, day: 1),
       flashcardsType: FlashcardsType.remembered,
     )),
     expect: () => [
       SessionsState(status: SessionsStatusLoading()),
-      SessionsState(status: SessionsStatusSessionUpdated()),
+      const SessionsState(
+        status: SessionsStatusSessionUpdated(sessionId: 's1'),
+      ),
     ],
     verify: (_) {
       verify(
         () => sessionsInterface.updateSession(
           sessionId: 's1',
-          date: DateTime(2022, 1, 1),
+          date: const Date(year: 2022, month: 1, day: 1),
           flashcardsType: FlashcardsType.remembered,
         ),
       ).called(1);
@@ -202,14 +140,14 @@ void main() {
       when(
         () => sessionsInterface.updateSession(
           sessionId: 's1',
-          date: DateTime(2022, 1, 1),
+          date: const Date(year: 2022, month: 1, day: 1),
           flashcardsType: FlashcardsType.remembered,
         ),
       ).thenThrow('Error...');
     },
     act: (_) => bloc.add(SessionsEventUpdateSession(
       sessionId: 's1',
-      date: DateTime(2022, 1, 1),
+      date: const Date(year: 2022, month: 1, day: 1),
       flashcardsType: FlashcardsType.remembered,
     )),
     expect: () => [
@@ -220,7 +158,7 @@ void main() {
       verify(
         () => sessionsInterface.updateSession(
           sessionId: 's1',
-          date: DateTime(2022, 1, 1),
+          date: const Date(year: 2022, month: 1, day: 1),
           flashcardsType: FlashcardsType.remembered,
         ),
       ).called(1);
@@ -237,7 +175,12 @@ void main() {
     act: (_) => bloc.add(SessionsEventRemoveSession(sessionId: 's1')),
     expect: () => [
       SessionsState(status: SessionsStatusLoading()),
-      SessionsState(status: SessionsStatusSessionRemoved()),
+      const SessionsState(
+        status: SessionsStatusSessionRemoved(
+          sessionId: 's1',
+          hasSessionBeenRemovedAfterLearningProcess: false,
+        ),
+      ),
     ],
     verify: (_) {
       verify(() => sessionsInterface.removeSession('s1')).called(1);

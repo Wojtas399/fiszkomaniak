@@ -16,8 +16,9 @@ class FireSessionsService {
     return FireReferences.sessionsRefWithConverter.snapshots();
   }
 
-  Future<void> addNewSession(SessionDbModel sessionData) async {
-    await FireReferences.sessionsRefWithConverter.add(sessionData);
+  Future<String> addNewSession(SessionDbModel sessionData) async {
+    final doc = await FireReferences.sessionsRefWithConverter.add(sessionData);
+    return doc.id;
   }
 
   Future<void> updateSession(FireDoc<SessionDbModel> sessionData) async {

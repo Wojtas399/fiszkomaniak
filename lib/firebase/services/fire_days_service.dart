@@ -1,7 +1,8 @@
 import 'package:fiszkomaniak/firebase/fire_references.dart';
 import 'package:fiszkomaniak/firebase/models/day_db_model.dart';
 import 'package:fiszkomaniak/firebase/models/user_db_model.dart';
-import 'package:fiszkomaniak/firebase/fire_converters.dart';
+import 'package:fiszkomaniak/firebase/fire_extensions.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import '../models/day_flashcard_db_model.dart';
 
 class FireDaysService {
@@ -20,7 +21,7 @@ class FireDaysService {
           return userData.copyWith(
             days: [
               DayDbModel(
-                date: FireConverters.convertDateTimeToString(DateTime.now()),
+                date: Date.now().toDbString(),
                 rememberedFlashcards: flashcards,
               )
             ],
@@ -38,9 +39,7 @@ class FireDaysService {
     List<DayFlashcardDbModel> flashcardsToSave,
   ) {
     final List<DayDbModel> updatedDays = [...existingDays];
-    final String currentDate = FireConverters.convertDateTimeToString(
-      DateTime.now(),
-    );
+    final String currentDate = Date.now().toDbString();
     final DayDbModel latestDay = updatedDays.last;
     if (latestDay.date == currentDate) {
       final List<DayFlashcardDbModel> rememberedFlashcards = [

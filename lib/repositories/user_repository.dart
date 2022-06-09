@@ -6,7 +6,7 @@ import 'package:fiszkomaniak/firebase/services/fire_user_service.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:fiszkomaniak/models/day_flashcard_model.dart';
 import 'package:fiszkomaniak/models/day_model.dart';
-import 'package:fiszkomaniak/firebase/fire_converters.dart';
+import 'package:fiszkomaniak/firebase/fire_extensions.dart';
 import 'package:rxdart/rxdart.dart';
 import '../firebase/models/day_db_model.dart';
 import '../firebase/models/user_db_model.dart';
@@ -33,6 +33,14 @@ class UserRepository implements UserInterface {
         return _createUserModel(avatarUrl, userDbModel);
       },
     ).whereType<User>();
+  }
+
+  @override
+  Future<void> addUser({
+    required String userId,
+    required String username,
+  }) async {
+    await _fireUserService.addUser(userId, username);
   }
 
   @override
@@ -82,7 +90,7 @@ class UserRepository implements UserInterface {
     return (days ?? [])
         .map(
           (day) => Day(
-            date: FireConverters.convertStringToDateTime(day.date),
+            date: day.date.toDate(),
             rememberedFlashcards: _convertFireDayFlashcardsToDayFlashcardsModel(
               day.rememberedFlashcards,
             ),

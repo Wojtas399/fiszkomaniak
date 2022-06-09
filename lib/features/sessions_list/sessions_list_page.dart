@@ -1,16 +1,13 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/sessions_list/components/session_item.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../core/sessions/sessions_state.dart';
 import '../../models/session_model.dart';
 
 class SessionsListPage extends StatelessWidget {

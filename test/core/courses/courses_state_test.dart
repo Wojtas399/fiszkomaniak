@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/core/courses/courses_state.dart';
-import 'package:fiszkomaniak/core/courses/courses_status.dart';
+import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,8 +17,19 @@ void main() {
 
   test('initial state', () {
     final CoursesState initialState = CoursesState();
+    expect(initialState.initializationStatus, InitializationStatus.loading);
     expect(initialState.allCourses, const []);
     expect(initialState.status, const CoursesStatusInitial());
+  });
+
+  test('copy with initialization status', () {
+    const InitializationStatus status = InitializationStatus.ready;
+
+    final CoursesState state2 = state.copyWith(initializationStatus: status);
+    final CoursesState state3 = state2.copyWith();
+
+    expect(state2.initializationStatus, status);
+    expect(state3.initializationStatus, status);
   });
 
   test('copy with all courses', () {

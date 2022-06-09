@@ -1,7 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
-import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_event.dart';
-import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_state.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
@@ -24,14 +23,6 @@ void main() {
     reset(settingsInterface);
   });
 
-  test('initial state', () {
-    final AppearanceSettingsState state = appearanceSettingsBloc.state;
-    expect(state.isDarkModeOn, false);
-    expect(state.isDarkModeCompatibilityWithSystemOn, false);
-    expect(state.isSessionTimerInvisibilityOn, false);
-    expect(state.httpStatus, const HttpStatusInitial());
-  });
-
   blocTest(
     'load, success',
     build: () => appearanceSettingsBloc,
@@ -49,6 +40,7 @@ void main() {
     ),
     expect: () => [
       const AppearanceSettingsState(
+        initializationStatus: InitializationStatus.ready,
         isDarkModeOn: true,
         isDarkModeCompatibilityWithSystemOn: false,
         isSessionTimerInvisibilityOn: false,

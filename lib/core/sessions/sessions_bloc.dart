@@ -1,11 +1,18 @@
 import 'dart:async';
-import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_state.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_status.dart';
+import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/changed_document.dart';
+import '../../models/time_model.dart';
+
+part 'sessions_event.dart';
+
+part 'sessions_state.dart';
+
+part 'sessions_status.dart';
 
 class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   late final SessionsInterface _sessionsInterface;
@@ -16,12 +23,16 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   }) : super(const SessionsState()) {
     _sessionsInterface = sessionsInterface;
     on<SessionsEventInitialize>(_initialize);
-    on<SessionsEventSessionAdded>(_sessionAdded);
-    on<SessionsEventSessionUpdated>(_sessionUpdated);
-    on<SessionsEventSessionRemoved>(_sessionRemoved);
+    on<SessionsEventSessionsChanged>(_sessionsChanged);
     on<SessionsEventAddSession>(_addSession);
     on<SessionsEventRemoveSession>(_removeSession);
     on<SessionsEventUpdateSession>(_updateSession);
+  }
+
+  @override
+  Future<void> close() {
+    _sessionsSubscription?.cancel();
+    return super.close();
   }
 
   void _initialize(
@@ -30,54 +41,36 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   ) {
     _sessionsSubscription = _sessionsInterface.getSessionsSnapshots().listen(
       (sessions) {
-        for (final session in sessions) {
-          switch (session.changeType) {
-            case DbDocChangeType.added:
-              add(SessionsEventSessionAdded(session: session.doc));
-              break;
-            case DbDocChangeType.updated:
-              add(SessionsEventSessionUpdated(session: session.doc));
-              break;
-            case DbDocChangeType.removed:
-              add(SessionsEventSessionRemoved(sessionId: session.doc.id));
-              break;
-          }
-        }
+        final GroupedDbDocuments<Session> groupedDocuments =
+            groupDbDocuments<Session>(sessions);
+        add(SessionsEventSessionsChanged(
+          addedSessions: groupedDocuments.addedDocuments,
+          updatedSessions: groupedDocuments.updatedDocuments,
+          deletedSessions: groupedDocuments.removedDocuments,
+        ));
       },
     );
   }
 
-  void _sessionAdded(
-    SessionsEventSessionAdded event,
+  void _sessionsChanged(
+    SessionsEventSessionsChanged event,
     Emitter<SessionsState> emit,
   ) {
+    final List<Session> newSessions = [...state.allSessions];
+    newSessions.addAll(event.addedSessions);
+    for (final updatedSession in event.updatedSessions) {
+      final int index = newSessions.indexWhere(
+        (session) => session.id == updatedSession.id,
+      );
+      newSessions[index] = updatedSession;
+    }
+    for (final deletedSession in event.deletedSessions) {
+      newSessions.removeWhere((session) => session.id == deletedSession.id);
+    }
     emit(state.copyWith(
-      allSessions: [
-        ...state.allSessions,
-        event.session,
-      ],
+      allSessions: newSessions,
+      initializationStatus: InitializationStatus.ready,
     ));
-  }
-
-  void _sessionUpdated(
-    SessionsEventSessionUpdated event,
-    Emitter<SessionsState> emit,
-  ) {
-    final List<Session> allSessions = [...state.allSessions];
-    final int index = allSessions.indexWhere(
-      (session) => session.id == event.session.id,
-    );
-    allSessions[index] = event.session;
-    emit(state.copyWith(allSessions: allSessions));
-  }
-
-  void _sessionRemoved(
-    SessionsEventSessionRemoved event,
-    Emitter<SessionsState> emit,
-  ) {
-    final List<Session> allSessions = [...state.allSessions];
-    allSessions.removeWhere((session) => session.id == event.sessionId);
-    emit(state.copyWith(allSessions: allSessions));
   }
 
   Future<void> _addSession(
@@ -86,8 +79,8 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   ) async {
     try {
       emit(state.copyWith(status: SessionsStatusLoading()));
-      await _sessionsInterface.addNewSession(event.session);
-      emit(state.copyWith(status: SessionsStatusSessionAdded()));
+      final String id = await _sessionsInterface.addNewSession(event.session);
+      emit(state.copyWith(status: SessionsStatusSessionAdded(sessionId: id)));
     } catch (error) {
       emit(state.copyWith(
         status: SessionsStatusError(message: error.toString()),
@@ -111,7 +104,9 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         duration: event.duration,
         notificationTime: event.notificationTime,
       );
-      emit(state.copyWith(status: SessionsStatusSessionUpdated()));
+      emit(state.copyWith(
+        status: SessionsStatusSessionUpdated(sessionId: event.sessionId),
+      ));
     } catch (error) {
       emit(state.copyWith(
         status: SessionsStatusError(message: error.toString()),
@@ -126,17 +121,17 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     try {
       emit(state.copyWith(status: SessionsStatusLoading()));
       await _sessionsInterface.removeSession(event.sessionId);
-      emit(state.copyWith(status: SessionsStatusSessionRemoved()));
+      emit(state.copyWith(
+        status: SessionsStatusSessionRemoved(
+          sessionId: event.sessionId,
+          hasSessionBeenRemovedAfterLearningProcess:
+              event.removeAfterLearningProcess,
+        ),
+      ));
     } catch (error) {
       emit(state.copyWith(
         status: SessionsStatusError(message: error.toString()),
       ));
     }
-  }
-
-  @override
-  Future<void> close() {
-    _sessionsSubscription?.cancel();
-    return super.close();
   }
 }

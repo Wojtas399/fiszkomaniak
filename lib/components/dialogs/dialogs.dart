@@ -6,6 +6,7 @@ import 'package:fiszkomaniak/components/dialogs/single_input_dialog/single_input
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:flutter/material.dart';
 import '../../config/slide_up_route_animation.dart';
+import 'achievement_dialog.dart';
 import 'image_confirmation_dialog.dart';
 
 class Dialogs {
@@ -24,6 +25,12 @@ class Dialogs {
         barrierDismissible: false,
         builder: (_) => SimpleLoadingDialog(text: loadingText),
       ).then((_) => isLoadingDialogOpened = false);
+    }
+  }
+
+  static void closeLoadingDialog(BuildContext context) {
+    if (isLoadingDialogOpened) {
+      Navigator.of(context, rootNavigator: true).pop();
     }
   }
 
@@ -80,6 +87,7 @@ class Dialogs {
   }) async {
     final BuildContext? context = navigatorKey.currentContext;
     if (context != null) {
+      hideSnackbar();
       return await Navigator.of(context).push(SlideUpRouteAnimation(
         page: ImageConfirmationDialog(imageFile: imageFile),
       ));
@@ -100,6 +108,7 @@ class Dialogs {
   }) async {
     final BuildContext? context = navigatorKey.currentContext;
     if (context != null) {
+      hideSnackbar();
       return await Navigator.of(context).push(
         SlideUpRouteAnimation(
           page: SingleInputDialog(
@@ -126,6 +135,34 @@ class Dialogs {
         content: Text(message),
         behavior: SnackBarBehavior.floating,
       ));
+    }
+  }
+
+  static void hideSnackbar() {
+    final BuildContext? context = navigatorKey.currentContext;
+    if (context != null) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    }
+  }
+
+  static Future<void> showAchievementDialog({
+    required int achievementValue,
+    required String title,
+    String? textBeforeAchievementValue,
+    String? textAfterAchievementValue,
+  }) async {
+    final BuildContext? context = navigatorKey.currentContext;
+    if (context != null) {
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => AchievementDialog(
+          achievementValue: achievementValue,
+          title: title,
+          textBeforeAchievementValue: textBeforeAchievementValue,
+          textAfterAchievementValue: textAfterAchievementValue,
+        ),
+      );
     }
   }
 }

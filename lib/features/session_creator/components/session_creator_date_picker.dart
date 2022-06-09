@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/converters/date_converters.dart';
+import 'package:fiszkomaniak/ui_extensions/ui_date_extensions.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/item_with_icon.dart';
+import '../../../models/date_model.dart';
 
 class SessionCreatorDatePicker extends StatefulWidget {
   const SessionCreatorDatePicker({super.key});
@@ -20,11 +21,10 @@ class _SessionCreatorDatePickerState extends State<SessionCreatorDatePicker> {
   Widget build(BuildContext context) {
     return BlocBuilder<SessionCreatorBloc, SessionCreatorState>(
       builder: (BuildContext context, SessionCreatorState state) {
-        final DateTime? date = state.date;
         return ItemWithIcon(
           icon: MdiIcons.calendarOutline,
           label: 'Data',
-          text: convertDateToViewFormat(date),
+          text: state.date.toUIFormat(),
           paddingLeft: 8.0,
           paddingRight: 8.0,
           onTap: () async {
@@ -38,7 +38,10 @@ class _SessionCreatorDatePickerState extends State<SessionCreatorDatePicker> {
               locale: const Locale('pl', 'PL'),
             );
             if (date != null && mounted) {
-              _onDateSelected(context, date);
+              _onDateSelected(
+                context,
+                Date(year: date.year, month: date.month, day: date.day),
+              );
             }
           },
         );
@@ -46,7 +49,7 @@ class _SessionCreatorDatePickerState extends State<SessionCreatorDatePicker> {
     );
   }
 
-  void _onDateSelected(BuildContext context, DateTime date) {
+  void _onDateSelected(BuildContext context, Date date) {
     context
         .read<SessionCreatorBloc>()
         .add(SessionCreatorEventDateSelected(date: date));

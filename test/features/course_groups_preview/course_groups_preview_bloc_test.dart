@@ -1,8 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_event.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_state.dart';

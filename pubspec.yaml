@@ -36,6 +36,9 @@ dependencies:
   image_picker: ^0.8.5
   cached_network_image: ^3.2.0
   syncfusion_flutter_charts: ^20.1.55
+  flutter_local_notifications: ^9.5.3+1
+  flutter_launcher_icons: ^0.9.2
+  timezone: ^0.8.0
 
 dev_dependencies:
   flutter_test:
@@ -48,3 +51,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+
+flutter_icons:
+  android: "logo_short"
+  ios: true
+  image_path: "assets/logo_short.png"

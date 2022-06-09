@@ -9,6 +9,10 @@ class SessionPreviewModeNormal extends SessionPreviewMode {
 
   @override
   List<Object> get props => [sessionId];
+
+  SessionPreviewModeNormal copyWith({String? sessionId}) {
+    return SessionPreviewModeNormal(sessionId: sessionId ?? this.sessionId);
+  }
 }
 
 class SessionPreviewModeQuick extends SessionPreviewMode {

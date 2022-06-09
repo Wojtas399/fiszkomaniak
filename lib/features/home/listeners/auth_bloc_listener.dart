@@ -8,14 +8,10 @@ class AuthBlocListener extends BlocListener<AuthBloc, AuthState> {
   AuthBlocListener({super.key})
       : super(
           listener: (BuildContext context, AuthState state) {
-            void closeLoadingDialog() {
-              Navigator.of(context, rootNavigator: true).pop();
-            }
-
             if (state is AuthStateLoading) {
               Dialogs.showLoadingDialog(context: context);
             } else if (state is AuthStateWrongPassword) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showDialogWithMessage(
                 title: 'Niepoprawne hasło',
                 message:
@@ -23,13 +19,13 @@ class AuthBlocListener extends BlocListener<AuthBloc, AuthState> {
                 context: context,
               );
             } else if (state is AuthStatePasswordChanged) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showSnackbarWithMessage('Pomyślnie zmieniono hasło.');
             } else if (state is AuthStateSignedOut) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               context.read<Navigation>().pushReplacementToInitialHome();
             } else if (state is AuthStateError) {
-              closeLoadingDialog();
+              Dialogs.closeLoadingDialog(context);
               Dialogs.showErrorDialog(
                 message: state.message,
                 context: context,

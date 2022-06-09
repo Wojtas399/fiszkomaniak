@@ -1,13 +1,14 @@
 import 'package:fiszkomaniak/components/learning_progress_chart/learning_progress_chart.dart';
 import 'package:fiszkomaniak/components/section.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/day_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class ProfileStats extends StatelessWidget {
-  const ProfileStats({Key? key}) : super(key: key);
+  const ProfileStats({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,7 @@ class ProfileStats extends StatelessWidget {
 }
 
 class _DaysInARow extends StatelessWidget {
-  const _DaysInARow({Key? key}) : super(key: key);
+  const _DaysInARow();
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +56,7 @@ class _DaysInARow extends StatelessWidget {
 }
 
 class _AmountOfFlashcards extends StatelessWidget {
-  const _AmountOfFlashcards({Key? key}) : super(key: key);
+  const _AmountOfFlashcards();
 
   @override
   Widget build(BuildContext context) {
@@ -76,11 +77,10 @@ class _NumberInfo extends StatelessWidget {
   final int value;
 
   const _NumberInfo({
-    Key? key,
     required this.icon,
     required this.label,
     required this.value,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +102,7 @@ class _NumberInfo extends StatelessWidget {
 }
 
 class _Chart extends StatelessWidget {
-  const _Chart({Key? key}) : super(key: key);
+  const _Chart();
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +111,7 @@ class _Chart extends StatelessWidget {
     );
     return LearningProgressChart(
       daysFromUser: days,
-      initialDateOfWeek: DateTime.now(),
+      initialDateOfWeek: Date.now(),
     );
   }
 }

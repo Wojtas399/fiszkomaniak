@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'courses_bloc.dart';
 
 abstract class CoursesStatus extends Equatable {
   const CoursesStatus();

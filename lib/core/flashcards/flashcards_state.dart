@@ -1,7 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_status.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+part of 'flashcards_bloc.dart';
 
 class FlashcardsState extends Equatable {
   final GroupsState groupsState;
@@ -25,11 +22,8 @@ class FlashcardsState extends Equatable {
   int get amountOfAllFlashcards {
     return groupsState.allGroups.isNotEmpty
         ? groupsState.allGroups
-            .map(
-              (group) => group.flashcards.length,
-            )
-            .reduce((sumOfAllFlashcards, amountOfFlashcardsInGroup) =>
-                sumOfAllFlashcards + amountOfFlashcardsInGroup)
+            .map((group) => group.flashcards.length)
+            .reduce(_sumFlashcardsFromGroups)
         : 0;
   }
 
@@ -52,6 +46,13 @@ class FlashcardsState extends Equatable {
       return null;
     }
     return groupsState.getGroupById(groupId)?.flashcards[flashcardIndex];
+  }
+
+  int _sumFlashcardsFromGroups(
+    int amountOfAllFlashcards,
+    int amountOfFlashcardsFromGroup,
+  ) {
+    return amountOfAllFlashcards + amountOfFlashcardsFromGroup;
   }
 
   @override

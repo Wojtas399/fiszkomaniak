@@ -1,10 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
-import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_event.dart';
-import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_state.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_state.dart';
 import 'package:fiszkomaniak/features/settings/bloc/settings_bloc.dart';
 import 'package:fiszkomaniak/features/settings/bloc/settings_event.dart';
 import 'package:fiszkomaniak/features/settings/bloc/settings_state.dart';
@@ -34,7 +30,7 @@ void main() {
     areSessionsPlannedNotificationsOn: true,
     areSessionsDefaultNotificationsOn: true,
     areAchievementsNotificationsOn: true,
-    areLossOfDaysNotificationsOn: false,
+    areDaysStreakLoseNotificationsOn: false,
   );
 
   setUp(() {
@@ -50,7 +46,7 @@ void main() {
         areSessionsPlannedNotificationsOn: true,
         areSessionsDefaultNotificationsOn: true,
         areAchievementsNotificationsOn: true,
-        areLossOfDaysNotificationsOn: false,
+        areDaysStreakLoseNotificationsOn: false,
       ),
     );
     when(() => appearanceSettingsBloc.stream)
@@ -76,7 +72,7 @@ void main() {
     expect(state.notificationsSettings.areSessionsPlannedNotificationsOn, true);
     expect(state.notificationsSettings.areSessionsDefaultNotificationsOn, true);
     expect(state.notificationsSettings.areAchievementsNotificationsOn, true);
-    expect(state.notificationsSettings.areLossOfDaysNotificationsOn, false);
+    expect(state.notificationsSettings.areDaysStreakLoseNotificationsOn, false);
   });
 
   blocTest(
@@ -121,7 +117,7 @@ void main() {
           areSessionsPlannedNotificationsOn: false,
           areSessionsDefaultNotificationsOn: true,
           areAchievementsNotificationsOn: true,
-          areLossOfDaysNotificationsOn: false,
+          areDaysStreakLoseNotificationsOn: false,
         ),
       ),
     ],
@@ -167,7 +163,7 @@ void main() {
           areSessionsPlannedNotificationsOn: true,
           areSessionsDefaultNotificationsOn: true,
           areAchievementsNotificationsOn: true,
-          areLossOfDaysNotificationsOn: true,
+          areDaysStreakLoseNotificationsOn: true,
         ),
       ),
     ),
@@ -178,7 +174,7 @@ void main() {
           areSessionsPlannedNotificationsOn: true,
           areSessionsDefaultNotificationsOn: true,
           areAchievementsNotificationsOn: true,
-          areLossOfDaysNotificationsOn: true,
+          areDaysStreakLoseNotificationsOn: true,
         ),
         areAllNotificationsOn: true,
       ),

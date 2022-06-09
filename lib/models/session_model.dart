@@ -1,15 +1,16 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'time_model.dart';
+import 'date_model.dart';
 
 class Session extends Equatable {
   final String id;
   final String groupId;
   final FlashcardsType flashcardsType;
   final bool areQuestionsAndAnswersSwapped;
-  final DateTime date;
-  final TimeOfDay time;
+  final Date date;
+  final Time time;
   final Duration? duration;
-  final TimeOfDay? notificationTime;
+  final Time? notificationTime;
 
   const Session({
     required this.id,
@@ -33,6 +34,29 @@ class Session extends Equatable {
         duration ?? '',
         notificationTime ?? '',
       ];
+
+  Session copyWith({
+    String? id,
+    String? groupId,
+    FlashcardsType? flashcardsType,
+    bool? areQuestionsAndAnswersSwapped,
+    Date? date,
+    Time? time,
+    Duration? duration,
+    Time? notificationTime,
+  }) {
+    return Session(
+      id: id ?? this.id,
+      groupId: groupId ?? this.groupId,
+      flashcardsType: flashcardsType ?? this.flashcardsType,
+      areQuestionsAndAnswersSwapped:
+          areQuestionsAndAnswersSwapped ?? this.areQuestionsAndAnswersSwapped,
+      date: date ?? this.date,
+      time: time ?? this.time,
+      duration: duration ?? this.duration,
+      notificationTime: notificationTime ?? this.notificationTime,
+    );
+  }
 }
 
 enum FlashcardsType {
@@ -46,18 +70,18 @@ Session createSession({
   String? groupId,
   FlashcardsType? flashcardsType,
   bool? areQuestionsAndAnswersSwapped,
-  DateTime? date,
-  TimeOfDay? time,
+  Date? date,
+  Time? time,
   Duration? duration,
-  TimeOfDay? notificationTime,
+  Time? notificationTime,
 }) {
   return Session(
     id: id ?? '',
     groupId: groupId ?? '',
     flashcardsType: flashcardsType ?? FlashcardsType.all,
     areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped ?? false,
-    date: date ?? DateTime(2022),
-    time: time ?? const TimeOfDay(hour: 12, minute: 0),
+    date: date ?? const Date(year: 2022, month: 1, day: 1),
+    time: time ?? const Time(hour: 1, minute: 1),
     duration: duration,
     notificationTime: notificationTime,
   );

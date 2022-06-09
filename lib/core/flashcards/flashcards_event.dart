@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+part of 'flashcards_bloc.dart';
 
 abstract class FlashcardsEvent extends Equatable {
   @override

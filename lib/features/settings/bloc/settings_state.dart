@@ -17,7 +17,7 @@ class SettingsState extends Equatable {
       areSessionsPlannedNotificationsOn: false,
       areSessionsDefaultNotificationsOn: false,
       areAchievementsNotificationsOn: false,
-      areLossOfDaysNotificationsOn: false,
+      areDaysStreakLoseNotificationsOn: false,
     ),
     this.areAllNotificationsOn = false,
   });

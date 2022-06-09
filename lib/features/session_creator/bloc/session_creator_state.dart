@@ -1,23 +1,57 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_status.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:fiszkomaniak/utils/group_utils.dart';
-import 'package:flutter/material.dart';
+import '../../../models/date_model.dart';
 import '../../../models/session_model.dart';
 
 class SessionCreatorState extends Equatable {
   final SessionCreatorMode mode;
+  final SessionCreatorStatus status;
   final List<Course> courses;
   final List<Group>? groups;
   final Course? selectedCourse;
   final Group? selectedGroup;
   final FlashcardsType flashcardsType;
   final bool areQuestionsAndAnswersSwapped;
-  final DateTime? date;
-  final TimeOfDay? time;
+  final Date? date;
+  final Time? time;
   final Duration? duration;
-  final TimeOfDay? notificationTime;
+  final Time? notificationTime;
+
+  const SessionCreatorState({
+    this.mode = const SessionCreatorCreateMode(),
+    this.status = const SessionCreatorStatusInitial(),
+    this.courses = const [],
+    this.groups,
+    this.selectedCourse,
+    this.selectedGroup,
+    this.flashcardsType = FlashcardsType.all,
+    this.areQuestionsAndAnswersSwapped = false,
+    this.date,
+    this.time,
+    this.duration,
+    this.notificationTime,
+  });
+
+  @override
+  List<Object> get props => [
+        mode,
+        status,
+        courses,
+        groups ?? [],
+        selectedCourse ?? createCourse(),
+        selectedGroup ?? createGroup(),
+        flashcardsType,
+        areQuestionsAndAnswersSwapped,
+        date ?? '',
+        time ?? '',
+        duration ?? '',
+        notificationTime ?? '',
+      ];
 
   String? get nameForQuestions => areQuestionsAndAnswersSwapped
       ? selectedGroup?.nameForAnswers
@@ -38,35 +72,23 @@ class SessionCreatorState extends Equatable {
     return GroupUtils.getAvailableFlashcardsTypes(group);
   }
 
-  const SessionCreatorState({
-    this.mode = const SessionCreatorCreateMode(),
-    this.courses = const [],
-    this.groups,
-    this.selectedCourse,
-    this.selectedGroup,
-    this.flashcardsType = FlashcardsType.all,
-    this.areQuestionsAndAnswersSwapped = false,
-    this.date,
-    this.time,
-    this.duration,
-    this.notificationTime,
-  });
-
   SessionCreatorState copyWith({
     SessionCreatorMode? mode,
+    SessionCreatorStatus? status,
     List<Course>? courses,
     List<Group>? groups,
     Course? selectedCourse,
     Group? selectedGroup,
     FlashcardsType? flashcardsType,
     bool? areQuestionsAndAnswersSwapped,
-    DateTime? date,
-    TimeOfDay? time,
+    Date? date,
+    Time? time,
     Duration? duration,
-    TimeOfDay? notificationTime,
+    Time? notificationTime,
   }) {
     return SessionCreatorState(
       mode: mode ?? this.mode,
+      status: status ?? SessionCreatorStatusLoaded(),
       courses: courses ?? this.courses,
       groups: groups ?? this.groups,
       selectedCourse: selectedCourse ?? this.selectedCourse,
@@ -88,6 +110,7 @@ class SessionCreatorState extends Equatable {
   }) {
     return SessionCreatorState(
       mode: mode,
+      status: status,
       courses: courses,
       groups: groups,
       selectedCourse: selectedCourse,
@@ -124,19 +147,4 @@ class SessionCreatorState extends Equatable {
       return false;
     }
   }
-
-  @override
-  List<Object> get props => [
-        mode,
-        courses,
-        groups ?? [],
-        selectedCourse ?? createCourse(),
-        selectedGroup ?? createGroup(),
-        flashcardsType,
-        areQuestionsAndAnswersSwapped,
-        date ?? '',
-        time ?? '',
-        duration ?? '',
-        notificationTime ?? '',
-      ];
 }

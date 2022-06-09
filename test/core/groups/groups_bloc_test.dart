@@ -1,8 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_event.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
-import 'package:fiszkomaniak/core/groups/groups_status.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
@@ -55,84 +53,11 @@ void main() {
     act: (_) => bloc.add(GroupsEventInitialize()),
     expect: () => [
       GroupsState(
-        allGroups: [snapshots[0].doc],
-        status: GroupsStatusLoaded(),
-      ),
-      GroupsState(
-        allGroups: [snapshots[0].doc, snapshots[1].doc],
-        status: GroupsStatusLoaded(),
-      ),
-      GroupsState(
-        allGroups: [
-          snapshots[0].doc,
-          snapshots[1].doc,
-          snapshots[2].doc,
-        ],
-        status: GroupsStatusLoaded(),
-      ),
-      GroupsState(
-        allGroups: [
-          snapshots[0].doc,
-          snapshots[1].doc,
-          snapshots[3].doc,
-        ],
-        status: GroupsStatusLoaded(),
-      ),
-      GroupsState(
+        initializationStatus: InitializationStatus.ready,
         allGroups: [
           snapshots[0].doc,
           snapshots[1].doc,
         ],
-        status: GroupsStatusLoaded(),
-      ),
-    ],
-  );
-
-  blocTest(
-    'group added',
-    build: () => bloc,
-    act: (_) => bloc.add(GroupsEventGroupAdded(group: snapshots[0].doc)),
-    expect: () => [
-      GroupsState(
-        allGroups: [snapshots[0].doc],
-        status: GroupsStatusLoaded(),
-      ),
-    ],
-  );
-
-  blocTest(
-    'group updated',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(GroupsEventGroupAdded(group: snapshots[2].doc));
-      bloc.add(GroupsEventGroupUpdated(group: snapshots[3].doc));
-    },
-    expect: () => [
-      GroupsState(
-        allGroups: [snapshots[2].doc],
-        status: GroupsStatusLoaded(),
-      ),
-      GroupsState(
-        allGroups: [snapshots[3].doc],
-        status: GroupsStatusLoaded(),
-      ),
-    ],
-  );
-
-  blocTest(
-    'group removed',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(GroupsEventGroupAdded(group: snapshots[1].doc));
-      bloc.add(GroupsEventGroupRemoved(groupId: 'g2'));
-    },
-    expect: () => [
-      GroupsState(
-        allGroups: [snapshots[1].doc],
-        status: GroupsStatusLoaded(),
-      ),
-      GroupsState(
-        allGroups: const [],
         status: GroupsStatusLoaded(),
       ),
     ],

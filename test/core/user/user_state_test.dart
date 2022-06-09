@@ -1,4 +1,6 @@
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/core/user/user_bloc.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/day_model.dart';
 import 'package:fiszkomaniak/models/user_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,8 +13,19 @@ void main() {
   });
 
   test('initial state', () {
+    expect(state.initializationStatus, InitializationStatus.loading);
     expect(state.status, const UserStatusInitial());
     expect(state.loggedUser, null);
+  });
+
+  test('copy with initialization status', () {
+    const InitializationStatus status = InitializationStatus.ready;
+
+    final UserState state2 = state.copyWith(initializationStatus: status);
+    final UserState state3 = state2.copyWith();
+
+    expect(state2.initializationStatus, status);
+    expect(state3.initializationStatus, status);
   });
 
   test('copy with status', () {
@@ -26,7 +39,7 @@ void main() {
   test('copy with logged user', () {
     final User loggedUser = createUser(
       avatarUrl: 'avatar/url/image.jpg',
-      days: [createDay(date: DateTime(2022))],
+      days: [createDay(date: createDate(year: 2022))],
     );
 
     final UserState state2 = state.copyWith(loggedUser: loggedUser);
@@ -34,21 +47,5 @@ void main() {
 
     expect(state2.loggedUser, loggedUser);
     expect(state3.loggedUser, loggedUser);
-  });
-
-  test('amount of days in a row, user is null', () {
-    expect(state.amountOfDaysInARow, 0);
-  });
-
-  test('amount of days in a row, user is not null', () {
-    final User loggedUser = createUser(days: [
-      createDay(date: DateTime.now()),
-      createDay(date: DateTime.now().subtract(const Duration(days: 1))),
-      createDay(date: DateTime.now().subtract(const Duration(days: 2))),
-    ]);
-
-    state = state.copyWith(loggedUser: loggedUser);
-
-    expect(state.amountOfDaysInARow, 3);
   });
 }

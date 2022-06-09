@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/day_flashcard_model.dart';
+import 'date_model.dart';
 
 class Day extends Equatable {
-  final DateTime date;
+  final Date date;
   final List<DayFlashcard> rememberedFlashcards;
 
   const Day({
@@ -15,11 +16,11 @@ class Day extends Equatable {
 }
 
 Day createDay({
-  DateTime? date,
+  Date? date,
   List<DayFlashcard>? rememberedFlashcards,
 }) {
   return Day(
-    date: date ?? DateTime(200),
+    date: date ?? const Date(year: 2022, month: 1, day: 1),
     rememberedFlashcards: rememberedFlashcards ?? [],
   );
 }

@@ -3,7 +3,6 @@ import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_bloc.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_dialogs.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_event.dart';

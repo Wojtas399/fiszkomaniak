@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
-import 'package:fiszkomaniak/core/groups/groups_status.dart';
+import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -36,8 +36,19 @@ void main() {
 
   test('initial state', () {
     const GroupsState initialState = GroupsState();
+    expect(initialState.initializationStatus, InitializationStatus.loading);
     expect(initialState.allGroups, []);
     expect(initialState.status, const GroupsStatusInitial());
+  });
+
+  test('copy with initialization status', () {
+    const InitializationStatus status = InitializationStatus.ready;
+
+    final GroupsState state2 = state.copyWith(initializationStatus: status);
+    final GroupsState state3 = state2.copyWith();
+
+    expect(state2.initializationStatus, status);
+    expect(state3.initializationStatus, status);
   });
 
   test('copy with all groups', () {

@@ -3,6 +3,11 @@ import 'package:fiszkomaniak/models/user_model.dart';
 abstract class UserInterface {
   Stream<User> getLoggedUserSnapshots();
 
+  Future<void> addUser({
+    required String userId,
+    required String username,
+  });
+
   Future<void> saveNewAvatar({required String fullPath});
 
   Future<void> removeAvatar();

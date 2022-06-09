@@ -1,11 +1,14 @@
 import 'package:fiszkomaniak/components/card_item.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/converters/time_converters.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/models/time_model.dart';
+import 'package:fiszkomaniak/ui_extensions/ui_duration_extensions.dart';
+import 'package:fiszkomaniak/ui_extensions/ui_time_extensions.dart';
 import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../models/date_model.dart';
 
 class SessionItem extends StatelessWidget {
   final Session session;
@@ -13,11 +16,11 @@ class SessionItem extends StatelessWidget {
   final String courseName;
 
   const SessionItem({
-    Key? key,
+    super.key,
     required this.session,
     required this.groupName,
     required this.courseName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +55,9 @@ class SessionItem extends StatelessWidget {
 }
 
 class _BigDate extends StatelessWidget {
-  final DateTime date;
+  final Date date;
 
-  const _BigDate({Key? key, required this.date}) : super(key: key);
+  const _BigDate({required this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -77,11 +80,7 @@ class _Title extends StatelessWidget {
   final String courseName;
   final String groupName;
 
-  const _Title({
-    Key? key,
-    required this.courseName,
-    required this.groupName,
-  }) : super(key: key);
+  const _Title({required this.courseName, required this.groupName});
 
   @override
   Widget build(BuildContext context) {
@@ -100,19 +99,13 @@ class _Title extends StatelessWidget {
 }
 
 class _TimeAndDuration extends StatelessWidget {
-  final TimeOfDay time;
+  final Time time;
   final Duration? duration;
 
-  const _TimeAndDuration({
-    Key? key,
-    required this.time,
-    required this.duration,
-  }) : super(key: key);
+  const _TimeAndDuration({required this.time, required this.duration});
 
   @override
   Widget build(BuildContext context) {
-    final String timeAsString = convertTimeToViewFormat(time);
-    final String durationAsString = convertDurationToViewFormat(duration);
     return IntrinsicHeight(
       child: Row(
         children: [
@@ -121,7 +114,7 @@ class _TimeAndDuration extends StatelessWidget {
               children: [
                 Text('Godzina', style: Theme.of(context).textTheme.caption),
                 const SizedBox(height: 4),
-                Text(timeAsString),
+                Text(time.toUIFormat()),
               ],
             ),
           ),
@@ -134,7 +127,7 @@ class _TimeAndDuration extends StatelessWidget {
                   style: Theme.of(context).textTheme.caption,
                 ),
                 const SizedBox(height: 4),
-                Text(durationAsString),
+                Text(duration.toUIFormat()),
               ],
             ),
           ),

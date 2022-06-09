@@ -1,9 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_event.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_dialogs.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
@@ -19,14 +17,21 @@ class MockGroupsBloc extends Mock implements GroupsBloc {}
 
 class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
 
+class MockAchievementsBloc extends Mock implements AchievementsBloc {}
+
 class MockFlashcardsEditorDialogs extends Mock
     implements FlashcardsEditorDialogs {}
 
 class MockFlashcardsEditorUtils extends Mock implements FlashcardsEditorUtils {}
 
+class FakeFlashcardsEvent extends Fake implements FlashcardsEvent {}
+
+class FakeAchievementsEvent extends Fake implements AchievementsEvent {}
+
 void main() {
   final GroupsBloc groupsBloc = MockGroupsBloc();
   final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
+  final AchievementsBloc achievementsBloc = MockAchievementsBloc();
   final FlashcardsEditorDialogs flashcardsEditorDialogs =
       MockFlashcardsEditorDialogs();
   final FlashcardsEditorUtils flashcardsEditorUtils =
@@ -86,10 +91,16 @@ void main() {
     mode: const FlashcardsEditorAddMode(groupId: 'g1'),
   );
 
+  setUpAll(() {
+    registerFallbackValue(FakeFlashcardsEvent());
+    registerFallbackValue(FakeAchievementsEvent());
+  });
+
   setUp(() {
     bloc = FlashcardsEditorBloc(
       groupsBloc: groupsBloc,
       flashcardsBloc: flashcardsBloc,
+      achievementsBloc: achievementsBloc,
       flashcardsEditorDialogs: flashcardsEditorDialogs,
       flashcardsEditorUtils: flashcardsEditorUtils,
     );
@@ -104,6 +115,7 @@ void main() {
   tearDown(() {
     reset(groupsBloc);
     reset(flashcardsBloc);
+    reset(achievementsBloc);
     reset(flashcardsEditorDialogs);
     reset(flashcardsEditorUtils);
   });
@@ -217,14 +229,8 @@ void main() {
     verify: (_) {
       verify(() => flashcardsEditorDialogs.displayInfoAboutNoChanges())
           .called(1);
-      verifyNever(
-        () => flashcardsBloc.add(
-          FlashcardsEventSaveFlashcards(
-            groupId: 'g1',
-            flashcards: stateAfterInitialization.flashcardsWithoutLastOne,
-          ),
-        ),
-      );
+      verifyNever(() => flashcardsBloc.add(any()));
+      verifyNever(() => achievementsBloc.add(any()));
     },
   );
 
@@ -268,14 +274,8 @@ void main() {
       verify(
         () => flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards(),
       ).called(1);
-      verifyNever(
-        () => flashcardsBloc.add(
-          FlashcardsEventSaveFlashcards(
-            groupId: 'g1',
-            flashcards: stateAfterInitialization.flashcardsWithoutLastOne,
-          ),
-        ),
-      );
+      verifyNever(() => flashcardsBloc.add(any()));
+      verifyNever(() => achievementsBloc.add(any()));
     },
   );
 
@@ -327,14 +327,8 @@ void main() {
       verify(
         () => flashcardsEditorDialogs.displayInfoAboutDuplicates(),
       ).called(1);
-      verifyNever(
-        () => flashcardsBloc.add(
-          FlashcardsEventSaveFlashcards(
-            groupId: 'g1',
-            flashcards: stateAfterInitialization.flashcardsWithoutLastOne,
-          ),
-        ),
-      );
+      verifyNever(() => flashcardsBloc.add(any()));
+      verifyNever(() => achievementsBloc.add(any()));
     },
   );
 
@@ -374,14 +368,8 @@ void main() {
       verify: (_) {
         verify(() => flashcardsEditorDialogs.askForSaveConfirmation())
             .called(1);
-        verifyNever(
-          () => flashcardsBloc.add(
-            FlashcardsEventSaveFlashcards(
-              groupId: 'g1',
-              flashcards: stateAfterInitialization.flashcardsWithoutLastOne,
-            ),
-          ),
-        );
+        verifyNever(() => flashcardsBloc.add(any()));
+        verifyNever(() => achievementsBloc.add(any()));
       },
     );
 
@@ -406,6 +394,14 @@ void main() {
             FlashcardsEventSaveFlashcards(
               groupId: 'g1',
               flashcards: stateAfterInitialization.flashcardsWithoutLastOne,
+            ),
+          ),
+        ).called(1);
+        verify(
+          () => achievementsBloc.add(
+            AchievementsEventAddNewFlashcards(
+              groupId: 'g1',
+              flashcardsIndexes: const [0, 1, 2],
             ),
           ),
         ).called(1);

@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+part of 'groups_bloc.dart';
 
 abstract class GroupsEvent extends Equatable {
   @override
@@ -8,31 +7,23 @@ abstract class GroupsEvent extends Equatable {
 
 class GroupsEventInitialize extends GroupsEvent {}
 
-class GroupsEventGroupAdded extends GroupsEvent {
-  final Group group;
+class GroupsEventGroupsChanged extends GroupsEvent {
+  final List<Group> addedGroups;
+  final List<Group> updatedGroups;
+  final List<Group> deletedGroups;
 
-  GroupsEventGroupAdded({required this.group});
-
-  @override
-  List<Object> get props => [group];
-}
-
-class GroupsEventGroupUpdated extends GroupsEvent {
-  final Group group;
-
-  GroupsEventGroupUpdated({required this.group});
+  GroupsEventGroupsChanged({
+    required this.addedGroups,
+    required this.updatedGroups,
+    required this.deletedGroups,
+  });
 
   @override
-  List<Object> get props => [group];
-}
-
-class GroupsEventGroupRemoved extends GroupsEvent {
-  final String groupId;
-
-  GroupsEventGroupRemoved({required this.groupId});
-
-  @override
-  List<Object> get props => [groupId];
+  List<Object> get props => [
+        addedGroups,
+        updatedGroups,
+        deletedGroups,
+      ];
 }
 
 class GroupsEventAddGroup extends GroupsEvent {

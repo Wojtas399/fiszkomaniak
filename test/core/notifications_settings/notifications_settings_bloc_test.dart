@@ -1,7 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/core/initialization_status.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_event.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_state.dart';
 import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/models/http_status_model.dart';
 import 'package:fiszkomaniak/models/settings/notifications_settings_model.dart';
@@ -24,15 +23,6 @@ void main() {
     reset(settingsInterface);
   });
 
-  test('initial state', () {
-    final NotificationsSettingsState state = notificationsSettingsBloc.state;
-    expect(state.areSessionsPlannedNotificationsOn, false);
-    expect(state.areSessionsDefaultNotificationsOn, false);
-    expect(state.areAchievementsNotificationsOn, false);
-    expect(state.areLossOfDaysNotificationsOn, false);
-    expect(state.httpStatus, const HttpStatusInitial());
-  });
-
   blocTest(
     'load, success',
     build: () => notificationsSettingsBloc,
@@ -42,7 +32,7 @@ void main() {
           areSessionsPlannedNotificationsOn: true,
           areSessionsDefaultNotificationsOn: false,
           areAchievementsNotificationsOn: false,
-          areLossOfDaysNotificationsOn: true,
+          areDaysStreakLoseNotificationsOn: true,
         ),
       );
     },
@@ -51,10 +41,11 @@ void main() {
     ),
     expect: () => [
       const NotificationsSettingsState(
+        initializationStatus: InitializationStatus.ready,
         areSessionsPlannedNotificationsOn: true,
         areSessionsDefaultNotificationsOn: false,
         areAchievementsNotificationsOn: false,
-        areLossOfDaysNotificationsOn: true,
+        areDaysStreakLoseNotificationsOn: true,
         httpStatus: HttpStatusSuccess(),
       ),
     ],

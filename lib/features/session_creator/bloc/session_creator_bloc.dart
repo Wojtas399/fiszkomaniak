@@ -1,35 +1,32 @@
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_dialogs.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
+import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_status.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
-import 'package:fiszkomaniak/utils/date_utils.dart' as custom_date_utils;
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/course_model.dart';
+import '../../../models/time_model.dart';
+import '../../../utils/time_utils.dart';
 
 class SessionCreatorBloc
     extends Bloc<SessionCreatorEvent, SessionCreatorState> {
   late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
   late final SessionsBloc _sessionsBloc;
-  late final SessionCreatorDialogs _sessionCreatorDialogs;
 
   SessionCreatorBloc({
     required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
     required SessionsBloc sessionsBloc,
-    required SessionCreatorDialogs sessionCreatorDialogs,
   }) : super(const SessionCreatorState()) {
     _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
     _sessionsBloc = sessionsBloc;
-    _sessionCreatorDialogs = sessionCreatorDialogs;
     on<SessionCreatorEventInitialize>(_initialize);
     on<SessionCreatorEventCourseSelected>(_courseSelected);
     on<SessionCreatorEventGroupSelected>(_groupSelected);
@@ -109,15 +106,24 @@ class SessionCreatorBloc
     emit(state.copyWith(date: event.date));
   }
 
-  void _timeSelected(
+  Future<void> _timeSelected(
     SessionCreatorEventTimeSelected event,
     Emitter<SessionCreatorState> emit,
-  ) {
-    if (_isSelectedDatePastDate()) {
-      _sessionCreatorDialogs.displayInfoAboutPastDate();
-    } else if (_isSelectedDateTodayDate() &&
-        _isTimeEarlierThanCurrentTime(event.time)) {
-      _sessionCreatorDialogs.displayInfoAboutNotAllowedTime();
+  ) async {
+    final Date? date = state.date;
+    final Time? notificationTime = state.notificationTime;
+    if (date != null && TimeUtils.isPastTime(event.time, date)) {
+      emit(state.copyWith(status: SessionCreatorStatusTimeFromThePast()));
+    } else if (notificationTime != null &&
+        TimeUtils.isTime1EarlierThanTime2(
+          time1: event.time,
+          time2: notificationTime,
+        )) {
+      emit(
+        state.copyWith(
+          status: SessionCreatorStatusStartTimeEarlierThanNotificationTime(),
+        ),
+      );
     } else {
       emit(state.copyWith(time: event.time));
     }
@@ -130,15 +136,24 @@ class SessionCreatorBloc
     emit(state.copyWith(duration: event.duration));
   }
 
-  void _notificationTimeSelected(
+  Future<void> _notificationTimeSelected(
     SessionCreatorEventNotificationTimeSelected event,
     Emitter<SessionCreatorState> emit,
-  ) {
-    if (_isSelectedDatePastDate()) {
-      _sessionCreatorDialogs.displayInfoAboutPastDate();
-    } else if (_isSelectedDateTodayDate() &&
-        _isTimeEarlierThanCurrentTime(event.notificationTime)) {
-      _sessionCreatorDialogs.displayInfoAboutNotAllowedTime();
+  ) async {
+    final Date? date = state.date;
+    final Time? time = state.time;
+    if (date != null && TimeUtils.isPastTime(event.notificationTime, date)) {
+      emit(state.copyWith(status: SessionCreatorStatusTimeFromThePast()));
+    } else if (time != null &&
+        TimeUtils.isTime1EarlierThanTime2(
+          time1: time,
+          time2: event.notificationTime,
+        )) {
+      emit(
+        state.copyWith(
+          status: SessionCreatorStatusNotificationTimeLaterThanStartTime(),
+        ),
+      );
     } else {
       emit(state.copyWith(notificationTime: event.notificationTime));
     }
@@ -203,31 +218,10 @@ class SessionCreatorBloc
     return group.flashcards.isNotEmpty;
   }
 
-  bool _isSelectedDatePastDate() {
-    final DateTime? date = state.date;
-    if (date == null) {
-      return false;
-    }
-    return custom_date_utils.DateUtils.compareDates(date, DateTime.now()) == -1;
-  }
-
-  bool _isSelectedDateTodayDate() {
-    final DateTime? date = state.date;
-    if (date == null) {
-      return false;
-    }
-    return custom_date_utils.DateUtils.compareDates(date, DateTime.now()) == 0;
-  }
-
-  bool _isTimeEarlierThanCurrentTime(TimeOfDay time) {
-    return custom_date_utils.DateUtils.compareTimes(time, TimeOfDay.now()) ==
-        -1;
-  }
-
   void _submitCreateMode() {
     final String? groupId = state.selectedGroup?.id;
-    final DateTime? date = state.date;
-    final TimeOfDay? time = state.time;
+    final Date? date = state.date;
+    final Time? time = state.time;
     if (groupId != null && date != null && time != null) {
       _sessionsBloc.add(
         SessionsEventAddSession(
@@ -254,9 +248,9 @@ class SessionCreatorBloc
         date: state.date,
         time: state.time,
         duration: state.duration,
-        notificationTime: state.notificationTime,
         flashcardsType: state.flashcardsType,
         areQuestionsAndFlashcardsSwapped: state.areQuestionsAndAnswersSwapped,
+        notificationTime: state.notificationTime,
       ),
     );
   }

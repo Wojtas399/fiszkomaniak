@@ -1,3 +1,4 @@
+import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/config/routes.dart';
 import 'package:fiszkomaniak/config/slide_right_route_animation.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
@@ -18,6 +19,7 @@ import '../features/learning_process/learning_process_data.dart';
 
 class Navigation {
   void moveBack({Object? objectToReturn}) {
+    Dialogs.hideSnackbar();
     navigatorKey.currentState?.pop(objectToReturn);
   }
 
@@ -49,10 +51,12 @@ class Navigation {
   }
 
   void navigateToSettings() {
+    Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(Routes.settings);
   }
 
   Future<void> navigateToCourseCreator(CourseCreatorMode mode) async {
+    Dialogs.hideSnackbar();
     await Future.delayed(
       const Duration(milliseconds: 1),
       () {
@@ -65,6 +69,7 @@ class Navigation {
   }
 
   Future<void> navigateToGroupCreator(GroupCreatorMode mode) async {
+    Dialogs.hideSnackbar();
     await Future.delayed(
       const Duration(milliseconds: 1),
       () {
@@ -77,6 +82,7 @@ class Navigation {
   }
 
   void navigateToSessionCreator(SessionCreatorMode mode) async {
+    Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.sessionCreator,
       arguments: mode,
@@ -84,12 +90,14 @@ class Navigation {
   }
 
   void navigateToGroupSelection() {
+    Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.groupSelection,
     );
   }
 
   void navigateToFlashcardsEditor(FlashcardsEditorMode mode) {
+    Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.flashcardsEditor,
       arguments: mode,
@@ -97,6 +105,7 @@ class Navigation {
   }
 
   void navigateToCourseGroupsPreview(String courseId) {
+    Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.courseGroupsPreview,
       arguments: courseId,
@@ -104,6 +113,7 @@ class Navigation {
   }
 
   void navigateToGroupFlashcardsPreview(String groupId) {
+    Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.groupFlashcardsPreview,
       arguments: groupId,
@@ -111,6 +121,7 @@ class Navigation {
   }
 
   void navigateToGroupPreview(String groupId) {
+    Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.groupPreview,
       arguments: groupId,
@@ -118,6 +129,7 @@ class Navigation {
   }
 
   void navigateToFlashcardPreview(String groupId, int flashcardIndex) {
+    Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.flashcardPreview,
       arguments: FlashcardPreviewParams(
@@ -128,6 +140,7 @@ class Navigation {
   }
 
   void navigateToSessionPreview(SessionPreviewMode mode) {
+    Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.sessionPreview,
       arguments: mode,
@@ -135,6 +148,7 @@ class Navigation {
   }
 
   void navigateToLearningProcess(LearningProcessData data) {
+    Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.session,
       arguments: data,

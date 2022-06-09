@@ -3,7 +3,6 @@ import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
@@ -129,16 +128,9 @@ class SessionPreviewBloc
     Emitter<SessionPreviewState> emit,
   ) {
     final String? sessionId = state.session?.id;
-    if (sessionId != null) {
-      final Session? updatedSession = _sessionsBloc.state.getSessionById(
-        sessionId,
-      );
-      if (updatedSession != null) {
-        emit(state.copyWith(
-          session: updatedSession,
-          duration: updatedSession.duration,
-        ));
-      }
+    final SessionPreviewMode? mode = state.mode;
+    if (sessionId != null && mode != null && mode is SessionPreviewModeNormal) {
+      _initializeNormalMode(mode.copyWith(sessionId: sessionId), emit);
     }
   }
 
@@ -187,7 +179,7 @@ class SessionPreviewBloc
   }
 
   void _setSessionsStateListener() {
-    _sessionsStateSubscription = _sessionsBloc.stream.listen((_) {
+    _sessionsStateSubscription ??= _sessionsBloc.stream.listen((_) {
       add(SessionPreviewEventSessionsStateUpdated());
     });
   }

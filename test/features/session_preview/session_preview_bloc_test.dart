@@ -1,12 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/courses/courses_state.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_state.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_event.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_state.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
@@ -16,7 +12,7 @@ import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
-import 'package:flutter/material.dart';
+import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -44,9 +40,9 @@ void main() {
       createSession(
         id: 's1',
         groupId: 'g1',
-        time: const TimeOfDay(hour: 12, minute: 30),
+        time: createTime(hour: 12, minute: 30),
         duration: const Duration(minutes: 25),
-        notificationTime: const TimeOfDay(hour: 8, minute: 0),
+        notificationTime: createTime(hour: 8, minute: 0),
       ),
       createSession(id: 's2', groupId: 'g2'),
     ],

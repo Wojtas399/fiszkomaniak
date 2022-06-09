@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fiszkomaniak/firebase/fire_converters.dart';
+import 'package:fiszkomaniak/firebase/fire_extensions.dart';
 import 'package:fiszkomaniak/firebase/models/flashcard_db_model.dart';
 import 'package:fiszkomaniak/firebase/models/group_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_groups_service.dart';
@@ -82,7 +82,7 @@ class GroupsRepository implements GroupsInterface {
         nameForAnswers != null &&
         flashcards != null) {
       return ChangedDocument(
-        changeType: FireConverters.convertChangeType(docChange.type),
+        changeType: docChange.type.toDbDocChangeType(),
         doc: Group(
           id: docChange.doc.id,
           name: name,

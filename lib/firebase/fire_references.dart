@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fiszkomaniak/firebase/fire_user.dart';
 import 'fire_instances.dart';
+import 'models/achievement_db_model.dart';
 import 'models/appearance_settings_db_model.dart';
 import 'models/course_db_model.dart';
 import 'models/group_db_model.dart';
@@ -30,6 +31,9 @@ class FireReferences {
 
   static CollectionReference get sessionsRef =>
       loggedUserRef.collection('Sessions');
+
+  static CollectionReference get achievementsRef =>
+      loggedUserRef.collection('Achievements');
 
   static Reference get avatarRef => FireInstances.storage.ref(
         'Avatars/${FireUser.loggedUserId}.jpg',
@@ -93,4 +97,12 @@ class FireReferences {
         ),
         toFirestore: (data, _) => data.toJson(),
       );
+
+  static CollectionReference<AchievementDbModel>
+      get achievementsRefWithConverter =>
+          achievementsRef.withConverter<AchievementDbModel>(
+            fromFirestore: (snapshot, _) =>
+                AchievementDbModel.fromJson(snapshot.data()!),
+            toFirestore: (data, _) => data.toJson(),
+          );
 }

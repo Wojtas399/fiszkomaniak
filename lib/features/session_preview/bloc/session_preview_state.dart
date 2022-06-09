@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
+import '../../../models/date_model.dart';
 import '../../../models/group_model.dart';
 import '../../../utils/group_utils.dart';
 
@@ -23,11 +24,11 @@ class SessionPreviewState extends Equatable {
     this.areQuestionsAndAnswersSwapped = false,
   });
 
-  DateTime? get date {
+  Date? get date {
     if (mode is SessionPreviewModeNormal) {
       return session?.date;
     } else if (mode is SessionPreviewModeQuick) {
-      return DateTime.now();
+      return Date.now();
     }
     return null;
   }

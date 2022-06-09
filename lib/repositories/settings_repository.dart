@@ -60,7 +60,7 @@ class SettingsRepository implements SettingsInterface {
         areSessionsPlannedNotificationsOn: areSessionsPlannedNotificationsOn,
         areSessionsDefaultNotificationsOn: areSessionsDefaultNotificationsOn,
         areAchievementsNotificationsOn: areAchievementsNotificationsOn,
-        areLossOfDaysNotificationsOn: areLossOfDaysNotificationsOn,
+        areDaysStreakLoseNotificationsOn: areLossOfDaysNotificationsOn,
       );
     } else {
       throw 'Cannot load one of the notifications settings.';

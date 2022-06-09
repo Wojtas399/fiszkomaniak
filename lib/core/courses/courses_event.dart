@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
+part of 'courses_bloc.dart';
 
 abstract class CoursesEvent extends Equatable {
   @override
@@ -8,31 +7,23 @@ abstract class CoursesEvent extends Equatable {
 
 class CoursesEventInitialize extends CoursesEvent {}
 
-class CoursesEventCourseAdded extends CoursesEvent {
-  final Course course;
+class CoursesEventCoursesChanged extends CoursesEvent {
+  final List<Course> addedCourses;
+  final List<Course> updatedCourses;
+  final List<Course> deletedCourses;
 
-  CoursesEventCourseAdded({required this.course});
-
-  @override
-  List<Object> get props => [course];
-}
-
-class CoursesEventCourseModified extends CoursesEvent {
-  final Course course;
-
-  CoursesEventCourseModified({required this.course});
+  CoursesEventCoursesChanged({
+    required this.addedCourses,
+    required this.updatedCourses,
+    required this.deletedCourses,
+  });
 
   @override
-  List<Object> get props => [course];
-}
-
-class CoursesEventCourseRemoved extends CoursesEvent {
-  final String courseId;
-
-  CoursesEventCourseRemoved({required this.courseId});
-
-  @override
-  List<Object> get props => [courseId];
+  List<Object> get props => [
+        addedCourses,
+        updatedCourses,
+        deletedCourses,
+      ];
 }
 
 class CoursesEventAddNewCourse extends CoursesEvent {

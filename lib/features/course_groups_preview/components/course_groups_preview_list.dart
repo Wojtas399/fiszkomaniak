@@ -1,7 +1,6 @@
 import 'package:fiszkomaniak/components/group_item/group_item.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_state.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_state.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,7 @@ import '../../../components/bouncing_scroll.dart';
 import '../../../components/on_tap_focus_lose_area.dart';
 
 class CourseGroupsPreviewList extends StatelessWidget {
-  const CourseGroupsPreviewList({Key? key}) : super(key: key);
+  const CourseGroupsPreviewList({super.key});
 
   @override
   Widget build(BuildContext context) {

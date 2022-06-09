@@ -1,0 +1,4 @@
+enum InitializationStatus {
+  loading,
+  ready,
+}

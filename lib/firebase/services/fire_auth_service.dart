@@ -30,8 +30,7 @@ class FireAuthService {
     );
   }
 
-  Future<void> signUp({
-    required String username,
+  Future<String?> signUp({
     required String email,
     required String password,
   }) async {
@@ -42,8 +41,9 @@ class FireAuthService {
     );
     User? user = userCredential.user;
     if (user != null) {
-      await _fireUserService.addUser(user.uid, username);
+      return user.uid;
     }
+    return null;
   }
 
   Future<void> sendPasswordResetEmail({required String email}) async {

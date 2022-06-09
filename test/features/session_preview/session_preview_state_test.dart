@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
@@ -106,10 +107,10 @@ void main() {
   test('date, normal mode', () {
     final SessionPreviewState updatedState = state.copyWith(
       mode: SessionPreviewModeNormal(sessionId: 's1'),
-      session: createSession(id: 's1', date: DateTime(2022, 1, 1)),
+      session: createSession(id: 's1', date: createDate()),
     );
 
-    expect(updatedState.date, DateTime(2022, 1, 1));
+    expect(updatedState.date, createDate());
   });
 
   test('date, quick mode', () {
@@ -117,10 +118,7 @@ void main() {
       mode: SessionPreviewModeQuick(groupId: 'g1'),
     );
 
-    expect(
-      DateUtils.dateOnly(updatedState.date!),
-      DateUtils.dateOnly(DateTime.now()),
-    );
+    expect(updatedState.date, Date.now());
   });
 
   group('name for questions and answers', () {
