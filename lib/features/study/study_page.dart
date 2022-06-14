@@ -1,73 +1,57 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/components/group_item/group_item.dart';
+import 'package:fiszkomaniak/features/study/bloc/study_bloc.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
+import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+import '../../interfaces/groups_interface.dart';
 
 class StudyPage extends StatelessWidget {
   const StudyPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CoursesBloc, CoursesState>(
-      builder: (_, CoursesState coursesState) {
-        return BlocBuilder<GroupsBloc, GroupsState>(
-          builder: (_, GroupsState groupsState) {
-            if (groupsState.allGroups.isEmpty) {
-              return const _NoGroupsInfo();
-            }
-            return BlocBuilder<FlashcardsBloc, FlashcardsState>(
-              builder: (BuildContext context, FlashcardsState flashcardsState) {
-                return BouncingScroll(
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 16,
-                        right: 16,
-                        bottom: 32,
-                        left: 16,
-                      ),
-                      child: Column(
-                        children: _buildGroups(
-                          context,
-                          coursesState,
-                          groupsState,
-                          flashcardsState,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
+    return _StudyBlocProvider(
+      child: BlocBuilder<StudyBloc, StudyState>(
+        builder: (_, StudyState state) {
+          if (state.groupsItems.isEmpty) {
+            return const _NoGroupsInfo();
+          }
+          return BouncingScroll(
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 16,
+                  right: 16,
+                  bottom: 32,
+                  left: 16,
+                ),
+                child: Column(
+                  children: _buildGroups(context, state),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
-  List<Widget> _buildGroups(
-    BuildContext context,
-    CoursesState coursesState,
-    GroupsState groupsState,
-    FlashcardsState flashcardsState,
-  ) {
-    return groupsState.allGroups
+  List<Widget> _buildGroups(BuildContext context, StudyState state) {
+    return state.groupsItems
         .map(
-          (group) => GroupItem(
-            courseName: coursesState.getCourseNameById(group.courseId) ?? '',
-            groupName: group.name,
-            amountOfRememberedFlashcards: flashcardsState
-                .getAmountOfRememberedFlashcardsFromGroup(group.id),
-            amountOfAllFlashcards:
-                flashcardsState.getAmountOfAllFlashcardsFromGroup(group.id),
+          (item) => GroupItem(
+            courseName: item.courseName,
+            groupName: item.groupName,
+            amountOfRememberedFlashcards: item.amountOfRememberedFlashcards,
+            amountOfAllFlashcards: item.amountOfAllFlashcards,
             onTap: () {
-              context.read<Navigation>().navigateToGroupPreview(group.id);
+              context.read<Navigation>().navigateToGroupPreview(item.groupId);
             },
           ),
         )
@@ -75,8 +59,26 @@ class StudyPage extends StatelessWidget {
   }
 }
 
+class _StudyBlocProvider extends StatelessWidget {
+  final Widget child;
+
+  const _StudyBlocProvider({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (BuildContext context) => StudyBloc(
+        coursesInterface: context.read<CoursesInterface>(),
+        groupsInterface: context.read<GroupsInterface>(),
+        flashcardsInterface: context.read<FlashcardsInterface>(),
+      )..add(StudyEventInitialize()),
+      child: child,
+    );
+  }
+}
+
 class _NoGroupsInfo extends StatelessWidget {
-  const _NoGroupsInfo({Key? key}) : super(key: key);
+  const _NoGroupsInfo();
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,13 @@
 import 'package:fiszkomaniak/models/user_model.dart';
 
 abstract class UserInterface {
-  Stream<User> get loggedUser$;
+  Stream<String> get loggedUserAvatarUrl$;
+
+  Stream<User> get loggedUserData$;
+
+  Future<void> loadLoggedUserAvatar();
+
+  Future<void> loadLoggedUserData();
 
   Future<void> addUser({
     required String userId,

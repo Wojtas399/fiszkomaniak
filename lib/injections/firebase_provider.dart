@@ -68,8 +68,11 @@ class FirebaseProvider {
     return GroupsRepository(fireGroupsService: _fireGroupsService);
   }
 
-  static FlashcardsInterface provideFlashcardsInterface() {
+  static FlashcardsInterface provideFlashcardsInterface({
+    required GroupsInterface groupsInterface,
+  }) {
     return FlashcardsRepository(
+      groupsInterface: groupsInterface,
       fireFlashcardsService: _fireFlashcardsService,
       fireDaysService: _fireDaysService,
     );

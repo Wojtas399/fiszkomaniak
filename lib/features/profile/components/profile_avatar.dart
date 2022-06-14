@@ -10,10 +10,12 @@ class ProfileAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String? avatarUrl = context.select(
-      (ProfileBloc bloc) => bloc.state.loggedUserData?.avatarUrl,
+      (ProfileBloc bloc) => bloc.state.loggedUserAvatarUrl,
     );
     return Avatar(
-      imageType: avatarUrl != null ? AvatarImageTypeUrl(url: avatarUrl) : null,
+      imageType: avatarUrl != null && avatarUrl != ''
+          ? AvatarImageTypeUrl(url: avatarUrl)
+          : null,
       size: 250.0,
       onPressed: () => _avatarPressed(context),
     );

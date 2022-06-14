@@ -1,13 +1,30 @@
 part of 'profile_bloc.dart';
 
-abstract class ProfileEvent {}
+abstract class ProfileEvent extends Equatable {
+  @override
+  List<Object> get props => [];
+}
 
 class ProfileEventInitialize extends ProfileEvent {}
 
-class ProfileEventUserStateUpdated extends ProfileEvent {
-  final User? newUserData;
+class ProfileEventLoggedUserAvatarUrlChanged extends ProfileEvent {
+  final String newLoggedUserAvatarUrl;
 
-  ProfileEventUserStateUpdated({required this.newUserData});
+  ProfileEventLoggedUserAvatarUrlChanged({
+    required this.newLoggedUserAvatarUrl,
+  });
+
+  @override
+  List<Object> get props => [newLoggedUserAvatarUrl];
+}
+
+class ProfileEventLoggedUserDataChanged extends ProfileEvent {
+  final User newLoggedUserData;
+
+  ProfileEventLoggedUserDataChanged({required this.newLoggedUserData});
+
+  @override
+  List<Object> get props => [newLoggedUserData];
 }
 
 class ProfileEventAchievementsStateUpdated extends ProfileEvent {
@@ -18,6 +35,9 @@ class ProfileEventAchievementsStateUpdated extends ProfileEvent {
     required this.daysStreak,
     required this.allFlashcardsAmount,
   });
+
+  @override
+  List<Object> get props => [daysStreak, allFlashcardsAmount];
 }
 
 class ProfileEventModifyAvatar extends ProfileEvent {}

@@ -20,4 +20,12 @@ abstract class FlashcardsInterface {
     required String groupId,
     required Flashcard flashcard,
   });
+
+  Stream<List<Flashcard>> getFlashcardsFromGroup({required String groupId});
+
+  Stream<int> getAmountOfAllFlashcardsFromGroup({required String groupId});
+
+  Stream<int> getAmountOfRememberedFlashcardsFromGroup({
+    required String groupId,
+  });
 }

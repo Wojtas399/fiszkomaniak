@@ -6,28 +6,31 @@ import 'package:fiszkomaniak/firebase/services/fire_groups_service.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/models/changed_document.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:rxdart/rxdart.dart';
 import '../models/flashcard_model.dart';
 
 class GroupsRepository implements GroupsInterface {
   late final FireGroupsService _fireGroupsService;
+  final _allGroups$ = BehaviorSubject<List<Group>>.seeded([]);
 
   GroupsRepository({required FireGroupsService fireGroupsService}) {
     _fireGroupsService = fireGroupsService;
   }
 
   @override
+  Stream<List<Group>> get allGroups$ => _allGroups$.stream;
+
+  @override
   Stream<List<ChangedDocument<Group>>> getGroupsSnapshots() {
-    return _fireGroupsService
-        .getGroupsSnapshots()
-        .map((snapshot) => snapshot.docChanges)
-        .map(
-          (docChanges) => docChanges
-              .map((element) => _convertFireDocumentToChangedDocumentModel(
-                    element,
-                  ))
-              .whereType<ChangedDocument<Group>>()
-              .toList(),
-        );
+    return const Stream.empty();
+  }
+
+  @override
+  Future<void> loadAllGroups() async {
+    final groups = await _fireGroupsService.getAllGroups();
+    _allGroups$.add(
+      groups.map(_convertGroupDbModelToGroup).whereType<Group>().toList(),
+    );
   }
 
   @override
@@ -67,69 +70,64 @@ class GroupsRepository implements GroupsInterface {
     await _fireGroupsService.removeGroup(groupId);
   }
 
-  ChangedDocument<Group>? _convertFireDocumentToChangedDocumentModel(
-    DocumentChange<GroupDbModel> docChange,
-  ) {
-    final docData = docChange.doc.data();
-    final String? name = docData?.name;
-    final String? courseId = docData?.courseId;
-    final String? nameForQuestions = docData?.nameForQuestions;
-    final String? nameForAnswers = docData?.nameForAnswers;
-    final List<FlashcardDbModel>? flashcards = docData?.flashcards;
-    if (name != null &&
+  @override
+  Stream<Group> getGroupById({required String groupId}) {
+    if (_isGroupLoaded(groupId)) {
+      return allGroups$.map(
+        (groups) => groups.firstWhere((group) => group.id == groupId),
+      );
+    }
+    return Rx.fromCallable(
+      () async => await _loadGroupFromDb(groupId),
+    ).whereType<Group>();
+  }
+
+  Group? _convertGroupDbModelToGroup(DocumentSnapshot<GroupDbModel> group) {
+    final groupData = group.data();
+    final String? name = groupData?.name;
+    final String? courseId = groupData?.courseId;
+    final String? nameForQuestions = groupData?.nameForQuestions;
+    final String? nameForAnswers = groupData?.nameForAnswers;
+    if (groupData != null &&
+        name != null &&
         courseId != null &&
         nameForQuestions != null &&
-        nameForAnswers != null &&
-        flashcards != null) {
-      return ChangedDocument(
-        changeType: docChange.type.toDbDocChangeType(),
-        doc: Group(
-          id: docChange.doc.id,
-          name: name,
-          courseId: courseId,
-          nameForQuestions: nameForQuestions,
-          nameForAnswers: nameForAnswers,
-          flashcards: flashcards
-              .asMap()
-              .entries
-              .map(
-                (flashcard) => _convertFireFlashcardDocumentToFlashcardModel(
-                  flashcard.key,
-                  flashcard.value,
-                ),
-              )
-              .toList(),
-        ),
+        nameForAnswers != null) {
+      return Group(
+        id: group.id,
+        name: name,
+        courseId: courseId,
+        nameForQuestions: nameForQuestions,
+        nameForAnswers: nameForAnswers,
+        flashcards: groupData.flashcards
+            .map(_convertFlashcardDbModelToFlashcard)
+            .whereType<Flashcard>()
+            .toList(),
       );
     }
     return null;
   }
 
-  Flashcard _convertFireFlashcardDocumentToFlashcardModel(
-    int index,
-    FlashcardDbModel flashcardDbModel,
-  ) {
-    final String question = flashcardDbModel.question;
-    final String answer = flashcardDbModel.answer;
-    final FlashcardStatus status = _convertStringToFlashcardStatus(
-      flashcardDbModel.status,
-    );
-    return Flashcard(
-      index: index,
-      question: question,
-      answer: answer,
-      status: status,
-    );
+  Flashcard? _convertFlashcardDbModelToFlashcard(FlashcardDbModel flashcard) {
+    final FlashcardStatus? flashcardStatus =
+        flashcard.status.toFlashcardStatus();
+    if (flashcardStatus != null) {
+      return Flashcard(
+        index: flashcard.index,
+        question: flashcard.question,
+        answer: flashcard.answer,
+        status: flashcardStatus,
+      );
+    }
+    return null;
   }
 
-  FlashcardStatus _convertStringToFlashcardStatus(String value) {
-    switch (value) {
-      case 'remembered':
-        return FlashcardStatus.remembered;
-      case 'notRemembered':
-        return FlashcardStatus.notRemembered;
-      default:
-        return FlashcardStatus.remembered;
-    }
+  bool _isGroupLoaded(String groupId) {
+    return _allGroups$.value.map((group) => group.id).contains(groupId);
+  }
+
+  Future<Group?> _loadGroupFromDb(String groupId) async {
+    final groupFromDb = await _fireGroupsService.loadGroup(groupId: groupId);
+    return _convertGroupDbModelToGroup(groupFromDb);
   }
 }

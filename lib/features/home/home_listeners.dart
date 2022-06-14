@@ -5,7 +5,6 @@ import 'package:fiszkomaniak/features/home/listeners/courses_bloc_listener.dart'
 import 'package:fiszkomaniak/features/home/listeners/flashcards_bloc_listener.dart';
 import 'package:fiszkomaniak/features/home/listeners/groups_bloc_listener.dart';
 import 'package:fiszkomaniak/features/home/listeners/sessions_bloc_listener.dart';
-import 'package:fiszkomaniak/features/home/listeners/user_bloc_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../components/dialogs/dialogs.dart';
@@ -27,7 +26,6 @@ class HomeListeners extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         AuthBlocListener(),
-        UserBlocListener(),
         AppearanceSettingsBlocListener(),
         CoursesBlocListener(onHomePageChanged: _animateToPage),
         GroupsBlocListener(onHomePageChanged: _animateToPage),

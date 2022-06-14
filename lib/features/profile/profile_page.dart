@@ -1,13 +1,13 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
 import 'package:fiszkomaniak/features/profile/components/profile_account_options.dart';
 import 'package:fiszkomaniak/features/profile/components/profile_avatar.dart';
 import 'package:fiszkomaniak/features/profile/components/profile_stats.dart';
 import 'package:fiszkomaniak/features/profile/components/profile_user_data.dart';
 import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
+import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -49,7 +49,7 @@ class _ProfileBlocProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => ProfileBloc(
-        userBloc: context.read<UserBloc>(),
+        userInterface: context.read<UserInterface>(),
         authBloc: context.read<AuthBloc>(),
         achievementsBloc: context.read<AchievementsBloc>(),
         profileDialogs: ProfileDialogs(),

@@ -13,6 +13,8 @@ import '../firebase/models/user_db_model.dart';
 import '../models/user_model.dart';
 
 class UserRepository implements UserInterface {
+  final _loggedUserAvatarUrl$ = BehaviorSubject<String?>.seeded(null);
+  final _loggedUserData$ = BehaviorSubject<User?>.seeded(null);
   late final FireUserService _fireUserService;
   late final FireAvatarService _fireAvatarService;
 
@@ -25,13 +27,28 @@ class UserRepository implements UserInterface {
   }
 
   @override
-  Stream<User> get loggedUser$ => Rx.combineLatest2(
-        _fireAvatarService.getLoggedUserAvatarSnapshots(),
-        _fireUserService.getLoggedUserSnapshots(),
-        (String? avatarUrl, DocumentSnapshot<UserDbModel> userDbModel) {
-          return _createUserModel(avatarUrl, userDbModel);
-        },
-      ).whereType<User>();
+  Stream<String> get loggedUserAvatarUrl$ =>
+      _loggedUserAvatarUrl$.stream.whereType<String>();
+
+  @override
+  Stream<User> get loggedUserData$ => _loggedUserData$.stream.whereType<User>();
+
+  @override
+  Future<void> loadLoggedUserAvatar() async {
+    if (_loggedUserAvatarUrl$.value == null) {
+      _loggedUserAvatarUrl$.add(
+        await _fireAvatarService.loadLoggedUserAvatarUrl(),
+      );
+    }
+  }
+
+  @override
+  Future<void> loadLoggedUserData() async {
+    if (_loggedUserData$.value == null) {
+      final userFromDb = await _fireUserService.loadLoggedUserData();
+      _loggedUserData$.add(_convertUserFromDbToModel(userFromDb));
+    }
+  }
 
   @override
   Future<void> addUser({
@@ -44,6 +61,8 @@ class UserRepository implements UserInterface {
   @override
   Future<void> saveNewAvatar({required String fullPath}) async {
     await _fireAvatarService.saveNewLoggedUserAvatar(fullPath);
+    final newAvatarUrl = await _fireAvatarService.loadLoggedUserAvatarUrl();
+    _loggedUserAvatarUrl$.add(newAvatarUrl);
   }
 
   @override
@@ -54,19 +73,18 @@ class UserRepository implements UserInterface {
   @override
   Future<void> saveNewUsername({required String newUsername}) async {
     await _fireUserService.saveNewUsername(newUsername);
+    _loggedUserData$.add(
+      _loggedUserData$.value?.copyWith(username: newUsername),
+    );
   }
 
-  User? _createUserModel(
-    String? avatarUrl,
-    DocumentSnapshot<UserDbModel> fireDocument,
-  ) {
+  User? _convertUserFromDbToModel(DocumentSnapshot<UserDbModel> fireDocument) {
     final UserDbModel? data = fireDocument.data();
     final String? loggedUserEmail = FireUser.loggedUserEmail;
     if (data != null && loggedUserEmail != null) {
       return User(
         email: loggedUserEmail,
         username: data.username,
-        avatarUrl: avatarUrl,
         days: _convertFireDaysToDayModel(data.days),
       );
     }

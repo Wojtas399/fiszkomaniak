@@ -4,8 +4,8 @@ import 'package:fiszkomaniak/firebase/fire_references.dart';
 import 'package:fiszkomaniak/firebase/models/user_db_model.dart';
 
 class FireUserService {
-  Stream<DocumentSnapshot<UserDbModel>> getLoggedUserSnapshots() {
-    return FireReferences.loggedUserRefWithConverter.snapshots();
+  Future<DocumentSnapshot<UserDbModel>> loadLoggedUserData() async {
+    return await FireReferences.loggedUserRefWithConverter.get();
   }
 
   Future<void> addUser(String userId, String username) async {

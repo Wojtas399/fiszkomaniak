@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
+import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/notification_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
 import '../models/changed_document.dart';
@@ -65,6 +66,17 @@ extension FireStringExtensions on String {
         return FlashcardsType.remembered;
       case 'notRemembered':
         return FlashcardsType.notRemembered;
+      default:
+        return null;
+    }
+  }
+
+  FlashcardStatus? toFlashcardStatus() {
+    switch (this) {
+      case 'remembered':
+        return FlashcardStatus.remembered;
+      case 'notRemembered':
+        return FlashcardStatus.notRemembered;
       default:
         return null;
     }

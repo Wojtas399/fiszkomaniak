@@ -3,7 +3,7 @@ import 'package:fiszkomaniak/components/avatar/avatar_image_type.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/config/theme/global_theme.dart';
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_bloc.dart';
+import 'package:fiszkomaniak/features/home/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -75,7 +75,7 @@ class _LoggedUserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String? avatarUrl = context.select(
-      (UserBloc bloc) => bloc.state.loggedUser?.avatarUrl,
+      (HomeBloc bloc) => bloc.state.loggedUserAvatarUrl,
     );
     return Avatar(
       imageType: avatarUrl != null ? AvatarImageTypeUrl(url: avatarUrl) : null,

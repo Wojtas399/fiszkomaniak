@@ -4,13 +4,11 @@ import 'package:fiszkomaniak/models/day_model.dart';
 class User extends Equatable {
   final String email;
   final String username;
-  final String? avatarUrl;
   final List<Day> days;
 
   const User({
     required this.email,
     required this.username,
-    required this.avatarUrl,
     required this.days,
   });
 
@@ -18,9 +16,20 @@ class User extends Equatable {
   List<Object> get props => [
         email,
         username,
-        avatarUrl ?? '',
         days,
       ];
+
+  User copyWith({
+    String? email,
+    String? username,
+    List<Day>? days,
+  }) {
+    return User(
+      email: email ?? this.email,
+      username: username ?? this.username,
+      days: days ?? this.days,
+    );
+  }
 }
 
 User createUser({
@@ -32,7 +41,6 @@ User createUser({
   return User(
     email: email ?? '',
     username: username ?? '',
-    avatarUrl: avatarUrl ?? '',
     days: days ?? [],
   );
 }

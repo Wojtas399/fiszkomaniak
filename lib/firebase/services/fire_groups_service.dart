@@ -17,6 +17,17 @@ class FireGroupsService {
     return FireReferences.groupsRefWithConverter.snapshots();
   }
 
+  Future<List<DocumentSnapshot<GroupDbModel>>> getAllGroups() async {
+    final docs = await FireReferences.groupsRefWithConverter.get();
+    return docs.docChanges.map((docChange) => docChange.doc).toList();
+  }
+
+  Future<DocumentSnapshot<GroupDbModel>> loadGroup({
+    required String groupId,
+  }) async {
+    return await FireReferences.groupsRefWithConverter.doc(groupId).get();
+  }
+
   Future<void> addNewGroup(GroupDbModel groupData) async {
     try {
       await FireReferences.groupsRefWithConverter.add(groupData);

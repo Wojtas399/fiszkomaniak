@@ -1,8 +1,11 @@
 import 'package:fiszkomaniak/models/course_model.dart';
-import '../models/changed_document.dart';
 
 abstract class CoursesInterface {
-  Stream<List<ChangedDocument<Course>>> getCoursesSnapshots();
+  Stream<List<Course>> get allCourses$;
+
+  Future<void> loadCoursesByIds(List<String> coursesIds);
+
+  Future<void> loadAllCourses();
 
   Future<void> addNewCourse(String name);
 
@@ -12,4 +15,10 @@ abstract class CoursesInterface {
   });
 
   Future<void> removeCourse(String courseId);
+
+  Stream<Course> getCourseById(String courseId);
+
+  Stream<String> getCourseNameById(String courseId);
+
+  Future<bool> isThereCourseWithTheSameName(String courseName);
 }

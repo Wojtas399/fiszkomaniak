@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';
 import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
+import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/auth/auth_bloc.dart';
@@ -14,28 +14,29 @@ part 'profile_event.dart';
 part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  late final UserBloc _userBloc;
+  late final UserInterface _userInterface;
   late final AuthBloc _authBloc;
   late final AchievementsBloc _achievementsBloc;
   late final ProfileDialogs _profileDialogs;
   late final ImagePicker _imagePicker;
-  StreamSubscription<UserState>? _userStateListener;
+  StreamSubscription<String>? _loggedUserAvatarUrlListener;
+  StreamSubscription<User>? _loggedUserDataListener;
   StreamSubscription<AchievementsState>? _achievementsStateListener;
 
   ProfileBloc({
-    required UserBloc userBloc,
+    required UserInterface userInterface,
     required AuthBloc authBloc,
     required AchievementsBloc achievementsBloc,
     required ProfileDialogs profileDialogs,
     required ImagePicker imagePicker,
   }) : super(const ProfileState()) {
-    _userBloc = userBloc;
-    _authBloc = authBloc;
+    _userInterface = userInterface;
     _achievementsBloc = achievementsBloc;
     _profileDialogs = profileDialogs;
     _imagePicker = imagePicker;
     on<ProfileEventInitialize>(_initialize);
-    on<ProfileEventUserStateUpdated>(_userStateUpdated);
+    on<ProfileEventLoggedUserAvatarUrlChanged>(_loggedUserAvatarUrlChanged);
+    on<ProfileEventLoggedUserDataChanged>(_loggedUserDataChanged);
     on<ProfileEventAchievementsStateUpdated>(_achievementsStateUpdated);
     on<ProfileEventModifyAvatar>(_modifyAvatar);
     on<ProfileEventChangeUsername>(_changeUsername);
@@ -46,7 +47,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   @override
   Future<void> close() {
-    _userStateListener?.cancel();
+    _loggedUserAvatarUrlListener?.cancel();
+    _loggedUserDataListener?.cancel();
     _achievementsStateListener?.cancel();
     return super.close();
   }
@@ -55,21 +57,32 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileEventInitialize event,
     Emitter<ProfileState> emit,
   ) {
+    _setLoggedUserAvatarUrlListener();
+    _setLoggedUserDataListener();
+    _userInterface.loadLoggedUserAvatar();
+    _userInterface.loadLoggedUserData();
     emit(state.copyWith(
-      loggedUserData: _userBloc.state.loggedUser,
       amountOfDaysInARow: _achievementsBloc.state.daysStreak,
       amountOfAllFlashcards: _achievementsBloc.state.allFlashcardsAmount,
     ));
-    _setUserStateListener();
     _setAchievementsStateListener();
   }
 
-  void _userStateUpdated(
-    ProfileEventUserStateUpdated event,
+  void _loggedUserAvatarUrlChanged(
+    ProfileEventLoggedUserAvatarUrlChanged event,
     Emitter<ProfileState> emit,
   ) {
     emit(state.copyWith(
-      loggedUserData: event.newUserData,
+      loggedUserAvatarUrl: event.newLoggedUserAvatarUrl,
+    ));
+  }
+
+  void _loggedUserDataChanged(
+    ProfileEventLoggedUserDataChanged event,
+    Emitter<ProfileState> emit,
+  ) {
+    emit(state.copyWith(
+      loggedUserData: event.newLoggedUserData,
     ));
   }
 
@@ -87,7 +100,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileEventModifyAvatar event,
     Emitter<ProfileState> emit,
   ) async {
-    if (state.loggedUserData?.avatarUrl == null) {
+    if (state.loggedUserAvatarUrl != '') {
       await _editAvatar();
     } else {
       final AvatarActions? action = await _profileDialogs.askForAvatarAction();
@@ -109,7 +122,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         currentUsername,
       );
       if (newUsername != null) {
-        _userBloc.add(UserEventChangeUsername(newUsername: newUsername));
+        _userInterface.saveNewUsername(newUsername: newUsername);
       }
     }
   }
@@ -149,12 +162,22 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  void _setUserStateListener() {
-    _userStateListener ??= _userBloc.stream.listen((state) {
-      add(ProfileEventUserStateUpdated(
-        newUserData: state.loggedUser,
-      ));
-    });
+  void _setLoggedUserAvatarUrlListener() {
+    _loggedUserAvatarUrlListener = _userInterface.loggedUserAvatarUrl$.listen(
+      (avatarUrl) => add(
+        ProfileEventLoggedUserAvatarUrlChanged(
+          newLoggedUserAvatarUrl: avatarUrl,
+        ),
+      ),
+    );
+  }
+
+  void _setLoggedUserDataListener() {
+    _loggedUserDataListener = _userInterface.loggedUserData$.listen(
+      (userData) => add(
+        ProfileEventLoggedUserDataChanged(newLoggedUserData: userData),
+      ),
+    );
   }
 
   void _setAchievementsStateListener() {
@@ -175,7 +198,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           image.path,
         );
         if (confirmation) {
-          _userBloc.add(UserEventSaveNewAvatar(imageFullPath: image.path));
+          _userInterface.saveNewAvatar(fullPath: image.path);
         }
       }
     }
@@ -185,7 +208,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final bool confirmation =
         await _profileDialogs.askForDeleteAvatarConfirmation();
     if (confirmation) {
-      _userBloc.add(UserEventRemoveAvatar());
+      _userInterface.removeAvatar();
     }
   }
 }

@@ -3,11 +3,8 @@ import 'dart:io';
 import 'package:fiszkomaniak/firebase/fire_references.dart';
 
 class FireAvatarService {
-  final StreamController<String?> _loggedUserAvatarUrl = StreamController();
-
-  Stream<String?> getLoggedUserAvatarSnapshots() {
-    _loadLoggedUserAvatarUrl();
-    return _loggedUserAvatarUrl.stream;
+  Future<String> loadLoggedUserAvatarUrl() async {
+    return await FireReferences.avatarRef.getDownloadURL();
   }
 
   Future<void> saveNewLoggedUserAvatar(String fullPath) async {
@@ -15,8 +12,6 @@ class FireAvatarService {
       await removeLoggedUserAvatar();
       final File imageFile = File(fullPath);
       await FireReferences.avatarRef.putFile(imageFile);
-      final String url = await FireReferences.avatarRef.getDownloadURL();
-      _loggedUserAvatarUrl.add(url);
     } catch (error) {
       rethrow;
     }
@@ -27,18 +22,8 @@ class FireAvatarService {
       if (await doesLoggedUserAvatarExist()) {
         await FireReferences.avatarRef.delete();
       }
-      _loggedUserAvatarUrl.add(null);
     } catch (error) {
       rethrow;
-    }
-  }
-
-  Future<void> _loadLoggedUserAvatarUrl() async {
-    try {
-      final String url = await FireReferences.avatarRef.getDownloadURL();
-      _loggedUserAvatarUrl.add(url);
-    } catch (error) {
-      _loggedUserAvatarUrl.add(null);
     }
   }
 

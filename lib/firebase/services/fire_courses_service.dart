@@ -6,8 +6,15 @@ import 'package:fiszkomaniak/firebase/services/fire_groups_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
 
 class FireCoursesService {
-  Stream<QuerySnapshot<CourseDbModel>> getCoursesSnapshots() {
-    return FireReferences.coursesRefWithConverter.snapshots();
+  Future<List<DocumentSnapshot<CourseDbModel>>> loadAllCourses() async {
+    final docs = await FireReferences.coursesRefWithConverter.get();
+    return docs.docChanges.map((docChange) => docChange.doc).toList();
+  }
+
+  Future<DocumentSnapshot<CourseDbModel>> getCourseById({
+    required String courseId,
+  }) async {
+    return await FireReferences.coursesRefWithConverter.doc(courseId).get();
   }
 
   Future<void> addNewCourse(String name) async {

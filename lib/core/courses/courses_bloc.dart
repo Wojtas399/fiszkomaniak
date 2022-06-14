@@ -34,17 +34,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   }
 
   void _initialize(CoursesEventInitialize event, Emitter<CoursesState> emit) {
-    _coursesSubscription ??= _coursesInterface.getCoursesSnapshots().listen(
-      (courses) {
-        final GroupedDbDocuments<Course> groupedDocuments =
-            groupDbDocuments<Course>(courses);
-        add(CoursesEventCoursesChanged(
-          addedCourses: groupedDocuments.addedDocuments,
-          updatedCourses: groupedDocuments.updatedDocuments,
-          deletedCourses: groupedDocuments.removedDocuments,
-        ));
-      },
-    );
+    //TODO
   }
 
   void _coursesChanged(
