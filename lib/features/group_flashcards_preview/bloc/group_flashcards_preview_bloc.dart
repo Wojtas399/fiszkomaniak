@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_event.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_state.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
@@ -9,18 +7,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GroupFlashcardsPreviewBloc
     extends Bloc<GroupFlashcardsPreviewEvent, GroupFlashcardsPreviewState> {
-  late final GroupsBloc _groupsBloc;
-  late final FlashcardsBloc _flashcardsBloc;
   late final Navigation _navigation;
   StreamSubscription? _flashcardsStateSubscription;
 
   GroupFlashcardsPreviewBloc({
-    required GroupsBloc groupsBloc,
-    required FlashcardsBloc flashcardsBloc,
     required Navigation navigation,
   }) : super(const GroupFlashcardsPreviewState()) {
-    _groupsBloc = groupsBloc;
-    _flashcardsBloc = flashcardsBloc;
     _navigation = navigation;
     on<GroupFlashcardsPreviewEventInitialize>(_initialize);
     on<GroupFlashcardsPreviewEventSearchValueChanged>(_searchValueChanged);
@@ -34,17 +26,17 @@ class GroupFlashcardsPreviewBloc
     GroupFlashcardsPreviewEventInitialize event,
     Emitter<GroupFlashcardsPreviewState> emit,
   ) {
-    final String? groupName = _groupsBloc.state.getGroupNameById(event.groupId);
-    final List<Flashcard> flashcardsFromGroup =
-        _flashcardsBloc.state.getFlashcardsFromGroup(event.groupId);
-    if (groupName != null) {
-      emit(state.copyWith(
-        groupId: event.groupId,
-        groupName: groupName,
-        flashcardsFromGroup: flashcardsFromGroup,
-      ));
-    }
-    _setFlashcardsStateSubscription();
+    // final String? groupName = _groupsBloc.state.getGroupNameById(event.groupId);
+    // final List<Flashcard> flashcardsFromGroup =
+    //     _flashcardsBloc.state.getFlashcardsFromGroup(event.groupId);
+    // if (groupName != null) {
+    //   emit(state.copyWith(
+    //     groupId: event.groupId,
+    //     groupName: groupName,
+    //     flashcardsFromGroup: flashcardsFromGroup,
+    //   ));
+    // }
+    // _setFlashcardsStateSubscription();
   }
 
   void _searchValueChanged(
@@ -68,15 +60,15 @@ class GroupFlashcardsPreviewBloc
     GroupFlashcardsPreviewEventFlashcardsStateUpdated event,
     Emitter<GroupFlashcardsPreviewState> emit,
   ) {
-    final List<Flashcard> flashcardsFromGroup =
-        _flashcardsBloc.state.getFlashcardsFromGroup(state.groupId);
-    emit(state.copyWith(flashcardsFromGroup: flashcardsFromGroup));
+    // final List<Flashcard> flashcardsFromGroup =
+    //     _flashcardsBloc.state.getFlashcardsFromGroup(state.groupId);
+    // emit(state.copyWith(flashcardsFromGroup: flashcardsFromGroup));
   }
 
   void _setFlashcardsStateSubscription() {
-    _flashcardsStateSubscription = _flashcardsBloc.stream.listen((_) {
-      add(GroupFlashcardsPreviewEventFlashcardsStateUpdated());
-    });
+    // _flashcardsStateSubscription = _flashcardsBloc.stream.listen((_) {
+    //   add(GroupFlashcardsPreviewEventFlashcardsStateUpdated());
+    // });
   }
 
   @override

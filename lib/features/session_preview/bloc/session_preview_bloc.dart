@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
@@ -21,7 +20,6 @@ part 'session_preview_state.dart';
 class SessionPreviewBloc
     extends Bloc<SessionPreviewEvent, SessionPreviewState> {
   late final CoursesInterface _coursesInterface;
-  late final GroupsBloc _groupsBloc;
   late final SessionsBloc _sessionsBloc;
   late final SessionPreviewDialogs _sessionPreviewDialogs;
   late final Navigation _navigation;
@@ -29,13 +27,11 @@ class SessionPreviewBloc
 
   SessionPreviewBloc({
     required CoursesInterface coursesInterface,
-    required GroupsBloc groupsBloc,
     required SessionsBloc sessionsBloc,
     required SessionPreviewDialogs sessionPreviewDialogs,
     required Navigation navigation,
   }) : super(const SessionPreviewState()) {
     _coursesInterface = coursesInterface;
-    _groupsBloc = groupsBloc;
     _sessionsBloc = sessionsBloc;
     _sessionPreviewDialogs = sessionPreviewDialogs;
     _navigation = navigation;
@@ -146,20 +142,20 @@ class SessionPreviewBloc
     final Session? session = _sessionsBloc.state.getSessionById(
       mode.sessionId,
     );
-    final Group? group = _groupsBloc.state.getGroupById(session?.groupId);
-    if (session != null && group != null) {
-      final String courseName =
-          await _coursesInterface.getCourseNameById(group.courseId).first;
-      emit(state.copyWith(
-        mode: mode,
-        session: session,
-        group: group,
-        courseName: courseName,
-        duration: session.duration,
-        flashcardsType: session.flashcardsType,
-        areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
-      ));
-    }
+    // final Group? group = _groupsBloc.state.getGroupById(session?.groupId);
+    // if (session != null && group != null) {
+    //   final String courseName =
+    //       await _coursesInterface.getCourseNameById(group.courseId).first;
+    //   emit(state.copyWith(
+    //     mode: mode,
+    //     session: session,
+    //     group: group,
+    //     courseName: courseName,
+    //     duration: session.duration,
+    //     flashcardsType: session.flashcardsType,
+    //     areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
+    //   ));
+    // }
     _setSessionsStateListener();
   }
 
@@ -167,18 +163,18 @@ class SessionPreviewBloc
     SessionPreviewModeQuick mode,
     Emitter<SessionPreviewState> emit,
   ) async {
-    final Group? group = _groupsBloc.state.getGroupById(mode.groupId);
-    if (group != null) {
-      final String courseName =
-          await _coursesInterface.getCourseNameById(group.courseId).first;
-      emit(state.copyWith(
-        mode: mode,
-        group: group,
-        courseName: courseName,
-        flashcardsType: FlashcardsType.all,
-        areQuestionsAndAnswersSwapped: false,
-      ));
-    }
+    // final Group? group = _groupsBloc.state.getGroupById(mode.groupId);
+    // if (group != null) {
+    //   final String courseName =
+    //       await _coursesInterface.getCourseNameById(group.courseId).first;
+    //   emit(state.copyWith(
+    //     mode: mode,
+    //     group: group,
+    //     courseName: courseName,
+    //     flashcardsType: FlashcardsType.all,
+    //     areQuestionsAndAnswersSwapped: false,
+    //   ));
+    // }
   }
 
   void _setSessionsStateListener() {

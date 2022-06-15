@@ -7,7 +7,6 @@ import 'package:fiszkomaniak/features/group_selection/components/group_selection
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../config/navigation.dart';
-import '../../core/groups/groups_bloc.dart';
 import '../../interfaces/courses_interface.dart';
 
 class GroupSelection extends StatelessWidget {
@@ -59,7 +58,6 @@ class _GroupSelectionBlocProvider extends StatelessWidget {
     return BlocProvider(
       create: (BuildContext context) => GroupSelectionBloc(
         coursesInterface: context.read<CoursesInterface>(),
-        groupsBloc: context.read<GroupsBloc>(),
         navigation: context.read<Navigation>(),
       )..add(GroupSelectionEventInitialize()),
       child: child,

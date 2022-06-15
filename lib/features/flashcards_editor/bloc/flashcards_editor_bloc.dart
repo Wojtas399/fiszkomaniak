@@ -1,6 +1,4 @@
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_dialogs.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
@@ -12,21 +10,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FlashcardsEditorBloc
     extends Bloc<FlashcardsEditorEvent, FlashcardsEditorState> {
-  late final GroupsBloc _groupsBloc;
-  late final FlashcardsBloc _flashcardsBloc;
   late final AchievementsBloc _achievementsBloc;
   late final FlashcardsEditorDialogs _flashcardsEditorDialogs;
   late final FlashcardsEditorUtils _flashcardsEditorUtils;
 
   FlashcardsEditorBloc({
-    required GroupsBloc groupsBloc,
-    required FlashcardsBloc flashcardsBloc,
     required AchievementsBloc achievementsBloc,
     required FlashcardsEditorDialogs flashcardsEditorDialogs,
     required FlashcardsEditorUtils flashcardsEditorUtils,
   }) : super(const FlashcardsEditorState()) {
-    _groupsBloc = groupsBloc;
-    _flashcardsBloc = flashcardsBloc;
     _achievementsBloc = achievementsBloc;
     _flashcardsEditorDialogs = flashcardsEditorDialogs;
     _flashcardsEditorUtils = flashcardsEditorUtils;
@@ -40,28 +32,28 @@ class FlashcardsEditorBloc
     FlashcardsEditorEventInitialize event,
     Emitter<FlashcardsEditorState> emit,
   ) {
-    final Group? group = _groupsBloc.state.getGroupById(event.mode.groupId);
-    if (group != null) {
-      final List<Flashcard> initialFlashcards = group.flashcards;
-      final List<EditorFlashcard> convertedInitialFlashcards =
-          _convertFlashcardsFromCore(initialFlashcards);
-      final List<EditorFlashcard> flashcards = [
-        ...(event.mode is FlashcardsEditorEditMode
-            ? convertedInitialFlashcards
-            : []),
-        EditorFlashcard(
-          key: 'flashcard${convertedInitialFlashcards.length}',
-          isCorrect: true,
-          doc: createFlashcard(index: convertedInitialFlashcards.length),
-        ),
-      ];
-      emit(state.copyWith(
-        mode: event.mode,
-        group: group,
-        flashcards: flashcards,
-        keyCounter: convertedInitialFlashcards.length,
-      ));
-    }
+    // final Group? group = _groupsBloc.state.getGroupById(event.mode.groupId);
+    // if (group != null) {
+    //   final List<Flashcard> initialFlashcards = group.flashcards;
+    //   final List<EditorFlashcard> convertedInitialFlashcards =
+    //       _convertFlashcardsFromCore(initialFlashcards);
+    //   final List<EditorFlashcard> flashcards = [
+    //     ...(event.mode is FlashcardsEditorEditMode
+    //         ? convertedInitialFlashcards
+    //         : []),
+    //     EditorFlashcard(
+    //       key: 'flashcard${convertedInitialFlashcards.length}',
+    //       isCorrect: true,
+    //       doc: createFlashcard(index: convertedInitialFlashcards.length),
+    //     ),
+    //   ];
+    //   emit(state.copyWith(
+    //     mode: event.mode,
+    //     group: group,
+    //     flashcards: flashcards,
+    //     keyCounter: convertedInitialFlashcards.length,
+    //   ));
+    // }
   }
 
   Future<void> _removeFlashcard(
@@ -124,23 +116,23 @@ class FlashcardsEditorBloc
     FlashcardsEditorEventSave event,
     Emitter<FlashcardsEditorState> emit,
   ) async {
-    final Group? group = state.group;
-    final FlashcardsEditorMode? mode = state.mode;
-    if (group != null && mode != null && await _canSave(emit)) {
-      final List<Flashcard> flashcardsToSave = mode is FlashcardsEditorEditMode
-          ? state.flashcardsWithoutLastOne
-          : [...group.flashcards, ...state.flashcardsWithoutLastOne];
-      _flashcardsBloc.add(FlashcardsEventSaveEditedFlashcards(
-        groupId: group.id,
-        flashcards: flashcardsToSave,
-        justAddedFlashcards: mode is FlashcardsEditorAddMode,
-      ));
-      _achievementsBloc.add(AchievementsEventAddNewFlashcards(
-        groupId: group.id,
-        flashcardsIndexes:
-            flashcardsToSave.map((flashcard) => flashcard.index).toList(),
-      ));
-    }
+    // final Group? group = state.group;
+    // final FlashcardsEditorMode? mode = state.mode;
+    // if (group != null && mode != null && await _canSave(emit)) {
+    //   final List<Flashcard> flashcardsToSave = mode is FlashcardsEditorEditMode
+    //       ? state.flashcardsWithoutLastOne
+    //       : [...group.flashcards, ...state.flashcardsWithoutLastOne];
+    //   _flashcardsBloc.add(FlashcardsEventSaveEditedFlashcards(
+    //     groupId: group.id,
+    //     flashcards: flashcardsToSave,
+    //     justAddedFlashcards: mode is FlashcardsEditorAddMode,
+    //   ));
+    //   _achievementsBloc.add(AchievementsEventAddNewFlashcards(
+    //     groupId: group.id,
+    //     flashcardsIndexes:
+    //         flashcardsToSave.map((flashcard) => flashcard.index).toList(),
+    //   ));
+    // }
   }
 
   List<EditorFlashcard> _convertFlashcardsFromCore(

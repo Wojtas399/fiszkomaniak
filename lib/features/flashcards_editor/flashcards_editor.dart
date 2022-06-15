@@ -1,8 +1,6 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_dialogs.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
@@ -56,8 +54,6 @@ class _FlashcardsEditorBlocProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => FlashcardsEditorBloc(
-        groupsBloc: context.read<GroupsBloc>(),
-        flashcardsBloc: context.read<FlashcardsBloc>(),
         achievementsBloc: context.read<AchievementsBloc>(),
         flashcardsEditorDialogs: FlashcardsEditorDialogs(),
         flashcardsEditorUtils: FlashcardsEditorUtils(),

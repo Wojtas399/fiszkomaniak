@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
@@ -16,7 +15,6 @@ part 'group_preview_event.dart';
 part 'group_preview_state.dart';
 
 class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
-  late final GroupsBloc _groupsBloc;
   late final CoursesInterface _coursesInterface;
   late final GroupPreviewDialogs _groupPreviewDialogs;
   late final Navigation _navigation;
@@ -24,12 +22,10 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
   StreamSubscription? _groupsStateSubscription;
 
   GroupPreviewBloc({
-    required GroupsBloc groupsBloc,
     required CoursesInterface coursesInterface,
     required GroupPreviewDialogs groupPreviewDialogs,
     required Navigation navigation,
   }) : super(const GroupPreviewState()) {
-    _groupsBloc = groupsBloc;
     _coursesInterface = coursesInterface;
     _groupPreviewDialogs = groupPreviewDialogs;
     _navigation = navigation;
@@ -54,11 +50,11 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
     GroupPreviewEventInitialize event,
     Emitter<GroupPreviewState> emit,
   ) {
-    final Group? group = _groupsBloc.state.getGroupById(event.groupId);
-    if (group != null) {
-      _setCourseNameListener(group.courseId);
-      emit(state.copyWith(group: group));
-    }
+    // final Group? group = _groupsBloc.state.getGroupById(event.groupId);
+    // if (group != null) {
+    //   _setCourseNameListener(group.courseId);
+    //   emit(state.copyWith(group: group));
+    // }
     _setGroupsStateListener();
   }
 
@@ -89,9 +85,9 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
     if (groupId != null) {
       final bool confirmation =
           await _groupPreviewDialogs.askForDeleteConfirmation();
-      if (confirmation == true) {
-        _groupsBloc.add(GroupsEventRemoveGroup(groupId: groupId));
-      }
+      // if (confirmation == true) {
+      //   _groupsBloc.add(GroupsEventRemoveGroup(groupId: groupId));
+      // }
     }
   }
 
@@ -133,10 +129,10 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
     GroupPreviewEventGroupsStateUpdated event,
     Emitter<GroupPreviewState> emit,
   ) {
-    final Group? group = _groupsBloc.state.getGroupById(state.group?.id);
-    if (group != null) {
-      emit(state.copyWith(group: group));
-    }
+    // final Group? group = _groupsBloc.state.getGroupById(state.group?.id);
+    // if (group != null) {
+    //   emit(state.copyWith(group: group));
+    // }
   }
 
   void _setCourseNameListener(String courseId) {
@@ -148,8 +144,8 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
   }
 
   void _setGroupsStateListener() {
-    _groupsStateSubscription = _groupsBloc.stream.listen((_) {
-      add(GroupPreviewEventGroupsStateUpdated());
-    });
+    // _groupsStateSubscription = _groupsBloc.stream.listen((_) {
+    //   add(GroupPreviewEventGroupsStateUpdated());
+    // });
   }
 }

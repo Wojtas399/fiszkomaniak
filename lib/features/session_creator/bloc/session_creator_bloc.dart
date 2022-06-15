@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
@@ -21,16 +20,13 @@ part 'session_creator_status.dart';
 class SessionCreatorBloc
     extends Bloc<SessionCreatorEvent, SessionCreatorState> {
   late final CoursesInterface _coursesInterface;
-  late final GroupsBloc _groupsBloc;
   late final SessionsBloc _sessionsBloc;
 
   SessionCreatorBloc({
     required CoursesInterface coursesInterface,
-    required GroupsBloc groupsBloc,
     required SessionsBloc sessionsBloc,
   }) : super(const SessionCreatorState()) {
     _coursesInterface = coursesInterface;
-    _groupsBloc = groupsBloc;
     _sessionsBloc = sessionsBloc;
     on<SessionCreatorEventInitialize>(_initialize);
     on<SessionCreatorEventCourseSelected>(_courseSelected);
@@ -64,14 +60,14 @@ class SessionCreatorBloc
   ) async {
     final Course course =
         await _coursesInterface.getCourseById(event.courseId).first;
-    final List<Group> groupsFromCourse =
-        _groupsBloc.state.getGroupsByCourseId(event.courseId);
+    // final List<Group> groupsFromCourse =
+    //     _groupsBloc.state.getGroupsByCourseId(event.courseId);
     if (state.selectedCourse != course && state.selectedCourse != null) {
       emit(state.reset(selectedGroup: true));
     }
     emit(state.copyWith(
       selectedCourse: course,
-      groups: groupsFromCourse.where(_areThereFlashcardsInGroup).toList(),
+      // groups: groupsFromCourse.where(_areThereFlashcardsInGroup).toList(),
     ));
   }
 
@@ -79,10 +75,10 @@ class SessionCreatorBloc
     SessionCreatorEventGroupSelected event,
     Emitter<SessionCreatorState> emit,
   ) {
-    final Group? group = _groupsBloc.state.getGroupById(event.groupId);
-    if (group != null) {
-      emit(state.copyWith(selectedGroup: group));
-    }
+    // final Group? group = _groupsBloc.state.getGroupById(event.groupId);
+    // if (group != null) {
+    //   emit(state.copyWith(selectedGroup: group));
+    // }
   }
 
   void _flashcardsTypeSelected(
@@ -198,18 +194,18 @@ class SessionCreatorBloc
     Emitter<SessionCreatorState> emit,
   ) async {
     final Session session = createMode.session;
-    final Group? group = _groupsBloc.state.getGroupById(session.groupId);
-    final Course course =
-        await _coursesInterface.getCourseById(group?.courseId ?? '').first;
-    final List<Group> groupsFromCourse = _groupsBloc.state.getGroupsByCourseId(
-      group?.courseId,
-    );
+    // final Group? group = _groupsBloc.state.getGroupById(session.groupId);
+    // final Course course =
+    //     await _coursesInterface.getCourseById(group?.courseId ?? '').first;
+    // final List<Group> groupsFromCourse = _groupsBloc.state.getGroupsByCourseId(
+    //   group?.courseId,
+    // );
     emit(state.copyWith(
       mode: createMode,
       courses: await _coursesInterface.allCourses$.first,
-      groups: groupsFromCourse,
-      selectedCourse: course,
-      selectedGroup: group,
+      // groups: groupsFromCourse,
+      // selectedCourse: course,
+      // selectedGroup: group,
       flashcardsType: session.flashcardsType,
       areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
       date: session.date,

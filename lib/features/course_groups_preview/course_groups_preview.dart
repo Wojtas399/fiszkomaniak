@@ -1,4 +1,3 @@
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_app_bar.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_content.dart';
@@ -41,7 +40,6 @@ class _CourseGroupsPreviewBlocProvider extends StatelessWidget {
     return BlocProvider(
       create: (BuildContext context) => CourseGroupsPreviewBloc(
         coursesInterface: context.read<CoursesInterface>(),
-        groupsBloc: context.read<GroupsBloc>(),
       )..add(CourseGroupsPreviewEventInitialize(courseId: courseId)),
       child: child,
     );

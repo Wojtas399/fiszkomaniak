@@ -1,8 +1,6 @@
 import 'package:fiszkomaniak/features/home/listeners/achievements_bloc_listener.dart';
 import 'package:fiszkomaniak/features/home/listeners/appearance_settings_bloc_listener.dart';
 import 'package:fiszkomaniak/features/home/listeners/auth_bloc_listener.dart';
-import 'package:fiszkomaniak/features/home/listeners/flashcards_bloc_listener.dart';
-import 'package:fiszkomaniak/features/home/listeners/groups_bloc_listener.dart';
 import 'package:fiszkomaniak/features/home/listeners/sessions_bloc_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,8 +24,6 @@ class HomeListeners extends StatelessWidget {
       listeners: [
         AuthBlocListener(),
         AppearanceSettingsBlocListener(),
-        GroupsBlocListener(onHomePageChanged: _animateToPage),
-        FlashcardsBlocListener(),
         SessionsBlocListener(onHomePageChanged: _animateToPage),
         NotificationsBlocListener(),
         AchievementsBlocListener(),

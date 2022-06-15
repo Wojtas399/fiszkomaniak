@@ -1,8 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
@@ -22,26 +20,20 @@ part 'learning_process_status.dart';
 
 class LearningProcessBloc
     extends Bloc<LearningProcessEvent, LearningProcessState> {
-  late final FlashcardsBloc _flashcardsBloc;
   late final CoursesInterface _coursesInterface;
-  late final GroupsBloc _groupsBloc;
   late final SessionsBloc _sessionsBloc;
   late final AchievementsBloc _achievementsBloc;
   late final LearningProcessDialogs _dialogs;
   late final Navigation _navigation;
 
   LearningProcessBloc({
-    required FlashcardsBloc flashcardsBloc,
     required CoursesInterface coursesInterface,
-    required GroupsBloc groupsBloc,
     required SessionsBloc sessionsBloc,
     required AchievementsBloc achievementsBloc,
     required LearningProcessDialogs learningProcessDialogs,
     required Navigation navigation,
   }) : super(const LearningProcessState()) {
-    _flashcardsBloc = flashcardsBloc;
     _coursesInterface = coursesInterface;
-    _groupsBloc = groupsBloc;
     _sessionsBloc = sessionsBloc;
     _achievementsBloc = achievementsBloc;
     _dialogs = learningProcessDialogs;
@@ -59,32 +51,32 @@ class LearningProcessBloc
     LearningProcessEventInitialize event,
     Emitter<LearningProcessState> emit,
   ) async {
-    final Group? group = _groupsBloc.state.getGroupById(event.data.groupId);
-    if (group != null) {
-      final String courseName =
-          await _coursesInterface.getCourseNameById(group.courseId).first;
-      final int amountOfFlashcardsInStack =
-          FlashcardsUtils.getAmountOfFlashcardsMatchingToFlashcardsType(
-        group.flashcards,
-        event.data.flashcardsType,
-      );
-      final List<int> indexesOfRememberedFlashcards =
-          FlashcardsUtils.getIndexesOfRememberedFlashcards(group.flashcards);
-      final List<int> indexesOfNotRememberedFlashcards =
-          FlashcardsUtils.getIndexesOfNotRememberedFlashcards(group.flashcards);
-      emit(state.copyWith(
-        sessionId: event.data.sessionId,
-        courseName: courseName,
-        group: group,
-        duration: event.data.duration,
-        areQuestionsAndAnswersSwapped: event.data.areQuestionsAndAnswersSwapped,
-        indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
-        indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
-        flashcardsType: event.data.flashcardsType,
-        amountOfFlashcardsInStack: amountOfFlashcardsInStack,
-        status: LearningProcessStatusLoaded(),
-      ));
-    }
+    // final Group? group = _groupsBloc.state.getGroupById(event.data.groupId);
+    // if (group != null) {
+    //   final String courseName =
+    //       await _coursesInterface.getCourseNameById(group.courseId).first;
+    //   final int amountOfFlashcardsInStack =
+    //       FlashcardsUtils.getAmountOfFlashcardsMatchingToFlashcardsType(
+    //     group.flashcards,
+    //     event.data.flashcardsType,
+    //   );
+    //   final List<int> indexesOfRememberedFlashcards =
+    //       FlashcardsUtils.getIndexesOfRememberedFlashcards(group.flashcards);
+    //   final List<int> indexesOfNotRememberedFlashcards =
+    //       FlashcardsUtils.getIndexesOfNotRememberedFlashcards(group.flashcards);
+    //   emit(state.copyWith(
+    //     sessionId: event.data.sessionId,
+    //     courseName: courseNam/e,
+    //     group: group,
+    //     duration: event.data.duration,
+    //     areQuestionsAndAnswersSwapped: event.data.areQuestionsAndAnswersSwapped,
+    //     indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
+    //     indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
+    //     flashcardsType: event.data.flashcardsType,
+    //     amountOfFlashcardsInStack: amountOfFlashcardsInStack,
+    //     status: LearningProcessStatusLoaded(),
+    //   ));
+    // }
   }
 
   void _rememberedFlashcard(
@@ -193,10 +185,10 @@ class LearningProcessBloc
   void _saveFlashcards() {
     final String? groupId = state.group?.id;
     if (groupId != null) {
-      _flashcardsBloc.add(FlashcardsEventSaveRememberedFlashcards(
-        groupId: groupId,
-        flashcardsIndexes: state.indexesOfRememberedFlashcards,
-      ));
+      // _flashcardsBloc.add(FlashcardsEventSaveRememberedFlashcards(
+      //   groupId: groupId,
+      //   flashcardsIndexes: state.indexesOfRememberedFlashcards,
+      // ));
       _achievementsBloc.add(AchievementsEventAddRememberedFlashcards(
         groupId: groupId,
         rememberedFlashcardsIndexes: state.indexesOfRememberedFlashcards,

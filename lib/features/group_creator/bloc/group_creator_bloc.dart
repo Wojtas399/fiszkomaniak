@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_dialogs.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
@@ -12,16 +11,13 @@ part 'group_creator_state.dart';
 
 class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
   late final CoursesInterface _coursesInterface;
-  late final GroupsBloc _groupsBloc;
   late final GroupCreatorDialogs _groupCreatorDialogs;
 
   GroupCreatorBloc({
     required CoursesInterface coursesInterface,
-    required GroupsBloc groupsBloc,
     required GroupCreatorDialogs groupCreatorDialogs,
   }) : super(const GroupCreatorState()) {
     _coursesInterface = coursesInterface;
-    _groupsBloc = groupsBloc;
     _groupCreatorDialogs = groupCreatorDialogs;
     on<GroupCreatorEventInitialize>(_initialize);
     on<GroupCreatorEventCourseChanged>(_onCourseChanged);
@@ -93,30 +89,30 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
     final String nameForQuestions = state.nameForQuestions.trim();
     final String nameForAnswers = state.nameForAnswers.trim();
     if (selectedCourse != null) {
-      if (_groupsBloc.state.isThereGroupWithTheSameNameInTheSameCourse(
-        groupName,
-        selectedCourse.id,
-      )) {
-        _groupCreatorDialogs.displayInfoAboutAlreadyTakenGroupNameInCourse();
-      } else {
-        final GroupCreatorMode mode = state.mode;
-        if (mode is GroupCreatorCreateMode) {
-          _groupsBloc.add(GroupsEventAddGroup(
-            name: groupName,
-            courseId: selectedCourse.id,
-            nameForQuestions: nameForQuestions,
-            nameForAnswers: nameForAnswers,
-          ));
-        } else if (mode is GroupCreatorEditMode) {
-          _groupsBloc.add(GroupsEventUpdateGroup(
-            groupId: mode.group.id,
-            name: groupName,
-            courseId: selectedCourse.id,
-            nameForQuestions: nameForQuestions,
-            nameForAnswers: nameForAnswers,
-          ));
-        }
-      }
+      // if (_groupsBloc.state.isThereGroupWithTheSameNameInTheSameCourse(
+      //   groupName,
+      //   selectedCourse.id,
+      // )) {
+      //   _groupCreatorDialogs.displayInfoAboutAlreadyTakenGroupNameInCourse();
+      // } else {
+      //   final GroupCreatorMode mode = state.mode;
+      //   if (mode is GroupCreatorCreateMode) {
+      //     _groupsBloc.add(GroupsEventAddGroup(
+      //       name: groupName,
+      //       courseId: selectedCourse.id,
+      //       nameForQuestions: nameForQuestions,
+      //       nameForAnswers: nameForAnswers,
+      //     ));
+      //   } else if (mode is GroupCreatorEditMode) {
+      //     _groupsBloc.add(GroupsEventUpdateGroup(
+      //       groupId: mode.group.id,
+      //       name: groupName,
+      //       courseId: selectedCourse.id,
+      //       nameForQuestions: nameForQuestions,
+      //       nameForAnswers: nameForAnswers,
+      //     ));
+      //   }
+      // }
     }
   }
 }

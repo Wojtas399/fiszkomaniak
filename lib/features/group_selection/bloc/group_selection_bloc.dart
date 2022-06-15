@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,17 +15,14 @@ part 'group_selection_state.dart';
 class GroupSelectionBloc
     extends Bloc<GroupSelectionEvent, GroupSelectionState> {
   late final CoursesInterface _coursesInterface;
-  late final GroupsBloc _groupsBloc;
   late final Navigation _navigation;
   StreamSubscription? _groupsStateSubscription;
 
   GroupSelectionBloc({
     required CoursesInterface coursesInterface,
-    required GroupsBloc groupsBloc,
     required Navigation navigation,
   }) : super(GroupSelectionState()) {
     _coursesInterface = coursesInterface;
-    _groupsBloc = groupsBloc;
     _navigation = navigation;
     on<GroupSelectionEventInitialize>(_initialize);
     on<GroupSelectionEventCourseSelected>(_courseSelected);
@@ -52,7 +48,7 @@ class GroupSelectionBloc
     emit(state.copyWith(
       selectedCourse:
           await _coursesInterface.getCourseById(event.courseId).first,
-      groupsFromCourse: _groupsBloc.state.getGroupsByCourseId(event.courseId),
+      // groupsFromCourse: _groupsBloc.state.getGroupsByCourseId(event.courseId),
     ));
   }
 
@@ -60,12 +56,12 @@ class GroupSelectionBloc
     GroupSelectionEventGroupSelected event,
     Emitter<GroupSelectionState> emit,
   ) {
-    final Group? group = _groupsBloc.state.getGroupById(event.groupId);
-    if (group != null) {
-      emit(state.copyWith(
-        selectedGroup: _groupsBloc.state.getGroupById(event.groupId),
-      ));
-    }
+    // final Group? group = _groupsBloc.state.getGroupById(event.groupId);
+    // if (group != null) {
+    //   emit(state.copyWith(
+    //     selectedGroup: _groupsBloc.state.getGroupById(event.groupId),
+    //   ));
+    // }
   }
 
   void _buttonPressed(
@@ -84,15 +80,15 @@ class GroupSelectionBloc
     GroupSelectionEventGroupsStateUpdated event,
     Emitter<GroupSelectionState> emit,
   ) {
-    emit(state.copyWith(
-      selectedGroup: event.newGroupsState.getGroupById(state.selectedGroup?.id),
-    ));
+    // emit(state.copyWith(
+    //   selectedGroup: event.newGroupsState.getGroupById(state.selectedGroup?.id),
+    // ));
   }
 
   void _setGroupsStateListener() {
-    _groupsStateSubscription = _groupsBloc.stream.listen((state) {
-      add(GroupSelectionEventGroupsStateUpdated(newGroupsState: state));
-    });
+    // _groupsStateSubscription = _groupsBloc.stream.listen((state) {
+    //   add(GroupSelectionEventGroupsStateUpdated(newGroupsState: state));
+    // });
   }
 
   @override

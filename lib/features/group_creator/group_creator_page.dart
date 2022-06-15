@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_bloc.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_dialogs.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
@@ -62,7 +61,6 @@ class _GroupCreatorBlocProvider extends StatelessWidget {
     return BlocProvider(
       create: (_) => GroupCreatorBloc(
           coursesInterface: context.read<CoursesInterface>(),
-          groupsBloc: context.read<GroupsBloc>(),
           groupCreatorDialogs: GroupCreatorDialogs())
         ..add(GroupCreatorEventInitialize(mode: mode)),
       child: child,

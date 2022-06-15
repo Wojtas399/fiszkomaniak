@@ -1,7 +1,5 @@
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/notifications/achievements_notifications_bloc.dart';
 import 'package:fiszkomaniak/core/notifications/sessions_notifications_bloc.dart';
 import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
@@ -9,7 +7,6 @@ import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/injections/notifications_provider.dart';
 import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
 import 'package:fiszkomaniak/interfaces/achievements_notifications_interface.dart';
-import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
@@ -74,17 +71,6 @@ class HomeProviders extends StatelessWidget {
               settingsInterface: context.read<SettingsInterface>(),
             )..add(NotificationsSettingsEventLoad()),
           ),
-          BlocProvider<GroupsBloc>(
-            create: (BuildContext context) => GroupsBloc(
-              groupsInterface: context.read<GroupsInterface>(),
-            )..add(GroupsEventInitialize()),
-          ),
-          BlocProvider<FlashcardsBloc>(
-            create: (BuildContext context) => FlashcardsBloc(
-              flashcardsInterface: context.read<FlashcardsInterface>(),
-              groupsBloc: context.read<GroupsBloc>(),
-            )..add(FlashcardsEventInitialize()),
-          ),
           BlocProvider<SessionsBloc>(
             create: (BuildContext context) => SessionsBloc(
               sessionsInterface: context.read<SessionsInterface>(),
@@ -93,7 +79,6 @@ class HomeProviders extends StatelessWidget {
           BlocProvider<AchievementsBloc>(
             create: (BuildContext context) => AchievementsBloc(
               achievementsInterface: context.read<AchievementsInterface>(),
-              flashcardsBloc: context.read<FlashcardsBloc>(),
             )..add(AchievementsEventInitialize()),
           ),
           BlocProvider<NotificationsBloc>(
@@ -107,7 +92,6 @@ class HomeProviders extends StatelessWidget {
                 notificationsSettingsBloc:
                     context.read<NotificationsSettingsBloc>(),
                 sessionsBloc: context.read<SessionsBloc>(),
-                groupsBloc: context.read<GroupsBloc>(),
               ),
               achievementsNotificationsBloc: AchievementsNotificationsBloc(
                 achievementsNotificationsInterface:

@@ -1,7 +1,6 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_bloc.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_dialogs.dart';
 import 'package:fiszkomaniak/features/courses_library/components/courses_library_course_item.dart';
@@ -18,40 +17,36 @@ class CoursesLibraryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _CoursesLibraryBlocProvider(
-      child: BlocBuilder<GroupsBloc, GroupsState>(
-        builder: (BuildContext context, GroupsState groupsState) {
-          return BlocBuilder<CoursesLibraryBloc, CoursesLibraryState>(
-            builder: (
-              BuildContext context,
-              CoursesLibraryState coursesLibraryState,
-            ) {
-              if (coursesLibraryState.courses.isEmpty) {
-                return const _NoCoursesInfo();
-              }
-              return BouncingScroll(
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 16,
-                      right: 16,
-                      bottom: 32,
-                      left: 16,
-                    ),
-                    child: Column(
-                      children: coursesLibraryState.courses
-                          .map(
-                            (course) => _generateCourseItem(
-                              context,
-                              course,
-                              groupsState.getGroupsByCourseId(course.id).length,
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ),
+      child: BlocBuilder<CoursesLibraryBloc, CoursesLibraryState>(
+        builder: (
+          BuildContext context,
+          CoursesLibraryState coursesLibraryState,
+        ) {
+          if (coursesLibraryState.courses.isEmpty) {
+            return const _NoCoursesInfo();
+          }
+          return BouncingScroll(
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 16,
+                  right: 16,
+                  bottom: 32,
+                  left: 16,
                 ),
-              );
-            },
+                child: Column(
+                  children: coursesLibraryState.courses
+                      .map(
+                        (course) => _generateCourseItem(
+                          context,
+                          course,
+                          5,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ),
           );
         },
       ),
