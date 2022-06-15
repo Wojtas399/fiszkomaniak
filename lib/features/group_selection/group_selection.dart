@@ -1,7 +1,5 @@
 import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_bloc.dart';
-import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_event.dart';
 import 'package:fiszkomaniak/features/group_selection/components/group_selection_button.dart';
 import 'package:fiszkomaniak/features/group_selection/components/group_selection_flashcards_info.dart';
 import 'package:fiszkomaniak/features/group_selection/components/group_selection_select_course_item.dart';
@@ -10,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../config/navigation.dart';
 import '../../core/groups/groups_bloc.dart';
+import '../../interfaces/courses_interface.dart';
 
 class GroupSelection extends StatelessWidget {
   final ScrollController scrollController = ScrollController();
@@ -59,7 +58,7 @@ class _GroupSelectionBlocProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => GroupSelectionBloc(
-        coursesBloc: context.read<CoursesBloc>(),
+        coursesInterface: context.read<CoursesInterface>(),
         groupsBloc: context.read<GroupsBloc>(),
         navigation: context.read<Navigation>(),
       )..add(GroupSelectionEventInitialize()),

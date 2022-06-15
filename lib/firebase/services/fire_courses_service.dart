@@ -17,6 +17,15 @@ class FireCoursesService {
     return await FireReferences.coursesRefWithConverter.doc(courseId).get();
   }
 
+  Future<bool> isThereCourseWithTheName({
+    required String courseName,
+  }) async {
+    final query = await FireReferences.coursesRefWithConverter
+        .where('name', isEqualTo: courseName)
+        .get();
+    return query.docs.isNotEmpty;
+  }
+
   Future<void> addNewCourse(String name) async {
     try {
       await FireReferences.coursesRefWithConverter.add(

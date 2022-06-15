@@ -1,18 +1,16 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_bloc.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_dialogs.dart';
-import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_event.dart';
 import 'package:fiszkomaniak/features/courses_library/components/courses_library_course_item.dart';
 import 'package:fiszkomaniak/features/courses_library/components/courses_library_course_popup_menu.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../models/course_model.dart';
-import 'bloc/courses_library_state.dart';
 
 class CoursesLibraryPage extends StatelessWidget {
   const CoursesLibraryPage({Key? key}) : super(key: key);
@@ -107,8 +105,7 @@ class _CoursesLibraryBlocProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => CoursesLibraryBloc(
-        coursesBloc: context.read<CoursesBloc>(),
-        groupsBloc: context.read<GroupsBloc>(),
+        coursesInterface: context.read<CoursesInterface>(),
         coursesLibraryDialogs: CoursesLibraryDialogs(),
         navigation: context.read<Navigation>(),
       )..add(CoursesLibraryEventInitialize()),

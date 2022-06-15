@@ -1,7 +1,5 @@
-import 'package:fiszkomaniak/ui_extensions/ui_date_extensions.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
+import 'package:fiszkomaniak/ui_extensions/ui_date_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

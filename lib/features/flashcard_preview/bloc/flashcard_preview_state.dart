@@ -1,7 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_status.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+part of 'flashcard_preview_bloc.dart';
 
 class FlashcardPreviewState extends Equatable {
   final Flashcard? flashcard;

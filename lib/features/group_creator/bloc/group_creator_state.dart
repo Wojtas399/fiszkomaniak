@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
+part of 'group_creator_bloc.dart';
 
 class GroupCreatorState extends Equatable {
   final GroupCreatorMode mode;

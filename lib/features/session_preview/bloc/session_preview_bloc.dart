@@ -1,21 +1,26 @@
 import 'dart:async';
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../models/date_model.dart';
 import '../../../models/session_model.dart';
+import '../../../utils/group_utils.dart';
 import '../../learning_process/learning_process_data.dart';
+
+part 'session_preview_event.dart';
+
+part 'session_preview_state.dart';
 
 class SessionPreviewBloc
     extends Bloc<SessionPreviewEvent, SessionPreviewState> {
-  late final CoursesBloc _coursesBloc;
+  late final CoursesInterface _coursesInterface;
   late final GroupsBloc _groupsBloc;
   late final SessionsBloc _sessionsBloc;
   late final SessionPreviewDialogs _sessionPreviewDialogs;
@@ -23,13 +28,13 @@ class SessionPreviewBloc
   StreamSubscription? _sessionsStateSubscription;
 
   SessionPreviewBloc({
-    required CoursesBloc coursesBloc,
+    required CoursesInterface coursesInterface,
     required GroupsBloc groupsBloc,
     required SessionsBloc sessionsBloc,
     required SessionPreviewDialogs sessionPreviewDialogs,
     required Navigation navigation,
   }) : super(const SessionPreviewState()) {
-    _coursesBloc = coursesBloc;
+    _coursesInterface = coursesInterface;
     _groupsBloc = groupsBloc;
     _sessionsBloc = sessionsBloc;
     _sessionPreviewDialogs = sessionPreviewDialogs;
@@ -134,18 +139,17 @@ class SessionPreviewBloc
     }
   }
 
-  void _initializeNormalMode(
+  Future<void> _initializeNormalMode(
     SessionPreviewModeNormal mode,
     Emitter<SessionPreviewState> emit,
-  ) {
+  ) async {
     final Session? session = _sessionsBloc.state.getSessionById(
       mode.sessionId,
     );
     final Group? group = _groupsBloc.state.getGroupById(session?.groupId);
-    final String? courseName = _coursesBloc.state.getCourseNameById(
-      group?.courseId,
-    );
-    if (session != null && group != null && courseName != null) {
+    if (session != null && group != null) {
+      final String courseName =
+          await _coursesInterface.getCourseNameById(group.courseId).first;
       emit(state.copyWith(
         mode: mode,
         session: session,
@@ -159,15 +163,14 @@ class SessionPreviewBloc
     _setSessionsStateListener();
   }
 
-  void _initializeQuickMode(
+  Future<void> _initializeQuickMode(
     SessionPreviewModeQuick mode,
     Emitter<SessionPreviewState> emit,
-  ) {
+  ) async {
     final Group? group = _groupsBloc.state.getGroupById(mode.groupId);
-    final String? courseName = _coursesBloc.state.getCourseNameById(
-      group?.courseId,
-    );
-    if (group != null && courseName != null) {
+    if (group != null) {
+      final String courseName =
+          await _coursesInterface.getCourseNameById(group.courseId).first;
       emit(state.copyWith(
         mode: mode,
         group: group,

@@ -13,7 +13,7 @@ import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../features/flashcard_preview/bloc/flashcard_preview_state.dart';
+import '../features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
 import '../features/home/home.dart';
 import '../features/learning_process/learning_process_data.dart';
 

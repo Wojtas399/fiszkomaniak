@@ -1,7 +1,6 @@
 import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

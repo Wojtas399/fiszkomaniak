@@ -1,7 +1,4 @@
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_event.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_state.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/flashcard_model.dart';

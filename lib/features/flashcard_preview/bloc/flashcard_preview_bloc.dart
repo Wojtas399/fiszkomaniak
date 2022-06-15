@@ -1,40 +1,53 @@
 import 'dart:async';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_dialogs.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_event.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_state.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_status.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+part 'flashcard_preview_event.dart';
+
+part 'flashcard_preview_state.dart';
+
+part 'flashcard_preview_status.dart';
+
 class FlashcardPreviewBloc
     extends Bloc<FlashcardPreviewEvent, FlashcardPreviewState> {
+  late final CoursesInterface _coursesInterface;
   late final FlashcardsBloc _flashcardsBloc;
-  late final CoursesBloc _coursesBloc;
   late final GroupsBloc _groupsBloc;
   late final FlashcardPreviewDialogs _flashcardPreviewDialogs;
+  StreamSubscription<String>? _courseNameListener;
   StreamSubscription? _flashcardsStateSubscription;
 
   FlashcardPreviewBloc({
+    required CoursesInterface coursesInterface,
     required FlashcardsBloc flashcardsBloc,
-    required CoursesBloc coursesBloc,
     required GroupsBloc groupsBloc,
     required FlashcardPreviewDialogs flashcardPreviewDialogs,
   }) : super(const FlashcardPreviewState()) {
+    _coursesInterface = coursesInterface;
     _flashcardsBloc = flashcardsBloc;
-    _coursesBloc = coursesBloc;
     _groupsBloc = groupsBloc;
     _flashcardPreviewDialogs = flashcardPreviewDialogs;
     on<FlashcardPreviewEventInitialize>(_initialize);
+    on<FlashcardPreviewEventCourseNameUpdated>(_courseNameUpdated);
     on<FlashcardPreviewEventQuestionChanged>(_questionChanged);
     on<FlashcardPreviewEventAnswerChanged>(_answerChanged);
     on<FlashcardPreviewEventResetChanges>(_resetChanges);
     on<FlashcardPreviewEventSaveChanges>(_saveChanges);
     on<FlashcardPreviewEventRemoveFlashcard>(_removeFlashcard);
     on<FlashcardPreviewEventFlashcardsStateUpdated>(_flashcardsStateUpdated);
+  }
+
+  @override
+  Future<void> close() {
+    _courseNameListener?.cancel();
+    _flashcardsStateSubscription?.cancel();
+    return super.close();
   }
 
   void _initialize(
@@ -48,20 +61,24 @@ class FlashcardPreviewBloc
     if (flashcard != null) {
       final Group? group = _groupsBloc.state.getGroupById(event.params.groupId);
       if (group != null) {
-        final String? courseName = _coursesBloc.state.getCourseNameById(
-          group.courseId,
-        );
-        if (courseName != null) {
-          emit(state.copyWith(
-            flashcard: flashcard,
-            group: group,
-            courseName: courseName,
-            status: FlashcardPreviewStatusLoaded(),
-          ));
-        }
+        _setCourseNameListener(group.courseId);
+        emit(state.copyWith(
+          flashcard: flashcard,
+          group: group,
+          status: FlashcardPreviewStatusLoaded(),
+        ));
       }
     }
     _setFlashcardsStateListener();
+  }
+
+  void _courseNameUpdated(
+    FlashcardPreviewEventCourseNameUpdated event,
+    Emitter<FlashcardPreviewState> emit,
+  ) {
+    emit(state.copyWith(
+      courseName: event.newCourseName,
+    ));
   }
 
   void _questionChanged(
@@ -149,15 +166,17 @@ class FlashcardPreviewBloc
     }
   }
 
+  void _setCourseNameListener(String courseId) {
+    _courseNameListener = _coursesInterface.getCourseNameById(courseId).listen(
+          (courseName) => add(
+            FlashcardPreviewEventCourseNameUpdated(newCourseName: courseName),
+          ),
+        );
+  }
+
   void _setFlashcardsStateListener() {
     _flashcardsStateSubscription = _flashcardsBloc.stream.listen((_) {
       add(FlashcardPreviewEventFlashcardsStateUpdated());
     });
-  }
-
-  @override
-  Future<void> close() {
-    _flashcardsStateSubscription?.cancel();
-    return super.close();
   }
 }

@@ -33,7 +33,7 @@ class CoursesRepository implements CoursesInterface {
   }
 
   @override
-  Future<void> addNewCourse(String name) async {
+  Future<void> addNewCourse({required String name}) async {
     await _fireCoursesService.addNewCourse(name);
   }
 
@@ -49,7 +49,7 @@ class CoursesRepository implements CoursesInterface {
   }
 
   @override
-  Future<void> removeCourse(String courseId) async {
+  Future<void> removeCourse({required String courseId}) async {
     await _fireCoursesService.removeCourse(courseId);
   }
 
@@ -81,8 +81,9 @@ class CoursesRepository implements CoursesInterface {
     if (course != null) {
       return true;
     }
-    //TODO check in DB
-    throw UnimplementedError();
+    return await _fireCoursesService.isThereCourseWithTheName(
+      courseName: courseName,
+    );
   }
 
   Future<Course?> _loadCourseFromDb(String courseId) async {

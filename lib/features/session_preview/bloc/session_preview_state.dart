@@ -1,9 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
-import '../../../models/date_model.dart';
-import '../../../models/group_model.dart';
-import '../../../utils/group_utils.dart';
+part of 'session_preview_bloc.dart';
 
 class SessionPreviewState extends Equatable {
   final SessionPreviewMode? mode;

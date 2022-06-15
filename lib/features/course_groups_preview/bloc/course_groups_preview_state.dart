@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
-import '../../../models/course_model.dart';
+part of 'course_groups_preview_bloc.dart';
 
 class CourseGroupsPreviewState extends Equatable {
   final Course? course;

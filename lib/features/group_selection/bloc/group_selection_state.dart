@@ -1,7 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+part of 'group_selection_bloc.dart';
 
 class GroupSelectionState extends Equatable {
   late final List<Course> _allCourses;

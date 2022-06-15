@@ -1,7 +1,6 @@
 import 'package:fiszkomaniak/components/flashcards_progress_bar.dart';
 import 'package:fiszkomaniak/components/item_with_icon.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_bloc.dart';
-import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

@@ -1,30 +1,35 @@
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_state.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_status.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/course_model.dart';
 import '../../../models/time_model.dart';
+import '../../../utils/group_utils.dart';
 import '../../../utils/time_utils.dart';
+
+part 'session_creator_event.dart';
+
+part 'session_creator_state.dart';
+
+part 'session_creator_status.dart';
 
 class SessionCreatorBloc
     extends Bloc<SessionCreatorEvent, SessionCreatorState> {
-  late final CoursesBloc _coursesBloc;
+  late final CoursesInterface _coursesInterface;
   late final GroupsBloc _groupsBloc;
   late final SessionsBloc _sessionsBloc;
 
   SessionCreatorBloc({
-    required CoursesBloc coursesBloc,
+    required CoursesInterface coursesInterface,
     required GroupsBloc groupsBloc,
     required SessionsBloc sessionsBloc,
   }) : super(const SessionCreatorState()) {
-    _coursesBloc = coursesBloc;
+    _coursesInterface = coursesInterface;
     _groupsBloc = groupsBloc;
     _sessionsBloc = sessionsBloc;
     on<SessionCreatorEventInitialize>(_initialize);
@@ -53,22 +58,21 @@ class SessionCreatorBloc
     }
   }
 
-  void _courseSelected(
+  Future<void> _courseSelected(
     SessionCreatorEventCourseSelected event,
     Emitter<SessionCreatorState> emit,
-  ) {
-    final Course? course = _coursesBloc.state.getCourseById(event.courseId);
-    if (course != null) {
-      final List<Group> groupsFromCourse =
-          _groupsBloc.state.getGroupsByCourseId(event.courseId);
-      if (state.selectedCourse != course && state.selectedCourse != null) {
-        emit(state.reset(selectedGroup: true));
-      }
-      emit(state.copyWith(
-        selectedCourse: course,
-        groups: groupsFromCourse.where(_areThereFlashcardsInGroup).toList(),
-      ));
+  ) async {
+    final Course course =
+        await _coursesInterface.getCourseById(event.courseId).first;
+    final List<Group> groupsFromCourse =
+        _groupsBloc.state.getGroupsByCourseId(event.courseId);
+    if (state.selectedCourse != course && state.selectedCourse != null) {
+      emit(state.reset(selectedGroup: true));
     }
+    emit(state.copyWith(
+      selectedCourse: course,
+      groups: groupsFromCourse.where(_areThereFlashcardsInGroup).toList(),
+    ));
   }
 
   void _groupSelected(
@@ -185,23 +189,24 @@ class SessionCreatorBloc
     }
   }
 
-  void _initializeCreateMode(Emitter<SessionCreatorState> emit) {
-    emit(state.copyWith(courses: _coursesBloc.state.allCourses));
+  Future<void> _initializeCreateMode(Emitter<SessionCreatorState> emit) async {
+    emit(state.copyWith(courses: await _coursesInterface.allCourses$.first));
   }
 
-  void _initializeEditMode(
+  Future<void> _initializeEditMode(
     SessionCreatorEditMode createMode,
     Emitter<SessionCreatorState> emit,
-  ) {
+  ) async {
     final Session session = createMode.session;
     final Group? group = _groupsBloc.state.getGroupById(session.groupId);
-    final Course? course = _coursesBloc.state.getCourseById(group?.courseId);
+    final Course course =
+        await _coursesInterface.getCourseById(group?.courseId ?? '').first;
     final List<Group> groupsFromCourse = _groupsBloc.state.getGroupsByCourseId(
       group?.courseId,
     );
     emit(state.copyWith(
       mode: createMode,
-      courses: _coursesBloc.state.allCourses,
+      courses: await _coursesInterface.allCourses$.first,
       groups: groupsFromCourse,
       selectedCourse: course,
       selectedGroup: group,

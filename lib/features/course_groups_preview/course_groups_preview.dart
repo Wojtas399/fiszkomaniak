@@ -1,9 +1,8 @@
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_event.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_app_bar.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_content.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -41,7 +40,7 @@ class _CourseGroupsPreviewBlocProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => CourseGroupsPreviewBloc(
-        coursesBloc: context.read<CoursesBloc>(),
+        coursesInterface: context.read<CoursesInterface>(),
         groupsBloc: context.read<GroupsBloc>(),
       )..add(CourseGroupsPreviewEventInitialize(courseId: courseId)),
       child: child,

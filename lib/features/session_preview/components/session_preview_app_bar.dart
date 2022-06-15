@@ -1,8 +1,6 @@
 import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
 import 'package:fiszkomaniak/components/popup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

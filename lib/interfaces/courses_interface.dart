@@ -7,14 +7,14 @@ abstract class CoursesInterface {
 
   Future<void> loadAllCourses();
 
-  Future<void> addNewCourse(String name);
+  Future<void> addNewCourse({required String name});
 
   Future<void> updateCourseName({
     required String courseId,
     required String newCourseName,
   });
 
-  Future<void> removeCourse(String courseId);
+  Future<void> removeCourse({required String courseId});
 
   Stream<Course> getCourseById(String courseId);
 

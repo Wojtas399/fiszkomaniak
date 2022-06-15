@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:fiszkomaniak/utils/flashcards_utils.dart';
@@ -23,7 +23,7 @@ part 'learning_process_status.dart';
 class LearningProcessBloc
     extends Bloc<LearningProcessEvent, LearningProcessState> {
   late final FlashcardsBloc _flashcardsBloc;
-  late final CoursesBloc _coursesBloc;
+  late final CoursesInterface _coursesInterface;
   late final GroupsBloc _groupsBloc;
   late final SessionsBloc _sessionsBloc;
   late final AchievementsBloc _achievementsBloc;
@@ -32,7 +32,7 @@ class LearningProcessBloc
 
   LearningProcessBloc({
     required FlashcardsBloc flashcardsBloc,
-    required CoursesBloc coursesBloc,
+    required CoursesInterface coursesInterface,
     required GroupsBloc groupsBloc,
     required SessionsBloc sessionsBloc,
     required AchievementsBloc achievementsBloc,
@@ -40,7 +40,7 @@ class LearningProcessBloc
     required Navigation navigation,
   }) : super(const LearningProcessState()) {
     _flashcardsBloc = flashcardsBloc;
-    _coursesBloc = coursesBloc;
+    _coursesInterface = coursesInterface;
     _groupsBloc = groupsBloc;
     _sessionsBloc = sessionsBloc;
     _achievementsBloc = achievementsBloc;
@@ -55,15 +55,14 @@ class LearningProcessBloc
     on<LearningProcessEventExit>(_exit);
   }
 
-  void _initialize(
+  Future<void> _initialize(
     LearningProcessEventInitialize event,
     Emitter<LearningProcessState> emit,
-  ) {
+  ) async {
     final Group? group = _groupsBloc.state.getGroupById(event.data.groupId);
-    final String? courseName = _coursesBloc.state.getCourseNameById(
-      group?.courseId,
-    );
-    if (group != null && courseName != null) {
+    if (group != null) {
+      final String courseName =
+          await _coursesInterface.getCourseNameById(group.courseId).first;
       final int amountOfFlashcardsInStack =
           FlashcardsUtils.getAmountOfFlashcardsMatchingToFlashcardsType(
         group.flashcards,

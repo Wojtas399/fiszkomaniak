@@ -1,6 +1,5 @@
 import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_state.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

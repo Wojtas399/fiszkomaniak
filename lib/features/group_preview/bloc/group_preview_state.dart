@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+part of 'group_preview_bloc.dart';
 
 class GroupPreviewState extends Equatable {
   final Group? group;

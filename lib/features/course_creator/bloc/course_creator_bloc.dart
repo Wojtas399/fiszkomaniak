@@ -1,19 +1,19 @@
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_dialogs.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_event.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
-  late final CoursesBloc _coursesBloc;
+  late final CoursesInterface _coursesInterface;
   late final CourseCreatorDialogs _courseCreatorDialogs;
 
   CourseCreatorBloc({
-    required CoursesBloc coursesBloc,
+    required CoursesInterface coursesInterface,
     required CourseCreatorDialogs courseCreatorDialogs,
   }) : super(const CourseCreatorState()) {
-    _coursesBloc = coursesBloc;
+    _coursesInterface = coursesInterface;
     _courseCreatorDialogs = courseCreatorDialogs;
     on<CourseCreatorEventInitialize>(_initialize);
     on<CourseCreatorEventCourseNameChanged>(_courseNameChanged);
@@ -44,22 +44,22 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     ));
   }
 
-  void _saveChanges(
+  Future<void> _saveChanges(
     CourseCreatorEventSaveChanges event,
     Emitter<CourseCreatorState> emit,
-  ) {
+  ) async {
     final String courseName = state.courseName.trim();
-    if (_coursesBloc.state.isThereCourseWithTheSameName(courseName)) {
+    if (await _coursesInterface.isThereCourseWithTheSameName(courseName)) {
       _courseCreatorDialogs.displayInfoAboutAlreadyTakenCourseName();
     } else {
       CourseCreatorMode mode = state.mode;
       if (mode is CourseCreatorCreateMode) {
-        _coursesBloc.add(CoursesEventAddNewCourse(name: courseName));
+        await _coursesInterface.addNewCourse(name: courseName);
       } else if (mode is CourseCreatorEditMode) {
-        _coursesBloc.add(CoursesEventUpdateCourseName(
+        await _coursesInterface.updateCourseName(
           courseId: mode.course.id,
           newCourseName: courseName,
-        ));
+        );
       }
     }
   }

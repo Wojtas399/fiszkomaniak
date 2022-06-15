@@ -1,40 +1,55 @@
 import 'dart:async';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_event.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_state.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/course_model.dart';
+import '../../../models/group_model.dart';
+
+part 'course_groups_preview_event.dart';
+
+part 'course_groups_preview_state.dart';
 
 class CourseGroupsPreviewBloc
     extends Bloc<CourseGroupsPreviewEvent, CourseGroupsPreviewState> {
-  late final CoursesBloc _coursesBloc;
+  late final CoursesInterface _coursesInterface;
   late final GroupsBloc _groupsBloc;
+  StreamSubscription<Course>? _courseListener;
   StreamSubscription? _groupsStateSubscription;
 
   CourseGroupsPreviewBloc({
-    required CoursesBloc coursesBloc,
+    required CoursesInterface coursesInterface,
     required GroupsBloc groupsBloc,
   }) : super(const CourseGroupsPreviewState()) {
-    _coursesBloc = coursesBloc;
+    _coursesInterface = coursesInterface;
     _groupsBloc = groupsBloc;
     on<CourseGroupsPreviewEventInitialize>(_initialize);
+    on<CourseGroupsPreviewEventCourseUpdated>(_courseUpdated);
     on<CourseGroupsPreviewEventGroupsStateChanged>(_groupsStateChanged);
     on<CourseGroupsPreviewEventSearchValueChanged>(_searchValueChanged);
   }
 
-  void _initialize(
+  @override
+  Future<void> close() {
+    _courseListener?.cancel();
+    _groupsStateSubscription?.cancel();
+    return super.close();
+  }
+
+  Future<void> _initialize(
     CourseGroupsPreviewEventInitialize event,
     Emitter<CourseGroupsPreviewState> emit,
+  ) async {
+    _setCourseListener(event.courseId);
+  }
+
+  void _courseUpdated(
+    CourseGroupsPreviewEventCourseUpdated event,
+    Emitter<CourseGroupsPreviewState> emit,
   ) {
-    final Course? course = _coursesBloc.state.getCourseById(event.courseId);
-    if (course != null) {
-      emit(state.copyWith(course: course));
-      add(CourseGroupsPreviewEventGroupsStateChanged());
-      _groupsStateSubscription = _groupsBloc.stream.listen((_) {
-        add(CourseGroupsPreviewEventGroupsStateChanged());
-      });
-    }
+    emit(state.copyWith(
+      course: event.updatedCourse,
+    ));
   }
 
   void _groupsStateChanged(
@@ -58,9 +73,11 @@ class CourseGroupsPreviewBloc
     emit(state.copyWith(searchValue: event.searchValue));
   }
 
-  @override
-  Future<void> close() {
-    _groupsStateSubscription?.cancel();
-    return super.close();
+  void _setCourseListener(final String courseId) {
+    _courseListener = _coursesInterface.getCourseById(courseId).listen(
+          (course) => add(
+            CourseGroupsPreviewEventCourseUpdated(updatedCourse: course),
+          ),
+        );
   }
 }

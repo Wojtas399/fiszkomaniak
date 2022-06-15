@@ -1,12 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_status.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
-import 'package:fiszkomaniak/models/time_model.dart';
-import 'package:fiszkomaniak/utils/group_utils.dart';
-import '../../../models/date_model.dart';
-import '../../../models/session_model.dart';
+part of 'session_creator_bloc.dart';
 
 class SessionCreatorState extends Equatable {
   final SessionCreatorMode mode;

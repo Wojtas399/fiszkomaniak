@@ -3,9 +3,9 @@ import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_dialogs
 import 'package:fiszkomaniak/features/course_creator/components/course_creator_app_bar.dart';
 import 'package:fiszkomaniak/features/course_creator/components/course_creator_content.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/courses/courses_bloc.dart';
 
 class CourseCreator extends StatelessWidget {
   final CourseCreatorMode mode;
@@ -43,7 +43,7 @@ class _CourseCreatorBlocProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => CourseCreatorBloc(
-        coursesBloc: context.read<CoursesBloc>(),
+        coursesInterface: context.read<CoursesInterface>(),
         courseCreatorDialogs: CourseCreatorDialogs(),
       ),
       child: child,

@@ -1,6 +1,5 @@
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/core/notifications/achievements_notifications_bloc.dart';
@@ -10,7 +9,6 @@ import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/injections/notifications_provider.dart';
 import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
 import 'package:fiszkomaniak/interfaces/achievements_notifications_interface.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/flashcards_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
@@ -76,15 +74,10 @@ class HomeProviders extends StatelessWidget {
               settingsInterface: context.read<SettingsInterface>(),
             )..add(NotificationsSettingsEventLoad()),
           ),
-          BlocProvider<CoursesBloc>(
-            create: (BuildContext context) => CoursesBloc(
-              coursesInterface: context.read<CoursesInterface>(),
-            ),
-          ),
           BlocProvider<GroupsBloc>(
             create: (BuildContext context) => GroupsBloc(
               groupsInterface: context.read<GroupsInterface>(),
-            ),
+            )..add(GroupsEventInitialize()),
           ),
           BlocProvider<FlashcardsBloc>(
             create: (BuildContext context) => FlashcardsBloc(

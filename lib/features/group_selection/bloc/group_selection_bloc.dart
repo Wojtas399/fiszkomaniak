@@ -1,26 +1,31 @@
 import 'dart:async';
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
-import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_event.dart';
-import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_state.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../models/course_model.dart';
+import '../../../models/flashcard_model.dart';
 import '../../../models/group_model.dart';
+
+part 'group_selection_event.dart';
+
+part 'group_selection_state.dart';
 
 class GroupSelectionBloc
     extends Bloc<GroupSelectionEvent, GroupSelectionState> {
-  late final CoursesBloc _coursesBloc;
+  late final CoursesInterface _coursesInterface;
   late final GroupsBloc _groupsBloc;
   late final Navigation _navigation;
   StreamSubscription? _groupsStateSubscription;
 
   GroupSelectionBloc({
-    required CoursesBloc coursesBloc,
+    required CoursesInterface coursesInterface,
     required GroupsBloc groupsBloc,
     required Navigation navigation,
   }) : super(GroupSelectionState()) {
-    _coursesBloc = coursesBloc;
+    _coursesInterface = coursesInterface;
     _groupsBloc = groupsBloc;
     _navigation = navigation;
     on<GroupSelectionEventInitialize>(_initialize);
@@ -30,22 +35,23 @@ class GroupSelectionBloc
     on<GroupSelectionEventGroupsStateUpdated>(_groupsStateUpdated);
   }
 
-  void _initialize(
+  Future<void> _initialize(
     GroupSelectionEventInitialize event,
     Emitter<GroupSelectionState> emit,
-  ) {
+  ) async {
     emit(state.copyWith(
-      allCourses: _coursesBloc.state.allCourses,
+      allCourses: await _coursesInterface.allCourses$.first,
     ));
     _setGroupsStateListener();
   }
 
-  void _courseSelected(
+  Future<void> _courseSelected(
     GroupSelectionEventCourseSelected event,
     Emitter<GroupSelectionState> emit,
-  ) {
+  ) async {
     emit(state.copyWith(
-      selectedCourse: _coursesBloc.state.getCourseById(event.courseId),
+      selectedCourse:
+          await _coursesInterface.getCourseById(event.courseId).first,
       groupsFromCourse: _groupsBloc.state.getGroupsByCourseId(event.courseId),
     ));
   }

@@ -1,23 +1,26 @@
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_dialogs.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_event.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_state.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+part 'group_creator_event.dart';
+
+part 'group_creator_state.dart';
+
 class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
-  late final CoursesBloc _coursesBloc;
+  late final CoursesInterface _coursesInterface;
   late final GroupsBloc _groupsBloc;
   late final GroupCreatorDialogs _groupCreatorDialogs;
 
   GroupCreatorBloc({
-    required CoursesBloc coursesBloc,
+    required CoursesInterface coursesInterface,
     required GroupsBloc groupsBloc,
     required GroupCreatorDialogs groupCreatorDialogs,
   }) : super(const GroupCreatorState()) {
-    _coursesBloc = coursesBloc;
+    _coursesInterface = coursesInterface;
     _groupsBloc = groupsBloc;
     _groupCreatorDialogs = groupCreatorDialogs;
     on<GroupCreatorEventInitialize>(_initialize);
@@ -28,11 +31,11 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
     on<GroupCreatorEventSubmit>(_submit);
   }
 
-  void _initialize(
+  Future<void> _initialize(
     GroupCreatorEventInitialize event,
     Emitter<GroupCreatorState> emit,
-  ) {
-    final List<Course> allCourses = _coursesBloc.state.allCourses;
+  ) async {
+    final List<Course> allCourses = await _coursesInterface.allCourses$.first;
     final GroupCreatorMode mode = event.mode;
     if (mode is GroupCreatorCreateMode) {
       emit(state.copyWith(

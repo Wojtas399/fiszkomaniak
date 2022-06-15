@@ -2,7 +2,6 @@ import 'package:fiszkomaniak/components/group_item/group_item.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/bouncing_scroll.dart';

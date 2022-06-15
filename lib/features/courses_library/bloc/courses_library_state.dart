@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import '../../../models/course_model.dart';
+part of 'courses_library_bloc.dart';
 
 class CoursesLibraryState extends Equatable {
   final List<Course> courses;

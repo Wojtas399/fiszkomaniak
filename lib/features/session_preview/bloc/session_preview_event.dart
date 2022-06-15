@@ -1,24 +1,35 @@
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
+part of 'session_preview_bloc.dart';
 
-abstract class SessionPreviewEvent {}
+abstract class SessionPreviewEvent extends Equatable {
+  @override
+  List<Object> get props => [];
+}
 
 class SessionPreviewEventInitialize extends SessionPreviewEvent {
   final SessionPreviewMode mode;
 
   SessionPreviewEventInitialize({required this.mode});
+
+  @override
+  List<Object> get props => [mode];
 }
 
 class SessionPreviewEventDurationChanged extends SessionPreviewEvent {
   final Duration? duration;
 
   SessionPreviewEventDurationChanged({required this.duration});
+
+  @override
+  List<Object> get props => [duration ?? ''];
 }
 
 class SessionPreviewEventFlashcardsTypeChanged extends SessionPreviewEvent {
   final FlashcardsType flashcardsType;
 
   SessionPreviewEventFlashcardsTypeChanged({required this.flashcardsType});
+
+  @override
+  List<Object> get props => [flashcardsType];
 }
 
 class SessionPreviewEventSwapQuestionsAndAnswers extends SessionPreviewEvent {}

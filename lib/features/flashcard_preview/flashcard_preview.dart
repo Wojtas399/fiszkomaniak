@@ -1,14 +1,12 @@
 import 'package:fiszkomaniak/components/bouncing_scroll.dart';
 import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
 import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
 import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_dialogs.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_event.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_state.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/components/flashcard_preview_app_bar.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/components/flashcard_preview_content.dart';
+import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -61,7 +59,7 @@ class _FlashcardPreviewBlocProvider extends StatelessWidget {
     return BlocProvider(
       create: (BuildContext context) => FlashcardPreviewBloc(
         flashcardsBloc: context.read<FlashcardsBloc>(),
-        coursesBloc: context.read<CoursesBloc>(),
+        coursesInterface: context.read<CoursesInterface>(),
         groupsBloc: context.read<GroupsBloc>(),
         flashcardPreviewDialogs: FlashcardPreviewDialogs(),
       )..add(FlashcardPreviewEventInitialize(params: params)),

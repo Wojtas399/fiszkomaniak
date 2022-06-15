@@ -1,8 +1,6 @@
 import 'package:fiszkomaniak/components/flashcards_progress_bar.dart';
 import 'package:fiszkomaniak/components/section.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
-import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_event.dart';
-import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

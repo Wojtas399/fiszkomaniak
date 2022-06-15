@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'flashcard_preview_bloc.dart';
 
 abstract class FlashcardPreviewStatus extends Equatable {
   const FlashcardPreviewStatus();
