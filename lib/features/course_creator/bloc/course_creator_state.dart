@@ -1,9 +1,34 @@
-import 'package:equatable/equatable.dart';
-import '../course_creator_mode.dart';
+part of 'course_creator_bloc.dart';
 
 class CourseCreatorState extends Equatable {
+  final CourseCreatorStatus status;
   final CourseCreatorMode mode;
   final String courseName;
+
+  const CourseCreatorState({
+    this.status = const CourseCreatorStatusInitial(),
+    this.mode = const CourseCreatorCreateMode(),
+    this.courseName = '',
+  });
+
+  @override
+  List<Object> get props => [
+        status,
+        mode,
+        courseName,
+      ];
+
+  CourseCreatorState copyWith({
+    CourseCreatorStatus? status,
+    CourseCreatorMode? mode,
+    String? courseName,
+  }) {
+    return CourseCreatorState(
+      status: status ?? CourseCreatorStatusLoaded(),
+      mode: mode ?? this.mode,
+      courseName: courseName ?? this.courseName,
+    );
+  }
 
   bool get isButtonDisabled {
     final CourseCreatorMode mode = this.mode;
@@ -12,43 +37,4 @@ class CourseCreatorState extends Equatable {
     }
     return courseName.isEmpty;
   }
-
-  String get title {
-    if (mode is CourseCreatorCreateMode) {
-      return 'Nowy kurs';
-    } else if (mode is CourseCreatorEditMode) {
-      return 'Edycja kursu';
-    }
-    return '';
-  }
-
-  String get buttonText {
-    if (mode is CourseCreatorCreateMode) {
-      return 'utwórz';
-    } else if (mode is CourseCreatorEditMode) {
-      return 'zapisz';
-    }
-    return '';
-  }
-
-  const CourseCreatorState({
-    this.mode = const CourseCreatorCreateMode(),
-    this.courseName = '',
-  });
-
-  CourseCreatorState copyWith({
-    CourseCreatorMode? mode,
-    String? courseName,
-  }) {
-    return CourseCreatorState(
-      mode: mode ?? this.mode,
-      courseName: courseName ?? this.courseName,
-    );
-  }
-
-  @override
-  List<Object> get props => [
-        mode,
-        courseName,
-      ];
 }

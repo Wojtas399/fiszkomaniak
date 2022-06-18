@@ -9,13 +9,11 @@ import 'listeners/notifications_bloc_listener.dart';
 
 class HomeListeners extends StatelessWidget {
   final Widget child;
-  final PageController pageController;
   final Dialogs dialogs = Dialogs();
 
   HomeListeners({
     super.key,
     required this.child,
-    required this.pageController,
   });
 
   @override
@@ -24,19 +22,11 @@ class HomeListeners extends StatelessWidget {
       listeners: [
         AuthBlocListener(),
         AppearanceSettingsBlocListener(),
-        SessionsBlocListener(onHomePageChanged: _animateToPage),
+        SessionsBlocListener(onHomePageChanged: (int pageNumber) {}),
         NotificationsBlocListener(),
         AchievementsBlocListener(),
       ],
       child: child,
-    );
-  }
-
-  void _animateToPage(int pageNumber) {
-    pageController.animateToPage(
-      pageNumber,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeInOut,
     );
   }
 }

@@ -5,7 +5,7 @@ import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
 import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/repositories/achievements_repository.dart';
-import 'package:fiszkomaniak/repositories/courses_repository.dart';
+import 'package:fiszkomaniak/domain/repositories/courses_repository.dart';
 import 'package:fiszkomaniak/repositories/sessions_repository.dart';
 import 'package:fiszkomaniak/repositories/settings_repository.dart';
 import 'package:fiszkomaniak/repositories/flashcards_repository.dart';
@@ -24,7 +24,7 @@ import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/repositories/user_repository.dart';
 import '../interfaces/user_interface.dart';
 import '../repositories/auth_repository.dart';
-import '../repositories/courses_repository.dart';
+import '../domain/repositories/courses_repository.dart';
 
 class FirebaseProvider {
   static final _fireUserService = FireUserService();

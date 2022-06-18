@@ -5,49 +5,42 @@ import 'package:fiszkomaniak/features/home/home_listeners.dart';
 import 'package:fiszkomaniak/features/sessions_list/sessions_list_page.dart';
 import 'package:fiszkomaniak/features/study/study_page.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:provider/provider.dart';
 import '../profile/profile_page.dart';
 import 'components/home_action_button.dart';
+import 'home.dart';
 
 class HomeView extends StatelessWidget {
-  final PageController _pageController = PageController(initialPage: 0);
-  final _displayingPageNumber = BehaviorSubject<int>();
-
-  HomeView({Key? key}) : super(key: key);
+  const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return HomeListeners(
-      pageController: _pageController,
-      child: StreamBuilder(
-        stream: _displayingPageNumber,
-        builder: (_, AsyncSnapshot<int> snapshot) {
-          int displayingPageNumber = snapshot.data ?? 0;
-          return Scaffold(
-            extendBody: true,
-            appBar: HomeAppBar(displayingPageNumber: displayingPageNumber),
-            body: PageView(
-              controller: _pageController,
-              onPageChanged: (int number) {
-                _displayingPageNumber.add(number);
-              },
-              children: const [
-                StudyPage(),
-                SessionsListPage(),
-                CoursesLibraryPage(),
-                ProfilePage(),
-              ],
-            ),
-            floatingActionButton: const HomeActionButton(),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
-            bottomNavigationBar: HomeBottomNavigationBar(
-              pageController: _pageController,
-              displayingPageNumber: displayingPageNumber,
-            ),
-          );
-        },
+      child: const Scaffold(
+        extendBody: true,
+        appBar: HomeAppBar(),
+        body: _PageView(),
+        floatingActionButton: HomeActionButton(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: HomeBottomNavigationBar(),
       ),
+    );
+  }
+}
+
+class _PageView extends StatelessWidget {
+  const _PageView();
+
+  @override
+  Widget build(BuildContext context) {
+    return PageView(
+      controller: context.read<HomePageController>().controller,
+      children: const [
+        StudyPage(),
+        SessionsListPage(),
+        CoursesLibraryPage(),
+        ProfilePage(),
+      ],
     );
   }
 }

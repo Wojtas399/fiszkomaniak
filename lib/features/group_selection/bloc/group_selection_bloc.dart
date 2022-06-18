@@ -4,7 +4,7 @@ import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../models/course_model.dart';
+import '../../../domain/entities/course.dart';
 import '../../../models/flashcard_model.dart';
 import '../../../models/group_model.dart';
 

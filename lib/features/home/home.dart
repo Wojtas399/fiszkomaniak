@@ -7,6 +7,7 @@ import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -52,8 +53,28 @@ class _View extends StatelessWidget {
     if (homeStatus is HomeStatusLoading) {
       return const HomeLoadingScreen();
     } else if (homeStatus is HomeStatusLoaded) {
-      return const HomeRouter();
+      return ChangeNotifierProvider(
+        create: (_) => HomePageController(),
+        child: const HomeRouter(),
+      );
     }
     return const HomeErrorScreen();
+  }
+}
+
+class HomePageController extends ChangeNotifier {
+  final PageController _pageController = PageController(initialPage: 0);
+  int pageNumber = 0;
+
+  PageController get controller => _pageController;
+
+  void moveToPage(int pageNumber) {
+    _pageController.animateToPage(
+      pageNumber,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+    );
+    this.pageNumber = pageNumber;
+    notifyListeners();
   }
 }

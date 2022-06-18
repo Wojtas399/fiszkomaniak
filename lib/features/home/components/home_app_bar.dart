@@ -7,12 +7,10 @@ import 'package:fiszkomaniak/features/home/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../home.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final int displayingPageNumber;
-  final List<String> _pageNames = ['Nauka', 'Sesje', 'Kursy', 'Profil'];
-
-  HomeAppBar({super.key, required this.displayingPageNumber});
+  const HomeAppBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -22,7 +20,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Theme(
       data: GlobalTheme.lightTheme,
       child: AppBar(
-        title: Text(_pageNames[displayingPageNumber]),
+        title: const _Title(),
         centerTitle: true,
         leadingWidth: 200,
         leading: const _AvatarAndDays(),
@@ -40,6 +38,31 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   void _onSettingsPressed(BuildContext context) {
     context.read<Navigation>().navigateToSettings();
+  }
+}
+
+class _Title extends StatelessWidget {
+  const _Title();
+
+  @override
+  Widget build(BuildContext context) {
+    final pageNumber = context.watch<HomePageController>().pageNumber;
+    return Text(_getPageTitle(pageNumber));
+  }
+
+  String _getPageTitle(int pageNumber) {
+    switch (pageNumber) {
+      case 0:
+        return 'Nauka';
+      case 1:
+        return 'Sesje';
+      case 2:
+        return 'Kursy';
+      case 3:
+        return 'Profil';
+      default:
+        return '';
+    }
   }
 }
 

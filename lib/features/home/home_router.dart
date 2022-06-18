@@ -51,7 +51,7 @@ class _HomeRouterState extends State<HomeRouter> {
     switch (routeSettings.name) {
       case Routes.home:
         return MaterialPageRoute(
-          builder: (_) => HomeView(),
+          builder: (_) => const HomeView(),
           settings: routeSettings,
         );
       case Routes.settings:

@@ -11,6 +11,10 @@ class Course extends Equatable {
 
   @override
   List<Object> get props => [id, name];
+
+  Course copyWithName(String? name) {
+    return Course(id: id, name: name ?? this.name);
+  }
 }
 
 Course createCourse({String id = '', String name = ''}) {

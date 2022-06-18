@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_dialogs.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../config/navigation.dart';
 import '../../course_creator/course_creator_mode.dart';

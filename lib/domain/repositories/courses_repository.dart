@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiszkomaniak/firebase/fire_document.dart';
 import 'package:fiszkomaniak/firebase/models/course_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_courses_service.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CoursesRepository implements CoursesInterface {
@@ -17,16 +17,11 @@ class CoursesRepository implements CoursesInterface {
   Stream<List<Course>> get allCourses$ => _courses$.stream;
 
   @override
-  Future<void> loadCoursesByIds(List<String> coursesIds) async {
-    //TODO
-  }
-
-  @override
   Future<void> loadAllCourses() async {
     final allCoursesFromDb = await _fireCoursesService.loadAllCourses();
     _courses$.add(
       allCoursesFromDb
-          .map(_convertDbCourseToCourseModel)
+          .map(_convertCourseFromDbToCourseModel)
           .whereType<Course>()
           .toList(),
     );
@@ -34,7 +29,13 @@ class CoursesRepository implements CoursesInterface {
 
   @override
   Future<void> addNewCourse({required String name}) async {
-    await _fireCoursesService.addNewCourse(name);
+    final courseFromDb = await _fireCoursesService.addNewCourse(name);
+    if (courseFromDb != null) {
+      final Course course = _convertCourseFromDbToCourseModel(courseFromDb);
+      final courses = [..._courses$.value];
+      courses.add(course);
+      _courses$.add(courses);
+    }
   }
 
   @override
@@ -42,15 +43,28 @@ class CoursesRepository implements CoursesInterface {
     required String courseId,
     required String newCourseName,
   }) async {
-    await _fireCoursesService.updateCourseName(
+    final updatedCourseFromDb = await _fireCoursesService.updateCourseName(
       courseId: courseId,
       newName: newCourseName,
     );
+    if (updatedCourseFromDb != null) {
+      final courses = [..._courses$.value];
+      final updatedCourseIndex = courses.indexWhere(
+        (course) => course.id == updatedCourseFromDb.id,
+      );
+      courses[updatedCourseIndex] = _convertCourseFromDbToCourseModel(
+        updatedCourseFromDb,
+      );
+      _courses$.add(courses);
+    }
   }
 
   @override
   Future<void> removeCourse({required String courseId}) async {
-    await _fireCoursesService.removeCourse(courseId);
+    final removedCourseId = await _fireCoursesService.removeCourse(courseId);
+    final courses = [..._courses$.value];
+    courses.removeWhere((course) => course.id == removedCourseId);
+    _courses$.add(courses);
   }
 
   @override
@@ -72,7 +86,7 @@ class CoursesRepository implements CoursesInterface {
   }
 
   @override
-  Future<bool> isThereCourseWithTheSameName(String courseName) async {
+  Future<bool> isCourseNameAlreadyTaken(String courseName) async {
     final List<Course?> allCourses = [..._courses$.value];
     final Course? course = allCourses.firstWhere(
       (element) => element?.name == courseName,
@@ -90,8 +104,8 @@ class CoursesRepository implements CoursesInterface {
     final courseFromDb = await _fireCoursesService.getCourseById(
       courseId: courseId,
     );
-    final Course? course = _convertDbCourseToCourseModel(courseFromDb);
-    if (course != null) {
+    if (courseFromDb != null) {
+      final Course course = _convertCourseFromDbToCourseModel(courseFromDb);
       _addNewCourse(course);
       return course;
     }
@@ -103,12 +117,8 @@ class CoursesRepository implements CoursesInterface {
     return loadedCourses.map((course) => course.id).contains(courseId);
   }
 
-  Course? _convertDbCourseToCourseModel(DocumentSnapshot<CourseDbModel> doc) {
-    final data = doc.data();
-    if (data != null) {
-      return Course(id: doc.id, name: data.name);
-    }
-    return null;
+  Course _convertCourseFromDbToCourseModel(FireDocument<CourseDbModel> doc) {
+    return Course(id: doc.id, name: doc.data.name);
   }
 
   void _addNewCourse(Course course) {

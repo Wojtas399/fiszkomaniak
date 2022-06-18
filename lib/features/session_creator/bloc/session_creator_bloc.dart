@@ -6,7 +6,7 @@ import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../models/course_model.dart';
+import '../../../domain/entities/course.dart';
 import '../../../models/time_model.dart';
 import '../../../utils/group_utils.dart';
 import '../../../utils/time_utils.dart';

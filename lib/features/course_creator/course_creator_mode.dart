@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
 
 abstract class CourseCreatorMode extends Equatable {
   const CourseCreatorMode();

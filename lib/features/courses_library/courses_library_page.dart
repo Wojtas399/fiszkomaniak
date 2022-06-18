@@ -9,7 +9,7 @@ import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../models/course_model.dart';
+import '../../domain/entities/course.dart';
 
 class CoursesLibraryPage extends StatelessWidget {
   const CoursesLibraryPage({Key? key}) : super(key: key);

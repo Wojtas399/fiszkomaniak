@@ -1,20 +1,29 @@
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_dialogs.dart';
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_event.dart';
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';
+import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/add_new_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/check_course_name_usage_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/update_course_name_use_case.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+part 'course_creator_event.dart';
+
+part 'course_creator_state.dart';
+
+part 'course_creator_status.dart';
+
 class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
-  late final CoursesInterface _coursesInterface;
-  late final CourseCreatorDialogs _courseCreatorDialogs;
+  late final AddNewCourseUseCase _addNewCourseUseCase;
+  late final CheckCourseNameUsageUseCase _checkCourseNameUsageUseCase;
+  late final UpdateCourseNameUseCase _updateCourseNameUseCase;
 
   CourseCreatorBloc({
-    required CoursesInterface coursesInterface,
-    required CourseCreatorDialogs courseCreatorDialogs,
+    required AddNewCourseUseCase addNewCourseUseCase,
+    required CheckCourseNameUsageUseCase checkCourseNameUsageUseCase,
+    required UpdateCourseNameUseCase updateCourseNameUseCase,
   }) : super(const CourseCreatorState()) {
-    _coursesInterface = coursesInterface;
-    _courseCreatorDialogs = courseCreatorDialogs;
+    _addNewCourseUseCase = addNewCourseUseCase;
+    _checkCourseNameUsageUseCase = checkCourseNameUsageUseCase;
+    _updateCourseNameUseCase = updateCourseNameUseCase;
     on<CourseCreatorEventInitialize>(_initialize);
     on<CourseCreatorEventCourseNameChanged>(_courseNameChanged);
     on<CourseCreatorEventSaveChanges>(_saveChanges);
@@ -24,13 +33,13 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     CourseCreatorEventInitialize event,
     Emitter<CourseCreatorState> emit,
   ) {
-    CourseCreatorMode creatorMode = event.mode;
-    if (creatorMode is CourseCreatorCreateMode) {
-      emit(state.copyWith(mode: creatorMode));
-    } else if (creatorMode is CourseCreatorEditMode) {
+    CourseCreatorMode mode = event.mode;
+    if (mode is CourseCreatorCreateMode) {
+      emit(state.copyWith(mode: mode));
+    } else if (mode is CourseCreatorEditMode) {
       emit(state.copyWith(
-        mode: creatorMode,
-        courseName: creatorMode.course.name,
+        mode: mode,
+        courseName: mode.course.name,
       ));
     }
   }
@@ -48,19 +57,47 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     CourseCreatorEventSaveChanges event,
     Emitter<CourseCreatorState> emit,
   ) async {
+    emit(state.copyWith(
+      status: CourseCreatorStatusLoading(),
+    ));
     final String courseName = state.courseName.trim();
-    if (await _coursesInterface.isThereCourseWithTheSameName(courseName)) {
-      _courseCreatorDialogs.displayInfoAboutAlreadyTakenCourseName();
+    final bool isCourseNameAlreadyTaken =
+        await _checkCourseNameUsageUseCase.execute(courseName: courseName);
+    if (isCourseNameAlreadyTaken) {
+      emit(state.copyWith(
+        status: CourseCreatorStatusCourseNameIsAlreadyTaken(),
+      ));
     } else {
       CourseCreatorMode mode = state.mode;
       if (mode is CourseCreatorCreateMode) {
-        await _coursesInterface.addNewCourse(name: courseName);
+        await _addNewCourse(courseName, emit);
       } else if (mode is CourseCreatorEditMode) {
-        await _coursesInterface.updateCourseName(
-          courseId: mode.course.id,
-          newCourseName: courseName,
-        );
+        await _updateCourseName(mode.course.id, courseName, emit);
       }
     }
+  }
+
+  Future<void> _addNewCourse(
+    String courseName,
+    Emitter<CourseCreatorState> emit,
+  ) async {
+    await _addNewCourseUseCase.execute(courseName: courseName);
+    emit(state.copyWith(
+      status: CourseCreatorStatusCourseAdded(),
+    ));
+  }
+
+  Future<void> _updateCourseName(
+    String courseId,
+    String newCourseName,
+    Emitter<CourseCreatorState> emit,
+  ) async {
+    await _updateCourseNameUseCase.execute(
+      courseId: courseId,
+      newCourseName: newCourseName,
+    );
+    emit(state.copyWith(
+      status: CourseCreatorStatusCourseUpdated(),
+    ));
   }
 }

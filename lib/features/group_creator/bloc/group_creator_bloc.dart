@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_dialogs.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'group_creator_event.dart';

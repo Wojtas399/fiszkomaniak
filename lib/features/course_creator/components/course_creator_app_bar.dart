@@ -1,12 +1,12 @@
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/app_bar_with_close_button.dart';
 
 class CourseCreatorAppBar extends StatelessWidget
     implements PreferredSizeWidget {
-  const CourseCreatorAppBar({Key? key}) : super(key: key);
+  const CourseCreatorAppBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -15,8 +15,18 @@ class CourseCreatorAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     return BlocBuilder<CourseCreatorBloc, CourseCreatorState>(
       builder: (_, CourseCreatorState state) {
-        return CustomAppBar(label: state.title);
+        return CustomAppBar(label: _getTitle(state.mode));
       },
     );
+  }
+
+  String _getTitle(CourseCreatorMode mode) {
+    if (mode is CourseCreatorCreateMode) {
+      return 'Nowy kurs';
+    }
+    if (mode is CourseCreatorEditMode) {
+      return 'Edycja kursu';
+    }
+    return '';
   }
 }

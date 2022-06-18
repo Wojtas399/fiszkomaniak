@@ -1,9 +1,7 @@
-import 'package:fiszkomaniak/models/course_model.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
 
 abstract class CoursesInterface {
   Stream<List<Course>> get allCourses$;
-
-  Future<void> loadCoursesByIds(List<String> coursesIds);
 
   Future<void> loadAllCourses();
 
@@ -20,5 +18,5 @@ abstract class CoursesInterface {
 
   Stream<String> getCourseNameById(String courseId);
 
-  Future<bool> isThereCourseWithTheSameName(String courseName);
+  Future<bool> isCourseNameAlreadyTaken(String courseName);
 }
