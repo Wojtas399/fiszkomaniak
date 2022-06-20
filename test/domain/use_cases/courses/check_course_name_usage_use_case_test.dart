@@ -6,16 +6,10 @@ import 'package:mocktail/mocktail.dart';
 class MockCoursesInterface extends Mock implements CoursesInterface {}
 
 void main() {
-  final CoursesInterface coursesInterface = MockCoursesInterface();
-  late CheckCourseNameUsageUseCase useCase;
-
-  setUp(() {
-    useCase = CheckCourseNameUsageUseCase(coursesInterface: coursesInterface);
-  });
-
-  tearDown(() {
-    reset(coursesInterface);
-  });
+  final coursesInterface = MockCoursesInterface();
+  final useCase = CheckCourseNameUsageUseCase(
+    coursesInterface: coursesInterface,
+  );
 
   test(
     'should return result of method from courses interface responsible for checking if course name is already taken',

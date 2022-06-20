@@ -10,12 +10,13 @@ import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../models/bloc_status.dart';
 import '../home/home.dart';
 
-class CourseCreator extends StatelessWidget {
+class CourseCreatorScreen extends StatelessWidget {
   final CourseCreatorMode mode;
 
-  const CourseCreator({super.key, required this.mode});
+  const CourseCreatorScreen({super.key, required this.mode});
 
   @override
   Widget build(BuildContext context) {
@@ -74,29 +75,43 @@ class _CourseCreatorBlocListener extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<CourseCreatorBloc, CourseCreatorState>(
       listener: (BuildContext context, CourseCreatorState state) {
-        final CourseCreatorStatus status = state.status;
-        if (status is CourseCreatorStatusLoading) {
+        final BlocStatus blocStatus = state.status;
+        if (blocStatus is BlocStatusLoading) {
           Dialogs.showLoadingDialog();
-        } else if (status is CourseCreatorStatusCourseNameIsAlreadyTaken) {
+        } else if (blocStatus is BlocStatusComplete) {
           Dialogs.closeLoadingDialog(context);
-          Dialogs.showDialogWithMessage(
-            title: 'Zajęta nazwa',
-            message:
-                'Kurs o podanej nazwie już istnieje. Spróbuj wpisać inną nazwę.',
-          );
-        } else if (status is CourseCreatorStatusCourseAdded) {
-          Dialogs.closeLoadingDialog(context);
-          context.read<Navigation>().backHome();
-          context.read<HomePageController>().moveToPage(2);
-          Dialogs.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
-        } else if (status is CourseCreatorStatusCourseUpdated) {
-          Dialogs.closeLoadingDialog(context);
-          context.read<Navigation>().backHome();
-          context.read<HomePageController>().moveToPage(2);
-          Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano kurs');
+          final CourseCreatorInfoType? info = blocStatus.info;
+          if (info != null) {
+            _displayAppropriateUIInfo(blocStatus.info, context);
+          }
         }
       },
       child: child,
     );
+  }
+
+  void _displayAppropriateUIInfo(
+    CourseCreatorInfoType infoType,
+    BuildContext context,
+  ) {
+    switch (infoType) {
+      case CourseCreatorInfoType.courseNameIsAlreadyTaken:
+        Dialogs.showDialogWithMessage(
+          title: 'Zajęta nazwa',
+          message:
+              'Kurs o podanej nazwie już istnieje. Spróbuj wpisać inną nazwę.',
+        );
+        break;
+      case CourseCreatorInfoType.courseHasBeenAdded:
+        context.read<Navigation>().backHome();
+        context.read<HomePageController>().moveToPage(2);
+        Dialogs.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
+        break;
+      case CourseCreatorInfoType.courseHasBeenUpdated:
+        context.read<Navigation>().backHome();
+        context.read<HomePageController>().moveToPage(2);
+        Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano kurs');
+        break;
+    }
   }
 }

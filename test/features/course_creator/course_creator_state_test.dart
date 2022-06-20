@@ -1,6 +1,7 @@
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -13,7 +14,7 @@ void main() {
   test(
     'initial state',
     () {
-      expect(state.status, const CourseCreatorStatusInitial());
+      expect(state.status, const BlocStatusInitial());
       expect(state.mode, const CourseCreatorCreateMode());
       expect(state.courseName, '');
     },
@@ -22,13 +23,13 @@ void main() {
   test(
     'copy with status',
     () {
-      final expectedStatus = CourseCreatorStatusCourseAdded();
+      const expectedStatus = BlocStatusLoading();
 
       final state2 = state.copyWith(status: expectedStatus);
       final state3 = state2.copyWith();
 
       expect(state2.status, expectedStatus);
-      expect(state3.status, CourseCreatorStatusLoaded());
+      expect(state3.status, const BlocStatusComplete());
     },
   );
 

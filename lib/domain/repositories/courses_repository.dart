@@ -122,8 +122,10 @@ class CoursesRepository implements CoursesInterface {
   }
 
   void _addNewCourse(Course course) {
-    final updatedCourses = [..._courses$.value];
-    updatedCourses.add(course);
-    _courses$.add(updatedCourses);
+    if (!_isCourseLoaded(course.id)) {
+      final updatedCourses = [..._courses$.value];
+      updatedCourses.add(course);
+      _courses$.add(updatedCourses);
+    }
   }
 }

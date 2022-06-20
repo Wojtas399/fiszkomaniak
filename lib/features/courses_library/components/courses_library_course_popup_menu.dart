@@ -5,9 +5,9 @@ class CoursesLibraryCoursePopupMenu extends StatelessWidget {
   final Function(CoursePopupAction action) onActionSelected;
 
   const CoursesLibraryCoursePopupMenu({
-    Key? key,
+    super.key,
     required this.onActionSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

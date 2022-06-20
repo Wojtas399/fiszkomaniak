@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/features/courses_library/courses_library_page.dart';
+import 'package:fiszkomaniak/features/courses_library/courses_library_screen.dart';
 import 'package:fiszkomaniak/features/home/components/home_app_bar.dart';
 import 'package:fiszkomaniak/features/home/components/home_bottom_navigation_bar.dart';
 import 'package:fiszkomaniak/features/home/home_listeners.dart';
@@ -38,7 +38,7 @@ class _PageView extends StatelessWidget {
       children: const [
         StudyPage(),
         SessionsListPage(),
-        CoursesLibraryPage(),
+        CoursesLibraryScreen(),
         ProfilePage(),
       ],
     );

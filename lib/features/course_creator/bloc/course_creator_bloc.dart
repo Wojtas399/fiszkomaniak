@@ -4,12 +4,11 @@ import 'package:fiszkomaniak/domain/use_cases/courses/check_course_name_usage_us
 import 'package:fiszkomaniak/domain/use_cases/courses/update_course_name_use_case.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../models/bloc_status.dart';
 
 part 'course_creator_event.dart';
 
 part 'course_creator_state.dart';
-
-part 'course_creator_status.dart';
 
 class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
   late final AddNewCourseUseCase _addNewCourseUseCase;
@@ -58,14 +57,16 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     Emitter<CourseCreatorState> emit,
   ) async {
     emit(state.copyWith(
-      status: CourseCreatorStatusLoading(),
+      status: const BlocStatusLoading(),
     ));
     final String courseName = state.courseName.trim();
     final bool isCourseNameAlreadyTaken =
         await _checkCourseNameUsageUseCase.execute(courseName: courseName);
     if (isCourseNameAlreadyTaken) {
       emit(state.copyWith(
-        status: CourseCreatorStatusCourseNameIsAlreadyTaken(),
+        status: const BlocStatusComplete(
+          info: CourseCreatorInfoType.courseNameIsAlreadyTaken,
+        ),
       ));
     } else {
       CourseCreatorMode mode = state.mode;
@@ -83,7 +84,9 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
   ) async {
     await _addNewCourseUseCase.execute(courseName: courseName);
     emit(state.copyWith(
-      status: CourseCreatorStatusCourseAdded(),
+      status: const BlocStatusComplete(
+        info: CourseCreatorInfoType.courseHasBeenAdded,
+      ),
     ));
   }
 
@@ -97,7 +100,9 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
       newCourseName: newCourseName,
     );
     emit(state.copyWith(
-      status: CourseCreatorStatusCourseUpdated(),
+      status: const BlocStatusComplete(
+        info: CourseCreatorInfoType.courseHasBeenUpdated,
+      ),
     ));
   }
 }

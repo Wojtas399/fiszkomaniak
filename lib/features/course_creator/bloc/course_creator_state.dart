@@ -1,12 +1,12 @@
 part of 'course_creator_bloc.dart';
 
 class CourseCreatorState extends Equatable {
-  final CourseCreatorStatus status;
+  final BlocStatus status;
   final CourseCreatorMode mode;
   final String courseName;
 
   const CourseCreatorState({
-    this.status = const CourseCreatorStatusInitial(),
+    this.status = const BlocStatusInitial(),
     this.mode = const CourseCreatorCreateMode(),
     this.courseName = '',
   });
@@ -19,12 +19,12 @@ class CourseCreatorState extends Equatable {
       ];
 
   CourseCreatorState copyWith({
-    CourseCreatorStatus? status,
+    BlocStatus? status,
     CourseCreatorMode? mode,
     String? courseName,
   }) {
     return CourseCreatorState(
-      status: status ?? CourseCreatorStatusLoaded(),
+      status: status ?? const BlocStatusComplete(),
       mode: mode ?? this.mode,
       courseName: courseName ?? this.courseName,
     );
@@ -37,4 +37,10 @@ class CourseCreatorState extends Equatable {
     }
     return courseName.isEmpty;
   }
+}
+
+enum CourseCreatorInfoType {
+  courseNameIsAlreadyTaken,
+  courseHasBeenAdded,
+  courseHasBeenUpdated,
 }

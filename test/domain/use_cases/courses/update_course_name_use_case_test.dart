@@ -6,16 +6,8 @@ import 'package:mocktail/mocktail.dart';
 class MockCoursesInterface extends Mock implements CoursesInterface {}
 
 void main() {
-  final CoursesInterface coursesInterface = MockCoursesInterface();
-  late UpdateCourseNameUseCase useCase;
-
-  setUp(() {
-    useCase = UpdateCourseNameUseCase(coursesInterface: coursesInterface);
-  });
-
-  tearDown(() {
-    reset(coursesInterface);
-  });
+  final coursesInterface = MockCoursesInterface();
+  final useCase = UpdateCourseNameUseCase(coursesInterface: coursesInterface);
 
   test(
     'should call method from courses interface responsible for updating course name',

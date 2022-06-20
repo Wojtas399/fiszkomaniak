@@ -4,6 +4,7 @@ import 'package:fiszkomaniak/domain/use_cases/courses/check_course_name_usage_us
 import 'package:fiszkomaniak/domain/use_cases/courses/update_course_name_use_case.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -45,9 +46,9 @@ void main() {
       ),
     ),
     expect: () => [
-      CourseCreatorState(
-        status: CourseCreatorStatusLoaded(),
-        mode: const CourseCreatorCreateMode(),
+      const CourseCreatorState(
+        status: BlocStatusComplete(),
+        mode: CourseCreatorCreateMode(),
       ),
     ],
   );
@@ -67,7 +68,7 @@ void main() {
     ),
     expect: () => [
       CourseCreatorState(
-        status: CourseCreatorStatusLoaded(),
+        status: const BlocStatusComplete(),
         mode: CourseCreatorEditMode(
           course: createCourse(
             id: 'c1',
@@ -86,8 +87,8 @@ void main() {
       CourseCreatorEventCourseNameChanged(courseName: 'new course name'),
     ),
     expect: () => [
-      CourseCreatorState(
-        status: CourseCreatorStatusLoaded(),
+      const CourseCreatorState(
+        status: BlocStatusComplete(),
         courseName: 'new course name',
       ),
     ],
@@ -106,16 +107,17 @@ void main() {
       bloc.add(CourseCreatorEventSaveChanges());
     },
     expect: () => [
-      CourseCreatorState(
-        status: CourseCreatorStatusLoaded(),
+      const CourseCreatorState(
+        status: BlocStatusComplete(),
         courseName: 'courseName',
       ),
-      CourseCreatorState(
-        status: CourseCreatorStatusLoading(),
+      const CourseCreatorState(
+        status: BlocStatusLoading(),
         courseName: 'courseName',
       ),
-      CourseCreatorState(
-        status: CourseCreatorStatusCourseNameIsAlreadyTaken(),
+      const CourseCreatorState(
+        status: BlocStatusComplete(
+            info: CourseCreatorInfoType.courseNameIsAlreadyTaken),
         courseName: 'courseName',
       ),
     ],
@@ -142,16 +144,17 @@ void main() {
       bloc.add(CourseCreatorEventSaveChanges());
     },
     expect: () => [
-      CourseCreatorState(
-        status: CourseCreatorStatusLoaded(),
+      const CourseCreatorState(
+        status: BlocStatusComplete(),
         courseName: 'courseName',
       ),
-      CourseCreatorState(
-        status: CourseCreatorStatusLoading(),
+      const CourseCreatorState(
+        status: BlocStatusLoading(),
         courseName: 'courseName',
       ),
-      CourseCreatorState(
-        status: CourseCreatorStatusCourseAdded(),
+      const CourseCreatorState(
+        status:
+            BlocStatusComplete(info: CourseCreatorInfoType.courseHasBeenAdded),
         courseName: 'courseName',
       ),
     ],
@@ -191,21 +194,22 @@ void main() {
     },
     expect: () => [
       CourseCreatorState(
-        status: CourseCreatorStatusLoaded(),
+        status: const BlocStatusComplete(),
         mode: CourseCreatorEditMode(
           course: createCourse(id: 'c1', name: 'courseName'),
         ),
         courseName: 'courseName',
       ),
       CourseCreatorState(
-        status: CourseCreatorStatusLoading(),
+        status: const BlocStatusLoading(),
         mode: CourseCreatorEditMode(
           course: createCourse(id: 'c1', name: 'courseName'),
         ),
         courseName: 'courseName',
       ),
       CourseCreatorState(
-        status: CourseCreatorStatusCourseUpdated(),
+        status: const BlocStatusComplete(
+            info: CourseCreatorInfoType.courseHasBeenUpdated),
         mode: CourseCreatorEditMode(
           course: createCourse(id: 'c1', name: 'courseName'),
         ),

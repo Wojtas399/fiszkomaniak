@@ -9,12 +9,12 @@ class CoursesLibraryCourseItem extends StatelessWidget {
   final Function(CoursePopupAction action) onActionSelected;
 
   const CoursesLibraryCourseItem({
-    Key? key,
+    super.key,
     required this.title,
     required this.amountOfGroups,
     required this.onTap,
     required this.onActionSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

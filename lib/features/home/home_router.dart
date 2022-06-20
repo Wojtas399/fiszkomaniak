@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/features/course_creator/course_creator.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_screen.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/course_groups_preview.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview.dart';
@@ -58,7 +58,7 @@ class _HomeRouterState extends State<HomeRouter> {
         return MaterialPageRoute(builder: (_) => const SettingsPage());
       case Routes.courseCreator:
         return MaterialPageRoute(
-          builder: (_) => CourseCreator(
+          builder: (_) => CourseCreatorScreen(
             mode: routeSettings.arguments as CourseCreatorMode,
           ),
         );

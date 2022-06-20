@@ -5,10 +5,10 @@ class CoursesLibraryCourseItemInfo extends StatelessWidget {
   final int amountOfGroups;
 
   const CoursesLibraryCourseItemInfo({
-    Key? key,
+    super.key,
     required this.title,
     required this.amountOfGroups,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
