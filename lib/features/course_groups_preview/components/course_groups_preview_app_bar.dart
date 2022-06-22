@@ -5,26 +5,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CourseGroupsPreviewAppBar extends StatelessWidget
     implements PreferredSizeWidget {
-  const CourseGroupsPreviewAppBar({Key? key}) : super(key: key);
+  const CourseGroupsPreviewAppBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CourseGroupsPreviewBloc, CourseGroupsPreviewState>(
-      builder: (BuildContext context, CourseGroupsPreviewState state) {
-        return AppBarWithSearchTextField(
-          label: state.courseName,
-          onChanged: (String value) {
-            context.read<CourseGroupsPreviewBloc>().add(
-                  CourseGroupsPreviewEventSearchValueChanged(
-                    searchValue: value,
-                  ),
-                );
-          },
-        );
-      },
+    final String courseName = context.select(
+      (CourseGroupsPreviewBloc bloc) => bloc.state.courseName,
     );
+    return AppBarWithSearchTextField(
+      label: courseName,
+      onChanged: (String value) => _onSearchValueChanged(context, value),
+    );
+  }
+
+  void _onSearchValueChanged(BuildContext context, String searchValue) {
+    context.read<CourseGroupsPreviewBloc>().add(
+          CourseGroupsPreviewEventSearchValueChanged(
+            searchValue: searchValue,
+          ),
+        );
   }
 }

@@ -1,10 +1,7 @@
-import 'package:fiszkomaniak/models/group_model.dart';
-import '../models/changed_document.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 
 abstract class GroupsInterface {
   Stream<List<Group>> get allGroups$;
-
-  Stream<List<ChangedDocument<Group>>> getGroupsSnapshots();
 
   Future<void> loadAllGroups();
 
@@ -26,4 +23,6 @@ abstract class GroupsInterface {
   Future<void> removeGroup(String groupId);
 
   Stream<Group> getGroupById({required String groupId});
+
+  Stream<List<Group>> getGroupsByCourseId({required String courseId});
 }

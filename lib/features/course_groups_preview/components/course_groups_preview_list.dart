@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/components/group_item/group_item.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,45 +10,38 @@ class CourseGroupsPreviewList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CourseGroupsPreviewBloc, CourseGroupsPreviewState>(
-      builder: (
-        BuildContext context,
-        CourseGroupsPreviewState courseGroupsPreviewState,
-      ) {
-        return OnTapFocusLoseArea(
-          child: BouncingScroll(
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: _buildGroups(
-                    context,
-                    courseGroupsPreviewState,
-                  ),
-                ),
-              ),
-            ),
+    return const OnTapFocusLoseArea(
+      child: BouncingScroll(
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: _GroupsList(),
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+}
+
+class _GroupsList extends StatelessWidget {
+  const _GroupsList();
+
+  @override
+  Widget build(BuildContext context) {
+    final List<GroupItemParams> groupsItemsParams = context.select(
+      (CourseGroupsPreviewBloc bloc) => bloc.state.groupsItemsParams,
+    );
+    return Column(
+      children: groupsItemsParams
+          .map((group) => _createGroupItem(context, group))
+          .toList(),
     );
   }
 
-  List<Widget> _buildGroups(
-    BuildContext context,
-    CourseGroupsPreviewState courseGroupsPreviewState,
-  ) {
-    return courseGroupsPreviewState.matchingGroups
-        .map(
-          (group) => GroupItem(
-            groupName: group.name,
-            amountOfRememberedFlashcards: 200,
-            amountOfAllFlashcards: 400,
-            onTap: () {
-              context.read<Navigation>().navigateToGroupPreview(group.id);
-            },
-          ),
-        )
-        .toList();
+  Widget _createGroupItem(BuildContext context, GroupItemParams params) {
+    return GroupItem(
+      key: ValueKey(params.name),
+      params: params,
+    );
   }
 }

@@ -1,17 +1,21 @@
+import 'package:fiszkomaniak/config/navigation.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_app_bar.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_content.dart';
+import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_body.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
+import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CourseGroupsPreview extends StatelessWidget {
+class CourseGroupsPreviewScreen extends StatelessWidget {
   final String courseId;
 
-  const CourseGroupsPreview({
-    Key? key,
+  const CourseGroupsPreviewScreen({
+    super.key,
     required this.courseId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +23,7 @@ class CourseGroupsPreview extends StatelessWidget {
       courseId: courseId,
       child: const Scaffold(
         appBar: CourseGroupsPreviewAppBar(),
-        body: CourseGroupsPreviewContent(),
+        body: CourseGroupsPreviewBody(),
       ),
     );
   }
@@ -30,16 +34,21 @@ class _CourseGroupsPreviewBlocProvider extends StatelessWidget {
   final Widget child;
 
   const _CourseGroupsPreviewBlocProvider({
-    Key? key,
     required this.courseId,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => CourseGroupsPreviewBloc(
-        coursesInterface: context.read<CoursesInterface>(),
+        getCourseUseCase: GetCourseUseCase(
+          coursesInterface: context.read<CoursesInterface>(),
+        ),
+        getGroupsByCourseIdUseCase: GetGroupsByCourseIdUseCase(
+          groupsInterface: context.read<GroupsInterface>(),
+        ),
+        navigation: context.read<Navigation>(),
       )..add(CourseGroupsPreviewEventInitialize(courseId: courseId)),
       child: child,
     );

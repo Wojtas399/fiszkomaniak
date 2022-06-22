@@ -3,7 +3,7 @@ import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/course.dart';

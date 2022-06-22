@@ -1,71 +1,42 @@
+import 'package:fiszkomaniak/components/course_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/bouncing_scroll.dart';
-import '../../../config/navigation.dart';
-import '../../../domain/entities/course.dart';
 import '../bloc/courses_library_bloc.dart';
-import 'courses_library_course_item.dart';
-import 'courses_library_course_popup_menu.dart';
 
 class CoursesLibraryCoursesList extends StatelessWidget {
-  final List<Course> courses;
-
-  const CoursesLibraryCoursesList({super.key, required this.courses});
+  const CoursesLibraryCoursesList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BouncingScroll(
+    return const BouncingScroll(
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(
+          padding: EdgeInsets.only(
             top: 16,
             right: 16,
             bottom: 32,
             left: 16,
           ),
-          child: Column(
-            children: courses
-                .map((course) => _generateCourseItem(context, course, 5))
-                .toList(),
-          ),
+          child: _CoursesList(),
         ),
       ),
     );
   }
+}
 
-  Widget _generateCourseItem(
-    BuildContext context,
-    Course course,
-    int amountOfGroups,
-  ) {
-    return CoursesLibraryCourseItem(
-      title: course.name,
-      amountOfGroups: amountOfGroups,
-      onTap: () {
-        context.read<Navigation>().navigateToCourseGroupsPreview(course.id);
-      },
-      onActionSelected: (CoursePopupAction action) {
-        _manageCourseAction(context, action, course);
-      },
+class _CoursesList extends StatelessWidget {
+  const _CoursesList();
+
+  @override
+  Widget build(BuildContext context) {
+    final List<CourseItemParams> coursesItemsParams = context.select(
+      (CoursesLibraryBloc bloc) => bloc.state.coursesItemsParams,
     );
-  }
-
-  void _manageCourseAction(
-    BuildContext context,
-    CoursePopupAction action,
-    Course course,
-  ) {
-    switch (action) {
-      case CoursePopupAction.edit:
-        context
-            .read<CoursesLibraryBloc>()
-            .add(CoursesLibraryEventEditCourse(course: course));
-        break;
-      case CoursePopupAction.remove:
-        context
-            .read<CoursesLibraryBloc>()
-            .add(CoursesLibraryEventRemoveCourse(courseId: course.id));
-        break;
-    }
+    return Column(
+      children: coursesItemsParams
+          .map((params) => CourseItem(params: params))
+          .toList(),
+    );
   }
 }

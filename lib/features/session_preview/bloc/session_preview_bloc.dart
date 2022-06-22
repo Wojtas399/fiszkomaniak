@@ -6,7 +6,7 @@ import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/date_model.dart';
 import '../../../models/session_model.dart';

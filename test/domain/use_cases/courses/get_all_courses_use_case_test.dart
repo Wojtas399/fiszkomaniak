@@ -11,7 +11,7 @@ void main() {
   final useCase = GetAllCoursesUseCase(coursesInterface: coursesInterface);
 
   test(
-    'should return all courses stream from courses interface',
+    'should return stream which contains all courses',
     () async {
       final List<Course> expectedCourses = [
         createCourse(id: 'c1'),

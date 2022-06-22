@@ -9,7 +9,7 @@ import 'package:fiszkomaniak/domain/repositories/courses_repository.dart';
 import 'package:fiszkomaniak/repositories/sessions_repository.dart';
 import 'package:fiszkomaniak/repositories/settings_repository.dart';
 import 'package:fiszkomaniak/repositories/flashcards_repository.dart';
-import 'package:fiszkomaniak/repositories/groups_repository.dart';
+import 'package:fiszkomaniak/domain/repositories/groups_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_auth_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_courses_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_flashcards_service.dart';

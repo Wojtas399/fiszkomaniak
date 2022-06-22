@@ -6,7 +6,7 @@ import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/course.dart';
 import '../../../models/flashcard_model.dart';
-import '../../../models/group_model.dart';
+import '../../../domain/entities/group.dart';
 
 part 'group_selection_event.dart';
 

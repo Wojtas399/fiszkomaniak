@@ -2,23 +2,25 @@ part of 'courses_library_bloc.dart';
 
 class CoursesLibraryState extends Equatable {
   final BlocStatus status;
-  final List<Course> courses;
+  final List<CourseItemParams> coursesItemsParams;
 
   const CoursesLibraryState({
     this.status = const BlocStatusInitial(),
-    this.courses = const [],
+    this.coursesItemsParams = const [],
   });
 
   @override
-  List<Object> get props => [status, courses];
+  List<Object> get props => [status, coursesItemsParams];
+
+  bool get areCourses => coursesItemsParams.isNotEmpty;
 
   CoursesLibraryState copyWith({
     BlocStatus? status,
-    List<Course>? courses,
+    List<CourseItemParams>? coursesItemsParams,
   }) {
     return CoursesLibraryState(
       status: status ?? const BlocStatusComplete(),
-      courses: courses ?? this.courses,
+      coursesItemsParams: coursesItemsParams ?? this.coursesItemsParams,
     );
   }
 }

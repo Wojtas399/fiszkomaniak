@@ -1,44 +1,55 @@
 part of 'course_groups_preview_bloc.dart';
 
 class CourseGroupsPreviewState extends Equatable {
-  final Course? course;
-  final List<Group> groupsFromCourse;
+  final String courseName;
   final String searchValue;
+  late final List<GroupItemParams> _groupsFromCourse;
 
-  List<Group> get matchingGroups {
-    return groupsFromCourse
+  CourseGroupsPreviewState({
+    this.courseName = '',
+    this.searchValue = '',
+    List<GroupItemParams> groupsFromCourse = const [],
+  }) {
+    _groupsFromCourse = groupsFromCourse;
+  }
+
+  @override
+  List<Object> get props => [
+        courseName,
+        searchValue,
+        _groupsFromCourse,
+      ];
+
+  List<GroupItemParams> get groupsItemsParams {
+    final List<GroupItemParams> matchingGroups = _groupsFromCourse
         .where(
           (group) => group.name.toLowerCase().contains(
                 searchValue.toLowerCase(),
               ),
         )
         .toList();
+    matchingGroups.sort(_setGroupsAlphabeticallyByName);
+    return matchingGroups;
   }
 
-  String get courseName => course?.name ?? '';
-
-  const CourseGroupsPreviewState({
-    this.course,
-    this.groupsFromCourse = const [],
-    this.searchValue = '',
-  });
+  bool get areGroupsInCourse => _groupsFromCourse.isNotEmpty;
 
   CourseGroupsPreviewState copyWith({
-    Course? course,
-    List<Group>? groupsFromCourse,
+    String? courseName,
     String? searchValue,
+    List<GroupItemParams>? groupsFromCourse,
   }) {
     return CourseGroupsPreviewState(
-      course: course ?? this.course,
-      groupsFromCourse: groupsFromCourse ?? this.groupsFromCourse,
+      courseName: courseName ?? this.courseName,
       searchValue: searchValue ?? this.searchValue,
+      groupsFromCourse: groupsFromCourse ?? _groupsFromCourse,
     );
   }
 
-  @override
-  List<Object> get props => [
-        course ?? createCourse(),
-        groupsFromCourse,
-        searchValue,
-      ];
+  int _setGroupsAlphabeticallyByName(
+    GroupItemParams group1,
+    GroupItemParams group2,
+  ) {
+    return group1.name.compareTo(group2.name);
+  }
 }

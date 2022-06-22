@@ -1,45 +1,22 @@
 part of 'study_bloc.dart';
 
 class StudyState extends Equatable {
-  final List<GroupItemParams> groupsItems;
+  final List<GroupItemParams> groupsItemsParams;
 
   const StudyState({
-    this.groupsItems = const [],
+    this.groupsItemsParams = const [],
   });
 
   @override
-  List<Object> get props => [groupsItems];
+  List<Object> get props => [groupsItemsParams];
+
+  bool get areGroups => groupsItemsParams.isNotEmpty;
 
   StudyState copyWith({
-    List<GroupItemParams>? groupsItems,
+    List<GroupItemParams>? groupsItemsParams,
   }) {
     return StudyState(
-      groupsItems: groupsItems ?? this.groupsItems,
+      groupsItemsParams: groupsItemsParams ?? this.groupsItemsParams,
     );
   }
-}
-
-class GroupItemParams extends Equatable {
-  final String groupId;
-  final String groupName;
-  final String courseName;
-  final int amountOfAllFlashcards;
-  final int amountOfRememberedFlashcards;
-
-  const GroupItemParams({
-    required this.groupId,
-    required this.groupName,
-    required this.courseName,
-    required this.amountOfAllFlashcards,
-    required this.amountOfRememberedFlashcards,
-  });
-
-  @override
-  List<Object> get props => [
-        groupId,
-        groupName,
-        courseName,
-        amountOfAllFlashcards,
-        amountOfRememberedFlashcards,
-      ];
 }

@@ -5,24 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class CourseGroupsPreviewContent extends StatelessWidget {
-  const CourseGroupsPreviewContent({Key? key}) : super(key: key);
+class CourseGroupsPreviewBody extends StatelessWidget {
+  const CourseGroupsPreviewBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CourseGroupsPreviewBloc, CourseGroupsPreviewState>(
-      builder: (_, CourseGroupsPreviewState state) {
-        if (state.matchingGroups.isEmpty) {
-          return const _NoGroupsInfo();
-        }
-        return const CourseGroupsPreviewList();
-      },
+    final bool areGroupsInCourse = context.select(
+      (CourseGroupsPreviewBloc bloc) => bloc.state.areGroupsInCourse,
     );
+    if (areGroupsInCourse) {
+      return const CourseGroupsPreviewList();
+    }
+    return const _NoGroupsInfo();
   }
 }
 
 class _NoGroupsInfo extends StatelessWidget {
-  const _NoGroupsInfo({Key? key}) : super(key: key);
+  const _NoGroupsInfo();
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 
 abstract class GroupCreatorMode extends Equatable {
   const GroupCreatorMode();

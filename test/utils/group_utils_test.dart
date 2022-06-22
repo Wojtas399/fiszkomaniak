@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:fiszkomaniak/utils/group_utils.dart';
 import 'package:flutter_test/flutter_test.dart';

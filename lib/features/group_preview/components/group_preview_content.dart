@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/buttons/button.dart';

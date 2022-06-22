@@ -5,7 +5,7 @@ import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_s
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FlashcardsEditorBloc

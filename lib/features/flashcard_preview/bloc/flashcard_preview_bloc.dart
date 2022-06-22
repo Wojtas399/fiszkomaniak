@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_dialogs.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'flashcard_preview_event.dart';

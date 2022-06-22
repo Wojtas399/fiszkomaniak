@@ -1,13 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiszkomaniak/firebase/fire_document.dart';
 import 'package:fiszkomaniak/firebase/fire_extensions.dart';
 import 'package:fiszkomaniak/firebase/models/flashcard_db_model.dart';
 import 'package:fiszkomaniak/firebase/models/group_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_groups_service.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/models/changed_document.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:rxdart/rxdart.dart';
-import '../models/flashcard_model.dart';
+import '../../models/flashcard_model.dart';
 
 class GroupsRepository implements GroupsInterface {
   late final FireGroupsService _fireGroupsService;
@@ -21,13 +20,8 @@ class GroupsRepository implements GroupsInterface {
   Stream<List<Group>> get allGroups$ => _allGroups$.stream;
 
   @override
-  Stream<List<ChangedDocument<Group>>> getGroupsSnapshots() {
-    return const Stream.empty();
-  }
-
-  @override
   Future<void> loadAllGroups() async {
-    final groups = await _fireGroupsService.getAllGroups();
+    final groups = await _fireGroupsService.loadAllGroups();
     _allGroups$.add(
       groups.map(_convertGroupDbModelToGroup).whereType<Group>().toList(),
     );
@@ -77,24 +71,33 @@ class GroupsRepository implements GroupsInterface {
         (groups) => groups.firstWhere((group) => group.id == groupId),
       );
     }
-    return Rx.fromCallable(
-      () async => await _loadGroupFromDb(groupId),
-    ).whereType<Group>();
+    return Rx.fromCallable(() async => await _loadGroupFromDb(groupId))
+        .whereType<Group>()
+        .doOnData((group) => _addGroupsToStream([group]));
   }
 
-  Group? _convertGroupDbModelToGroup(DocumentSnapshot<GroupDbModel> group) {
-    final groupData = group.data();
+  @override
+  Stream<List<Group>> getGroupsByCourseId({required String courseId}) {
+    return allGroups$.map(
+      (groups) => groups.where((group) => group.courseId == courseId).toList(),
+    );
+  }
+
+  Group? _convertGroupDbModelToGroup(FireDocument<GroupDbModel>? group) {
+    final String? groupId = group?.id;
+    final groupData = group?.data;
     final String? name = groupData?.name;
     final String? courseId = groupData?.courseId;
     final String? nameForQuestions = groupData?.nameForQuestions;
     final String? nameForAnswers = groupData?.nameForAnswers;
-    if (groupData != null &&
+    if (groupId != null &&
+        groupData != null &&
         name != null &&
         courseId != null &&
         nameForQuestions != null &&
         nameForAnswers != null) {
       return Group(
-        id: group.id,
+        id: groupId,
         name: name,
         courseId: courseId,
         nameForQuestions: nameForQuestions,
@@ -127,7 +130,15 @@ class GroupsRepository implements GroupsInterface {
   }
 
   Future<Group?> _loadGroupFromDb(String groupId) async {
-    final groupFromDb = await _fireGroupsService.loadGroup(groupId: groupId);
+    final groupFromDb = await _fireGroupsService.loadGroupById(
+      groupId: groupId,
+    );
     return _convertGroupDbModelToGroup(groupFromDb);
+  }
+
+  void _addGroupsToStream(List<Group> groups) {
+    final List<Group> updatedGroups = [..._allGroups$.value];
+    updatedGroups.addAll(groups);
+    _allGroups$.add(updatedGroups.toSet().toList());
   }
 }

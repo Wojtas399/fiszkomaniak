@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiszkomaniak/firebase/fire_document.dart';
 import 'package:fiszkomaniak/firebase/fire_references.dart';
+import 'package:fiszkomaniak/firebase/fire_utils.dart';
 import 'package:fiszkomaniak/firebase/models/group_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
 import '../fire_instances.dart';
@@ -13,27 +15,25 @@ class FireGroupsService {
         .get();
   }
 
-  Stream<QuerySnapshot<GroupDbModel>> getGroupsSnapshots() {
-    return FireReferences.groupsRefWithConverter.snapshots();
-  }
-
-  Future<List<DocumentSnapshot<GroupDbModel>>> getAllGroups() async {
+  Future<List<FireDocument<GroupDbModel>>> loadAllGroups() async {
     final docs = await FireReferences.groupsRefWithConverter.get();
-    return docs.docChanges.map((docChange) => docChange.doc).toList();
+    final groupsSnapshots =
+        docs.docChanges.map((docChange) => docChange.doc).toList();
+    return groupsSnapshots
+        .map(_convertDocumentSnapshotToFireDocument)
+        .whereType<FireDocument<GroupDbModel>>()
+        .toList();
   }
 
-  Future<DocumentSnapshot<GroupDbModel>> loadGroup({
+  Future<FireDocument<GroupDbModel>?> loadGroupById({
     required String groupId,
   }) async {
-    return await FireReferences.groupsRefWithConverter.doc(groupId).get();
+    final doc = await FireReferences.groupsRefWithConverter.doc(groupId).get();
+    return _convertDocumentSnapshotToFireDocument(doc);
   }
 
   Future<void> addNewGroup(GroupDbModel groupData) async {
-    try {
-      await FireReferences.groupsRefWithConverter.add(groupData);
-    } catch (error) {
-      rethrow;
-    }
+    await FireReferences.groupsRefWithConverter.add(groupData);
   }
 
   Future<void> updateGroup({
@@ -43,34 +43,32 @@ class FireGroupsService {
     String? nameForQuestions,
     String? nameForAnswers,
   }) async {
-    try {
-      await FireReferences.groupsRefWithConverter.doc(groupId).update(
-            GroupDbModel(
-              name: name,
-              courseId: courseId,
-              nameForQuestions: nameForQuestions,
-              nameForAnswers: nameForAnswers,
-            ).toJson(),
-          );
-    } catch (error) {
-      rethrow;
-    }
+    await FireReferences.groupsRefWithConverter.doc(groupId).update(
+          GroupDbModel(
+            name: name,
+            courseId: courseId,
+            nameForQuestions: nameForQuestions,
+            nameForAnswers: nameForAnswers,
+          ).toJson(),
+        );
   }
 
   Future<void> removeGroup(String groupId) async {
-    try {
-      final batch = FireInstances.firestore.batch();
-      final group =
-          await FireReferences.groupsRefWithConverter.doc(groupId).get();
-      final sessionsFromGroups =
-          await FireSessionsService.getSessionsByGroupsIds([groupId]);
-      for (final session in sessionsFromGroups.docs) {
-        batch.delete(session.reference);
-      }
-      batch.delete(group.reference);
-      await batch.commit();
-    } catch (error) {
-      rethrow;
+    final batch = FireInstances.firestore.batch();
+    final group =
+        await FireReferences.groupsRefWithConverter.doc(groupId).get();
+    final sessionsFromGroups =
+        await FireSessionsService.getSessionsByGroupsIds([groupId]);
+    for (final session in sessionsFromGroups.docs) {
+      batch.delete(session.reference);
     }
+    batch.delete(group.reference);
+    await batch.commit();
+  }
+
+  FireDocument<GroupDbModel>? _convertDocumentSnapshotToFireDocument(
+    DocumentSnapshot<GroupDbModel> doc,
+  ) {
+    return FireUtils.convertDocumentSnapshotToFireDocument<GroupDbModel>(doc);
   }
 }

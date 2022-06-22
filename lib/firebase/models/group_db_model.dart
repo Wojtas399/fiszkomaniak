@@ -48,3 +48,19 @@ class GroupDbModel extends Equatable {
         flashcards,
       ];
 }
+
+GroupDbModel createGroupDbModel({
+  String? name,
+  String? courseId,
+  String? nameForQuestions,
+  String? nameForAnswers,
+  List<FlashcardDbModel>? flashcards,
+}) {
+  return GroupDbModel(
+    name: name ?? '',
+    courseId: courseId ?? '',
+    nameForQuestions: nameForQuestions ?? '',
+    nameForAnswers: nameForAnswers ?? '',
+    flashcards: flashcards ?? [],
+  );
+}

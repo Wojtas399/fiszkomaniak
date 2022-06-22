@@ -4,7 +4,7 @@ import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_s
 import 'package:fiszkomaniak/features/flashcards_editor/components/flashcards_editor_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../models/group_model.dart';
+import '../../../domain/entities/group.dart';
 
 class FlashcardsEditorList extends StatelessWidget {
   const FlashcardsEditorList({Key? key}) : super(key: key);

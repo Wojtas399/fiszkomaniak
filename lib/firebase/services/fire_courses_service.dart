@@ -5,6 +5,7 @@ import 'package:fiszkomaniak/firebase/fire_references.dart';
 import 'package:fiszkomaniak/firebase/models/course_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_groups_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
+import '../fire_utils.dart';
 
 class FireCoursesService {
   Future<List<FireDocument<CourseDbModel>>> loadAllCourses() async {
@@ -78,10 +79,6 @@ class FireCoursesService {
   FireDocument<CourseDbModel>? _convertDocumentSnapshotToFireDocument(
     DocumentSnapshot<CourseDbModel> doc,
   ) {
-    final data = doc.data();
-    if (data != null) {
-      return FireDocument(id: doc.id, data: data);
-    }
-    return null;
+    return FireUtils.convertDocumentSnapshotToFireDocument<CourseDbModel>(doc);
   }
 }

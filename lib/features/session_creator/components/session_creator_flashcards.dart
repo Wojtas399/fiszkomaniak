@@ -3,7 +3,7 @@ import 'package:fiszkomaniak/components/item_with_icon.dart';
 import 'package:fiszkomaniak/components/section.dart';
 import 'package:fiszkomaniak/components/select_item/select_item.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

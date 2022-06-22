@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../config/navigation.dart';
 import '../../../interfaces/courses_interface.dart';
 import '../../../models/flashcard_model.dart';
-import '../../../models/group_model.dart';
+import '../../../domain/entities/group.dart';
 import '../../group_creator/bloc/group_creator_mode.dart';
 
 part 'group_preview_event.dart';
