@@ -22,6 +22,11 @@ abstract class GroupsInterface {
 
   Future<void> removeGroup(String groupId);
 
+  Future<bool> isGroupNameInCourseAlreadyTaken({
+    required String groupName,
+    required String courseId,
+  });
+
   Stream<Group> getGroupById({required String groupId});
 
   Stream<List<Group>> getGroupsByCourseId({required String courseId});

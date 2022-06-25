@@ -2,29 +2,33 @@ part of 'group_creator_bloc.dart';
 
 class GroupCreatorState extends Equatable {
   final GroupCreatorMode mode;
+  final BlocStatus status;
   final Course? selectedCourse;
   final List<Course> allCourses;
   final String groupName;
   final String nameForQuestions;
   final String nameForAnswers;
 
-  String get modeTitle {
-    if (mode is GroupCreatorCreateMode) {
-      return 'Nowa grupa';
-    } else if (mode is GroupCreatorEditMode) {
-      return 'Edycja grupy';
-    }
-    return '';
-  }
+  const GroupCreatorState({
+    this.mode = const GroupCreatorCreateMode(),
+    this.status = const BlocStatusInitial(),
+    this.selectedCourse,
+    this.allCourses = const [],
+    this.groupName = '',
+    this.nameForQuestions = '',
+    this.nameForAnswers = '',
+  });
 
-  String get modeButtonText {
-    if (mode is GroupCreatorCreateMode) {
-      return 'utwórz';
-    } else if (mode is GroupCreatorEditMode) {
-      return 'zapisz';
-    }
-    return '';
-  }
+  @override
+  List<Object> get props => [
+        mode,
+        status,
+        selectedCourse ?? '',
+        allCourses,
+        groupName,
+        nameForQuestions,
+        nameForAnswers,
+      ];
 
   bool get isButtonDisabled {
     final GroupCreatorMode mode = this.mode;
@@ -42,17 +46,9 @@ class GroupCreatorState extends Equatable {
     return areDataNotEntered;
   }
 
-  const GroupCreatorState({
-    this.mode = const GroupCreatorCreateMode(),
-    this.selectedCourse,
-    this.allCourses = const [],
-    this.groupName = '',
-    this.nameForQuestions = '',
-    this.nameForAnswers = '',
-  });
-
   GroupCreatorState copyWith({
     GroupCreatorMode? mode,
+    BlocStatus? status,
     Course? selectedCourse,
     List<Course>? allCourses,
     String? groupName,
@@ -61,6 +57,7 @@ class GroupCreatorState extends Equatable {
   }) {
     return GroupCreatorState(
       mode: mode ?? this.mode,
+      status: status ?? const BlocStatusComplete<GroupCreatorInfo>(),
       selectedCourse: selectedCourse ?? this.selectedCourse,
       allCourses: allCourses ?? this.allCourses,
       groupName: groupName ?? this.groupName,
@@ -68,13 +65,4 @@ class GroupCreatorState extends Equatable {
       nameForAnswers: nameForAnswers ?? this.nameForAnswers,
     );
   }
-
-  @override
-  List<Object> get props => [
-        mode,
-        selectedCourse ?? '',
-        groupName,
-        nameForQuestions,
-        nameForAnswers,
-      ];
 }

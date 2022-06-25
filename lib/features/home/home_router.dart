@@ -7,7 +7,7 @@ import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.d
 import 'package:fiszkomaniak/features/group_flashcards_preview/group_flashcards_preview.dart';
 import 'package:fiszkomaniak/features/group_selection/group_selection.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
-import 'package:fiszkomaniak/features/group_creator/group_creator_page.dart';
+import 'package:fiszkomaniak/features/group_creator/group_creator_screen.dart';
 import 'package:fiszkomaniak/features/group_preview/group_preview_page.dart';
 import 'package:fiszkomaniak/features/home/home.dart';
 import 'package:fiszkomaniak/features/home/home_view.dart';
@@ -64,7 +64,7 @@ class _HomeRouterState extends State<HomeRouter> {
         );
       case Routes.groupCreator:
         return MaterialPageRoute(
-          builder: (_) => GroupCreator(
+          builder: (_) => GroupCreatorScreen(
             mode: routeSettings.arguments as GroupCreatorMode,
           ),
         );

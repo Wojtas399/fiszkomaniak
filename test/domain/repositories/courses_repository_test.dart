@@ -142,7 +142,7 @@ void main() {
   );
 
   test(
-    'get course by id, should return course from stream if it has been already loaded',
+    'get course by id, should only return course if it has been already loaded',
     () async {
       final List<FireDocument<CourseDbModel>> coursesFromDb = [
         FireDocument(id: 'c1', data: CourseDbModel(name: 'course 1')),
@@ -153,9 +153,9 @@ void main() {
       ).thenAnswer((_) async => coursesFromDb);
 
       await repository.loadAllCourses();
-      final Stream<Course> course = repository.getCourseById('c1');
+      final Stream<Course> course$ = repository.getCourseById('c1');
 
-      expect(await course.first, const Course(id: 'c1', name: 'course 1'));
+      expect(await course$.first, const Course(id: 'c1', name: 'course 1'));
       verifyNever(
         () => fireCoursesService.getCourseById(
           courseId: any(named: 'courseId'),
@@ -175,9 +175,9 @@ void main() {
         () => fireCoursesService.getCourseById(courseId: 'c1'),
       ).thenAnswer((_) async => courseFromDb);
 
-      final Stream<Course> course = repository.getCourseById('c1');
+      final Stream<Course> course$ = repository.getCourseById('c1');
 
-      expect(await course.first, const Course(id: 'c1', name: 'course 1'));
+      expect(await course$.first, const Course(id: 'c1', name: 'course 1'));
       verify(
         () => fireCoursesService.getCourseById(courseId: 'c1'),
       ).called(1);
@@ -185,15 +185,15 @@ void main() {
   );
 
   test(
-    'get course by id, should not return anything if the course does not exist',
+    'get course by id, returned stream should be empty if course does not exist',
     () async {
       when(
         () => fireCoursesService.getCourseById(courseId: 'c1'),
       ).thenAnswer((_) async => null);
 
-      final Stream<Course> course = repository.getCourseById('c1');
+      final Stream<Course> course$ = repository.getCourseById('c1');
 
-      expect(await course.isEmpty, true);
+      expect(await course$.isEmpty, true);
       verify(
         () => fireCoursesService.getCourseById(courseId: 'c1'),
       ).called(1);

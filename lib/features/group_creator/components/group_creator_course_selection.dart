@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/select_item/select_item.dart';
+import '../../../domain/entities/course.dart';
 
 class GroupCreatorCourseSelection extends StatelessWidget {
-  const GroupCreatorCourseSelection({Key? key}) : super(key: key);
+  const GroupCreatorCourseSelection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,16 +20,26 @@ class GroupCreatorCourseSelection extends StatelessWidget {
           options: {
             for (final course in state.allCourses) course.id: course.name
           },
-          onOptionSelected: (String key, String value) {
-            final course = state.allCourses.firstWhere(
-              (course) => course.id == key,
-            );
-            context
-                .read<GroupCreatorBloc>()
-                .add(GroupCreatorEventCourseChanged(course: course));
-          },
+          onOptionSelected: (String key, _) => _onOptionSelected(
+            context,
+            key,
+            state.allCourses,
+          ),
         );
       },
     );
+  }
+
+  void _onOptionSelected(
+    BuildContext context,
+    String key,
+    List<Course> allCourses,
+  ) {
+    final course = allCourses.firstWhere(
+      (course) => course.id == key,
+    );
+    context
+        .read<GroupCreatorBloc>()
+        .add(GroupCreatorEventCourseChanged(course: course));
   }
 }

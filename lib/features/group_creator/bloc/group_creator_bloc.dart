@@ -1,24 +1,40 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_dialogs.dart';
+import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_info.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../domain/use_cases/courses/get_all_courses_use_case.dart';
+import '../../../domain/use_cases/courses/load_all_courses_use_case.dart';
+import '../../../domain/use_cases/groups/add_group_use_case.dart';
+import '../../../domain/use_cases/groups/check_group_name_usage_in_course_use_case.dart';
+import '../../../domain/use_cases/groups/update_group_use_case.dart';
 
 part 'group_creator_event.dart';
 
 part 'group_creator_state.dart';
 
 class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
-  late final CoursesInterface _coursesInterface;
-  late final GroupCreatorDialogs _groupCreatorDialogs;
+  late final LoadAllCoursesUseCase _loadAllCoursesUseCase;
+  late final GetAllCoursesUseCase _getAllCoursesUseCase;
+  late final CheckGroupNameUsageInCourseUseCase
+      _checkGroupNameUsageInCourseUseCase;
+  late final AddGroupUseCase _addGroupUseCase;
+  late final UpdateGroupUseCase _updateGroupUseCase;
 
   GroupCreatorBloc({
-    required CoursesInterface coursesInterface,
-    required GroupCreatorDialogs groupCreatorDialogs,
+    required LoadAllCoursesUseCase loadAllCoursesUseCase,
+    required GetAllCoursesUseCase getAllCoursesUseCase,
+    required CheckGroupNameUsageInCourseUseCase
+        checkGroupNameUsageInCourseUseCase,
+    required AddGroupUseCase addGroupUseCase,
+    required UpdateGroupUseCase updateGroupUseCase,
   }) : super(const GroupCreatorState()) {
-    _coursesInterface = coursesInterface;
-    _groupCreatorDialogs = groupCreatorDialogs;
+    _loadAllCoursesUseCase = loadAllCoursesUseCase;
+    _getAllCoursesUseCase = getAllCoursesUseCase;
+    _checkGroupNameUsageInCourseUseCase = checkGroupNameUsageInCourseUseCase;
+    _addGroupUseCase = addGroupUseCase;
+    _updateGroupUseCase = updateGroupUseCase;
     on<GroupCreatorEventInitialize>(_initialize);
     on<GroupCreatorEventCourseChanged>(_onCourseChanged);
     on<GroupCreatorEventGroupNameChanged>(_onGroupNameChanged);
@@ -31,7 +47,11 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
     GroupCreatorEventInitialize event,
     Emitter<GroupCreatorState> emit,
   ) async {
-    final List<Course> allCourses = await _coursesInterface.allCourses$.first;
+    emit(state.copyWith(
+      status: const BlocStatusLoading(),
+    ));
+    await _loadAllCoursesUseCase.execute();
+    final List<Course> allCourses = await _getAllCoursesUseCase.execute().first;
     final GroupCreatorMode mode = event.mode;
     if (mode is GroupCreatorCreateMode) {
       emit(state.copyWith(
@@ -80,39 +100,92 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
     emit(state.copyWith(nameForAnswers: event.nameForAnswers));
   }
 
-  void _submit(
+  Future<void> _submit(
     GroupCreatorEventSubmit event,
     Emitter<GroupCreatorState> emit,
-  ) {
+  ) async {
     final Course? selectedCourse = state.selectedCourse;
     final String groupName = state.groupName.trim();
     final String nameForQuestions = state.nameForQuestions.trim();
     final String nameForAnswers = state.nameForAnswers.trim();
     if (selectedCourse != null) {
-      // if (_groupsBloc.state.isThereGroupWithTheSameNameInTheSameCourse(
-      //   groupName,
-      //   selectedCourse.id,
-      // )) {
-      //   _groupCreatorDialogs.displayInfoAboutAlreadyTakenGroupNameInCourse();
-      // } else {
-      //   final GroupCreatorMode mode = state.mode;
-      //   if (mode is GroupCreatorCreateMode) {
-      //     _groupsBloc.add(GroupsEventAddGroup(
-      //       name: groupName,
-      //       courseId: selectedCourse.id,
-      //       nameForQuestions: nameForQuestions,
-      //       nameForAnswers: nameForAnswers,
-      //     ));
-      //   } else if (mode is GroupCreatorEditMode) {
-      //     _groupsBloc.add(GroupsEventUpdateGroup(
-      //       groupId: mode.group.id,
-      //       name: groupName,
-      //       courseId: selectedCourse.id,
-      //       nameForQuestions: nameForQuestions,
-      //       nameForAnswers: nameForAnswers,
-      //     ));
-      //   }
-      // }
+      emit(state.copyWith(
+        status: const BlocStatusLoading(),
+      ));
+      final bool isGroupNameAlreadyTaken =
+          await _checkGroupNameUsageInCourseUseCase.execute(
+        groupName: groupName,
+        courseId: selectedCourse.id,
+      );
+      if (isGroupNameAlreadyTaken) {
+        emit(state.copyWith(
+          status: const BlocStatusComplete<GroupCreatorInfo>(
+            info: GroupCreatorInfoGroupNameIsAlreadyTaken(),
+          ),
+        ));
+      } else {
+        final GroupCreatorMode mode = state.mode;
+        if (mode is GroupCreatorCreateMode) {
+          await _addGroup(
+            name: groupName,
+            courseId: selectedCourse.id,
+            nameForQuestions: nameForQuestions,
+            nameForAnswers: nameForAnswers,
+            emit: emit,
+          );
+        } else if (mode is GroupCreatorEditMode) {
+          await _updateGroup(
+            id: mode.group.id,
+            name: groupName,
+            courseId: selectedCourse.id,
+            nameForQuestions: nameForQuestions,
+            nameForAnswers: nameForAnswers,
+            emit: emit,
+          );
+        }
+      }
     }
+  }
+
+  Future<void> _addGroup({
+    required String name,
+    required String courseId,
+    required String nameForQuestions,
+    required String nameForAnswers,
+    required Emitter<GroupCreatorState> emit,
+  }) async {
+    await _addGroupUseCase.execute(
+      name: name,
+      courseId: courseId,
+      nameForQuestions: nameForQuestions,
+      nameForAnswers: nameForAnswers,
+    );
+    emit(state.copyWith(
+      status: const BlocStatusComplete<GroupCreatorInfo>(
+        info: GroupCreatorInfoGroupHasBeenAdded(),
+      ),
+    ));
+  }
+
+  Future<void> _updateGroup({
+    required String id,
+    required Emitter<GroupCreatorState> emit,
+    String? name,
+    String? courseId,
+    String? nameForQuestions,
+    String? nameForAnswers,
+  }) async {
+    await _updateGroupUseCase.execute(
+      groupId: id,
+      name: name,
+      courseId: courseId,
+      nameForQuestions: nameForQuestions,
+      nameForAnswers: nameForAnswers,
+    );
+    emit(state.copyWith(
+      status: BlocStatusComplete<GroupCreatorInfo>(
+        info: GroupCreatorInfoGroupHasBeenUpdated(groupId: id),
+      ),
+    ));
   }
 }

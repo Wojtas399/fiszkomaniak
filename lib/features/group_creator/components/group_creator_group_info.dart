@@ -6,13 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class GroupCreatorGroupInfo extends StatelessWidget {
-  final TextEditingController groupNameController = TextEditingController();
-  final TextEditingController nameForQuestionsController =
-      TextEditingController();
-  final TextEditingController nameForAnswersController =
-      TextEditingController();
+  final _groupNameController = TextEditingController();
+  final _nameForQuestionsController = TextEditingController();
+  final _nameForAnswersController = TextEditingController();
 
-  GroupCreatorGroupInfo({Key? key}) : super(key: key);
+  GroupCreatorGroupInfo({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +19,13 @@ class GroupCreatorGroupInfo extends StatelessWidget {
         final GroupCreatorMode mode = state.mode;
         if (mode is GroupCreatorEditMode) {
           if (mode.group.name == state.groupName) {
-            groupNameController.text = mode.group.name;
+            _groupNameController.text = mode.group.name;
           }
           if (mode.group.nameForQuestions == state.nameForQuestions) {
-            nameForQuestionsController.text = mode.group.nameForQuestions;
+            _nameForQuestionsController.text = mode.group.nameForQuestions;
           }
           if (mode.group.nameForAnswers == state.nameForAnswers) {
-            nameForAnswersController.text = mode.group.nameForAnswers;
+            _nameForAnswersController.text = mode.group.nameForAnswers;
           }
         }
         return Column(
@@ -35,40 +33,50 @@ class GroupCreatorGroupInfo extends StatelessWidget {
             CustomTextField(
               icon: MdiIcons.folder,
               label: 'Nazwa grupy fiszek',
-              controller: groupNameController,
-              onChanged: (String value) {
-                context
-                    .read<GroupCreatorBloc>()
-                    .add(GroupCreatorEventGroupNameChanged(groupName: value));
-              },
+              controller: _groupNameController,
+              onChanged: (String value) => _onGroupNameChanged(context, value),
             ),
             CustomTextField(
               icon: MdiIcons.file,
               label: 'Nazwa dla pytań',
-              controller: nameForQuestionsController,
-              onChanged: (String value) {
-                context
-                    .read<GroupCreatorBloc>()
-                    .add(GroupCreatorEventNameForQuestionsChanged(
-                      nameForQuestions: value,
-                    ));
-              },
+              controller: _nameForQuestionsController,
+              onChanged: (String value) => _onNameForQuestionsChanged(
+                context,
+                value,
+              ),
             ),
             CustomTextField(
               icon: MdiIcons.fileReplace,
               label: 'Nazwa dla odpowiedzi',
-              controller: nameForAnswersController,
-              onChanged: (String value) {
-                context
-                    .read<GroupCreatorBloc>()
-                    .add(GroupCreatorEventNameForAnswersChanged(
-                      nameForAnswers: value,
-                    ));
-              },
+              controller: _nameForAnswersController,
+              onChanged: (String value) => _onNameForAnswersChanged(
+                context,
+                value,
+              ),
             ),
           ],
         );
       },
     );
+  }
+
+  void _onGroupNameChanged(BuildContext context, String value) {
+    context
+        .read<GroupCreatorBloc>()
+        .add(GroupCreatorEventGroupNameChanged(groupName: value));
+  }
+
+  void _onNameForQuestionsChanged(BuildContext context, String value) {
+    context
+        .read<GroupCreatorBloc>()
+        .add(GroupCreatorEventNameForQuestionsChanged(
+          nameForQuestions: value,
+        ));
+  }
+
+  void _onNameForAnswersChanged(BuildContext context, String value) {
+    context.read<GroupCreatorBloc>().add(GroupCreatorEventNameForAnswersChanged(
+          nameForAnswers: value,
+        ));
   }
 }

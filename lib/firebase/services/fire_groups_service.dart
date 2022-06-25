@@ -32,28 +32,35 @@ class FireGroupsService {
     return _convertDocumentSnapshotToFireDocument(doc);
   }
 
-  Future<void> addNewGroup(GroupDbModel groupData) async {
-    await FireReferences.groupsRefWithConverter.add(groupData);
+  Future<FireDocument<GroupDbModel>?> addNewGroup(
+    GroupDbModel groupData,
+  ) async {
+    final docRef = await FireReferences.groupsRefWithConverter.add(groupData);
+    final doc = await docRef.get();
+    return _convertDocumentSnapshotToFireDocument(doc);
   }
 
-  Future<void> updateGroup({
+  Future<FireDocument<GroupDbModel>?> updateGroup({
     required String groupId,
     String? name,
     String? courseId,
     String? nameForQuestions,
     String? nameForAnswers,
   }) async {
-    await FireReferences.groupsRefWithConverter.doc(groupId).update(
-          GroupDbModel(
-            name: name,
-            courseId: courseId,
-            nameForQuestions: nameForQuestions,
-            nameForAnswers: nameForAnswers,
-          ).toJson(),
-        );
+    final docRef = FireReferences.groupsRefWithConverter.doc(groupId);
+    await docRef.update(
+      GroupDbModel(
+        name: name,
+        courseId: courseId,
+        nameForQuestions: nameForQuestions,
+        nameForAnswers: nameForAnswers,
+      ).toJson(),
+    );
+    final doc = await docRef.get();
+    return _convertDocumentSnapshotToFireDocument(doc);
   }
 
-  Future<void> removeGroup(String groupId) async {
+  Future<String> removeGroup(String groupId) async {
     final batch = FireInstances.firestore.batch();
     final group =
         await FireReferences.groupsRefWithConverter.doc(groupId).get();
@@ -64,6 +71,18 @@ class FireGroupsService {
     }
     batch.delete(group.reference);
     await batch.commit();
+    return groupId;
+  }
+
+  Future<bool> isGroupNameInCourseAlreadyTaken({
+    required String groupName,
+    required String courseId,
+  }) async {
+    final query = await FireReferences.groupsRefWithConverter
+        .where('courseId', isEqualTo: courseId)
+        .where('name', isEqualTo: groupName)
+        .get();
+    return query.docs.isNotEmpty;
   }
 
   FireDocument<GroupDbModel>? _convertDocumentSnapshotToFireDocument(

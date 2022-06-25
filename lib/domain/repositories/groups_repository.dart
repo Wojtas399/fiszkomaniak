@@ -34,12 +34,16 @@ class GroupsRepository implements GroupsInterface {
     required String nameForQuestions,
     required String nameForAnswers,
   }) async {
-    await _fireGroupsService.addNewGroup(GroupDbModel(
+    final groupFromDb = await _fireGroupsService.addNewGroup(GroupDbModel(
       name: name,
       courseId: courseId,
       nameForQuestions: nameForQuestions,
       nameForAnswers: nameForAnswers,
     ));
+    final Group? group = _convertGroupDbModelToGroup(groupFromDb);
+    if (group != null) {
+      _addGroupsToStream([group]);
+    }
   }
 
   @override
@@ -50,18 +54,49 @@ class GroupsRepository implements GroupsInterface {
     String? nameForQuestion,
     String? nameForAnswers,
   }) async {
-    await _fireGroupsService.updateGroup(
+    final updatedGroupFromDb = await _fireGroupsService.updateGroup(
       groupId: groupId,
       name: name,
       courseId: courseId,
       nameForQuestions: nameForQuestion,
       nameForAnswers: nameForAnswers,
     );
+    final Group? updatedGroup = _convertGroupDbModelToGroup(updatedGroupFromDb);
+    if (updatedGroup != null) {
+      final groups = [..._allGroups$.value];
+      final updatedGroupIndex = groups.indexWhere(
+        (group) => group.id == updatedGroup.id,
+      );
+      groups[updatedGroupIndex] = updatedGroup;
+      _allGroups$.add(groups);
+    }
   }
 
   @override
   Future<void> removeGroup(String groupId) async {
-    await _fireGroupsService.removeGroup(groupId);
+    final removedGroupId = await _fireGroupsService.removeGroup(groupId);
+    final groups = [..._allGroups$.value];
+    groups.removeWhere((group) => group.id == removedGroupId);
+    _allGroups$.add(groups);
+  }
+
+  @override
+  Future<bool> isGroupNameInCourseAlreadyTaken({
+    required String groupName,
+    required String courseId,
+  }) async {
+    final List<Group?> allGroups = [..._allGroups$.value];
+    final Group? group = allGroups.firstWhere(
+      (group) => group?.courseId == courseId && group?.name == groupName,
+      orElse: () => null,
+    );
+    if (group != null) {
+      return true;
+    }
+    return await _fireGroupsService.isGroupNameInCourseAlreadyTaken(
+      groupName: groupName,
+      courseId: courseId,
+    );
   }
 
   @override
