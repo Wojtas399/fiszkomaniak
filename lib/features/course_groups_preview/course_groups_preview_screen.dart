@@ -1,4 +1,3 @@
-import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
@@ -48,7 +47,6 @@ class _CourseGroupsPreviewBlocProvider extends StatelessWidget {
         getGroupsByCourseIdUseCase: GetGroupsByCourseIdUseCase(
           groupsInterface: context.read<GroupsInterface>(),
         ),
-        navigation: context.read<Navigation>(),
       )..add(CourseGroupsPreviewEventInitialize(courseId: courseId)),
       child: child,
     );

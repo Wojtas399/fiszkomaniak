@@ -6,16 +6,18 @@ import 'package:flutter/material.dart';
 
 class GroupItem extends StatelessWidget {
   final GroupItemParams params;
+  final VoidCallback? onPressed;
 
   const GroupItem({
     super.key,
     required this.params,
+    this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
     return CardItem(
-      onTap: params.onPressed,
+      onTap: onPressed,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -35,22 +37,23 @@ class GroupItem extends StatelessWidget {
 }
 
 class GroupItemParams extends Equatable {
+  final String id;
   final String name;
   final String? courseName;
   final int amountOfRememberedFlashcards;
   final int amountOfAllFlashcards;
-  final VoidCallback? onPressed;
 
   const GroupItemParams({
+    required this.id,
     required this.name,
     required this.courseName,
     required this.amountOfRememberedFlashcards,
     required this.amountOfAllFlashcards,
-    required this.onPressed,
   });
 
   @override
   List<Object> get props => [
+        id,
         name,
         courseName ?? '',
         amountOfRememberedFlashcards,
@@ -59,17 +62,17 @@ class GroupItemParams extends Equatable {
 }
 
 GroupItemParams createGroupItemParams({
+  String? id,
   String? name,
   String? courseName,
   int? amountOfRememberedFlashcards,
   int? amountOfAllFlashcards,
-  VoidCallback? onPressed,
 }) {
   return GroupItemParams(
+    id: id ?? '',
     name: name ?? '',
     courseName: courseName,
     amountOfRememberedFlashcards: amountOfRememberedFlashcards ?? 0,
     amountOfAllFlashcards: amountOfAllFlashcards ?? 0,
-    onPressed: onPressed ?? () {},
   );
 }

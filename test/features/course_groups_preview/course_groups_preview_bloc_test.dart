@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fiszkomaniak/components/group_item/group_item.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
@@ -12,26 +11,21 @@ class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
 class MockGetGroupsByCourseIdUseCase extends Mock
     implements GetGroupsByCourseIdUseCase {}
 
-class MockNavigation extends Mock implements Navigation {}
-
 void main() {
   final getCourseUseCase = MockGetCourseUseCase();
   final getGroupsByCourseIdUseCase = MockGetGroupsByCourseIdUseCase();
-  final navigation = MockNavigation();
   late CourseGroupsPreviewBloc bloc;
 
   setUp(() {
     bloc = CourseGroupsPreviewBloc(
       getCourseUseCase: getCourseUseCase,
       getGroupsByCourseIdUseCase: getGroupsByCourseIdUseCase,
-      navigation: navigation,
     );
   });
 
   tearDown(() {
     reset(getCourseUseCase);
     reset(getGroupsByCourseIdUseCase);
-    reset(navigation);
   });
 
   blocTest(
@@ -72,15 +66,15 @@ void main() {
     build: () => bloc,
     act: (_) => bloc.add(
       CourseGroupsPreviewEventGroupsUpdated(updatedGroups: [
-        createGroupItemParams(name: 'group 1'),
-        createGroupItemParams(name: 'group 2'),
+        createGroupItemParams(id: 'g1', name: 'group 1'),
+        createGroupItemParams(id: 'g2', name: 'group 2'),
       ]),
     ),
     expect: () => [
       CourseGroupsPreviewState(
         groupsFromCourse: [
-          createGroupItemParams(name: 'group 1'),
-          createGroupItemParams(name: 'group 2'),
+          createGroupItemParams(id: 'g1', name: 'group 1'),
+          createGroupItemParams(id: 'g2', name: 'group 2'),
         ],
       ),
     ],

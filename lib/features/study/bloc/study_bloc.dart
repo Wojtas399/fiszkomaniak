@@ -1,30 +1,30 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/components/group_item/group_item.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_all_groups_use_case.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
-import '../../../interfaces/courses_interface.dart';
 
 part 'study_event.dart';
 
 part 'study_state.dart';
 
 class StudyBloc extends Bloc<StudyEvent, StudyState> {
-  late final CoursesInterface _coursesInterface;
-  late final GroupsInterface _groupsInterface;
+  late final GetAllGroupsUseCase _getAllGroupsUseCase;
+  late final GetCourseUseCase _getCourseUseCase;
   StreamSubscription<List<GroupItemParams>>? _groupsItemsParamsListener;
 
   StudyBloc({
-    required CoursesInterface coursesInterface,
-    required GroupsInterface groupsInterface,
+    required GetAllGroupsUseCase getAllGroupsUseCase,
+    required GetCourseUseCase getCourseUseCase,
   }) : super(const StudyState()) {
-    _coursesInterface = coursesInterface;
-    _groupsInterface = groupsInterface;
+    _getAllGroupsUseCase = getAllGroupsUseCase;
+    _getCourseUseCase = getCourseUseCase;
     on<StudyEventInitialize>(_initialize);
-    on<StudyEventGroupsItemsChanged>(_groupsItemsChanged);
+    on<StudyEventGroupsItemsParamsChanged>(_groupsItemsParamsChanged);
   }
 
   @override
@@ -37,7 +37,8 @@ class StudyBloc extends Bloc<StudyEvent, StudyState> {
     StudyEventInitialize event,
     Emitter<StudyState> emit,
   ) {
-    _groupsItemsParamsListener = _groupsInterface.allGroups$
+    _groupsItemsParamsListener = _getAllGroupsUseCase
+        .execute()
         .flatMap(
           (groups) => Rx.combineLatest(
             groups.map(_createGroupItemParams),
@@ -46,21 +47,27 @@ class StudyBloc extends Bloc<StudyEvent, StudyState> {
         )
         .listen(
           (groupsItemsParams) => add(
-            StudyEventGroupsItemsChanged(groupsItemsParams: groupsItemsParams),
+            StudyEventGroupsItemsParamsChanged(
+              groupsItemsParams: groupsItemsParams,
+            ),
           ),
         );
   }
 
-  void _groupsItemsChanged(
-    StudyEventGroupsItemsChanged event,
+  void _groupsItemsParamsChanged(
+    StudyEventGroupsItemsParamsChanged event,
     Emitter<StudyState> emit,
   ) {
     emit(state.copyWith(groupsItemsParams: event.groupsItemsParams));
   }
 
   Stream<GroupItemParams> _createGroupItemParams(Group group) {
-    return _coursesInterface.getCourseNameById(group.courseId).map(
+    return _getCourseUseCase
+        .execute(courseId: group.courseId)
+        .map((course) => course.name)
+        .map(
           (String courseName) => GroupItemParams(
+            id: group.id,
             name: group.name,
             courseName: courseName,
             amountOfAllFlashcards: group.flashcards.length,
@@ -69,9 +76,6 @@ class StudyBloc extends Bloc<StudyEvent, StudyState> {
                   (flashcard) => flashcard.status == FlashcardStatus.remembered,
                 )
                 .length,
-            onPressed: () {
-              //TODO
-            },
           ),
         );
   }

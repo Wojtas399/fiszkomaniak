@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/components/group_item/group_item.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,6 +43,9 @@ class _GroupsList extends StatelessWidget {
     return GroupItem(
       key: ValueKey(params.name),
       params: params,
+      onPressed: () {
+        context.read<Navigation>().navigateToGroupPreview(params.id);
+      },
     );
   }
 }

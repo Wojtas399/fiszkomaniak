@@ -7,10 +7,10 @@ abstract class StudyEvent extends Equatable {
 
 class StudyEventInitialize extends StudyEvent {}
 
-class StudyEventGroupsItemsChanged extends StudyEvent {
+class StudyEventGroupsItemsParamsChanged extends StudyEvent {
   final List<GroupItemParams> groupsItemsParams;
 
-  StudyEventGroupsItemsChanged({required this.groupsItemsParams});
+  StudyEventGroupsItemsParamsChanged({required this.groupsItemsParams});
 
   @override
   List<Object> get props => [groupsItemsParams];

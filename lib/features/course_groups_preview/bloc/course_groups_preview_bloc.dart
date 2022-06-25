@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
 import 'package:fiszkomaniak/models/flashcard_model.dart';
@@ -17,18 +16,15 @@ class CourseGroupsPreviewBloc
     extends Bloc<CourseGroupsPreviewEvent, CourseGroupsPreviewState> {
   late final GetCourseUseCase _getCourseUseCase;
   late final GetGroupsByCourseIdUseCase _getGroupsByCourseIdUseCase;
-  late final Navigation _navigation;
   StreamSubscription<String>? _courseNameListener;
   StreamSubscription<List<GroupItemParams>>? _groupsListener;
 
   CourseGroupsPreviewBloc({
     required GetCourseUseCase getCourseUseCase,
     required GetGroupsByCourseIdUseCase getGroupsByCourseIdUseCase,
-    required Navigation navigation,
   }) : super(CourseGroupsPreviewState()) {
     _getCourseUseCase = getCourseUseCase;
     _getGroupsByCourseIdUseCase = getGroupsByCourseIdUseCase;
-    _navigation = navigation;
     on<CourseGroupsPreviewEventInitialize>(_initialize);
     on<CourseGroupsPreviewEventCourseNameUpdated>(_courseNameUpdated);
     on<CourseGroupsPreviewEventGroupsUpdated>(_groupsUpdated);
@@ -107,6 +103,7 @@ class CourseGroupsPreviewBloc
   Stream<GroupItemParams> _getGroupItemParams(Group group) {
     return _getCourseUseCase.execute(courseId: group.courseId).map(
           (course) => GroupItemParams(
+            id: group.id,
             name: group.name,
             courseName: course.name,
             amountOfRememberedFlashcards: group.flashcards
@@ -115,12 +112,7 @@ class CourseGroupsPreviewBloc
                 )
                 .length,
             amountOfAllFlashcards: group.flashcards.length,
-            onPressed: () => _onGroupPressed(group.id),
           ),
         );
-  }
-
-  void _onGroupPressed(String groupId) {
-    _navigation.navigateToGroupPreview(groupId);
   }
 }
