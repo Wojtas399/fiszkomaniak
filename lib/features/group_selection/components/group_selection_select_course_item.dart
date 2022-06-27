@@ -5,24 +5,26 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../../../components/select_item/select_item.dart';
 
 class GroupSelectionSelectCourseItem extends StatelessWidget {
-  const GroupSelectionSelectCourseItem({Key? key}) : super(key: key);
+  const GroupSelectionSelectCourseItem({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GroupSelectionBloc, GroupSelectionState>(
-      builder: (BuildContext context, GroupSelectionState state) {
-        return SelectItem(
-          icon: MdiIcons.archiveOutline,
-          value: state.selectedCourse?.name,
-          label: 'Kurs',
-          optionsListTitle: 'Wybierz kurs',
-          options: state.coursesToSelect,
-          onOptionSelected: (String key, String value) {
-            context
-                .read<GroupSelectionBloc>()
-                .add(GroupSelectionEventCourseSelected(courseId: key));
-          },
-        );
+    final String? selectedCourseName = context.select(
+      (GroupSelectionBloc bloc) => bloc.state.selectedCourse?.name,
+    );
+    final Map<String, String> coursesToSelect = context.select(
+      (GroupSelectionBloc bloc) => bloc.state.coursesToSelect,
+    );
+    return SelectItem(
+      icon: MdiIcons.archiveOutline,
+      value: selectedCourseName,
+      label: 'Kurs',
+      optionsListTitle: 'Wybierz kurs',
+      options: coursesToSelect,
+      onOptionSelected: (String key, String value) {
+        context
+            .read<GroupSelectionBloc>()
+            .add(GroupSelectionEventCourseSelected(courseId: key));
       },
     );
   }

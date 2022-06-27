@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class GroupSelectionSelectGroupItem extends StatelessWidget {
-  const GroupSelectionSelectGroupItem({Key? key}) : super(key: key);
+  const GroupSelectionSelectGroupItem({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class GroupSelectionSelectGroupItem extends StatelessWidget {
           label: 'Grupa',
           optionsListTitle: 'Wybierz grupę',
           options: state.groupsFromCourseToSelect,
-          noOptionsMessage: 'Wybierz kurs aby wyświetlić listę grup',
+          noOptionsMessage: _getNoOptionsMessage(state.selectedCourse != null),
           onOptionSelected: (String key, String value) {
             context
                 .read<GroupSelectionBloc>()
@@ -26,5 +26,12 @@ class GroupSelectionSelectGroupItem extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _getNoOptionsMessage(bool hasCourseBeenSelected) {
+    if (hasCourseBeenSelected) {
+      return 'W tym kursie nie ma żadnych utworzonych grup';
+    }
+    return 'Wybierz kurs aby wyświetlić listę grup';
   }
 }

@@ -25,13 +25,11 @@ class GroupSelectionEventGroupSelected extends GroupSelectionEvent {
   List<Object> get props => [groupId];
 }
 
-class GroupSelectionEventButtonPressed extends GroupSelectionEvent {}
+class GroupSelectionEventGroupUpdated extends GroupSelectionEvent {
+  final Group group;
 
-class GroupSelectionEventGroupsStateUpdated extends GroupSelectionEvent {
-  // final GroupsState newGroupsState;
-  //
-  // GroupSelectionEventGroupsStateUpdated({required this.newGroupsState});
-  //
-  // @override
-  // List<Object> get props => [newGroupsState];
+  GroupSelectionEventGroupUpdated({required this.group});
+
+  @override
+  List<Object> get props => [group];
 }

@@ -9,11 +9,11 @@ class OptionsOfSelectItem extends StatelessWidget {
   final String noOptionsMessage;
 
   const OptionsOfSelectItem({
-    Key? key,
+    super.key,
     required this.title,
     required this.options,
     required this.noOptionsMessage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +48,9 @@ class _OptionItem extends StatelessWidget {
   final String value;
 
   const _OptionItem({
-    Key? key,
     required this.itemKey,
     required this.value,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -80,16 +79,17 @@ class _OptionItem extends StatelessWidget {
 class _NoOptionsInfo extends StatelessWidget {
   final String noOptionsMessage;
 
-  const _NoOptionsInfo({Key? key, required this.noOptionsMessage})
-      : super(key: key);
+  const _NoOptionsInfo({required this.noOptionsMessage});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: EmptyContentInfo(subtitle: noOptionsMessage),
+    return SafeArea(
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: EmptyContentInfo(subtitle: noOptionsMessage),
+        ),
       ),
     );
   }
