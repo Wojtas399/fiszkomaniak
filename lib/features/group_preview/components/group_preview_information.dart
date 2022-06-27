@@ -6,36 +6,68 @@ import '../../../components/item_with_icon.dart';
 import '../../../components/section.dart';
 
 class GroupPreviewInformation extends StatelessWidget {
-  const GroupPreviewInformation({Key? key}) : super(key: key);
+  const GroupPreviewInformation({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GroupPreviewBloc, GroupPreviewState>(
-      builder: (_, GroupPreviewState state) {
-        return Section(
-          title: 'Informacje',
-          displayDividerAtTheBottom: true,
-          child: Column(
-            children: [
-              ItemWithIcon(
-                icon: MdiIcons.archiveOutline,
-                label: 'Kurs',
-                text: state.courseName,
-              ),
-              ItemWithIcon(
-                icon: MdiIcons.fileOutline,
-                label: 'Pytania',
-                text: state.group?.nameForQuestions ?? '',
-              ),
-              ItemWithIcon(
-                icon: MdiIcons.fileReplaceOutline,
-                label: 'Odpowiedzi',
-                text: state.group?.nameForAnswers ?? '',
-              ),
-            ],
-          ),
-        );
-      },
+    return Section(
+      title: 'Informacje',
+      displayDividerAtTheBottom: true,
+      child: Column(
+        children: const [
+          _CourseName(),
+          _NameForQuestions(),
+          _NameForAnswers(),
+        ],
+      ),
+    );
+  }
+}
+
+class _CourseName extends StatelessWidget {
+  const _CourseName();
+
+  @override
+  Widget build(BuildContext context) {
+    final String? courseName = context.select(
+      (GroupPreviewBloc bloc) => bloc.state.course?.name,
+    );
+    return ItemWithIcon(
+      icon: MdiIcons.archiveOutline,
+      label: 'Kurs',
+      text: courseName ?? '',
+    );
+  }
+}
+
+class _NameForQuestions extends StatelessWidget {
+  const _NameForQuestions();
+
+  @override
+  Widget build(BuildContext context) {
+    final String? nameForQuestions = context.select(
+      (GroupPreviewBloc bloc) => bloc.state.group?.nameForQuestions,
+    );
+    return ItemWithIcon(
+      icon: MdiIcons.fileOutline,
+      label: 'Pytania',
+      text: nameForQuestions ?? '',
+    );
+  }
+}
+
+class _NameForAnswers extends StatelessWidget {
+  const _NameForAnswers();
+
+  @override
+  Widget build(BuildContext context) {
+    final String? nameForAnswers = context.select(
+      (GroupPreviewBloc bloc) => bloc.state.group?.nameForAnswers,
+    );
+    return ItemWithIcon(
+      icon: MdiIcons.fileReplaceOutline,
+      label: 'Odpowiedzi',
+      text: nameForAnswers ?? '',
     );
   }
 }

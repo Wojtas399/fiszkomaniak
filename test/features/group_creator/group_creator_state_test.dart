@@ -1,7 +1,6 @@
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_bloc.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_info.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,7 +49,7 @@ void main() {
       final state3 = state2.copyWith();
 
       expect(state2.status, expectedStatus);
-      expect(state3.status, const BlocStatusComplete<GroupCreatorInfo>());
+      expect(state3.status, const BlocStatusComplete<GroupCreatorInfoType>());
     },
   );
 

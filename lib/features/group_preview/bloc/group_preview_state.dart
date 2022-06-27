@@ -1,35 +1,45 @@
 part of 'group_preview_bloc.dart';
 
 class GroupPreviewState extends Equatable {
+  final BlocStatus status;
   final Group? group;
-  final String courseName;
+  final Course? course;
+
+  const GroupPreviewState({
+    this.status = const BlocStatusInitial(),
+    this.group,
+    this.course,
+  });
+
+  @override
+  List<Object> get props => [
+        status,
+        group ?? createGroup(),
+        course ?? createCourse(),
+      ];
 
   int get amountOfAllFlashcards => group?.flashcards.length ?? 0;
 
   int get amountOfRememberedFlashcards =>
-      group?.flashcards
-          .where((flashcard) => flashcard.status == FlashcardStatus.remembered)
-          .length ??
-      0;
+      group?.flashcards.where(_isFlashcardRemembered).length ?? 0;
 
-  const GroupPreviewState({
-    this.group,
-    this.courseName = '',
-  });
+  bool get isQuickSessionButtonDisabled => amountOfAllFlashcards == 0;
 
   GroupPreviewState copyWith({
+    BlocStatus? status,
     Group? group,
-    String? courseName,
+    Course? course,
   }) {
     return GroupPreviewState(
+      status: status ?? const BlocStatusComplete<GroupPreviewInfoType>(),
       group: group ?? this.group,
-      courseName: courseName ?? this.courseName,
+      course: course ?? this.course,
     );
   }
 
-  @override
-  List<Object> get props => [
-        group ?? createGroup(),
-        courseName,
-      ];
+  bool _isFlashcardRemembered(Flashcard flashcard) {
+    return flashcard.status == FlashcardStatus.remembered;
+  }
 }
+
+enum GroupPreviewInfoType { groupHasBeenRemoved }

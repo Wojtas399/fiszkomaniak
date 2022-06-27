@@ -19,6 +19,9 @@ class BlocStatusComplete<T> extends BlocStatus {
   final T? info;
 
   const BlocStatusComplete({this.info});
+
+  @override
+  List<Object> get props => [info ?? ''];
 }
 
 class BlocStatusError extends BlocStatus {

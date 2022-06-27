@@ -57,7 +57,7 @@ class GroupCreatorState extends Equatable {
   }) {
     return GroupCreatorState(
       mode: mode ?? this.mode,
-      status: status ?? const BlocStatusComplete<GroupCreatorInfo>(),
+      status: status ?? const BlocStatusComplete<GroupCreatorInfoType>(),
       selectedCourse: selectedCourse ?? this.selectedCourse,
       allCourses: allCourses ?? this.allCourses,
       groupName: groupName ?? this.groupName,
@@ -65,4 +65,10 @@ class GroupCreatorState extends Equatable {
       nameForAnswers: nameForAnswers ?? this.nameForAnswers,
     );
   }
+}
+
+enum GroupCreatorInfoType {
+  groupNameIsAlreadyTaken,
+  groupHasBeenAdded,
+  groupHasBeenEdited,
 }

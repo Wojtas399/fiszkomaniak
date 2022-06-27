@@ -14,23 +14,22 @@ class GroupPreviewEventInitialize extends GroupPreviewEvent {
   List<Object> get props => [groupId];
 }
 
-class GroupPreviewEventCourseNameChanged extends GroupPreviewEvent {
-  final String newCourseName;
+class GroupPreviewEventGroupUpdated extends GroupPreviewEvent {
+  final Group group;
 
-  GroupPreviewEventCourseNameChanged({required this.newCourseName});
+  GroupPreviewEventGroupUpdated({required this.group});
 
   @override
-  List<Object> get props => [newCourseName];
+  List<Object> get props => [group];
 }
 
-class GroupPreviewEventEdit extends GroupPreviewEvent {}
+class GroupPreviewEventCourseChanged extends GroupPreviewEvent {
+  final String courseId;
 
-class GroupPreviewEventRemove extends GroupPreviewEvent {}
+  GroupPreviewEventCourseChanged({required this.courseId});
 
-class GroupPreviewEventEditFlashcards extends GroupPreviewEvent {}
+  @override
+  List<Object> get props => [courseId];
+}
 
-class GroupPreviewEventReviewFlashcards extends GroupPreviewEvent {}
-
-class GroupPreviewEventCreateQuickSession extends GroupPreviewEvent {}
-
-class GroupPreviewEventGroupsStateUpdated extends GroupPreviewEvent {}
+class GroupPreviewEventRemoveGroup extends GroupPreviewEvent {}

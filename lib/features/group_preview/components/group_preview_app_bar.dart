@@ -1,13 +1,16 @@
 import 'package:fiszkomaniak/components/popup_menu.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
+import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/app_bar_with_close_button.dart';
+import '../../../domain/entities/group.dart';
 import '../bloc/group_preview_bloc.dart';
 
 class GroupPreviewAppBar extends StatelessWidget
     implements PreferredSizeWidget {
-  const GroupPreviewAppBar({Key? key}) : super(key: key);
+  const GroupPreviewAppBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -41,9 +44,18 @@ class GroupPreviewAppBar extends StatelessWidget
     int actionIndex,
   ) async {
     if (actionIndex == 0) {
-      context.read<GroupPreviewBloc>().add(GroupPreviewEventEdit());
+      _navigateToGroupCreatorInEditMode(context);
     } else if (actionIndex == 1) {
-      context.read<GroupPreviewBloc>().add(GroupPreviewEventRemove());
+      context.read<GroupPreviewBloc>().add(GroupPreviewEventRemoveGroup());
+    }
+  }
+
+  void _navigateToGroupCreatorInEditMode(BuildContext context) {
+    final Group? group = context.read<GroupPreviewBloc>().state.group;
+    if (group != null) {
+      context.read<Navigation>().navigateToGroupCreator(
+            GroupCreatorEditMode(group: group),
+          );
     }
   }
 }

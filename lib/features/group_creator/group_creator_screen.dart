@@ -7,7 +7,6 @@ import 'package:fiszkomaniak/domain/use_cases/groups/add_group_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/check_group_name_usage_in_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/update_group_use_case.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_bloc.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_info.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/group_creator/components/group_creator_app_bar.dart';
 import 'package:fiszkomaniak/features/group_creator/components/group_creator_course_selection.dart';
@@ -116,20 +115,24 @@ class _GroupCreatorBlocListener extends StatelessWidget {
     );
   }
 
-  void _manageBlocInfo(BuildContext context, GroupCreatorInfo info) {
-    if (info is GroupCreatorInfoGroupNameIsAlreadyTaken) {
-      Dialogs.showDialogWithMessage(
-        title: 'Zajęta nazwa grupy',
-        message:
-            'Już istnieje grupa o takiej nazwie. Zmień ją aby móc kontynuować operację.',
-      );
-    } else if (info is GroupCreatorInfoGroupHasBeenAdded) {
-      context.read<Navigation>().backHome();
-      context.read<HomePageController>().moveToPage(0);
-      Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
-    } else if (info is GroupCreatorInfoGroupHasBeenUpdated) {
-      context.read<Navigation>().navigateToGroupPreview(info.groupId);
-      Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizaowano grupę.');
+  void _manageBlocInfo(BuildContext context, GroupCreatorInfoType info) {
+    switch (info) {
+      case GroupCreatorInfoType.groupNameIsAlreadyTaken:
+        Dialogs.showDialogWithMessage(
+          title: 'Zajęta nazwa grupy',
+          message:
+              'Już istnieje grupa o takiej nazwie. Zmień ją aby móc kontynuować operację.',
+        );
+        break;
+      case GroupCreatorInfoType.groupHasBeenAdded:
+        context.read<Navigation>().backHome();
+        context.read<HomePageController>().moveToPage(0);
+        Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
+        break;
+      case GroupCreatorInfoType.groupHasBeenEdited:
+        context.read<Navigation>().moveBack();
+        Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizaowano grupę.');
+        break;
     }
   }
 }

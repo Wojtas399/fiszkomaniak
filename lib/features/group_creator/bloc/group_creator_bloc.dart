@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_info.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
@@ -104,45 +103,46 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
     GroupCreatorEventSubmit event,
     Emitter<GroupCreatorState> emit,
   ) async {
-    final Course? selectedCourse = state.selectedCourse;
+    emit(state.copyWith(
+      status: const BlocStatusLoading(),
+    ));
+    if (_shouldCheckGroupName() && await _isGroupNameAlreadyTaken()) {
+      emit(state.copyWith(
+        status: const BlocStatusComplete<GroupCreatorInfoType>(
+          info: GroupCreatorInfoType.groupNameIsAlreadyTaken,
+        ),
+      ));
+    } else {
+      await _doAppropriateSubmitOperation(emit);
+    }
+  }
+
+  Future<void> _doAppropriateSubmitOperation(
+    Emitter<GroupCreatorState> emit,
+  ) async {
+    final GroupCreatorMode mode = state.mode;
     final String groupName = state.groupName.trim();
     final String nameForQuestions = state.nameForQuestions.trim();
     final String nameForAnswers = state.nameForAnswers.trim();
-    if (selectedCourse != null) {
-      emit(state.copyWith(
-        status: const BlocStatusLoading(),
-      ));
-      final bool isGroupNameAlreadyTaken =
-          await _checkGroupNameUsageInCourseUseCase.execute(
-        groupName: groupName,
-        courseId: selectedCourse.id,
-      );
-      if (isGroupNameAlreadyTaken) {
-        emit(state.copyWith(
-          status: const BlocStatusComplete<GroupCreatorInfo>(
-            info: GroupCreatorInfoGroupNameIsAlreadyTaken(),
-          ),
-        ));
-      } else {
-        final GroupCreatorMode mode = state.mode;
-        if (mode is GroupCreatorCreateMode) {
-          await _addGroup(
-            name: groupName,
-            courseId: selectedCourse.id,
-            nameForQuestions: nameForQuestions,
-            nameForAnswers: nameForAnswers,
-            emit: emit,
-          );
-        } else if (mode is GroupCreatorEditMode) {
-          await _updateGroup(
-            id: mode.group.id,
-            name: groupName,
-            courseId: selectedCourse.id,
-            nameForQuestions: nameForQuestions,
-            nameForAnswers: nameForAnswers,
-            emit: emit,
-          );
-        }
+    final String? selectedCourseId = state.selectedCourse?.id;
+    if (selectedCourseId != null) {
+      if (mode is GroupCreatorCreateMode) {
+        await _addGroup(
+          name: groupName,
+          courseId: selectedCourseId,
+          nameForQuestions: nameForQuestions,
+          nameForAnswers: nameForAnswers,
+          emit: emit,
+        );
+      } else if (mode is GroupCreatorEditMode) {
+        await _updateGroup(
+          id: mode.group.id,
+          name: groupName,
+          courseId: selectedCourseId,
+          nameForQuestions: nameForQuestions,
+          nameForAnswers: nameForAnswers,
+          emit: emit,
+        );
       }
     }
   }
@@ -161,8 +161,8 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
       nameForAnswers: nameForAnswers,
     );
     emit(state.copyWith(
-      status: const BlocStatusComplete<GroupCreatorInfo>(
-        info: GroupCreatorInfoGroupHasBeenAdded(),
+      status: const BlocStatusComplete<GroupCreatorInfoType>(
+        info: GroupCreatorInfoType.groupHasBeenAdded,
       ),
     ));
   }
@@ -183,9 +183,27 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
       nameForAnswers: nameForAnswers,
     );
     emit(state.copyWith(
-      status: BlocStatusComplete<GroupCreatorInfo>(
-        info: GroupCreatorInfoGroupHasBeenUpdated(groupId: id),
+      status: const BlocStatusComplete<GroupCreatorInfoType>(
+        info: GroupCreatorInfoType.groupHasBeenEdited,
       ),
     ));
+  }
+
+  bool _shouldCheckGroupName() {
+    final GroupCreatorMode mode = state.mode;
+    return (mode is GroupCreatorCreateMode) ||
+        (mode is GroupCreatorEditMode && mode.group.name != state.groupName);
+  }
+
+  Future<bool> _isGroupNameAlreadyTaken() async {
+    final String groupName = state.groupName;
+    final String? courseId = state.selectedCourse?.id;
+    if (courseId != null) {
+      return await _checkGroupNameUsageInCourseUseCase.execute(
+        groupName: groupName,
+        courseId: courseId,
+      );
+    }
+    return false;
   }
 }

@@ -7,7 +7,6 @@ import 'package:fiszkomaniak/domain/use_cases/groups/add_group_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/check_group_name_usage_in_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/update_group_use_case.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_bloc.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_info.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -85,7 +84,7 @@ void main() {
         expect: () => [
           const GroupCreatorState(status: BlocStatusLoading()),
           GroupCreatorState(
-            status: const BlocStatusComplete<GroupCreatorInfo>(),
+            status: const BlocStatusComplete<GroupCreatorInfoType>(),
             mode: const GroupCreatorCreateMode(),
             allCourses: courses,
           ),
@@ -99,7 +98,7 @@ void main() {
         expect: () => [
           const GroupCreatorState(status: BlocStatusLoading()),
           GroupCreatorState(
-            status: const BlocStatusComplete<GroupCreatorInfo>(),
+            status: const BlocStatusComplete<GroupCreatorInfoType>(),
             mode: editMode,
             selectedCourse: courses[0],
             allCourses: courses,
@@ -120,7 +119,7 @@ void main() {
     )),
     expect: () => [
       GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfo>(),
+        status: const BlocStatusComplete<GroupCreatorInfoType>(),
         selectedCourse: createCourse(id: 'c2'),
       ),
     ],
@@ -134,7 +133,7 @@ void main() {
     ),
     expect: () => [
       const GroupCreatorState(
-        status: BlocStatusComplete<GroupCreatorInfo>(),
+        status: BlocStatusComplete<GroupCreatorInfoType>(),
         groupName: 'group 1',
       ),
     ],
@@ -148,7 +147,7 @@ void main() {
     ),
     expect: () => [
       const GroupCreatorState(
-        status: BlocStatusComplete<GroupCreatorInfo>(),
+        status: BlocStatusComplete<GroupCreatorInfoType>(),
         nameForQuestions: 'questions',
       ),
     ],
@@ -162,7 +161,7 @@ void main() {
     ),
     expect: () => [
       const GroupCreatorState(
-        status: BlocStatusComplete<GroupCreatorInfo>(),
+        status: BlocStatusComplete<GroupCreatorInfoType>(),
         nameForAnswers: 'answers',
       ),
     ],
@@ -185,22 +184,22 @@ void main() {
       }
 
       final state1 = GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfo>(),
+        status: const BlocStatusComplete<GroupCreatorInfoType>(),
         selectedCourse: createCourse(id: 'c1'),
       );
       final state2 = GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfo>(),
+        status: const BlocStatusComplete<GroupCreatorInfoType>(),
         selectedCourse: createCourse(id: 'c1'),
         groupName: 'group 1',
       );
       final state3 = GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfo>(),
+        status: const BlocStatusComplete<GroupCreatorInfoType>(),
         selectedCourse: createCourse(id: 'c1'),
         groupName: 'group 1',
         nameForQuestions: 'questions',
       );
       final state4 = GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfo>(),
+        status: const BlocStatusComplete<GroupCreatorInfoType>(),
         selectedCourse: createCourse(id: 'c1'),
         groupName: 'group 1',
         nameForQuestions: 'questions',
@@ -229,8 +228,8 @@ void main() {
           state4,
           state4.copyWith(status: const BlocStatusLoading()),
           state4.copyWith(
-            status: const BlocStatusComplete<GroupCreatorInfo>(
-              info: GroupCreatorInfoGroupNameIsAlreadyTaken(),
+            status: const BlocStatusComplete<GroupCreatorInfoType>(
+              info: GroupCreatorInfoType.groupNameIsAlreadyTaken,
             ),
           ),
         ],
@@ -266,8 +265,8 @@ void main() {
           state4,
           state4.copyWith(status: const BlocStatusLoading()),
           state4.copyWith(
-            status: const BlocStatusComplete<GroupCreatorInfo>(
-              info: GroupCreatorInfoGroupHasBeenAdded(),
+            status: const BlocStatusComplete<GroupCreatorInfoType>(
+              info: GroupCreatorInfoType.groupHasBeenAdded,
             ),
           ),
         ],
@@ -298,7 +297,7 @@ void main() {
         ),
       );
       final stateAfterInitialization = GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfo>(),
+        status: const BlocStatusComplete<GroupCreatorInfoType>(),
         mode: editMode,
         selectedCourse: createCourse(id: 'c1'),
         allCourses: [createCourse(id: 'c1')],
@@ -343,8 +342,8 @@ void main() {
           stateAfterInitialization,
           stateAfterInitialization.copyWith(status: const BlocStatusLoading()),
           stateAfterInitialization.copyWith(
-            status: const BlocStatusComplete<GroupCreatorInfo>(
-              info: GroupCreatorInfoGroupHasBeenUpdated(groupId: 'g1'),
+            status: const BlocStatusComplete<GroupCreatorInfoType>(
+              info: GroupCreatorInfoType.groupHasBeenEdited,
             ),
           ),
         ],
