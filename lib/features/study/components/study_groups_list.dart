@@ -21,6 +21,7 @@ class StudyGroupsList extends StatelessWidget {
 
   Widget _buildGroupItem(BuildContext context, GroupItemParams params) {
     return GroupItem(
+      key: ValueKey(params.id),
       params: params,
       onPressed: () {
         context.read<Navigation>().navigateToGroupPreview(params.id);
