@@ -7,7 +7,6 @@ import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/injections/notifications_provider.dart';
 import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
 import 'package:fiszkomaniak/interfaces/achievements_notifications_interface.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_notifications_interface.dart';
@@ -34,12 +33,6 @@ class HomeProviders extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (_) => FirebaseProvider.provideGroupsInterface(),
-        ),
-        RepositoryProvider(
-          create: (BuildContext context) =>
-              FirebaseProvider.provideFlashcardsInterface(
-            groupsInterface: context.read<GroupsInterface>(),
-          ),
         ),
         RepositoryProvider(
           create: (_) => FirebaseProvider.provideSessionsInterface(),

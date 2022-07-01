@@ -7,7 +7,7 @@ import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../models/flashcard_model.dart';
+import '../../../domain/entities/flashcard.dart';
 import '../../flashcards_stack/bloc/flashcards_stack_models.dart';
 import '../learning_process_data.dart';
 

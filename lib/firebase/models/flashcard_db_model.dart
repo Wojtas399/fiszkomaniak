@@ -51,3 +51,17 @@ class FlashcardDbModel extends Equatable {
         status,
       ];
 }
+
+FlashcardDbModel createFlashcardDbModel({
+  int? index,
+  String? question,
+  String? answer,
+  String? status,
+}) {
+  return FlashcardDbModel(
+    index: index ?? 0,
+    question: question ?? '',
+    answer: answer ?? '',
+    status: status ?? '',
+  );
+}

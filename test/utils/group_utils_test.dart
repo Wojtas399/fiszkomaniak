@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:fiszkomaniak/utils/group_utils.dart';

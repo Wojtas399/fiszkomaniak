@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_event.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_state.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GroupFlashcardsPreviewBloc

@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/components/group_item/group_item.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_all_groups_use_case.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';

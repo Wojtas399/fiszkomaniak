@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../models/flashcard_model.dart';
+import '../../../domain/entities/flashcard.dart';
 import 'flashcard_preview_info.dart';
 import 'flashcard_preview_question_answer.dart';
 

@@ -8,7 +8,7 @@ import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/course.dart';
-import '../../../models/flashcard_model.dart';
+import '../../../domain/entities/flashcard.dart';
 import '../../../domain/entities/group.dart';
 
 part 'group_selection_event.dart';

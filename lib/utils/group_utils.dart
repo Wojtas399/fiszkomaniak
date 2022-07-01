@@ -1,6 +1,6 @@
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/models/session_model.dart';
-import '../models/flashcard_model.dart';
+import '../domain/entities/flashcard.dart';
 
 class GroupUtils {
   static List<FlashcardsType> getAvailableFlashcardsTypes(Group group) {

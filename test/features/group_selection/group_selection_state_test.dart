@@ -2,7 +2,7 @@ import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

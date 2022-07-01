@@ -1,4 +1,4 @@
-import '../models/flashcard_model.dart';
+import '../domain/entities/flashcard.dart';
 import '../models/session_model.dart';
 
 class FlashcardsUtils {

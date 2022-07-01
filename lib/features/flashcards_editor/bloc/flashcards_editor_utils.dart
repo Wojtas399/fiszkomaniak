@@ -1,4 +1,4 @@
-import '../../../models/flashcard_model.dart';
+import '../../../domain/entities/flashcard.dart';
 import 'flashcards_editor_state.dart';
 
 class FlashcardsEditorUtils {

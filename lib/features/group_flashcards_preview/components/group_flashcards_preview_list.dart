@@ -4,7 +4,7 @@ import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashc
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_event.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_state.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/components/group_flashcards_preview_item.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

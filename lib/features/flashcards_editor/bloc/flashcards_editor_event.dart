@@ -1,4 +1,5 @@
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
+import '../flashcards_editor_mode.dart';
 
 abstract class FlashcardsEditorEvent {}
 

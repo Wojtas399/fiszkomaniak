@@ -5,7 +5,7 @@ import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_all_groups_use_case.dart';
 import 'package:fiszkomaniak/features/study/bloc/study_bloc.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

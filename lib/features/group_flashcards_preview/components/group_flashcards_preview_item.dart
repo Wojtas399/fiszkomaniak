@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:flutter/material.dart';
 
 class GroupFlashcardsPreviewItem extends StatelessWidget {

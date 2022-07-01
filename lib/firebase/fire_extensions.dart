@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/models/notification_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
 import '../models/changed_document.dart';
@@ -16,6 +16,17 @@ extension FireDocumentChangeTypeExtensions on DocumentChangeType {
         return DbDocChangeType.updated;
       case DocumentChangeType.removed:
         return DbDocChangeType.removed;
+    }
+  }
+}
+
+extension FireFlashcardStatusExtensions on FlashcardStatus {
+  String toDbString() {
+    switch (this) {
+      case FlashcardStatus.remembered:
+        return 'remembered';
+      case FlashcardStatus.notRemembered:
+        return 'notRemembered';
     }
   }
 }

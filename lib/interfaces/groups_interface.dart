@@ -1,7 +1,12 @@
 import 'package:fiszkomaniak/domain/entities/group.dart';
+import '../domain/entities/flashcard.dart';
 
 abstract class GroupsInterface {
   Stream<List<Group>> get allGroups$;
+
+  Stream<Group> getGroupById({required String groupId});
+
+  Stream<List<Group>> getGroupsByCourseId({required String courseId});
 
   Future<void> loadAllGroups();
 
@@ -27,7 +32,23 @@ abstract class GroupsInterface {
     required String courseId,
   });
 
-  Stream<Group> getGroupById({required String groupId});
+  Future<void> saveEditedFlashcards({
+    required String groupId,
+    required List<Flashcard> flashcards,
+  });
 
-  Stream<List<Group>> getGroupsByCourseId({required String courseId});
+  Future<void> markFlashcardsAsRemembered({
+    required String groupId,
+    required List<int> flashcardsIndexes,
+  });
+
+  Future<void> updateFlashcard({
+    required String groupId,
+    required Flashcard flashcard,
+  });
+
+  Future<void> removeFlashcard({
+    required String groupId,
+    required int flashcardIndex,
+  });
 }

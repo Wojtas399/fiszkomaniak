@@ -8,7 +8,7 @@ import 'package:fiszkomaniak/features/group_preview/group_preview_dialogs.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
-import '../../../models/flashcard_model.dart';
+import '../../../domain/entities/flashcard.dart';
 import '../../../domain/entities/group.dart';
 
 part 'group_preview_event.dart';

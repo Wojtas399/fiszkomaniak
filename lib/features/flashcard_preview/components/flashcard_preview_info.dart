@@ -1,6 +1,6 @@
 import 'package:fiszkomaniak/components/item_with_icon.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

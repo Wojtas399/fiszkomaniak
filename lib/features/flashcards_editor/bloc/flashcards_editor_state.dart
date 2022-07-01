@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 
 class FlashcardsEditorState extends Equatable {

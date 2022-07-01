@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 
 class GroupFlashcardsPreviewState extends Equatable {
   final String? groupId;

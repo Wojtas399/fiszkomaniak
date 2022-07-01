@@ -4,7 +4,7 @@ import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_e
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -189,31 +189,31 @@ class FlashcardsEditorBloc
   Future<bool> _areThereIncorrectFlashcards(
     Emitter<FlashcardsEditorState> emit,
   ) async {
-    final List<Flashcard> incorrectFlashcards = _flashcardsEditorUtils
-        .lookForIncorrectlyCompletedFlashcards(state.flashcardsWithoutLastOne);
-    if (incorrectFlashcards.isNotEmpty) {
-      _updateIncorrectFlashcards(incorrectFlashcards, emit);
-      await _flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards();
-      return true;
-    }
+    // final List<Flashcard> incorrectFlashcards = _flashcardsEditorUtils
+    //     .lookForIncorrectlyCompletedFlashcards(state.flashcardsWithoutLastOne);
+    // if (incorrectFlashcards.isNotEmpty) {
+    //   _updateIncorrectFlashcards(incorrectFlashcards, emit);
+    //   await _flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards();
+    //   return true;
+    // }
     return false;
   }
 
   Future<bool> _areThereDuplicates(Emitter<FlashcardsEditorState> emit) async {
-    final List<Flashcard> flashcardsToCheck =
-        state.mode is FlashcardsEditorAddMode
-            ? [
-                ...(state.group?.flashcards ?? []),
-                ...state.flashcardsWithoutLastOne,
-              ]
-            : state.flashcardsWithoutLastOne;
-    final List<Flashcard> duplications =
-        _flashcardsEditorUtils.lookForDuplicates(flashcardsToCheck);
-    if (duplications.isNotEmpty) {
-      _updateIncorrectFlashcards(duplications, emit);
-      await _flashcardsEditorDialogs.displayInfoAboutDuplicates();
-      return true;
-    }
+    // final List<Flashcard> flashcardsToCheck =
+    //     state.mode is FlashcardsEditorAddMode
+    //         ? [
+    //             ...(state.group?.flashcards ?? []),
+    //             ...state.flashcardsWithoutLastOne,
+    //           ]
+    //         : state.flashcardsWithoutLastOne;
+    // final List<Flashcard> duplications =
+    //     _flashcardsEditorUtils.lookForDuplicates(flashcardsToCheck);
+    // if (duplications.isNotEmpty) {
+    //   _updateIncorrectFlashcards(duplications, emit);
+    //   await _flashcardsEditorDialogs.displayInfoAboutDuplicates();
+    //   return true;
+    // }
     return false;
   }
 
@@ -221,12 +221,12 @@ class FlashcardsEditorBloc
     List<Flashcard> incorrectFlashcards,
     Emitter<FlashcardsEditorState> emit,
   ) {
-    final List<EditorFlashcard> updatedFlashcards = [...state.flashcards];
-    for (int i = 0; i < updatedFlashcards.length; i++) {
-      if (incorrectFlashcards.contains(updatedFlashcards[i].doc)) {
-        updatedFlashcards[i] = updatedFlashcards[i].copyWith(isCorrect: false);
-      }
-    }
-    emit(state.copyWith(flashcards: updatedFlashcards));
+    // final List<EditorFlashcard> updatedFlashcards = [...state.flashcards];
+    // for (int i = 0; i < updatedFlashcards.length; i++) {
+    //   if (incorrectFlashcards.contains(updatedFlashcards[i].doc)) {
+    //     updatedFlashcards[i] = updatedFlashcards[i].copyWith(isCorrect: false);
+    //   }
+    // }
+    // emit(state.copyWith(flashcards: updatedFlashcards));
   }
 }
