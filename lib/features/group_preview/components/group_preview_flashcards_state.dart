@@ -1,7 +1,6 @@
 import 'package:fiszkomaniak/components/flashcards_progress_bar.dart';
 import 'package:fiszkomaniak/components/section.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,9 +69,7 @@ class _FlashcardsOptions extends StatelessWidget {
   void _editFlashcards(BuildContext context) {
     final String? groupId = context.read<GroupPreviewBloc>().state.group?.id;
     if (groupId != null) {
-      context.read<Navigation>().navigateToFlashcardsEditor(
-            FlashcardsEditorEditMode(groupId: groupId),
-          );
+      context.read<Navigation>().navigateToFlashcardsEditor(groupId);
     }
   }
 

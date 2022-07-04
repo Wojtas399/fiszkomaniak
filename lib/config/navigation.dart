@@ -2,7 +2,6 @@ import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/config/routes.dart';
 import 'package:fiszkomaniak/config/slide_right_route_animation.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
@@ -96,11 +95,11 @@ class Navigation {
     );
   }
 
-  void navigateToFlashcardsEditor(FlashcardsEditorMode mode) {
+  void navigateToFlashcardsEditor(String groupId) {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.flashcardsEditor,
-      arguments: mode,
+      arguments: groupId,
     );
   }
 

@@ -1,86 +1,151 @@
+import 'package:fiszkomaniak/utils/utils.dart';
 import '../../../domain/entities/flashcard.dart';
 import 'flashcards_editor_state.dart';
 
 class FlashcardsEditorUtils {
-  List<EditorFlashcard> removeEmptyFlashcardsWithoutLastOneAndChangedFlashcard(
-    List<EditorFlashcard> flashcards,
+  List<EditorFlashcard> createInitialEditorFlashcards(
+    List<Flashcard> flashcards,
+  ) {
+    List<EditorFlashcard> editorFlashcards =
+        flashcards.map(_createEditorFlashcard).toList();
+    return addNewEditorFlashcard(editorFlashcards, editorFlashcards.length);
+  }
+
+  List<EditorFlashcard> removeEmptyEditorFlashcardsApartFromLastAndEditedOne(
+    List<EditorFlashcard> editorFlashcards,
     int indexOfEditedFlashcard,
   ) {
-    final List<EditorFlashcard> updatedFlashcards =
-        flashcards.getRange(0, flashcards.length - 1).toList();
-    updatedFlashcards.removeWhere((flashcard) {
-      int index = flashcards.indexOf(flashcard);
-      return flashcard.doc.question.isEmpty &&
-          flashcard.doc.answer.isEmpty &&
-          indexOfEditedFlashcard != index;
-    });
-    updatedFlashcards.add(flashcards.last);
-    return updatedFlashcards;
+    final List<EditorFlashcard> updatedEditorFlashcards =
+        Utils.removeLastElement(editorFlashcards);
+    updatedEditorFlashcards.removeWhere(
+      (editorFlashcard) =>
+          editorFlashcards.indexOf(editorFlashcard) != indexOfEditedFlashcard &&
+          _isFlashcardEmpty(editorFlashcard),
+    );
+    updatedEditorFlashcards.add(editorFlashcards.last);
+    return updatedEditorFlashcards;
   }
 
-  List<EditorFlashcard> setFlashcardsAsCorrectIfItIsPossible(
-    List<EditorFlashcard> flashcards,
+  List<EditorFlashcard> addNewEditorFlashcard(
+    List<EditorFlashcard> editorFlashcards,
+    int keyNumber,
   ) {
-    final List<EditorFlashcard> updatedFlashcards = [...flashcards];
-    final List<EditorFlashcard> incorrectFlashcards =
-        updatedFlashcards.where((flashcard) => !flashcard.isCorrect).toList();
-    for (final flashcard in incorrectFlashcards) {
-      if (flashcard.doc.question.isNotEmpty &&
-          flashcard.doc.answer.isNotEmpty) {
-        final int index =
-            updatedFlashcards.indexWhere((element) => element == flashcard);
-        updatedFlashcards[index] =
-            updatedFlashcards[index].copyWith(isCorrect: true);
+    final List<EditorFlashcard> updatedEditorFlashcards = [...editorFlashcards];
+    updatedEditorFlashcards.add(
+      EditorFlashcard(
+        key: 'flashcard$keyNumber',
+        question: '',
+        answer: '',
+        flashcardStatus: FlashcardStatus.notRemembered,
+        completionStatus: EditorFlashcardCompletionStatus.unknown,
+      ),
+    );
+    return updatedEditorFlashcards;
+  }
+
+  List<EditorFlashcard>
+      updateCompletionStatusInEditorFlashcardsMarkedAsIncomplete(
+    List<EditorFlashcard> editorFlashcards,
+  ) {
+    return editorFlashcards.map(
+      (editorFlashcard) {
+        if (_isFlashcardMarkedAsIncomplete(editorFlashcard) &&
+            _isFlashcardComplete(editorFlashcard)) {
+          return editorFlashcard.copyWith(
+            completionStatus: EditorFlashcardCompletionStatus.complete,
+          );
+        }
+        return editorFlashcard;
+      },
+    ).toList();
+  }
+
+  List<Flashcard> convertEditorFlashcardsToFlashcards(
+    List<EditorFlashcard> editorFlashcards,
+  ) {
+    return editorFlashcards
+        .asMap()
+        .entries
+        .map(
+          (entry) => Flashcard(
+            index: entry.key,
+            question: entry.value.question,
+            answer: entry.value.answer,
+            status: entry.value.flashcardStatus,
+          ),
+        )
+        .toList();
+  }
+
+  List<EditorFlashcard> updateEditorFlashcardsCompletionStatuses(
+    List<EditorFlashcard> editorFlashcards,
+  ) {
+    return editorFlashcards.asMap().entries.map(
+      (entry) {
+        if (_isFlashcardComplete(entry.value)) {
+          return entry.value.copyWith(
+            completionStatus: EditorFlashcardCompletionStatus.complete,
+          );
+        } else if (entry.key != editorFlashcards.length - 1) {
+          return entry.value.copyWith(
+            completionStatus: EditorFlashcardCompletionStatus.incomplete,
+          );
+        }
+        return entry.value;
+      },
+    ).toList();
+  }
+
+  bool areEditorFlashcardsSameAsGroupFlashcards(
+    List<Flashcard> groupFlashcards,
+    List<EditorFlashcard> editorFlashcards,
+  ) {
+    final List<Flashcard> convertedEditorFlashcards =
+        convertEditorFlashcardsToFlashcards(editorFlashcards);
+    for (final flashcard in convertedEditorFlashcards) {
+      if (!groupFlashcards.contains(flashcard)) {
+        return false;
       }
     }
-    return updatedFlashcards;
+    return true;
   }
 
-  bool haveChangesBeenMade(
-    List<Flashcard> originalFlashcards,
-    List<Flashcard> editedFlashcards,
+  bool areThereIncompleteEditorFlashcards(
+    List<EditorFlashcard> editorFlashcards,
   ) {
-    for (final editedFlashcard in editedFlashcards) {
-      if (!originalFlashcards.contains(editedFlashcard)) {
+    for (final editorFlashcard in editorFlashcards) {
+      if (_isFlashcardIncomplete(editorFlashcard)) {
         return true;
       }
     }
     return false;
   }
 
-  List<Flashcard> lookForIncorrectlyCompletedFlashcards(
-    List<Flashcard> flashcards,
-  ) {
-    final List<Flashcard> incorrectFlashcards = [];
-    for (int i = 0; i < flashcards.length; i++) {
-      final Flashcard flashcard = flashcards[i];
-      if (flashcard.question == '' || flashcard.answer == '') {
-        incorrectFlashcards.add(flashcard);
-      }
-    }
-    return incorrectFlashcards;
+  EditorFlashcard _createEditorFlashcard(Flashcard flashcard) {
+    return EditorFlashcard(
+      key: 'flashcard${flashcard.index}',
+      question: flashcard.question,
+      answer: flashcard.answer,
+      flashcardStatus: flashcard.status,
+      completionStatus: EditorFlashcardCompletionStatus.complete,
+    );
   }
 
-  List<Flashcard> lookForDuplicates(List<Flashcard> flashcards) {
-    final List<Flashcard?> flashcardsToCheck = [...flashcards];
-    final List<Flashcard> duplicates = [];
-    for (final flashcard in flashcards) {
-      final Flashcard? matchingFlashcard = flashcardsToCheck
-          .where((el) => el != flashcard)
-          .firstWhere((el) => _areTheSame(el, flashcard), orElse: () => null);
-      if (matchingFlashcard != null &&
-          !duplicates.contains(flashcard) &&
-          !duplicates.contains(matchingFlashcard)) {
-        duplicates.addAll([flashcard, matchingFlashcard]);
-      }
-    }
-    return duplicates;
+  bool _isFlashcardEmpty(EditorFlashcard editorFlashcard) {
+    return editorFlashcard.question.isEmpty && editorFlashcard.answer.isEmpty;
   }
 
-  bool _areTheSame(Flashcard? flashcard1, Flashcard? flashcard2) {
-    return flashcard1?.answer.toLowerCase() ==
-            flashcard2?.answer.toLowerCase() &&
-        flashcard1?.question.toLowerCase() ==
-            flashcard2?.question.toLowerCase();
+  bool _isFlashcardComplete(EditorFlashcard editorFlashcard) {
+    return editorFlashcard.question.isNotEmpty &&
+        editorFlashcard.answer.isNotEmpty;
+  }
+
+  bool _isFlashcardIncomplete(EditorFlashcard editorFlashcard) {
+    return editorFlashcard.question.isEmpty || editorFlashcard.answer.isEmpty;
+  }
+
+  bool _isFlashcardMarkedAsIncomplete(EditorFlashcard editorFlashcard) {
+    return editorFlashcard.completionStatus ==
+        EditorFlashcardCompletionStatus.incomplete;
   }
 }

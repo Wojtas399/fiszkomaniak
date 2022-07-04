@@ -2,71 +2,100 @@ import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_b
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/components/flashcards_editor_item.dart';
+import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/entities/group.dart';
 
 class FlashcardsEditorList extends StatelessWidget {
-  const FlashcardsEditorList({Key? key}) : super(key: key);
+  const FlashcardsEditorList({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FlashcardsEditorBloc, FlashcardsEditorState>(
       builder: (BuildContext context, FlashcardsEditorState state) {
-        final Group? group = state.group;
-        if (group == null) {
-          return const Center(
-            child: Text('No group selected'),
-          );
-        }
+        final String nameForQuestions = state.group?.nameForQuestions ?? '';
+        final String nameForAnswers = state.group?.nameForAnswers ?? '';
         return Column(
-          children: _buildFlashcards(context, state, group),
+          children: state.editorFlashcards
+              .asMap()
+              .entries
+              .map(
+                (entry) => _buildFlashcard(
+                  entry.key,
+                  entry.value,
+                  nameForQuestions,
+                  nameForAnswers,
+                  state.isEditorFlashcardMarkedAsIncomplete(entry.value),
+                  context,
+                ),
+              )
+              .toList(),
         );
       },
     );
   }
 
-  List<Widget> _buildFlashcards(
+  Widget _buildFlashcard(
+    int index,
+    EditorFlashcard editorFlashcard,
+    String nameForQuestions,
+    String nameForAnswers,
+    bool isIncomplete,
     BuildContext context,
-    FlashcardsEditorState state,
-    Group group,
   ) {
-    return state.flashcards.asMap().entries.map(
-      (entry) {
-        final int index = entry.key;
-        final EditorFlashcard params = entry.value;
-        return FlashcardsEditorItem(
-          key: ValueKey(params.key),
-          questionInitialValue: params.doc.question,
-          answerInitialValue: params.doc.answer,
-          nameForQuestion: group.nameForQuestions,
-          nameForAnswer: group.nameForAnswers,
-          displayRedBorder: !params.isCorrect,
-          onQuestionChanged: (String value) {
-            context
-                .read<FlashcardsEditorBloc>()
-                .add(FlashcardsEditorEventValueChanged(
-                  indexOfFlashcard: index,
-                  question: value.trim(),
-                ));
-          },
-          onAnswerChanged: (String value) {
-            context
-                .read<FlashcardsEditorBloc>()
-                .add(FlashcardsEditorEventValueChanged(
-                  indexOfFlashcard: index,
-                  answer: value.trim(),
-                ));
-          },
-          onTapDeleteButton: () {
-            context
-                .read<FlashcardsEditorBloc>()
-                .add(FlashcardsEditorEventRemoveFlashcard(
-                  indexOfFlashcard: index,
-                ));
-          },
+    return FlashcardsEditorItem(
+      key: ValueKey(editorFlashcard.key),
+      questionInitialValue: editorFlashcard.question,
+      answerInitialValue: editorFlashcard.answer,
+      nameForQuestion: nameForQuestions,
+      nameForAnswer: nameForAnswers,
+      displayRedBorder: isIncomplete,
+      onQuestionChanged: (String value) => _onQuestionChanged(
+        index,
+        value,
+        context,
+      ),
+      onAnswerChanged: (String value) => _onAnswerChanged(
+        index,
+        value,
+        context,
+      ),
+      onTapDeleteButton: () => _onDelete(index, context),
+    );
+  }
+
+  void _onQuestionChanged(
+    int flashcardIndex,
+    String question,
+    BuildContext context,
+  ) {
+    context.read<FlashcardsEditorBloc>().add(
+          FlashcardsEditorEventValueChanged(
+            flashcardIndex: flashcardIndex,
+            question: question.trim(),
+          ),
         );
-      },
-    ).toList();
+  }
+
+  void _onAnswerChanged(
+    int flashcardIndex,
+    String answer,
+    BuildContext context,
+  ) {
+    context.read<FlashcardsEditorBloc>().add(
+          FlashcardsEditorEventValueChanged(
+            flashcardIndex: flashcardIndex,
+            answer: answer.trim(),
+          ),
+        );
+  }
+
+  void _onDelete(int flashcardIndex, BuildContext context) {
+    Utils.unfocusElements();
+    context
+        .read<FlashcardsEditorBloc>()
+        .add(FlashcardsEditorEventRemoveFlashcard(
+          flashcardIndex: flashcardIndex,
+        ));
   }
 }
