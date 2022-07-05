@@ -1,21 +1,30 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/entities/flashcard.dart';
+part of 'group_flashcards_preview_bloc.dart';
 
 class GroupFlashcardsPreviewState extends Equatable {
-  final String? groupId;
-  final String? groupName;
+  final String groupId;
+  final String groupName;
   final List<Flashcard> flashcardsFromGroup;
   final String searchValue;
 
+  const GroupFlashcardsPreviewState({
+    required this.groupId,
+    required this.groupName,
+    required this.flashcardsFromGroup,
+    required this.searchValue,
+  });
+
+  @override
+  List<Object> get props => [
+        groupId,
+        groupName,
+        flashcardsFromGroup,
+        searchValue,
+      ];
+
+  bool get doesGroupHaveFlashcards => flashcardsFromGroup.isNotEmpty;
+
   List<Flashcard> get matchingFlashcards =>
       flashcardsFromGroup.where(_checkIfMatchesToSearchValue).toList();
-
-  const GroupFlashcardsPreviewState({
-    this.groupId,
-    this.groupName,
-    this.flashcardsFromGroup = const [],
-    this.searchValue = '',
-  });
 
   GroupFlashcardsPreviewState copyWith({
     String? groupId,
@@ -31,18 +40,10 @@ class GroupFlashcardsPreviewState extends Equatable {
     );
   }
 
-  @override
-  List<Object> get props => [
-        groupId ?? '',
-        groupName ?? '',
-        flashcardsFromGroup,
-        searchValue,
-      ];
-
   bool _checkIfMatchesToSearchValue(Flashcard flashcard) {
-    return flashcard.question
-            .toLowerCase()
-            .contains(searchValue.toLowerCase()) ||
-        flashcard.answer.toLowerCase().contains(searchValue.toLowerCase());
+    final String question = flashcard.question.toLowerCase();
+    final String answer = flashcard.answer.toLowerCase();
+    final String searchValue = this.searchValue.toLowerCase();
+    return question.contains(searchValue) || answer.contains(searchValue);
   }
 }
