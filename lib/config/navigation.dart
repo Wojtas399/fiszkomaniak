@@ -2,6 +2,7 @@ import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/config/routes.dart';
 import 'package:fiszkomaniak/config/slide_right_route_animation.dart';
 import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
+import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview_screen.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
@@ -12,7 +13,6 @@ import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
 import '../features/home/home.dart';
 import '../features/learning_process/learning_process_data.dart';
 
@@ -131,7 +131,7 @@ class Navigation {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.flashcardPreview,
-      arguments: FlashcardPreviewParams(
+      arguments: FlashcardPreviewScreenArguments(
         groupId: groupId,
         flashcardIndex: flashcardIndex,
       ),

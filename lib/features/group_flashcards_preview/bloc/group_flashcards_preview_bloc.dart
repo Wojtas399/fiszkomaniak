@@ -70,7 +70,7 @@ class GroupFlashcardsPreviewBloc
 
   void _setGroupListener(String groupId) {
     _groupListener = _getGroupUseCase.execute(groupId: groupId).listen(
-          (group) => GroupFlashcardsPreviewEventGroupChanged(group: group),
+          (group) => add(GroupFlashcardsPreviewEventGroupChanged(group: group)),
         );
   }
 }

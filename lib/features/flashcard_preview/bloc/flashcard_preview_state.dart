@@ -1,61 +1,58 @@
 part of 'flashcard_preview_bloc.dart';
 
 class FlashcardPreviewState extends Equatable {
+  final BlocStatus status;
   final Flashcard? flashcard;
   final Group? group;
   final String courseName;
-  final String? newQuestion;
-  final String? newAnswer;
-  final FlashcardPreviewStatus status;
-
-  bool get displaySaveConfirmation =>
-      (newQuestion != null && newQuestion != flashcard?.question) ||
-      (newAnswer != null && newAnswer != flashcard?.answer);
+  final String question;
+  final String answer;
 
   const FlashcardPreviewState({
-    this.flashcard,
-    this.group,
-    this.courseName = '',
-    this.newQuestion,
-    this.newAnswer,
-    this.status = const FlashcardPreviewStatusInitial(),
+    required this.status,
+    required this.flashcard,
+    required this.group,
+    required this.courseName,
+    required this.question,
+    required this.answer,
   });
-
-  FlashcardPreviewState copyWith({
-    Flashcard? flashcard,
-    Group? group,
-    String? courseName,
-    String? newQuestion,
-    String? newAnswer,
-    FlashcardPreviewStatus? status,
-  }) {
-    return FlashcardPreviewState(
-      flashcard: flashcard ?? this.flashcard,
-      group: group ?? this.group,
-      courseName: courseName ?? this.courseName,
-      newQuestion: newQuestion ?? this.newQuestion,
-      newAnswer: newAnswer ?? this.newAnswer,
-      status: status ?? FlashcardPreviewStatusLoaded(),
-    );
-  }
 
   @override
   List<Object> get props => [
+        status,
         flashcard ?? createFlashcard(),
         group ?? createGroup(),
         courseName,
-        newQuestion ?? '',
-        newAnswer ?? '',
-        status,
+        question,
+        answer,
       ];
+
+  bool get haveQuestionOrAnswerBeenChanged =>
+      (question != flashcard?.question) || (answer != flashcard?.answer);
+
+  FlashcardPreviewState copyWith({
+    BlocStatus? status,
+    Flashcard? flashcard,
+    Group? group,
+    String? courseName,
+    String? question,
+    String? answer,
+  }) {
+    return FlashcardPreviewState(
+      status: status ?? const BlocStatusComplete<FlashcardPreviewInfoType>(),
+      flashcard: flashcard ?? this.flashcard,
+      group: group ?? this.group,
+      courseName: courseName ?? this.courseName,
+      question: question ?? this.question,
+      answer: answer ?? this.answer,
+    );
+  }
 }
 
-class FlashcardPreviewParams {
-  final String groupId;
-  final int flashcardIndex;
-
-  FlashcardPreviewParams({
-    required this.groupId,
-    required this.flashcardIndex,
-  });
+enum FlashcardPreviewInfoType {
+  questionAndAnswerHaveBeenInitialized,
+  questionAndAnswerHaveBeenReset,
+  flashcardIsIncomplete,
+  flashcardHasBeenUpdated,
+  flashcardHasBeenRemoved,
 }

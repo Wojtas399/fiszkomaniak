@@ -6,21 +6,25 @@ abstract class FlashcardPreviewEvent extends Equatable {
 }
 
 class FlashcardPreviewEventInitialize extends FlashcardPreviewEvent {
-  final FlashcardPreviewParams params;
+  final String groupId;
+  final int flashcardIndex;
 
-  FlashcardPreviewEventInitialize({required this.params});
+  FlashcardPreviewEventInitialize({
+    required this.groupId,
+    required this.flashcardIndex,
+  });
 
   @override
-  List<Object> get props => [params];
+  List<Object> get props => [groupId, flashcardIndex];
 }
 
-class FlashcardPreviewEventCourseNameUpdated extends FlashcardPreviewEvent {
-  final String newCourseName;
+class FlashcardPreviewEventGroupUpdated extends FlashcardPreviewEvent {
+  final Group group;
 
-  FlashcardPreviewEventCourseNameUpdated({required this.newCourseName});
+  FlashcardPreviewEventGroupUpdated({required this.group});
 
   @override
-  List<Object> get props => [newCourseName];
+  List<Object> get props => [group];
 }
 
 class FlashcardPreviewEventQuestionChanged extends FlashcardPreviewEvent {
@@ -46,6 +50,3 @@ class FlashcardPreviewEventResetChanges extends FlashcardPreviewEvent {}
 class FlashcardPreviewEventSaveChanges extends FlashcardPreviewEvent {}
 
 class FlashcardPreviewEventRemoveFlashcard extends FlashcardPreviewEvent {}
-
-class FlashcardPreviewEventFlashcardsStateUpdated
-    extends FlashcardPreviewEvent {}

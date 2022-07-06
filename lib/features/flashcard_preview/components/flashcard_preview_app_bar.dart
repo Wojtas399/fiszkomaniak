@@ -8,26 +8,25 @@ import '../../../components/app_bar_with_close_button.dart';
 
 class FlashcardPreviewAppBar extends StatelessWidget
     implements PreferredSizeWidget {
-  const FlashcardPreviewAppBar({Key? key}) : super(key: key);
+  const FlashcardPreviewAppBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FlashcardPreviewBloc, FlashcardPreviewState>(
-      builder: (BuildContext context, FlashcardPreviewState state) {
-        if (state.displaySaveConfirmation) {
-          return const _ConfirmationAppBar();
-        }
-        return const _DefaultAppBar();
-      },
+    final bool haveQuestionOrAnswerBeenChanged = context.select(
+      (FlashcardPreviewBloc bloc) => bloc.state.haveQuestionOrAnswerBeenChanged,
     );
+    if (haveQuestionOrAnswerBeenChanged) {
+      return const _ConfirmationAppBar();
+    }
+    return const _DefaultAppBar();
   }
 }
 
 class _DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _DefaultAppBar({Key? key}) : super(key: key);
+  const _DefaultAppBar();
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -39,20 +38,22 @@ class _DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         CustomIconButton(
           icon: MdiIcons.delete,
-          onPressed: () {
-            context
-                .read<FlashcardPreviewBloc>()
-                .add(FlashcardPreviewEventRemoveFlashcard());
-          },
+          onPressed: () => _onDelete(context),
         ),
       ],
     );
+  }
+
+  void _onDelete(BuildContext context) {
+    context
+        .read<FlashcardPreviewBloc>()
+        .add(FlashcardPreviewEventRemoveFlashcard());
   }
 }
 
 class _ConfirmationAppBar extends StatelessWidget
     implements PreferredSizeWidget {
-  const _ConfirmationAppBar({Key? key}) : super(key: key);
+  const _ConfirmationAppBar();
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
