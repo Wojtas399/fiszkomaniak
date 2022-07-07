@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/load_all_groups_use_case.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../interfaces/groups_interface.dart';
 
 part 'home_event.dart';
 
@@ -12,15 +13,18 @@ part 'home_status.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   late final UserInterface _userInterface;
-  late final GroupsInterface _groupsInterface;
+  late final LoadAllGroupsUseCase _loadAllGroupsUseCase;
+  late final LoadAppearanceSettingsUseCase _loadAppearanceSettingsUseCase;
   StreamSubscription<String>? _loggedUserAvatarUrlListener;
 
   HomeBloc({
     required UserInterface userInterface,
-    required GroupsInterface groupsInterface,
+    required LoadAllGroupsUseCase loadAllGroupsUseCase,
+    required LoadAppearanceSettingsUseCase loadAppearanceSettingsUseCase,
   }) : super(const HomeState()) {
     _userInterface = userInterface;
-    _groupsInterface = groupsInterface;
+    _loadAllGroupsUseCase = loadAllGroupsUseCase;
+    _loadAppearanceSettingsUseCase = loadAppearanceSettingsUseCase;
     on<HomeEventInitialize>(_initialize);
     on<HomeEventLoggedUserAvatarUrlUpdated>(_loggedUserAvatarUrlUpdated);
   }
@@ -39,7 +43,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       emit(state.copyWith(status: HomeStatusLoading()));
       await _userInterface.loadLoggedUserAvatar();
-      await _groupsInterface.loadAllGroups();
+      await _loadAllGroupsUseCase.execute();
+      await _loadAppearanceSettingsUseCase.execute();
       emit(state.copyWith(status: HomeStatusLoaded()));
     } catch (error) {
       emit(state.copyWith(

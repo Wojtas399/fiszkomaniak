@@ -1,8 +1,11 @@
+import 'package:fiszkomaniak/domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/load_all_groups_use_case.dart';
 import 'package:fiszkomaniak/features/home/bloc/home_bloc.dart';
 import 'package:fiszkomaniak/features/home/home_error_screen.dart';
 import 'package:fiszkomaniak/features/home/home_loading_screen.dart';
 import 'package:fiszkomaniak/features/home/home_providers.dart';
 import 'package:fiszkomaniak/features/home/home_router.dart';
+import 'package:fiszkomaniak/interfaces/appearance_settings_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +38,13 @@ class _HomeBlocProvider extends StatelessWidget {
     return BlocProvider(
       create: (BuildContext context) => HomeBloc(
         userInterface: context.read<UserInterface>(),
-        groupsInterface: context.read<GroupsInterface>(),
+        loadAllGroupsUseCase: LoadAllGroupsUseCase(
+          groupsInterface: context.read<GroupsInterface>(),
+        ),
+        loadAppearanceSettingsUseCase: LoadAppearanceSettingsUseCase(
+          appearanceSettingsInterface:
+              context.read<AppearanceSettingsInterface>(),
+        ),
       )..add(HomeEventInitialize()),
       child: child,
     );

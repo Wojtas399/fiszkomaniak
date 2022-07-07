@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/initialization_status.dart';
-import 'package:fiszkomaniak/models/http_status_model.dart';
+import 'package:fiszkomaniak/domain/use_cases/appearance_settings/update_appearance_settings_use_case.dart';
 import 'package:fiszkomaniak/domain/entities/appearance_settings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/use_cases/appearance_settings/get_appearance_settings_use_case.dart';
 
 part 'appearance_settings_event.dart';
 
@@ -10,7 +10,25 @@ part 'appearance_settings_state.dart';
 
 class AppearanceSettingsBloc
     extends Bloc<AppearanceSettingsEvent, AppearanceSettingsState> {
-  AppearanceSettingsBloc() : super(const AppearanceSettingsState()) {
+  late final GetAppearanceSettingsUseCase _getAppearanceSettingsUseCase;
+  late final UpdateAppearanceSettingsUseCase _updateAppearanceSettingsUseCase;
+
+  AppearanceSettingsBloc({
+    required GetAppearanceSettingsUseCase getAppearanceSettingsUseCase,
+    required UpdateAppearanceSettingsUseCase updateAppearanceSettingsUseCase,
+    bool? isDarkModeOn,
+    bool? isDarkModeCompatibilityWithSystemOn,
+    bool? isSessionTimerInvisibilityOn,
+  }) : super(
+          AppearanceSettingsState(
+            isDarkModeOn: isDarkModeOn ?? false,
+            isDarkModeCompatibilityWithSystemOn:
+                isDarkModeCompatibilityWithSystemOn ?? false,
+            isSessionTimerInvisibilityOn: isSessionTimerInvisibilityOn ?? false,
+          ),
+        ) {
+    _getAppearanceSettingsUseCase = getAppearanceSettingsUseCase;
+    _updateAppearanceSettingsUseCase = updateAppearanceSettingsUseCase;
     on<AppearanceSettingsEventLoad>(_load);
     on<AppearanceSettingsEventUpdate>(_update);
   }
@@ -19,50 +37,31 @@ class AppearanceSettingsBloc
     AppearanceSettingsEvent event,
     Emitter<AppearanceSettingsState> emit,
   ) async {
-    try {
-      // final AppearanceSettings settings =
-      //     await _interface.loadAppearanceSettings();
-      // emit(state.copyWith(
-      //   initializationStatus: InitializationStatus.ready,
-      //   isDarkModeOn: settings.isDarkModeOn,
-      //   isDarkModeCompatibilityWithSystemOn:
-      //       settings.isDarkModeCompatibilityWithSystemOn,
-      //   isSessionTimerInvisibilityOn: settings.isSessionTimerInvisibilityOn,
-      //   httpStatus: const HttpStatusSuccess(),
-      // ));
-    } catch (error) {
-      emit(state.copyWith(
-        httpStatus: HttpStatusFailure(message: error.toString()),
-      ));
-    }
+    final AppearanceSettings settings =
+        await _getAppearanceSettingsUseCase.execute().first;
+    emit(state.copyWith(
+      isDarkModeOn: settings.isDarkModeOn,
+      isDarkModeCompatibilityWithSystemOn:
+          settings.isDarkModeCompatibilityWithSystemOn,
+      isSessionTimerInvisibilityOn: settings.isSessionTimerInvisibilityOn,
+    ));
   }
 
   Future<void> _update(
     AppearanceSettingsEventUpdate event,
     Emitter<AppearanceSettingsState> emit,
   ) async {
-    final AppearanceSettingsState currentState = state;
-    try {
-      emit(state.copyWith(
-        isDarkModeOn: event.isDarkModeOn,
-        isDarkModeCompatibilityWithSystemOn:
-            event.isDarkModeCompatibilityWithSystemOn,
-        isSessionTimerInvisibilityOn: event.isSessionTimerInvisibilityOn,
-      ));
-      // await _interface.updateAppearanceSettings(
-      //   isDarkModeOn: event.isDarkModeOn,
-      //   isDarkModeCompatibilityWithSystemOn:
-      //       event.isDarkModeCompatibilityWithSystemOn,
-      //   isSessionTimerInvisibilityOn: event.isSessionTimerInvisibilityOn,
-      // );
-    } catch (error) {
-      emit(state.copyWith(
-        isDarkModeOn: currentState.isDarkModeOn,
-        isDarkModeCompatibilityWithSystemOn:
-            currentState.isDarkModeCompatibilityWithSystemOn,
-        isSessionTimerInvisibilityOn: currentState.isSessionTimerInvisibilityOn,
-        httpStatus: HttpStatusFailure(message: error.toString()),
-      ));
-    }
+    emit(state.copyWith(
+      isDarkModeOn: event.isDarkModeOn,
+      isDarkModeCompatibilityWithSystemOn:
+          event.isDarkModeCompatibilityWithSystemOn,
+      isSessionTimerInvisibilityOn: event.isSessionTimerInvisibilityOn,
+    ));
+    await _updateAppearanceSettingsUseCase.execute(
+      isDarkModeOn: event.isDarkModeOn,
+      isDarkModeCompatibilityWithSystemOn:
+          event.isDarkModeCompatibilityWithSystemOn,
+      isSessionTimerInvisibilityOn: event.isSessionTimerInvisibilityOn,
+    );
   }
 }
