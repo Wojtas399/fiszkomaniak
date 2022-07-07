@@ -10,7 +10,6 @@ import 'package:fiszkomaniak/interfaces/achievements_notifications_interface.dar
 import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_notifications_interface.dart';
-import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/notifications/notifications_bloc.dart';
@@ -55,14 +54,12 @@ class HomeProviders extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (BuildContext context) => AppearanceSettingsBloc(
-              settingsInterface: context.read<SettingsInterface>(),
-            )..add(AppearanceSettingsEventLoad()),
+            create: (BuildContext context) =>
+                AppearanceSettingsBloc()..add(AppearanceSettingsEventLoad()),
           ),
           BlocProvider(
-            create: (BuildContext context) => NotificationsSettingsBloc(
-              settingsInterface: context.read<SettingsInterface>(),
-            )..add(NotificationsSettingsEventLoad()),
+            create: (BuildContext context) => NotificationsSettingsBloc()
+              ..add(NotificationsSettingsEventLoad()),
           ),
           BlocProvider<SessionsBloc>(
             create: (BuildContext context) => SessionsBloc(

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'auth_exception_model.dart';
@@ -11,15 +10,12 @@ part 'auth_event.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   late final AuthInterface _authInterface;
-  late final SettingsInterface _settingsInterface;
   StreamSubscription<bool>? _subscription;
 
   AuthBloc({
     required AuthInterface authInterface,
-    required SettingsInterface settingsInterface,
   }) : super(const AuthStateInitial()) {
     _authInterface = authInterface;
-    _settingsInterface = settingsInterface;
     on<AuthEventInitialize>(_initialize);
     on<AuthEventLoggedUserStatusChanged>(_loggedUserStatusChanged);
     on<AuthEventSignIn>(_signIn);
@@ -87,7 +83,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email,
         password: event.password,
       );
-      await _settingsInterface.setDefaultUserSettings();
+      // await _settingsInterface.setDefaultUserSettings();
       emit(AuthStateSignedIn());
     } on AuthException catch (error) {
       _onAuthException(error, emit);

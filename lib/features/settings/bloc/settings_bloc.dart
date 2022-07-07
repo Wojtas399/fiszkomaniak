@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
 import 'package:fiszkomaniak/features/settings/bloc/settings_event.dart';
 import 'package:fiszkomaniak/features/settings/bloc/settings_state.dart';
-import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
-import 'package:fiszkomaniak/models/settings/notifications_settings_model.dart';
+import 'package:fiszkomaniak/domain/entities/appearance_settings.dart';
+import 'package:fiszkomaniak/domain/entities/notifications_settings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/notifications_settings/notifications_settings_bloc.dart';
 

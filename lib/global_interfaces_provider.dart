@@ -5,8 +5,7 @@ import 'injections/firebase_provider.dart';
 class GlobalInterfacesProvider extends StatelessWidget {
   final Widget child;
 
-  const GlobalInterfacesProvider({Key? key, required this.child})
-      : super(key: key);
+  const GlobalInterfacesProvider({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,11 @@ class GlobalInterfacesProvider extends StatelessWidget {
           create: (_) => FirebaseProvider.provideAuthInterface(),
         ),
         RepositoryProvider(
-          create: (_) => FirebaseProvider.provideSettingsInterface(),
+          create: (_) => FirebaseProvider.provideAppearanceSettingsInterface(),
+        ),
+        RepositoryProvider(
+          create: (_) =>
+              FirebaseProvider.provideNotificationsSettingsInterface(),
         ),
       ],
       child: child,

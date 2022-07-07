@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
-import 'package:fiszkomaniak/models/settings/notifications_settings_model.dart';
+import 'package:fiszkomaniak/domain/entities/appearance_settings.dart';
+import 'package:fiszkomaniak/domain/entities/notifications_settings.dart';
 
 class SettingsState extends Equatable {
   final AppearanceSettings appearanceSettings;
