@@ -51,7 +51,7 @@ void main() {
         areSessionsPlannedNotificationsOn: true,
         areSessionsDefaultNotificationsOn: true,
         areAchievementsNotificationsOn: false,
-        areDaysStreakLoseNotificationsOn: false,
+        areLossOfDaysStreakNotificationsOn: false,
       );
       when(
         () => fireNotificationsSettingsService.loadSettings(),
@@ -103,7 +103,7 @@ void main() {
         areSessionsPlannedNotificationsOn: true,
         areSessionsDefaultNotificationsOn: false,
         areAchievementsNotificationsOn: true,
-        areLossOfDaysNotificationsOn: false,
+        areLossOfDaysStreakNotificationsOn: false,
       );
 
       verify(

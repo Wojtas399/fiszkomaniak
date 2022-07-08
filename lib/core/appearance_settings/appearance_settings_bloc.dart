@@ -16,15 +16,15 @@ class AppearanceSettingsBloc
   AppearanceSettingsBloc({
     required GetAppearanceSettingsUseCase getAppearanceSettingsUseCase,
     required UpdateAppearanceSettingsUseCase updateAppearanceSettingsUseCase,
-    bool? isDarkModeOn,
-    bool? isDarkModeCompatibilityWithSystemOn,
-    bool? isSessionTimerInvisibilityOn,
+    bool isDarkModeOn = false,
+    bool isDarkModeCompatibilityWithSystemOn = false,
+    bool isSessionTimerInvisibilityOn = false,
   }) : super(
           AppearanceSettingsState(
-            isDarkModeOn: isDarkModeOn ?? false,
+            isDarkModeOn: isDarkModeOn,
             isDarkModeCompatibilityWithSystemOn:
-                isDarkModeCompatibilityWithSystemOn ?? false,
-            isSessionTimerInvisibilityOn: isSessionTimerInvisibilityOn ?? false,
+                isDarkModeCompatibilityWithSystemOn,
+            isSessionTimerInvisibilityOn: isSessionTimerInvisibilityOn,
           ),
         ) {
     _getAppearanceSettingsUseCase = getAppearanceSettingsUseCase;

@@ -43,7 +43,7 @@ class NotificationsSettingsRepository
           areSessionsPlannedNotificationsOn: areSessionsPlannedNotificationsOn,
           areSessionsDefaultNotificationsOn: areSessionsDefaultNotificationsOn,
           areAchievementsNotificationsOn: areAchievementsNotificationsOn,
-          areDaysStreakLoseNotificationsOn: areLossOfDaysNotificationsOn,
+          areLossOfDaysStreakNotificationsOn: areLossOfDaysNotificationsOn,
         ),
       );
     } else {
@@ -56,13 +56,13 @@ class NotificationsSettingsRepository
     bool? areSessionsPlannedNotificationsOn,
     bool? areSessionsDefaultNotificationsOn,
     bool? areAchievementsNotificationsOn,
-    bool? areLossOfDaysNotificationsOn,
+    bool? areLossOfDaysStreakNotificationsOn,
   }) async {
     await _fireNotificationsSettingsService.updateSettings(
       areSessionsPlannedNotificationsOn: areSessionsPlannedNotificationsOn,
       areSessionsDefaultNotificationsOn: areSessionsDefaultNotificationsOn,
       areAchievementsNotificationsOn: areAchievementsNotificationsOn,
-      areLossOfDaysNotificationsOn: areLossOfDaysNotificationsOn,
+      areLossOfDaysNotificationsOn: areLossOfDaysStreakNotificationsOn,
     );
   }
 }

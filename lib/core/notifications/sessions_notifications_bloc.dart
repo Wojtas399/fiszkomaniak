@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
 import 'package:fiszkomaniak/interfaces/sessions_notifications_interface.dart';
 import 'package:rxdart/rxdart.dart';
 import '../../models/date_model.dart';
@@ -9,18 +8,15 @@ import '../sessions/sessions_bloc.dart';
 
 class SessionsNotificationsBloc {
   late final SessionsNotificationsInterface _sessionsNotificationsInterface;
-  late final NotificationsSettingsBloc _notificationsSettingsBloc;
   late final SessionsBloc _sessionsBloc;
   StreamSubscription<SessionsState>? _sessionsStateListener;
   final BehaviorSubject<String> errorStream = BehaviorSubject<String>();
 
   SessionsNotificationsBloc({
     required SessionsNotificationsInterface sessionsNotificationsInterface,
-    required NotificationsSettingsBloc notificationsSettingsBloc,
     required SessionsBloc sessionsBloc,
   }) {
     _sessionsNotificationsInterface = sessionsNotificationsInterface;
-    _notificationsSettingsBloc = notificationsSettingsBloc;
     _sessionsBloc = sessionsBloc;
   }
 
@@ -36,25 +32,25 @@ class SessionsNotificationsBloc {
   }
 
   Future<void> setScheduledNotifications() async {
-    if (_notificationsSettingsBloc.state.areSessionsPlannedNotificationsOn) {
-      try {
-        for (final session in _sessionsBloc.state.allSessions) {
-          const String groupName = 'groupName';
-          final Time? notificationTime = session.notificationTime;
-          if (notificationTime != null) {
-            await _setScheduledNotification(
-              sessionId: session.id,
-              groupName: groupName,
-              date: session.date,
-              time: notificationTime,
-              sessionStartTime: session.time,
-            );
-          }
-        }
-      } catch (error) {
-        errorStream.add(error.toString());
-      }
-    }
+    // if (_notificationsSettingsBloc.state.areSessionsPlannedNotificationsOn) {
+    //   try {
+    //     for (final session in _sessionsBloc.state.allSessions) {
+    //       const String groupName = 'groupName';
+    //       final Time? notificationTime = session.notificationTime;
+    //       if (notificationTime != null) {
+    //         await _setScheduledNotification(
+    //           sessionId: session.id,
+    //           groupName: groupName,
+    //           date: session.date,
+    //           time: notificationTime,
+    //           sessionStartTime: session.time,
+    //         );
+    //       }
+    //     }
+    //   } catch (error) {
+    //     errorStream.add(error.toString());
+    //   }
+    // }
   }
 
   Future<void> cancelScheduledNotifications() async {
@@ -70,20 +66,20 @@ class SessionsNotificationsBloc {
   }
 
   Future<void> setDefaultNotificationsForAllSessions() async {
-    if (_notificationsSettingsBloc.state.areSessionsDefaultNotificationsOn) {
-      try {
-        for (final session in _sessionsBloc.state.allSessions) {
-          await _setDefaultNotification(
-            sessionId: session.id,
-            groupName: 'WOWOWOWO',
-            date: session.date,
-            sessionStartTime: session.time,
-          );
-        }
-      } catch (error) {
-        errorStream.add(error.toString());
-      }
-    }
+    // if (_notificationsSettingsBloc.state.areSessionsDefaultNotificationsOn) {
+    //   try {
+    //     for (final session in _sessionsBloc.state.allSessions) {
+    //       await _setDefaultNotification(
+    //         sessionId: session.id,
+    //         groupName: 'WOWOWOWO',
+    //         date: session.date,
+    //         sessionStartTime: session.time,
+    //       );
+    //     }
+    //   } catch (error) {
+    //     errorStream.add(error.toString());
+    //   }
+    // }
   }
 
   Future<void> cancelDefaultNotificationsForAllSessions() async {
@@ -116,15 +112,15 @@ class SessionsNotificationsBloc {
     required Time time,
     required Time sessionStartTime,
   }) async {
-    if (_notificationsSettingsBloc.state.areSessionsPlannedNotificationsOn) {
-      await _sessionsNotificationsInterface.setScheduledNotification(
-        sessionId: sessionId,
-        groupName: groupName,
-        date: date,
-        time: time,
-        sessionStartTime: sessionStartTime,
-      );
-    }
+    // if (_notificationsSettingsBloc.state.areSessionsPlannedNotificationsOn) {
+    //   await _sessionsNotificationsInterface.setScheduledNotification(
+    //     sessionId: sessionId,
+    //     groupName: groupName,
+    //     date: date,
+    //     time: time,
+    //     sessionStartTime: sessionStartTime,
+    //   );
+    // }
   }
 
   Future<void> _removeScheduledNotification(String sessionId) async {
@@ -139,14 +135,14 @@ class SessionsNotificationsBloc {
     required Date date,
     required Time sessionStartTime,
   }) async {
-    if (_notificationsSettingsBloc.state.areSessionsDefaultNotificationsOn) {
-      await _sessionsNotificationsInterface.setDefaultNotification(
-        sessionId: sessionId,
-        groupName: groupName,
-        date: date,
-        sessionStartTime: sessionStartTime,
-      );
-    }
+    // if (_notificationsSettingsBloc.state.areSessionsDefaultNotificationsOn) {
+    //   await _sessionsNotificationsInterface.setDefaultNotification(
+    //     sessionId: sessionId,
+    //     groupName: groupName,
+    //     date: date,
+    //     sessionStartTime: sessionStartTime,
+    //   );
+    // }
   }
 
   Future<void> _removeDefaultNotification(String sessionId) async {

@@ -7,18 +7,6 @@ abstract class NotificationsEvent extends Equatable {
 
 class NotificationsEventInitialize extends NotificationsEvent {}
 
-class NotificationsEventNotificationsSettingsStateChanged
-    extends NotificationsEvent {
-  final NotificationsSettingsState newNotificationsSettingsState;
-
-  NotificationsEventNotificationsSettingsStateChanged({
-    required this.newNotificationsSettingsState,
-  });
-
-  @override
-  List<Object> get props => [newNotificationsSettingsState];
-}
-
 class NotificationsEventNotificationSelected extends NotificationsEvent {
   final Notification notification;
 

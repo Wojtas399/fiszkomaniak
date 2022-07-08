@@ -75,7 +75,7 @@ class SettingsNotificationsSection extends StatelessWidget {
                 icon: MdiIcons.medalOutline,
                 text: 'Możliwa utrata dni',
                 isSwitched: state
-                    .notificationsSettings.areDaysStreakLoseNotificationsOn,
+                    .notificationsSettings.areLossOfDaysStreakNotificationsOn,
                 onSwitchChanged: (bool isSwitched) {
                   context
                       .read<SettingsBloc>()

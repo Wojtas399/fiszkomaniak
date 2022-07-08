@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/core/notifications/achievements_notifications_bloc.dart';
 import 'package:fiszkomaniak/core/notifications/sessions_notifications_bloc.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
 import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/notification_model.dart';
@@ -17,9 +16,6 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   late final NotificationsInterface _notificationsInterface;
   late final SessionsNotificationsBloc _sessionsNotificationsBloc;
   late final AchievementsNotificationsBloc _achievementsNotificationsBloc;
-  late final NotificationsSettingsBloc _notificationsSettingsBloc;
-  StreamSubscription<NotificationsSettingsState>?
-      _notificationsSettingsStateListener;
   StreamSubscription<String>? _sessionsNotificationsErrorsListener;
   StreamSubscription<String>? _achievementsNotificationsErrorsListener;
 
@@ -27,23 +23,17 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     required NotificationsInterface notificationsInterface,
     required SessionsNotificationsBloc sessionsNotificationsBloc,
     required AchievementsNotificationsBloc achievementsNotificationsBloc,
-    required NotificationsSettingsBloc notificationsSettingsBloc,
   }) : super(const NotificationsState()) {
     _notificationsInterface = notificationsInterface;
     _sessionsNotificationsBloc = sessionsNotificationsBloc;
     _achievementsNotificationsBloc = achievementsNotificationsBloc;
-    _notificationsSettingsBloc = notificationsSettingsBloc;
     on<NotificationsEventInitialize>(_initialize);
-    on<NotificationsEventNotificationsSettingsStateChanged>(
-      _notificationsSettingsStateChanged,
-    );
     on<NotificationsEventNotificationSelected>(_notificationSelected);
     on<NotificationsEventErrorReceived>(_errorReceived);
   }
 
   @override
   Future<void> close() {
-    _notificationsSettingsStateListener?.cancel();
     _sessionsNotificationsErrorsListener?.cancel();
     _achievementsNotificationsErrorsListener?.cancel();
     _sessionsNotificationsBloc.dispose();
@@ -55,16 +45,16 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     NotificationsEventInitialize event,
     Emitter<NotificationsState> emit,
   ) async {
-    final NotificationsSettingsState notificationsSettingsState =
-        _notificationsSettingsBloc.state;
-    emit(state.copyWith(
-      areScheduledNotificationsOn:
-          notificationsSettingsState.areSessionsPlannedNotificationsOn,
-      areDefaultNotificationsOn:
-          notificationsSettingsState.areSessionsDefaultNotificationsOn,
-      areDaysStreakLoseNotificationsOn:
-          notificationsSettingsState.areDaysStreakLoseNotificationsOn,
-    ));
+    // final NotificationsSettingsState notificationsSettingsState =
+    //     _notificationsSettingsBloc.state;
+    // emit(state.copyWith(
+    //   areScheduledNotificationsOn:
+    //       notificationsSettingsState.areSessionsPlannedNotificationsOn,
+    //   areDefaultNotificationsOn:
+    //       notificationsSettingsState.areSessionsDefaultNotificationsOn,
+    //   areDaysStreakLoseNotificationsOn:
+    //       notificationsSettingsState.areLossOfDaysStreakNotificationsOn,
+    // ));
     await _checkIfNotificationLaunchedApp();
     await _initializeLocalNotifications();
     _sessionsNotificationsBloc.initialize();
@@ -74,52 +64,52 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     _setAchievementNotificationsErrorsListener();
   }
 
-  Future<void> _notificationsSettingsStateChanged(
-    NotificationsEventNotificationsSettingsStateChanged event,
-    Emitter<NotificationsState> emit,
-  ) async {
-    final NotificationsSettingsState settingsState =
-        event.newNotificationsSettingsState;
-    bool areScheduledNotificationsOn = state.areScheduledNotificationsOn;
-    bool areDefaultNotificationsOn = state.areDefaultNotificationsOn;
-    bool areDaysStreakLoseNotificationsOn =
-        state.areDaysStreakLoseNotificationsOn;
-    if (settingsState.areSessionsPlannedNotificationsOn !=
-        areScheduledNotificationsOn) {
-      if (settingsState.areSessionsPlannedNotificationsOn) {
-        areScheduledNotificationsOn = true;
-        await _turnOnSessionsScheduledNotifications();
-      } else {
-        areScheduledNotificationsOn = false;
-        await _turnOffSessionsScheduledNotifications();
-      }
-    }
-    if (settingsState.areSessionsDefaultNotificationsOn !=
-        areDefaultNotificationsOn) {
-      if (settingsState.areSessionsDefaultNotificationsOn) {
-        areDefaultNotificationsOn = true;
-        await _turnOnSessionsDefaultNotifications();
-      } else {
-        areDefaultNotificationsOn = false;
-        await _turnOffSessionsDefaultNotifications();
-      }
-    }
-    if (settingsState.areDaysStreakLoseNotificationsOn !=
-        areDaysStreakLoseNotificationsOn) {
-      if (settingsState.areDaysStreakLoseNotificationsOn) {
-        areDaysStreakLoseNotificationsOn = true;
-        await _turnOnDaysStreakLoseNotifications();
-      } else {
-        areDaysStreakLoseNotificationsOn = false;
-        await _turnOffDaysStreakLoseNotification();
-      }
-    }
-    emit(state.copyWith(
-      areScheduledNotificationsOn: areScheduledNotificationsOn,
-      areDefaultNotificationsOn: areDefaultNotificationsOn,
-      areDaysStreakLoseNotificationsOn: areDaysStreakLoseNotificationsOn,
-    ));
-  }
+  // Future<void> _notificationsSettingsStateChanged(
+  //   NotificationsEventNotificationsSettingsStateChanged event,
+  //   Emitter<NotificationsState> emit,
+  // ) async {
+  //   // final NotificationsSettingsState settingsState =
+  //   //     event.newNotificationsSettingsState;
+  //   // bool areScheduledNotificationsOn = state.areScheduledNotificationsOn;
+  //   // bool areDefaultNotificationsOn = state.areDefaultNotificationsOn;
+  //   // bool areDaysStreakLoseNotificationsOn =
+  //   //     state.areDaysStreakLoseNotificationsOn;
+  //   // if (settingsState.areSessionsPlannedNotificationsOn !=
+  //   //     areScheduledNotificationsOn) {
+  //   //   if (settingsState.areSessionsPlannedNotificationsOn) {
+  //   //     areScheduledNotificationsOn = true;
+  //   //     await _turnOnSessionsScheduledNotifications();
+  //   //   } else {
+  //   //     areScheduledNotificationsOn = false;
+  //   //     await _turnOffSessionsScheduledNotifications();
+  //   //   }
+  //   // }
+  //   // if (settingsState.areSessionsDefaultNotificationsOn !=
+  //   //     areDefaultNotificationsOn) {
+  //   //   if (settingsState.areSessionsDefaultNotificationsOn) {
+  //   //     areDefaultNotificationsOn = true;
+  //   //     await _turnOnSessionsDefaultNotifications();
+  //   //   } else {
+  //   //     areDefaultNotificationsOn = false;
+  //   //     await _turnOffSessionsDefaultNotifications();
+  //   //   }
+  //   // }
+  //   // if (settingsState.areLossOfDaysStreakNotificationsOn !=
+  //   //     areDaysStreakLoseNotificationsOn) {
+  //   //   if (settingsState.areLossOfDaysStreakNotificationsOn) {
+  //   //     areDaysStreakLoseNotificationsOn = true;
+  //   //     await _turnOnDaysStreakLoseNotifications();
+  //   //   } else {
+  //   //     areDaysStreakLoseNotificationsOn = false;
+  //   //     await _turnOffDaysStreakLoseNotification();
+  //   //   }
+  //   // }
+  //   // emit(state.copyWith(
+  //   //   areScheduledNotificationsOn: areScheduledNotificationsOn,
+  //   //   areDefaultNotificationsOn: areDefaultNotificationsOn,
+  //   //   areDaysStreakLoseNotificationsOn: areDaysStreakLoseNotificationsOn,
+  //   // ));
+  // }
 
   Future<void> _notificationSelected(
     NotificationsEventNotificationSelected event,
@@ -202,14 +192,14 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   }
 
   void _setNotificationsSettingsStateListener() {
-    _notificationsSettingsStateListener ??=
-        _notificationsSettingsBloc.stream.listen(
-      (state) => add(
-        NotificationsEventNotificationsSettingsStateChanged(
-          newNotificationsSettingsState: state,
-        ),
-      ),
-    );
+    // _notificationsSettingsStateListener ??=
+    //     _notificationsSettingsBloc.stream.listen(
+    //   (state) => add(
+    //     NotificationsEventNotificationsSettingsStateChanged(
+    //       newNotificationsSettingsState: state,
+    //     ),
+    //   ),
+    // );
   }
 
   void _setSessionsNotificationsErrorsListener() {

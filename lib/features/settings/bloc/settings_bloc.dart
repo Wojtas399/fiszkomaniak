@@ -5,17 +5,14 @@ import 'package:fiszkomaniak/features/settings/bloc/settings_state.dart';
 import 'package:fiszkomaniak/domain/entities/appearance_settings.dart';
 import 'package:fiszkomaniak/domain/entities/notifications_settings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/notifications_settings/notifications_settings_bloc.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   late final AppearanceSettingsBloc _appearanceSettingsBloc;
-  late final NotificationsSettingsBloc _notificationsSettingsBloc;
   StreamSubscription? _appearanceSettingsSubscription;
   StreamSubscription? _notificationsSettingsSubscription;
 
   SettingsBloc({
     required AppearanceSettingsBloc appearanceSettingsBloc,
-    required NotificationsSettingsBloc notificationsSettingsBloc,
   }) : super(
           SettingsState(
             appearanceSettings: AppearanceSettings(
@@ -25,28 +22,16 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
               isSessionTimerInvisibilityOn:
                   appearanceSettingsBloc.state.isSessionTimerInvisibilityOn,
             ),
-            notificationsSettings: NotificationsSettings(
-              areSessionsPlannedNotificationsOn: notificationsSettingsBloc
-                  .state.areSessionsPlannedNotificationsOn,
-              areSessionsDefaultNotificationsOn: notificationsSettingsBloc
-                  .state.areSessionsDefaultNotificationsOn,
-              areAchievementsNotificationsOn: notificationsSettingsBloc
-                  .state.areAchievementsNotificationsOn,
-              areDaysStreakLoseNotificationsOn: notificationsSettingsBloc
-                  .state.areDaysStreakLoseNotificationsOn,
+            notificationsSettings: const NotificationsSettings(
+              areSessionsPlannedNotificationsOn: false,
+              areSessionsDefaultNotificationsOn: false,
+              areAchievementsNotificationsOn: false,
+              areLossOfDaysStreakNotificationsOn: false,
             ),
-            areAllNotificationsOn: notificationsSettingsBloc
-                    .state.areSessionsPlannedNotificationsOn &&
-                notificationsSettingsBloc
-                    .state.areSessionsDefaultNotificationsOn &&
-                notificationsSettingsBloc
-                    .state.areAchievementsNotificationsOn &&
-                notificationsSettingsBloc
-                    .state.areDaysStreakLoseNotificationsOn,
+            areAllNotificationsOn: false,
           ),
         ) {
     _appearanceSettingsBloc = appearanceSettingsBloc;
-    _notificationsSettingsBloc = notificationsSettingsBloc;
     _setAppearanceSettingsSubscriber();
     _setNotificationsSettingsSubscriber();
     on<SettingsEventAppearanceSettingsChanged>(_updateAppearanceSettings);
@@ -70,15 +55,15 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   }
 
   void _setNotificationsSettingsSubscriber() {
-    final Stream<NotificationsSettingsState> stream =
-        _notificationsSettingsBloc.stream;
-    _notificationsSettingsSubscription = stream.listen(
-      (settings) {
-        add(SettingsEventEmitNewNotificationsSettings(
-          notificationsSettings: settings,
-        ));
-      },
-    );
+    // final Stream<NotificationsSettingsState> stream =
+    //     _notificationsSettingsBloc.stream;
+    // _notificationsSettingsSubscription = stream.listen(
+    //   (settings) {
+    //     add(SettingsEventEmitNewNotificationsSettings(
+    //       notificationsSettings: settings,
+    //     ));
+    //   },
+    // );
   }
 
   void _updateAppearanceSettings(
@@ -110,31 +95,31 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     SettingsEventNotificationsSettingsChanged event,
     Emitter<SettingsState> emit,
   ) {
-    final NotificationsSettings currentNotificationsSettings =
-        state.notificationsSettings;
-    emit(state.copyWith(
-      notificationsSettings: NotificationsSettings(
-        areSessionsPlannedNotificationsOn:
-            event.areSessionsPlannedNotificationsOn ??
-                currentNotificationsSettings.areSessionsPlannedNotificationsOn,
-        areSessionsDefaultNotificationsOn:
-            event.areSessionsDefaultNotificationsOn ??
-                currentNotificationsSettings.areSessionsDefaultNotificationsOn,
-        areAchievementsNotificationsOn: event.areAchievementsNotificationsOn ??
-            currentNotificationsSettings.areAchievementsNotificationsOn,
-        areDaysStreakLoseNotificationsOn:
-            event.areDaysStreakLoseNotificationsOn ??
-                currentNotificationsSettings.areDaysStreakLoseNotificationsOn,
-      ),
-    ));
-    _notificationsSettingsBloc.add(NotificationsSettingsEventUpdate(
-      areSessionsPlannedNotificationsOn:
-          event.areSessionsPlannedNotificationsOn,
-      areSessionsDefaultNotificationsOn:
-          event.areSessionsDefaultNotificationsOn,
-      areAchievementsNotificationsOn: event.areAchievementsNotificationsOn,
-      areDaysStreakLoseNotificationsOn: event.areDaysStreakLoseNotificationsOn,
-    ));
+    // final NotificationsSettings currentNotificationsSettings =
+    //     state.notificationsSettings;
+    // emit(state.copyWith(
+    //   notificationsSettings: NotificationsSettings(
+    //     areSessionsPlannedNotificationsOn:
+    //         event.areSessionsPlannedNotificationsOn ??
+    //             currentNotificationsSettings.areSessionsPlannedNotificationsOn,
+    //     areSessionsDefaultNotificationsOn:
+    //         event.areSessionsDefaultNotificationsOn ??
+    //             currentNotificationsSettings.areSessionsDefaultNotificationsOn,
+    //     areAchievementsNotificationsOn: event.areAchievementsNotificationsOn ??
+    //         currentNotificationsSettings.areAchievementsNotificationsOn,
+    //     areDaysStreakLoseNotificationsOn:
+    //         event.areDaysStreakLoseNotificationsOn ??
+    //             currentNotificationsSettings.areDaysStreakLoseNotificationsOn,
+    //   ),
+    // ));
+    // _notificationsSettingsBloc.add(NotificationsSettingsEventUpdate(
+    //   areSessionsPlannedNotificationsOn:
+    //       event.areSessionsPlannedNotificationsOn,
+    //   areSessionsDefaultNotificationsOn:
+    //       event.areSessionsDefaultNotificationsOn,
+    //   areAchievementsNotificationsOn: event.areAchievementsNotificationsOn,
+    //   areDaysStreakLoseNotificationsOn: event.areDaysStreakLoseNotificationsOn,
+    // ));
   }
 
   void _emitNewAppearanceSettings(
@@ -162,7 +147,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     return settings.areSessionsPlannedNotificationsOn &&
         settings.areSessionsDefaultNotificationsOn &&
         settings.areAchievementsNotificationsOn &&
-        settings.areDaysStreakLoseNotificationsOn;
+        settings.areLossOfDaysStreakNotificationsOn;
   }
 
   @override

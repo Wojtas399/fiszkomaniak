@@ -12,6 +12,13 @@ class AppearanceSettingsState extends AppearanceSettings {
           isSessionTimerInvisibilityOn: isSessionTimerInvisibilityOn,
         );
 
+  @override
+  List<Object> get props => [
+        isDarkModeOn,
+        isDarkModeCompatibilityWithSystemOn,
+        isSessionTimerInvisibilityOn,
+      ];
+
   AppearanceSettingsState copyWith({
     bool? isDarkModeOn,
     bool? isDarkModeCompatibilityWithSystemOn,
@@ -26,11 +33,4 @@ class AppearanceSettingsState extends AppearanceSettings {
           isSessionTimerInvisibilityOn ?? this.isSessionTimerInvisibilityOn,
     );
   }
-
-  @override
-  List<Object> get props => [
-        isDarkModeOn,
-        isDarkModeCompatibilityWithSystemOn,
-        isSessionTimerInvisibilityOn,
-      ];
 }

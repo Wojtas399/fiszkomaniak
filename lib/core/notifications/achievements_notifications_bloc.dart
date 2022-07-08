@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
 import 'package:fiszkomaniak/interfaces/achievements_notifications_interface.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
@@ -11,7 +10,6 @@ class AchievementsNotificationsBloc {
   late final AchievementsNotificationsInterface
       _achievementsNotificationsInterface;
   late final AchievementsBloc _achievementsBloc;
-  late final NotificationsSettingsBloc _notificationsSettingsBloc;
   StreamSubscription<AchievementsState>? _achievementsStateListener;
   final BehaviorSubject<String> errorStream = BehaviorSubject<String>();
 
@@ -19,11 +17,9 @@ class AchievementsNotificationsBloc {
     required AchievementsNotificationsInterface
         achievementsNotificationsInterface,
     required AchievementsBloc achievementsBloc,
-    required NotificationsSettingsBloc notificationsSettingsBloc,
   }) {
     _achievementsNotificationsInterface = achievementsNotificationsInterface;
     _achievementsBloc = achievementsBloc;
-    _notificationsSettingsBloc = notificationsSettingsBloc;
   }
 
   void initialize() {
@@ -36,21 +32,21 @@ class AchievementsNotificationsBloc {
   }
 
   Future<void> setDaysStreakLoseNotification() async {
-    if (_notificationsSettingsBloc.state.areDaysStreakLoseNotificationsOn &&
-        _achievementsBloc.state.daysStreak > 0) {
-      try {
-        await _achievementsNotificationsInterface.setDaysStreakLoseNotification(
-          date: TimeUtils.isPastTime(
-            const Time(hour: 19, minute: 00),
-            Date.now(),
-          )
-              ? Date.now().addDays(1)
-              : Date.now(),
-        );
-      } catch (error) {
-        errorStream.add(error.toString());
-      }
-    }
+    // if (_notificationsSettingsBloc.state.areLossOfDaysStreakNotificationsOn &&
+    //     _achievementsBloc.state.daysStreak > 0) {
+    //   try {
+    //     await _achievementsNotificationsInterface.setDaysStreakLoseNotification(
+    //       date: TimeUtils.isPastTime(
+    //         const Time(hour: 19, minute: 00),
+    //         Date.now(),
+    //       )
+    //           ? Date.now().addDays(1)
+    //           : Date.now(),
+    //     );
+    //   } catch (error) {
+    //     errorStream.add(error.toString());
+    //   }
+    // }
   }
 
   Future<void> cancelDaysStreakLoseNotification() async {
@@ -74,14 +70,14 @@ class AchievementsNotificationsBloc {
   }
 
   Future<void> _updateDaysStreakLoseNotification() async {
-    if (_notificationsSettingsBloc.state.areDaysStreakLoseNotificationsOn) {
-      try {
-        await _achievementsNotificationsInterface.setDaysStreakLoseNotification(
-          date: Date.now().addDays(1),
-        );
-      } catch (error) {
-        errorStream.add(error.toString());
-      }
-    }
+    // if (_notificationsSettingsBloc.state.areLossOfDaysStreakNotificationsOn) {
+    //   try {
+    //     await _achievementsNotificationsInterface.setDaysStreakLoseNotification(
+    //       date: Date.now().addDays(1),
+    //     );
+    //   } catch (error) {
+    //     errorStream.add(error.toString());
+    //   }
+    // }
   }
 }

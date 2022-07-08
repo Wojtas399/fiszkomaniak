@@ -17,9 +17,9 @@ void main() {
   final updateAppearanceSettingsUseCase = MockUpdateAppearanceSettingsUseCase();
 
   AppearanceSettingsBloc createBloc({
-    bool? isDarkModeOn,
-    bool? isDarkModeCompatibilityWithSystemOn,
-    bool? isSessionTimerInvisibilityOn,
+    bool isDarkModeOn = false,
+    bool isDarkModeCompatibilityWithSystemOn = false,
+    bool isSessionTimerInvisibilityOn = false,
   }) {
     return AppearanceSettingsBloc(
       getAppearanceSettingsUseCase: getAppearanceSettingsUseCase,

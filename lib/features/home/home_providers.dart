@@ -2,7 +2,6 @@ import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
 import 'package:fiszkomaniak/core/notifications/achievements_notifications_bloc.dart';
 import 'package:fiszkomaniak/core/notifications/sessions_notifications_bloc.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
 import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/domain/use_cases/appearance_settings/update_appearance_settings_use_case.dart';
 import 'package:fiszkomaniak/injections/notifications_provider.dart';
@@ -68,10 +67,6 @@ class HomeProviders extends StatelessWidget {
               ),
             )..add(AppearanceSettingsEventLoad()),
           ),
-          BlocProvider(
-            create: (BuildContext context) => NotificationsSettingsBloc()
-              ..add(NotificationsSettingsEventLoad()),
-          ),
           BlocProvider<SessionsBloc>(
             create: (BuildContext context) => SessionsBloc(
               sessionsInterface: context.read<SessionsInterface>(),
@@ -85,21 +80,15 @@ class HomeProviders extends StatelessWidget {
           BlocProvider<NotificationsBloc>(
             create: (BuildContext context) => NotificationsBloc(
               notificationsInterface: context.read<NotificationsInterface>(),
-              notificationsSettingsBloc:
-                  context.read<NotificationsSettingsBloc>(),
               sessionsNotificationsBloc: SessionsNotificationsBloc(
                 sessionsNotificationsInterface:
                     context.read<SessionsNotificationsInterface>(),
-                notificationsSettingsBloc:
-                    context.read<NotificationsSettingsBloc>(),
                 sessionsBloc: context.read<SessionsBloc>(),
               ),
               achievementsNotificationsBloc: AchievementsNotificationsBloc(
                 achievementsNotificationsInterface:
                     context.read<AchievementsNotificationsInterface>(),
                 achievementsBloc: context.read<AchievementsBloc>(),
-                notificationsSettingsBloc:
-                    context.read<NotificationsSettingsBloc>(),
               ),
             )..add(NotificationsEventInitialize()),
           ),

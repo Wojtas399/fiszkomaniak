@@ -11,6 +11,6 @@ abstract class NotificationsSettingsInterface {
     bool? areSessionsPlannedNotificationsOn,
     bool? areSessionsDefaultNotificationsOn,
     bool? areAchievementsNotificationsOn,
-    bool? areLossOfDaysNotificationsOn,
+    bool? areLossOfDaysStreakNotificationsOn,
   });
 }
