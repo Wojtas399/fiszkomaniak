@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/features/home/listeners/achievements_bloc_listener.dart';
-import 'package:fiszkomaniak/features/home/listeners/appearance_settings_bloc_listener.dart';
 import 'package:fiszkomaniak/features/home/listeners/auth_bloc_listener.dart';
 import 'package:fiszkomaniak/features/home/listeners/sessions_bloc_listener.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +20,6 @@ class HomeListeners extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         AuthBlocListener(),
-        AppearanceSettingsBlocListener(),
         SessionsBlocListener(onHomePageChanged: (int pageNumber) {}),
         NotificationsBlocListener(),
         AchievementsBlocListener(),

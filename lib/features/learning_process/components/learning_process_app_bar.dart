@@ -1,6 +1,5 @@
 import 'package:fiszkomaniak/components/countdown_timer/countdown_timer_provider.dart';
 import 'package:fiszkomaniak/components/custom_icon_button.dart';
-import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,9 +43,7 @@ class _LeftMargin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isTimerInvisible = context.select(
-      (AppearanceSettingsBloc bloc) => bloc.state.isSessionTimerInvisibilityOn,
-    );
+    const bool isTimerInvisible = false;
     final Duration? duration = context.select(
       (LearningProcessBloc bloc) => bloc.state.duration,
     );
@@ -74,9 +71,7 @@ class _Timer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isTimerInvisible = context.select(
-      (AppearanceSettingsBloc bloc) => bloc.state.isSessionTimerInvisibilityOn,
-    );
+    const bool isTimerInvisible = false;
     final Duration? duration = context.select(
       (LearningProcessBloc bloc) => bloc.state.duration,
     );
