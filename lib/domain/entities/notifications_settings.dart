@@ -20,4 +20,22 @@ class NotificationsSettings extends Equatable {
         areAchievementsNotificationsOn,
         areLossOfDaysStreakNotificationsOn,
       ];
+
+  NotificationsSettings copyWith({
+    bool? areSessionsPlannedNotificationsOn,
+    bool? areSessionsDefaultNotificationsOn,
+    bool? areAchievementsNotificationsOn,
+    bool? areLossOfDaysStreakNotificationsOn,
+  }) {
+    return NotificationsSettings(
+      areSessionsPlannedNotificationsOn: areSessionsPlannedNotificationsOn ??
+          this.areSessionsPlannedNotificationsOn,
+      areSessionsDefaultNotificationsOn: areSessionsDefaultNotificationsOn ??
+          this.areSessionsDefaultNotificationsOn,
+      areAchievementsNotificationsOn:
+          areAchievementsNotificationsOn ?? this.areAchievementsNotificationsOn,
+      areLossOfDaysStreakNotificationsOn: areLossOfDaysStreakNotificationsOn ??
+          this.areLossOfDaysStreakNotificationsOn,
+    );
+  }
 }

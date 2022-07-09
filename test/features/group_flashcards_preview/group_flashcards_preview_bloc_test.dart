@@ -40,6 +40,10 @@ void main() {
     );
   }
 
+  tearDown(() {
+    reset(getGroupUseCase);
+  });
+
   group(
     'initialize',
     () {

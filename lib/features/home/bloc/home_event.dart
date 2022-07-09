@@ -15,3 +15,12 @@ class HomeEventLoggedUserAvatarUrlUpdated extends HomeEvent {
   @override
   List<Object> get props => [newLoggedUserAvatarUrl];
 }
+
+class HomeEventAppearanceSettingsUpdated extends HomeEvent {
+  final AppearanceSettings appearanceSettings;
+
+  HomeEventAppearanceSettingsUpdated({required this.appearanceSettings});
+
+  @override
+  List<Object> get props => [appearanceSettings];
+}

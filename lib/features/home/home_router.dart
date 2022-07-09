@@ -14,7 +14,7 @@ import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.
 import 'package:fiszkomaniak/features/session_creator/session_creator.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/session_preview.dart';
-import 'package:fiszkomaniak/features/settings/settings_page.dart';
+import 'package:fiszkomaniak/features/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import '../../config/routes.dart';
 import '../learning_process/learning_process.dart';
@@ -53,7 +53,9 @@ class _HomeRouterState extends State<HomeRouter> {
           settings: routeSettings,
         );
       case Routes.settings:
-        return MaterialPageRoute(builder: (_) => const SettingsPage());
+        return MaterialPageRoute(
+          builder: (_) => const SettingsScreen(),
+        );
       case Routes.courseCreator:
         return MaterialPageRoute(
           builder: (_) => CourseCreatorScreen(

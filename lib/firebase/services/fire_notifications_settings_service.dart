@@ -13,15 +13,10 @@ class FireNotificationsSettingsService {
     );
   }
 
-  Future<NotificationsSettingsDbModel> loadSettings() async {
+  Future<NotificationsSettingsDbModel?> loadSettings() async {
     final settings =
         await FireReferences.notificationsSettingsRefWithConverter.get();
-    final settingsData = settings.data();
-    if (settingsData != null) {
-      return settingsData;
-    } else {
-      throw 'Cannot find notifications settings for this user';
-    }
+    return settings.data();
   }
 
   Future<void> updateSettings({

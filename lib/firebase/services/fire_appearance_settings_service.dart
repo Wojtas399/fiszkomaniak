@@ -12,15 +12,10 @@ class FireAppearanceSettingsService {
     );
   }
 
-  Future<AppearanceSettingsDbModel> loadSettings() async {
+  Future<AppearanceSettingsDbModel?> loadSettings() async {
     final settings =
         await FireReferences.appearanceSettingsRefWithConverter.get();
-    final settingsData = settings.data();
-    if (settingsData != null) {
-      return settingsData;
-    } else {
-      throw 'Cannot find appearance settings for this user';
-    }
+    return settings.data();
   }
 
   Future<void> updateSettings({

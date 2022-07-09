@@ -1,22 +1,22 @@
-import 'package:fiszkomaniak/features/settings/components/settings_switch.dart';
+import 'package:fiszkomaniak/components/switch_item.dart';
 import 'package:flutter/material.dart';
 import '../../../components/item_with_icon.dart';
 
-class SwitchOptionItem extends StatelessWidget {
+class SettingsSwitchItemWithDescription extends StatelessWidget {
   final String text;
   final IconData icon;
   final bool? isSwitched;
   final bool? disabled;
   final Function(bool isSwitched) onSwitchChanged;
 
-  const SwitchOptionItem({
-    Key? key,
+  const SettingsSwitchItemWithDescription({
+    super.key,
     required this.text,
     required this.icon,
     required this.onSwitchChanged,
     this.isSwitched,
     this.disabled,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class SwitchOptionItem extends StatelessWidget {
       icon: icon,
       text: text,
       paddingRight: 0.0,
-      trailing: SettingsSwitch(
+      trailing: SwitchItem(
         isSwitched: isSwitched,
         onSwitchChanged: onSwitchChanged,
         disabled: disabled,

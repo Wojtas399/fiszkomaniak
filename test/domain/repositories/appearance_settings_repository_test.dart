@@ -66,8 +66,7 @@ void main() {
   test(
     'load settings, should throw error if one of parameters does not have value',
     () async {
-      final AppearanceSettingsDbModel dbAppearanceSettings =
-          AppearanceSettingsDbModel(
+      final dbAppearanceSettings = AppearanceSettingsDbModel(
         isDarkModeOn: false,
         isDarkModeCompatibilityWithSystemOn: null,
         isSessionTimerInvisibilityOn: true,
@@ -79,14 +78,19 @@ void main() {
       try {
         await repository.loadSettings();
       } catch (error) {
-        expect(error, 'Cannot load one of the appearance settings.');
+        expect(error, 'Cannot load one of the appearance settings params');
       }
     },
   );
 
   test(
-    'update settings, should call method responsible for updating settings',
+    'update settings, should update stream firstly and then should call method responsible for updating appearance settings',
     () async {
+      const updatedAppearanceSettings = AppearanceSettings(
+        isDarkModeOn: true,
+        isDarkModeCompatibilityWithSystemOn: true,
+        isSessionTimerInvisibilityOn: false,
+      );
       when(
         () => fireAppearanceSettingsService.updateSettings(
           isDarkModeOn: true,
@@ -101,6 +105,46 @@ void main() {
         isSessionTimerInvisibilityOn: false,
       );
 
+      expect(
+        await repository.appearanceSettings$.first,
+        updatedAppearanceSettings,
+      );
+      verify(
+        () => fireAppearanceSettingsService.updateSettings(
+          isDarkModeOn: true,
+          isDarkModeCompatibilityWithSystemOn: true,
+          isSessionTimerInvisibilityOn: false,
+        ),
+      ).called(1);
+    },
+  );
+
+  test(
+    'update settings, should set previous stream value if method responsible for updating appearance settings will throw error',
+    () async {
+      const initialAppearanceSettings = AppearanceSettings(
+        isDarkModeOn: false,
+        isDarkModeCompatibilityWithSystemOn: false,
+        isSessionTimerInvisibilityOn: true,
+      );
+      when(
+        () => fireAppearanceSettingsService.updateSettings(
+          isDarkModeOn: true,
+          isDarkModeCompatibilityWithSystemOn: true,
+          isSessionTimerInvisibilityOn: false,
+        ),
+      ).thenThrow('Error...');
+
+      await repository.updateSettings(
+        isDarkModeOn: true,
+        isDarkModeCompatibilityWithSystemOn: true,
+        isSessionTimerInvisibilityOn: false,
+      );
+
+      expect(
+        await repository.appearanceSettings$.first,
+        initialAppearanceSettings,
+      );
       verify(
         () => fireAppearanceSettingsService.updateSettings(
           isDarkModeOn: true,

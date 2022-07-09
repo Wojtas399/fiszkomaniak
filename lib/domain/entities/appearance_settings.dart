@@ -17,4 +17,19 @@ class AppearanceSettings extends Equatable {
         isDarkModeCompatibilityWithSystemOn,
         isSessionTimerInvisibilityOn,
       ];
+
+  AppearanceSettings copyWith({
+    bool? isDarkModeOn,
+    bool? isDarkModeCompatibilityWithSystemOn,
+    bool? isSessionTimerInvisibilityOn,
+  }) {
+    return AppearanceSettings(
+      isDarkModeOn: isDarkModeOn ?? this.isDarkModeOn,
+      isDarkModeCompatibilityWithSystemOn:
+          isDarkModeCompatibilityWithSystemOn ??
+              this.isDarkModeCompatibilityWithSystemOn,
+      isSessionTimerInvisibilityOn:
+          isSessionTimerInvisibilityOn ?? this.isSessionTimerInvisibilityOn,
+    );
+  }
 }

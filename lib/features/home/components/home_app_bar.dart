@@ -101,7 +101,9 @@ class _LoggedUserAvatar extends StatelessWidget {
       (HomeBloc bloc) => bloc.state.loggedUserAvatarUrl,
     );
     return Avatar(
-      imageType: avatarUrl != null ? AvatarImageTypeUrl(url: avatarUrl) : null,
+      imageType: avatarUrl != null && avatarUrl.isNotEmpty
+          ? AvatarImageTypeUrl(url: avatarUrl)
+          : null,
       size: 42.0,
     );
   }

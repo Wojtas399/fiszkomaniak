@@ -82,14 +82,20 @@ void main() {
       try {
         await repository.loadSettings();
       } catch (error) {
-        expect(error, 'Cannot load one of the notifications settings.');
+        expect(error, 'Cannot load one of the notifications settings params');
       }
     },
   );
 
   test(
-    'update settings, should call method responsible for updating settings',
+    'update settings, should update stream firstly and then should call method responsible for updating notifications settings',
     () async {
+      const updatedNotificationsSettings = NotificationsSettings(
+        areSessionsPlannedNotificationsOn: true,
+        areSessionsDefaultNotificationsOn: false,
+        areAchievementsNotificationsOn: true,
+        areLossOfDaysStreakNotificationsOn: false,
+      );
       when(
         () => fireNotificationsSettingsService.updateSettings(
           areSessionsPlannedNotificationsOn: true,
@@ -106,6 +112,50 @@ void main() {
         areLossOfDaysStreakNotificationsOn: false,
       );
 
+      expect(
+        await repository.notificationsSettings$.first,
+        updatedNotificationsSettings,
+      );
+      verify(
+        () => fireNotificationsSettingsService.updateSettings(
+          areSessionsPlannedNotificationsOn: true,
+          areSessionsDefaultNotificationsOn: false,
+          areAchievementsNotificationsOn: true,
+          areLossOfDaysNotificationsOn: false,
+        ),
+      ).called(1);
+    },
+  );
+
+  test(
+    'update settings, should set previous stream value if method responsible for updating notifications settings will throw error',
+    () async {
+      const initialNotificationsSettings = NotificationsSettings(
+        areSessionsPlannedNotificationsOn: true,
+        areSessionsDefaultNotificationsOn: true,
+        areAchievementsNotificationsOn: true,
+        areLossOfDaysStreakNotificationsOn: true,
+      );
+      when(
+        () => fireNotificationsSettingsService.updateSettings(
+          areSessionsPlannedNotificationsOn: true,
+          areSessionsDefaultNotificationsOn: false,
+          areAchievementsNotificationsOn: true,
+          areLossOfDaysNotificationsOn: false,
+        ),
+      ).thenThrow('Error...');
+
+      await repository.updateSettings(
+        areSessionsPlannedNotificationsOn: true,
+        areSessionsDefaultNotificationsOn: false,
+        areAchievementsNotificationsOn: true,
+        areLossOfDaysStreakNotificationsOn: false,
+      );
+
+      expect(
+        await repository.notificationsSettings$.first,
+        initialNotificationsSettings,
+      );
       verify(
         () => fireNotificationsSettingsService.updateSettings(
           areSessionsPlannedNotificationsOn: true,

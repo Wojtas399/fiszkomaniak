@@ -71,6 +71,14 @@ void main() {
     );
   }
 
+  tearDown(() {
+    reset(getGroupUseCase);
+    reset(getCourseUseCase);
+    reset(updateFlashcardUseCase);
+    reset(removeFlashcardUseCase);
+    reset(flashcardPreviewDialogs);
+  });
+
   group(
     'initialize',
     () {
