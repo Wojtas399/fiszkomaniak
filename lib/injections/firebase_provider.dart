@@ -11,7 +11,7 @@ import 'package:fiszkomaniak/interfaces/appearance_settings_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/repositories/achievements_repository.dart';
 import 'package:fiszkomaniak/domain/repositories/courses_repository.dart';
-import 'package:fiszkomaniak/repositories/sessions_repository.dart';
+import 'package:fiszkomaniak/domain/repositories/sessions_repository.dart';
 import 'package:fiszkomaniak/domain/repositories/groups_repository.dart';
 import 'package:fiszkomaniak/firebase/services/fire_auth_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_courses_service.dart';

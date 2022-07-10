@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/course.dart';
 import '../../../models/time_model.dart';
@@ -20,14 +19,14 @@ part 'session_creator_status.dart';
 class SessionCreatorBloc
     extends Bloc<SessionCreatorEvent, SessionCreatorState> {
   late final CoursesInterface _coursesInterface;
-  late final SessionsBloc _sessionsBloc;
+  // late final SessionsBloc _sessionsBloc;
 
   SessionCreatorBloc({
     required CoursesInterface coursesInterface,
-    required SessionsBloc sessionsBloc,
+    // required SessionsBloc sessionsBloc,
   }) : super(const SessionCreatorState()) {
     _coursesInterface = coursesInterface;
-    _sessionsBloc = sessionsBloc;
+    // _sessionsBloc = sessionsBloc;
     on<SessionCreatorEventInitialize>(_initialize);
     on<SessionCreatorEventCourseSelected>(_courseSelected);
     on<SessionCreatorEventGroupSelected>(_groupSelected);
@@ -224,35 +223,35 @@ class SessionCreatorBloc
     final Date? date = state.date;
     final Time? time = state.time;
     if (groupId != null && date != null && time != null) {
-      _sessionsBloc.add(
-        SessionsEventAddSession(
-          session: Session(
-            id: '',
-            groupId: groupId,
-            flashcardsType: state.flashcardsType,
-            areQuestionsAndAnswersSwapped: state.areQuestionsAndAnswersSwapped,
-            date: date,
-            time: time,
-            duration: state.duration,
-            notificationTime: state.notificationTime,
-          ),
-        ),
-      );
+      // _sessionsBloc.add(
+      //   SessionsEventAddSession(
+      //     session: Session(
+      //       id: '',
+      //       groupId: groupId,
+      //       flashcardsType: state.flashcardsType,
+      //       areQuestionsAndAnswersSwapped: state.areQuestionsAndAnswersSwapped,
+      //       date: date,
+      //       time: time,
+      //       duration: state.duration,
+      //       notificationTime: state.notificationTime,
+      //     ),
+      //   ),
+      // );
     }
   }
 
   void _submitEditMode(SessionCreatorEditMode mode) {
-    _sessionsBloc.add(
-      SessionsEventUpdateSession(
-        sessionId: mode.session.id,
-        groupId: state.selectedGroup?.id,
-        date: state.date,
-        time: state.time,
-        duration: state.duration,
-        flashcardsType: state.flashcardsType,
-        areQuestionsAndFlashcardsSwapped: state.areQuestionsAndAnswersSwapped,
-        notificationTime: state.notificationTime,
-      ),
-    );
+    // _sessionsBloc.add(
+    //   SessionsEventUpdateSession(
+    //     sessionId: mode.session.id,
+    //     groupId: state.selectedGroup?.id,
+    //     date: state.date,
+    //     time: state.time,
+    //     duration: state.duration,
+    //     flashcardsType: state.flashcardsType,
+    //     areQuestionsAndFlashcardsSwapped: state.areQuestionsAndAnswersSwapped,
+    //     notificationTime: state.notificationTime,
+    //   ),
+    // );
   }
 }

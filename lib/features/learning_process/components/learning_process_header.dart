@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/providers/theme_provider.dart';
 import 'package:fiszkomaniak/ui_extensions/flashcards_type_converters.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

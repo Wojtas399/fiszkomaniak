@@ -4,7 +4,7 @@ import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/models/notification_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
 import '../models/changed_document.dart';
-import '../models/session_model.dart';
+import '../domain/entities/session.dart';
 import '../utils/utils.dart';
 
 extension FireDocumentChangeTypeExtensions on DocumentChangeType {

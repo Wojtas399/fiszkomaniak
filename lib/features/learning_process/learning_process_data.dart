@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../models/session_model.dart';
+import '../../domain/entities/session.dart';
 
 class LearningProcessData extends Equatable {
   final String? sessionId;

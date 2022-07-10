@@ -1,11 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/flashcard.dart';
 import '../../flashcards_stack/bloc/flashcards_stack_models.dart';
@@ -20,20 +19,20 @@ part 'learning_process_status.dart';
 class LearningProcessBloc
     extends Bloc<LearningProcessEvent, LearningProcessState> {
   late final CoursesInterface _coursesInterface;
-  late final SessionsBloc _sessionsBloc;
+  // late final SessionsBloc _sessionsBloc;
   late final AchievementsBloc _achievementsBloc;
   late final LearningProcessDialogs _dialogs;
   late final Navigation _navigation;
 
   LearningProcessBloc({
     required CoursesInterface coursesInterface,
-    required SessionsBloc sessionsBloc,
+    // required SessionsBloc sessionsBloc,
     required AchievementsBloc achievementsBloc,
     required LearningProcessDialogs learningProcessDialogs,
     required Navigation navigation,
   }) : super(const LearningProcessState()) {
     _coursesInterface = coursesInterface;
-    _sessionsBloc = sessionsBloc;
+    // _sessionsBloc = sessionsBloc;
     _achievementsBloc = achievementsBloc;
     _dialogs = learningProcessDialogs;
     _navigation = navigation;
@@ -204,10 +203,10 @@ class LearningProcessBloc
   void _removeSession() {
     final String? sessionId = state.sessionId;
     if (sessionId != null && sessionId.isNotEmpty) {
-      _sessionsBloc.add(SessionsEventRemoveSession(
-        sessionId: sessionId,
-        removeAfterLearningProcess: true,
-      ));
+      // _sessionsBloc.add(SessionsEventRemoveSession(
+      //   sessionId: sessionId,
+      //   removeAfterLearningProcess: true,
+      // ));
     }
   }
 

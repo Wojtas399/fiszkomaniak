@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/domain/entities/group.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/domain/entities/session.dart';
 import '../domain/entities/flashcard.dart';
 
 class GroupUtils {

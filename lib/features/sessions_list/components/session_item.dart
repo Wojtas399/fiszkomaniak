@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/components/card_item.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:fiszkomaniak/ui_extensions/ui_duration_extensions.dart';
 import 'package:fiszkomaniak/ui_extensions/ui_time_extensions.dart';

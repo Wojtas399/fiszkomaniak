@@ -2,22 +2,21 @@ import 'dart:async';
 import 'package:fiszkomaniak/interfaces/sessions_notifications_interface.dart';
 import 'package:rxdart/rxdart.dart';
 import '../../models/date_model.dart';
-import '../../models/session_model.dart';
+import '../../domain/entities/session.dart';
 import '../../models/time_model.dart';
-import '../sessions/sessions_bloc.dart';
 
 class SessionsNotificationsBloc {
   late final SessionsNotificationsInterface _sessionsNotificationsInterface;
-  late final SessionsBloc _sessionsBloc;
-  StreamSubscription<SessionsState>? _sessionsStateListener;
+  // late final SessionsBloc _sessionsBloc;
+  // StreamSubscription<SessionsState>? _sessionsStateListener;
   final BehaviorSubject<String> errorStream = BehaviorSubject<String>();
 
   SessionsNotificationsBloc({
     required SessionsNotificationsInterface sessionsNotificationsInterface,
-    required SessionsBloc sessionsBloc,
+    // required SessionsBloc sessionsBloc,
   }) {
     _sessionsNotificationsInterface = sessionsNotificationsInterface;
-    _sessionsBloc = sessionsBloc;
+    // _sessionsBloc = sessionsBloc;
   }
 
   void initialize() {
@@ -27,7 +26,7 @@ class SessionsNotificationsBloc {
   }
 
   void dispose() {
-    _sessionsStateListener?.cancel();
+    // _sessionsStateListener?.cancel();
     errorStream.close();
   }
 
@@ -55,11 +54,11 @@ class SessionsNotificationsBloc {
 
   Future<void> cancelScheduledNotifications() async {
     try {
-      for (final session in _sessionsBloc.state.allSessions) {
-        if (session.notificationTime != null) {
-          await _removeScheduledNotification(session.id);
-        }
-      }
+      // for (final session in _sessionsBloc.state.allSessions) {
+      //   if (session.notificationTime != null) {
+      //     await _removeScheduledNotification(session.id);
+      //   }
+      // }
     } catch (error) {
       errorStream.add(error.toString());
     }
@@ -84,25 +83,25 @@ class SessionsNotificationsBloc {
 
   Future<void> cancelDefaultNotificationsForAllSessions() async {
     try {
-      for (final session in _sessionsBloc.state.allSessions) {
-        await _removeDefaultNotification(session.id);
-      }
+      // for (final session in _sessionsBloc.state.allSessions) {
+      //   await _removeDefaultNotification(session.id);
+      // }
     } catch (error) {
       errorStream.add(error.toString());
     }
   }
 
   void _setSessionsStateListener() {
-    _sessionsStateListener = _sessionsBloc.stream.listen((state) async {
-      final SessionsStatus status = state.status;
-      if (status is SessionsStatusSessionAdded) {
-        await _setNotifications(status.sessionId);
-      } else if (status is SessionsStatusSessionUpdated) {
-        await _setNotifications(status.sessionId);
-      } else if (status is SessionsStatusSessionRemoved) {
-        await _removeNotifications(status.sessionId);
-      }
-    });
+    // _sessionsStateListener = _sessionsBloc.stream.listen((state) async {
+    //   final SessionsStatus status = state.status;
+    //   if (status is SessionsStatusSessionAdded) {
+    //     await _setNotifications(status.sessionId);
+    //   } else if (status is SessionsStatusSessionUpdated) {
+    //     await _setNotifications(status.sessionId);
+    //   } else if (status is SessionsStatusSessionRemoved) {
+    //     await _removeNotifications(status.sessionId);
+    //   }
+    // });
   }
 
   Future<void> _setScheduledNotification({
@@ -152,20 +151,20 @@ class SessionsNotificationsBloc {
   }
 
   Future<void> _setNotifications(String sessionId) async {
-    final Session? session = _sessionsBloc.state.getSessionById(sessionId);
-    if (session != null) {
-      try {
-        await _setScheduledAndDefaultNotifications(
-          sessionId: sessionId,
-          groupName: 'WOWOWOWOW',
-          date: session.date,
-          time: session.notificationTime,
-          sessionStartTime: session.time,
-        );
-      } catch (error) {
-        errorStream.add(error.toString());
-      }
-    }
+    // final Session? session = _sessionsBloc.state.getSessionById(sessionId);
+    // if (session != null) {
+    //   try {
+    //     await _setScheduledAndDefaultNotifications(
+    //       sessionId: sessionId,
+    //       groupName: 'WOWOWOWOW',
+    //       date: session.date,
+    //       time: session.notificationTime,
+    //       sessionStartTime: session.time,
+    //     );
+    //   } catch (error) {
+    //     errorStream.add(error.toString());
+    //   }
+    // }
   }
 
   Future<void> _removeNotifications(String sessionId) async {

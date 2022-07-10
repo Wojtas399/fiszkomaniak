@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/flashcards_type_picker.dart';
-import '../../../models/session_model.dart';
+import '../../../domain/entities/session.dart';
 
 class SessionCreatorFlashcards extends StatelessWidget {
   const SessionCreatorFlashcards({Key? key}) : super(key: key);

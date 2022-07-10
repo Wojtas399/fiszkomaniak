@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
@@ -9,7 +8,7 @@ import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/date_model.dart';
-import '../../../models/session_model.dart';
+import '../../../domain/entities/session.dart';
 import '../../../utils/group_utils.dart';
 import '../../learning_process/learning_process_data.dart';
 
@@ -20,19 +19,19 @@ part 'session_preview_state.dart';
 class SessionPreviewBloc
     extends Bloc<SessionPreviewEvent, SessionPreviewState> {
   late final CoursesInterface _coursesInterface;
-  late final SessionsBloc _sessionsBloc;
+  // late final SessionsBloc _sessionsBloc;
   late final SessionPreviewDialogs _sessionPreviewDialogs;
   late final Navigation _navigation;
   StreamSubscription? _sessionsStateSubscription;
 
   SessionPreviewBloc({
     required CoursesInterface coursesInterface,
-    required SessionsBloc sessionsBloc,
+    // required SessionsBloc sessionsBloc,
     required SessionPreviewDialogs sessionPreviewDialogs,
     required Navigation navigation,
   }) : super(const SessionPreviewState()) {
     _coursesInterface = coursesInterface;
-    _sessionsBloc = sessionsBloc;
+    // _sessionsBloc = sessionsBloc;
     _sessionPreviewDialogs = sessionPreviewDialogs;
     _navigation = navigation;
     on<SessionPreviewEventInitialize>(_initialize);
@@ -104,7 +103,7 @@ class SessionPreviewBloc
     final bool confirmation =
         await _sessionPreviewDialogs.askForDeleteConfirmation();
     if (confirmation && session != null) {
-      _sessionsBloc.add(SessionsEventRemoveSession(sessionId: session.id));
+      // _sessionsBloc.add(SessionsEventRemoveSession(sessionId: session.id));
     }
   }
 
@@ -139,9 +138,9 @@ class SessionPreviewBloc
     SessionPreviewModeNormal mode,
     Emitter<SessionPreviewState> emit,
   ) async {
-    final Session? session = _sessionsBloc.state.getSessionById(
-      mode.sessionId,
-    );
+    // final Session? session = _sessionsBloc.state.getSessionById(
+    //   mode.sessionId,
+    // );
     // final Group? group = _groupsBloc.state.getGroupById(session?.groupId);
     // if (session != null && group != null) {
     //   final String courseName =
@@ -178,9 +177,9 @@ class SessionPreviewBloc
   }
 
   void _setSessionsStateListener() {
-    _sessionsStateSubscription ??= _sessionsBloc.stream.listen((_) {
-      add(SessionPreviewEventSessionsStateUpdated());
-    });
+    // _sessionsStateSubscription ??= _sessionsBloc.stream.listen((_) {
+    //   add(SessionPreviewEventSessionsStateUpdated());
+    // });
   }
 
   @override

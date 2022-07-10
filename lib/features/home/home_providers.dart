@@ -1,12 +1,10 @@
 import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/core/notifications/achievements_notifications_bloc.dart';
 import 'package:fiszkomaniak/core/notifications/sessions_notifications_bloc.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
 import 'package:fiszkomaniak/injections/notifications_provider.dart';
 import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
 import 'package:fiszkomaniak/interfaces/achievements_notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
-import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_notifications_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,11 +49,6 @@ class HomeProviders extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider<SessionsBloc>(
-            create: (BuildContext context) => SessionsBloc(
-              sessionsInterface: context.read<SessionsInterface>(),
-            )..add(SessionsEventInitialize()),
-          ),
           BlocProvider<AchievementsBloc>(
             create: (BuildContext context) => AchievementsBloc(
               achievementsInterface: context.read<AchievementsInterface>(),
@@ -67,7 +60,6 @@ class HomeProviders extends StatelessWidget {
               sessionsNotificationsBloc: SessionsNotificationsBloc(
                 sessionsNotificationsInterface:
                     context.read<SessionsNotificationsInterface>(),
-                sessionsBloc: context.read<SessionsBloc>(),
               ),
               achievementsNotificationsBloc: AchievementsNotificationsBloc(
                 achievementsNotificationsInterface:

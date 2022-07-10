@@ -1,12 +1,23 @@
-import 'package:fiszkomaniak/models/session_model.dart';
-import '../models/changed_document.dart';
+import 'package:fiszkomaniak/domain/entities/session.dart';
 import '../models/date_model.dart';
 import '../models/time_model.dart';
 
 abstract class SessionsInterface {
-  Stream<List<ChangedDocument<Session>>> getSessionsSnapshots();
+  Stream<List<Session>> get allSessions$;
 
-  Future<String> addNewSession(Session session);
+  Stream<Session> getSessionById(String sessionId);
+
+  Future<void> loadAllSessions();
+
+  Future<void> addNewSession({
+    required String groupId,
+    required FlashcardsType flashcardsType,
+    required bool areQuestionsAndAnswersSwapped,
+    required Date date,
+    required Time time,
+    required Duration? duration,
+    required Time? notificationTime,
+  });
 
   Future<void> updateSession({
     required String sessionId,

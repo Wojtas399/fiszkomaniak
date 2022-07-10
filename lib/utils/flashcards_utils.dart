@@ -1,5 +1,5 @@
 import '../domain/entities/flashcard.dart';
-import '../models/session_model.dart';
+import '../domain/entities/session.dart';
 
 class FlashcardsUtils {
   static List<int> getIndexesOfRememberedFlashcards(

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'time_model.dart';
-import 'date_model.dart';
+import '../../models/time_model.dart';
+import '../../models/date_model.dart';
 
 class Session extends Equatable {
   final String id;
