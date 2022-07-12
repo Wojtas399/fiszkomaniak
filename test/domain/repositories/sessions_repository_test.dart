@@ -41,7 +41,7 @@ void main() {
       groupId: 'g1',
       flashcardsType: FlashcardsType.remembered,
       date: const Date(year: 2022, month: 5, day: 5),
-      time: const Time(hour: 12, minute: 30),
+      startTime: const Time(hour: 12, minute: 30),
       duration: const Duration(minutes: 30),
     ),
     createSession(
@@ -49,7 +49,7 @@ void main() {
       groupId: 'g2',
       flashcardsType: FlashcardsType.notRemembered,
       date: const Date(year: 2022, month: 3, day: 3),
-      time: const Time(hour: 9, minute: 0),
+      startTime: const Time(hour: 9, minute: 0),
       notificationTime: const Time(hour: 6, minute: 6),
     ),
   ];
@@ -111,7 +111,7 @@ void main() {
         groupId: 'g1',
         flashcardsType: FlashcardsType.remembered,
         date: const Date(year: 2022, month: 1, day: 1),
-        time: const Time(hour: 16, minute: 0),
+        startTime: const Time(hour: 16, minute: 0),
       );
       when(
         () => fireSessionsService.addNewSession(
@@ -130,7 +130,7 @@ void main() {
         flashcardsType: FlashcardsType.remembered,
         areQuestionsAndAnswersSwapped: false,
         date: const Date(year: 2022, month: 1, day: 1),
-        time: const Time(hour: 16, minute: 0),
+        startTime: const Time(hour: 16, minute: 0),
         duration: null,
         notificationTime: null,
       );
@@ -170,7 +170,7 @@ void main() {
       final Session updatedSession = sessions[0].copyWith(
         groupId: 'g3',
         flashcardsType: FlashcardsType.notRemembered,
-        time: const Time(hour: 15, minute: 0),
+        startTime: const Time(hour: 15, minute: 0),
       );
       when(
         () => fireSessionsService.updateSession(
@@ -185,7 +185,7 @@ void main() {
         sessionId: 's1',
         groupId: 'g3',
         flashcardsType: FlashcardsType.notRemembered,
-        time: const Time(hour: 15, minute: 0),
+        startTime: const Time(hour: 15, minute: 0),
       );
 
       verify(

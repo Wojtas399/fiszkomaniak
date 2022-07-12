@@ -14,7 +14,7 @@ abstract class SessionsInterface {
     required FlashcardsType flashcardsType,
     required bool areQuestionsAndAnswersSwapped,
     required Date date,
-    required Time time,
+    required Time startTime,
     required Duration? duration,
     required Time? notificationTime,
   });
@@ -25,7 +25,7 @@ abstract class SessionsInterface {
     FlashcardsType? flashcardsType,
     bool? areQuestionsAndAnswersSwapped,
     Date? date,
-    Time? time,
+    Time? startTime,
     Duration? duration,
     Time? notificationTime,
   });

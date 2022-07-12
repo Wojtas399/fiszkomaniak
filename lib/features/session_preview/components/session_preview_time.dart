@@ -24,7 +24,7 @@ class SessionPreviewTime extends StatelessWidget {
                 : ItemWithIcon(
                     icon: MdiIcons.clockStart,
                     label: 'Godzina rozpoczęcia',
-                    text: state.session?.time.toUIFormat() ?? '--',
+                    text: state.session?.startTime.toUIFormat() ?? '--',
                     paddingLeft: 8.0,
                     paddingRight: 8.0,
                   ),

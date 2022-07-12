@@ -17,34 +17,35 @@ class SessionCreatorDatePicker extends StatefulWidget {
 class _SessionCreatorDatePickerState extends State<SessionCreatorDatePicker> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SessionCreatorBloc, SessionCreatorState>(
-      builder: (BuildContext context, SessionCreatorState state) {
-        return ItemWithIcon(
-          icon: MdiIcons.calendarOutline,
-          label: 'Data',
-          text: state.date.toUIFormat(),
-          paddingLeft: 8.0,
-          paddingRight: 8.0,
-          onTap: () async {
-            final DateTime? date = await showDatePicker(
-              context: context,
-              confirmText: 'WYBIERZ',
-              cancelText: 'ANULUJ',
-              initialDate: DateTime.now(),
-              lastDate: DateUtils.addDaysToDate(DateTime.now(), 3650),
-              firstDate: DateTime.now(),
-              locale: const Locale('pl', 'PL'),
-            );
-            if (date != null && mounted) {
-              _onDateSelected(
-                context,
-                Date(year: date.year, month: date.month, day: date.day),
-              );
-            }
-          },
-        );
-      },
+    final Date? date = context.select(
+      (SessionCreatorBloc bloc) => bloc.state.date,
     );
+    return ItemWithIcon(
+      icon: MdiIcons.calendarOutline,
+      label: 'Data',
+      text: date.toUIFormat(),
+      paddingLeft: 8.0,
+      paddingRight: 8.0,
+      onTap: () async => await _onPressed(context),
+    );
+  }
+
+  Future<void> _onPressed(BuildContext context) async {
+    final DateTime? date = await showDatePicker(
+      context: context,
+      confirmText: 'WYBIERZ',
+      cancelText: 'ANULUJ',
+      initialDate: DateTime.now(),
+      lastDate: DateUtils.addDaysToDate(DateTime.now(), 3650),
+      firstDate: DateTime.now(),
+      locale: const Locale('pl', 'PL'),
+    );
+    if (date != null && mounted) {
+      _onDateSelected(
+        context,
+        Date(year: date.year, month: date.month, day: date.day),
+      );
+    }
   }
 
   void _onDateSelected(BuildContext context, Date date) {

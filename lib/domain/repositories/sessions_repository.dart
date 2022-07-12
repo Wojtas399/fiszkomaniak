@@ -43,7 +43,7 @@ class SessionsRepository implements SessionsInterface {
     required FlashcardsType flashcardsType,
     required bool areQuestionsAndAnswersSwapped,
     required Date date,
-    required Time time,
+    required Time startTime,
     required Duration? duration,
     required Time? notificationTime,
   }) async {
@@ -52,7 +52,7 @@ class SessionsRepository implements SessionsInterface {
       flashcardsType: flashcardsType.toDbString(),
       areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
       date: date.toDbString(),
-      time: time.toDbString(),
+      time: startTime.toDbString(),
       duration: duration?.toDbString(),
       notificationTime: notificationTime?.toDbString(),
     );
@@ -69,7 +69,7 @@ class SessionsRepository implements SessionsInterface {
     FlashcardsType? flashcardsType,
     bool? areQuestionsAndAnswersSwapped,
     Date? date,
-    Time? time,
+    Time? startTime,
     Duration? duration,
     Time? notificationTime,
   }) async {
@@ -79,7 +79,7 @@ class SessionsRepository implements SessionsInterface {
       flashcardsType: flashcardsType?.toDbString(),
       areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
       date: date?.toDbString(),
-      time: time?.toDbString(),
+      time: startTime?.toDbString(),
       duration: duration?.toDbString(),
       notificationTime: notificationTime?.toDbString(),
     );
@@ -108,7 +108,7 @@ class SessionsRepository implements SessionsInterface {
     final bool? areQuestionsAndAnswersSwapped =
         sessionData?.areQuestionsAndAnswersSwapped;
     final String? dateStr = sessionData?.date;
-    final String? timeStr = sessionData?.time;
+    final String? startTimeStr = sessionData?.time;
     final String? durationStr = sessionData?.duration;
     final String? notificationTimeStr = sessionData?.notificationTime;
     if (sessionId != null &&
@@ -116,14 +116,14 @@ class SessionsRepository implements SessionsInterface {
         flashcardsType != null &&
         areQuestionsAndAnswersSwapped != null &&
         dateStr != null &&
-        timeStr != null) {
+        startTimeStr != null) {
       return Session(
         id: sessionId,
         groupId: groupId,
         flashcardsType: flashcardsType,
         areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
         date: dateStr.toDate(),
-        time: timeStr.toTime(),
+        startTime: startTimeStr.toTime(),
         duration: durationStr?.toDuration(),
         notificationTime: notificationTimeStr?.toTime(),
       );

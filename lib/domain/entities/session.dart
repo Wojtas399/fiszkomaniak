@@ -8,7 +8,7 @@ class Session extends Equatable {
   final FlashcardsType flashcardsType;
   final bool areQuestionsAndAnswersSwapped;
   final Date date;
-  final Time time;
+  final Time startTime;
   final Duration? duration;
   final Time? notificationTime;
 
@@ -18,7 +18,7 @@ class Session extends Equatable {
     required this.flashcardsType,
     required this.areQuestionsAndAnswersSwapped,
     required this.date,
-    required this.time,
+    required this.startTime,
     required this.duration,
     required this.notificationTime,
   });
@@ -30,7 +30,7 @@ class Session extends Equatable {
         flashcardsType,
         areQuestionsAndAnswersSwapped,
         date,
-        time,
+        startTime,
         duration ?? '',
         notificationTime ?? '',
       ];
@@ -41,7 +41,7 @@ class Session extends Equatable {
     FlashcardsType? flashcardsType,
     bool? areQuestionsAndAnswersSwapped,
     Date? date,
-    Time? time,
+    Time? startTime,
     Duration? duration,
     Time? notificationTime,
   }) {
@@ -52,7 +52,7 @@ class Session extends Equatable {
       areQuestionsAndAnswersSwapped:
           areQuestionsAndAnswersSwapped ?? this.areQuestionsAndAnswersSwapped,
       date: date ?? this.date,
-      time: time ?? this.time,
+      startTime: startTime ?? this.startTime,
       duration: duration ?? this.duration,
       notificationTime: notificationTime ?? this.notificationTime,
     );
@@ -71,7 +71,7 @@ Session createSession({
   FlashcardsType? flashcardsType,
   bool? areQuestionsAndAnswersSwapped,
   Date? date,
-  Time? time,
+  Time? startTime,
   Duration? duration,
   Time? notificationTime,
 }) {
@@ -81,7 +81,7 @@ Session createSession({
     flashcardsType: flashcardsType ?? FlashcardsType.all,
     areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped ?? false,
     date: date ?? const Date(year: 2022, month: 1, day: 1),
-    time: time ?? const Time(hour: 1, minute: 1),
+    startTime: startTime ?? const Time(hour: 1, minute: 1),
     duration: duration,
     notificationTime: notificationTime,
   );

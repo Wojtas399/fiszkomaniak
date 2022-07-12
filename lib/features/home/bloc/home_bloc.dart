@@ -51,8 +51,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     HomeEventInitialize event,
     Emitter<HomeState> emit,
   ) async {
-    _setLoggedUserAvatarUrlListener();
-    _setAppearanceSettingsListener();
     try {
       emit(state.copyWith(status: HomeStatusLoading()));
       await _userInterface.loadLoggedUserAvatar();
@@ -65,6 +63,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         status: HomeStatusError(message: error.toString()),
       ));
     }
+    _setLoggedUserAvatarUrlListener();
+    _setAppearanceSettingsListener();
   }
 
   void _loggedUserAvatarUrlUpdated(

@@ -52,13 +52,13 @@ class SessionCreatorEventDateSelected extends SessionCreatorEvent {
   List<Object> get props => [date];
 }
 
-class SessionCreatorEventTimeSelected extends SessionCreatorEvent {
-  final Time time;
+class SessionCreatorEventStartTimeSelected extends SessionCreatorEvent {
+  final Time startTime;
 
-  SessionCreatorEventTimeSelected({required this.time});
+  SessionCreatorEventStartTimeSelected({required this.startTime});
 
   @override
-  List<Object> get props => [time];
+  List<Object> get props => [startTime];
 }
 
 class SessionCreatorEventDurationSelected extends SessionCreatorEvent {

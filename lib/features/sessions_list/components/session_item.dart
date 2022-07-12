@@ -41,7 +41,7 @@ class SessionItem extends StatelessWidget {
                   _Title(courseName: courseName, groupName: groupName),
                   const SizedBox(height: 8),
                   _TimeAndDuration(
-                    time: session.time,
+                    time: session.startTime,
                     duration: session.duration,
                   ),
                 ],
