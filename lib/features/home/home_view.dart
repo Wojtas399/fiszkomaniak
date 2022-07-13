@@ -2,7 +2,7 @@ import 'package:fiszkomaniak/features/courses_library/courses_library_screen.dar
 import 'package:fiszkomaniak/features/home/components/home_app_bar.dart';
 import 'package:fiszkomaniak/features/home/components/home_bottom_navigation_bar.dart';
 import 'package:fiszkomaniak/features/home/home_listeners.dart';
-import 'package:fiszkomaniak/features/sessions_list/sessions_list_page.dart';
+import 'package:fiszkomaniak/features/sessions_list/sessions_list_screen.dart';
 import 'package:fiszkomaniak/features/study/study_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +37,7 @@ class _PageView extends StatelessWidget {
       controller: context.read<HomePageController>().controller,
       children: const [
         StudyScreen(),
-        SessionsListPage(),
+        SessionsListScreen(),
         CoursesLibraryScreen(),
         ProfilePage(),
       ],

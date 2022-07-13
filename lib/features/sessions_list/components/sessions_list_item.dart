@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/components/card_item.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/domain/entities/session.dart';
+import 'package:fiszkomaniak/features/sessions_list/bloc/sessions_list_bloc.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:fiszkomaniak/ui_extensions/ui_duration_extensions.dart';
 import 'package:fiszkomaniak/ui_extensions/ui_time_extensions.dart';
@@ -10,39 +10,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/date_model.dart';
 
-class SessionItem extends StatelessWidget {
-  final Session session;
-  final String groupName;
-  final String courseName;
+class SessionsListItem extends StatelessWidget {
+  final SessionItemParams params;
 
-  const SessionItem({
+  const SessionsListItem({
     super.key,
-    required this.session,
-    required this.groupName,
-    required this.courseName,
+    required this.params,
   });
 
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
       child: CardItem(
-        onTap: () {
-          context.read<Navigation>().navigateToSessionPreview(
-                SessionPreviewModeNormal(sessionId: session.id),
-              );
-        },
+        onTap: () => _onPressed(context),
         child: Row(
           children: [
-            _BigDate(date: session.date),
+            _BigDate(date: params.date),
             const VerticalDivider(thickness: 1),
             Expanded(
               child: Column(
                 children: [
-                  _Title(courseName: courseName, groupName: groupName),
+                  _Title(
+                    courseName: params.courseName,
+                    groupName: params.groupName,
+                  ),
                   const SizedBox(height: 8),
                   _TimeAndDuration(
-                    time: session.startTime,
-                    duration: session.duration,
+                    time: params.startTime,
+                    duration: params.duration,
                   ),
                 ],
               ),
@@ -51,6 +46,12 @@ class SessionItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _onPressed(BuildContext context) {
+    context.read<Navigation>().navigateToSessionPreview(
+          SessionPreviewModeNormal(sessionId: params.sessionId),
+        );
   }
 }
 
