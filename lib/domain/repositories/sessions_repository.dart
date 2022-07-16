@@ -21,9 +21,20 @@ class SessionsRepository implements SessionsInterface {
 
   @override
   Stream<Session> getSessionById(String sessionId) {
-    return allSessions$.map(
-      (sessions) => sessions.firstWhere((session) => session.id == sessionId),
-    );
+    if (_isSessionLoaded(sessionId)) {
+      return allSessions$.map(
+        (sessions) {
+          final List<Session?> allSessions = [...sessions];
+          return allSessions.firstWhere(
+            (session) => session?.id == sessionId,
+            orElse: () => null,
+          );
+        },
+      ).whereType<Session>();
+    }
+    return Rx.fromCallable(() async => await _loadSessionFromDb(sessionId))
+        .whereType<Session>()
+        .doOnData((session) => _addSessionToList(session));
   }
 
   @override
@@ -95,6 +106,17 @@ class SessionsRepository implements SessionsInterface {
   Future<void> removeSession(String sessionId) async {
     await _fireSessionsService.removeSession(sessionId);
     _removeSessionFromList(sessionId);
+  }
+
+  bool _isSessionLoaded(String sessionId) {
+    return _allSessions$.value.map((session) => session.id).contains(sessionId);
+  }
+
+  Future<Session?> _loadSessionFromDb(String sessionId) async {
+    final sessionFromDb = await _fireSessionsService.loadSessionById(
+      sessionId: sessionId,
+    );
+    return _convertSessionDbModelToSession(sessionFromDb);
   }
 
   Session? _convertSessionDbModelToSession(

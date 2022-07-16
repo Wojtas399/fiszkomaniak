@@ -23,6 +23,14 @@ class FireSessionsService {
         .toList();
   }
 
+  Future<FireDocument<SessionDbModel>?> loadSessionById({
+    required String sessionId,
+  }) async {
+    final doc =
+        await FireReferences.sessionsRefWithConverter.doc(sessionId).get();
+    return _convertDocumentSnapshotToFireDocument(doc);
+  }
+
   Future<FireDocument<SessionDbModel>?> addNewSession({
     required String groupId,
     required String flashcardsType,

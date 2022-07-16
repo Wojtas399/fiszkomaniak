@@ -76,13 +76,52 @@ void main() {
   );
 
   test(
-    'get session by id, should return stream which contains expected session',
+    'get session by id, should only return session if it has been already loaded',
     () async {
       final Session expectedSession = sessions[0];
 
       final Stream<Session> session$ = repository.getSessionById('s1');
 
       expect(await session$.first, expectedSession);
+    },
+  );
+
+  test(
+    'get session by id, should load session from db if it has not been loaded yet',
+    () async {
+      final FireDocument<SessionDbModel> dbSession = dbSessions.first;
+      when(
+        () => fireSessionsService.loadSessionById(sessionId: 's1'),
+      ).thenAnswer((_) async => dbSession);
+
+      final newRepository = SessionsRepository(
+        fireSessionsService: fireSessionsService,
+      );
+      final Stream<Session> session$ = newRepository.getSessionById('s1');
+
+      expect(await session$.first, sessions.first);
+      verify(
+        () => fireSessionsService.loadSessionById(sessionId: 's1'),
+      ).called(1);
+    },
+  );
+
+  test(
+    'get session by id, returned stream should be empty if session does not exist',
+    () async {
+      when(
+        () => fireSessionsService.loadSessionById(sessionId: 's1'),
+      ).thenAnswer((_) async => null);
+
+      final newRepository = SessionsRepository(
+        fireSessionsService: fireSessionsService,
+      );
+      final Stream<Session> session$ = newRepository.getSessionById('s1');
+
+      expect(await session$.isEmpty, true);
+      verify(
+        () => fireSessionsService.loadSessionById(sessionId: 's1'),
+      ).called(1);
     },
   );
 

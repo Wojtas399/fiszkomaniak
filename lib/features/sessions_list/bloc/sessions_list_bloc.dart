@@ -58,6 +58,7 @@ class SessionsListBloc extends Bloc<SessionsListEvent, SessionsListState> {
     emit(state.copyWith(status: const BlocStatusLoading()));
     _setSessionsItemsParamsListener();
     await _loadAllSessionsUseCase.execute();
+    emit(state.copyWith(status: const BlocStatusComplete()));
   }
 
   void _sessionsItemsParamsUpdated(
@@ -103,6 +104,9 @@ class SessionsListBloc extends Bloc<SessionsListEvent, SessionsListState> {
   Stream<List<SessionItemParams>> _convertListOfStreamsIntoStreamOfList(
     Iterable<Stream<SessionItemParams>> sessionsItemsParamsStreams,
   ) {
+    if (sessionsItemsParamsStreams.isEmpty) {
+      return Stream.value([]);
+    }
     return Rx.combineLatest(
       sessionsItemsParamsStreams,
       (List<SessionItemParams> sessionsItemsParams) => sessionsItemsParams,

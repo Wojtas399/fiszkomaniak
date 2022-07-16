@@ -82,9 +82,14 @@ class Navigation {
 
   void navigateToSessionCreator(SessionCreatorMode mode) async {
     Dialogs.hideSnackbar();
-    navigatorKey.currentState?.pushNamed(
-      Routes.sessionCreator,
-      arguments: mode,
+    await Future.delayed(
+      const Duration(milliseconds: 1),
+      () {
+        navigatorKey.currentState?.pushNamed(
+          Routes.sessionCreator,
+          arguments: mode,
+        );
+      },
     );
   }
 

@@ -13,7 +13,7 @@ import 'package:fiszkomaniak/features/home/home_view.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_creator/session_creator_screen.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/session_preview.dart';
+import 'package:fiszkomaniak/features/session_preview/session_preview_screen.dart';
 import 'package:fiszkomaniak/features/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import '../../config/routes.dart';
@@ -111,7 +111,7 @@ class _HomeRouterState extends State<HomeRouter> {
         );
       case Routes.sessionPreview:
         return MaterialPageRoute(
-          builder: (_) => SessionPreview(
+          builder: (_) => SessionPreviewScreen(
             mode: routeSettings.arguments as SessionPreviewMode,
           ),
         );

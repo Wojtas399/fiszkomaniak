@@ -113,6 +113,9 @@ void main() {
             status: const BlocStatusLoading(),
           ),
           createState(
+            status: const BlocStatusComplete(),
+          ),
+          createState(
             sessionsItemsParams: [
               SessionItemParams(
                 sessionId: allSessions[0].id,

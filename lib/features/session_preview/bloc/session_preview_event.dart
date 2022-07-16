@@ -14,14 +14,25 @@ class SessionPreviewEventInitialize extends SessionPreviewEvent {
   List<Object> get props => [mode];
 }
 
+class SessionPreviewEventSessionUpdated extends SessionPreviewEvent {
+  final Session session;
+
+  SessionPreviewEventSessionUpdated({required this.session});
+
+  @override
+  List<Object> get props => [session];
+}
+
 class SessionPreviewEventDurationChanged extends SessionPreviewEvent {
-  final Duration? duration;
+  final Duration duration;
 
   SessionPreviewEventDurationChanged({required this.duration});
 
   @override
-  List<Object> get props => [duration ?? ''];
+  List<Object> get props => [duration];
 }
+
+class SessionPreviewEventResetDuration extends SessionPreviewEvent {}
 
 class SessionPreviewEventFlashcardsTypeChanged extends SessionPreviewEvent {
   final FlashcardsType flashcardsType;
@@ -34,10 +45,4 @@ class SessionPreviewEventFlashcardsTypeChanged extends SessionPreviewEvent {
 
 class SessionPreviewEventSwapQuestionsAndAnswers extends SessionPreviewEvent {}
 
-class SessionPreviewEventEditSession extends SessionPreviewEvent {}
-
-class SessionPreviewEventDeleteSession extends SessionPreviewEvent {}
-
-class SessionPreviewEventStartLearning extends SessionPreviewEvent {}
-
-class SessionPreviewEventSessionsStateUpdated extends SessionPreviewEvent {}
+class SessionPreviewEventRemoveSession extends SessionPreviewEvent {}
