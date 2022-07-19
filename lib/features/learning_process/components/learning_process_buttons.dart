@@ -2,7 +2,6 @@ import 'package:fiszkomaniak/components/buttons/button.dart';
 import 'package:fiszkomaniak/config/theme/colors.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_state.dart';
 import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,25 +9,27 @@ import '../../../components/buttons/small_button.dart';
 import '../bloc/learning_process_bloc.dart';
 
 class LearningProcessButtons extends StatelessWidget {
-  const LearningProcessButtons({Key? key}) : super(key: key);
+  const LearningProcessButtons({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FlashcardsStackBloc, FlashcardsStackState>(
-      builder: (_, FlashcardsStackState state) {
-        if (state.isPreviewProcess) {
-          return const _AnswerButtons();
-        } else if (state.status is FlashcardsStackStatusEnd) {
-          return const _EndSessionButton();
-        }
-        return const _QuestionButton();
-      },
+    final bool isPreview = context.select(
+      (FlashcardsStackBloc bloc) => bloc.state.isPreviewProcess,
     );
+    final FlashcardsStackStatus flashcardsStackStatus = context.select(
+      (FlashcardsStackBloc bloc) => bloc.state.status,
+    );
+    if (isPreview) {
+      return const _AnswerButtons();
+    } else if (flashcardsStackStatus is FlashcardsStackStatusEnd) {
+      return const _EndSessionButton();
+    }
+    return const _QuestionButton();
   }
 }
 
 class _QuestionButton extends StatelessWidget {
-  const _QuestionButton({Key? key}) : super(key: key);
+  const _QuestionButton();
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +54,7 @@ class _QuestionButton extends StatelessWidget {
 }
 
 class _AnswerButtons extends StatelessWidget {
-  const _AnswerButtons({Key? key}) : super(key: key);
+  const _AnswerButtons();
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +96,7 @@ class _AnswerButtons extends StatelessWidget {
 }
 
 class _EndSessionButton extends StatelessWidget {
-  const _EndSessionButton({Key? key}) : super(key: key);
+  const _EndSessionButton();
 
   @override
   Widget build(BuildContext context) {

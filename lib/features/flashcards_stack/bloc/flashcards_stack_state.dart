@@ -3,7 +3,7 @@ import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_sta
 import 'flashcards_stack_models.dart';
 
 class FlashcardsStackState extends Equatable {
-  final List<FlashcardInfo> flashcards;
+  final List<StackFlashcard> flashcards;
   final List<AnimatedElement> animatedElements;
   final int indexOfDisplayedFlashcard;
   final FlashcardsStackStatus status;
@@ -27,7 +27,7 @@ class FlashcardsStackState extends Equatable {
       status is FlashcardsStackStatusQuestionAgain;
 
   FlashcardsStackState copyWith({
-    List<FlashcardInfo>? flashcards,
+    List<StackFlashcard>? flashcards,
     List<AnimatedElement>? animatedElements,
     int? indexOfDisplayedFlashcard,
     FlashcardsStackStatus? status,

@@ -93,7 +93,7 @@ class FlashcardsStackBloc
   }
 
   List<AnimatedElement> _getInitialAnimatedElementsProperties(
-    List<FlashcardInfo> flashcards,
+    List<StackFlashcard> flashcards,
   ) {
     final List<AnimatedElement> animatedElements = [];
     final int maxIndex = flashcards.length <= 4 ? flashcards.length - 1 : 4;
@@ -203,7 +203,7 @@ class FlashcardsStackBloc
 
   FlashcardsStackStatus _getStatusDependingOnMovementDirection(
     _Direction direction,
-    FlashcardInfo flashcard,
+    StackFlashcard flashcard,
   ) {
     switch (direction) {
       case _Direction.left:

@@ -3,7 +3,7 @@ import 'flashcards_stack_models.dart';
 abstract class FlashcardsStackEvent {}
 
 class FlashcardsStackEventInitialize extends FlashcardsStackEvent {
-  final List<FlashcardInfo> flashcards;
+  final List<StackFlashcard> flashcards;
 
   FlashcardsStackEventInitialize({required this.flashcards});
 }

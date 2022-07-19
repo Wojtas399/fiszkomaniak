@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-class FlashcardInfo extends Equatable {
+class StackFlashcard extends Equatable {
   final int index;
   final String question;
   final String answer;
 
-  const FlashcardInfo({
+  const StackFlashcard({
     required this.index,
     required this.question,
     required this.answer,
@@ -25,7 +25,7 @@ class AnimatedElement extends Equatable {
   final double scale;
   final double opacity;
   final Position position;
-  final FlashcardInfo flashcard;
+  final StackFlashcard flashcard;
 
   const AnimatedElement({
     required this.key,
@@ -40,7 +40,7 @@ class AnimatedElement extends Equatable {
     double? scale,
     double? opacity,
     Position? position,
-    FlashcardInfo? flashcard,
+    StackFlashcard? flashcard,
   }) {
     return AnimatedElement(
       key: key ?? this.key,
@@ -97,12 +97,12 @@ class Position extends Equatable {
       ];
 }
 
-FlashcardInfo createFlashcardInfo({
+StackFlashcard createStackFlashcard({
   int? index,
   String? question,
   String? answer,
 }) {
-  return FlashcardInfo(
+  return StackFlashcard(
     index: index ?? -1,
     question: question ?? '',
     answer: answer ?? '',
@@ -114,14 +114,14 @@ AnimatedElement createAnimatedElement({
   double? scale,
   double? opacity,
   Position? position,
-  FlashcardInfo? flashcard,
+  StackFlashcard? flashcard,
 }) {
   return AnimatedElement(
     key: key ?? const ValueKey(''),
     scale: scale ?? 1.0,
     opacity: opacity ?? 1.0,
     position: position ?? createPosition(),
-    flashcard: flashcard ?? createFlashcardInfo(),
+    flashcard: flashcard ?? createStackFlashcard(),
   );
 }
 

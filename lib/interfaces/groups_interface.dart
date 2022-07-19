@@ -37,7 +37,7 @@ abstract class GroupsInterface {
     required List<Flashcard> flashcards,
   });
 
-  Future<void> markFlashcardsAsRemembered({
+  Future<void> setGivenFlashcardsAsRememberedAndRemainingAsNotRemembered({
     required String groupId,
     required List<int> flashcardsIndexes,
   });

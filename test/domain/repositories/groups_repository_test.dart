@@ -373,7 +373,7 @@ void main() {
       );
 
       test(
-        'mark flashcards as remembered, should call method responsible for marking flashcards as remembered and should update all groups stream',
+        'set given flashcards as remembered and remaining as not remembered, should call method responsible for marking flashcards as remembered and should update all groups stream',
         () async {
           final List<FlashcardDbModel> dbUpdatedFlashcards = [
             createFlashcardDbModel(
@@ -399,14 +399,16 @@ void main() {
             ],
           );
           when(
-            () => fireFlashcardsService.markFlashcardsAsRemembered(
+            () => fireFlashcardsService
+                .setGivenFlashcardsAsRememberedAndRemainingAsNotRemembered(
               groupId: 'g1',
               indexesOfRememberedFlashcards: [0],
             ),
           ).thenAnswer((_) async => dbUpdatedGroup);
 
           await repository.loadAllGroups();
-          await repository.markFlashcardsAsRemembered(
+          await repository
+              .setGivenFlashcardsAsRememberedAndRemainingAsNotRemembered(
             groupId: 'g1',
             flashcardsIndexes: [0],
           );
@@ -414,7 +416,8 @@ void main() {
           final List<Group> groups = await repository.allGroups$.first;
           expect(groups, [updatedGroup]);
           verify(
-            () => fireFlashcardsService.markFlashcardsAsRemembered(
+            () => fireFlashcardsService
+                .setGivenFlashcardsAsRememberedAndRemainingAsNotRemembered(
               groupId: 'g1',
               indexesOfRememberedFlashcards: [0],
             ),

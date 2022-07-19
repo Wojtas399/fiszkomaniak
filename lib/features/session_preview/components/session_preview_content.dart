@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_data.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/components/session_preview_app_bar.dart';
@@ -69,19 +68,15 @@ class _StartLearningButton extends StatelessWidget {
   void _startLearning(BuildContext context) {
     final SessionPreviewState state = context.read<SessionPreviewBloc>().state;
     final String? groupId = state.group?.id;
-    final FlashcardsType? flashcardsType = state.session?.flashcardsType;
-    final bool? areQuestionsAndAnswersSwapped =
-        state.session?.areQuestionsAndAnswersSwapped;
-    if (groupId != null &&
-        flashcardsType != null &&
-        areQuestionsAndAnswersSwapped != null) {
+    if (groupId != null) {
       context.read<Navigation>().navigateToLearningProcess(
             LearningProcessData(
               groupId: groupId,
-              flashcardsType: flashcardsType,
-              areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
+              flashcardsType: state.flashcardsType,
+              areQuestionsAndAnswersSwapped:
+                  state.areQuestionsAndAnswersSwapped,
               sessionId: state.session?.id,
-              duration: state.session?.duration,
+              duration: state.duration,
             ),
           );
     }

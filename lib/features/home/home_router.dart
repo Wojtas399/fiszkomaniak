@@ -17,7 +17,7 @@ import 'package:fiszkomaniak/features/session_preview/session_preview_screen.dar
 import 'package:fiszkomaniak/features/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import '../../config/routes.dart';
-import '../learning_process/learning_process.dart';
+import '../learning_process/learning_process_screen.dart';
 import '../learning_process/learning_process_data.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -117,7 +117,7 @@ class _HomeRouterState extends State<HomeRouter> {
         );
       case Routes.session:
         return MaterialPageRoute(
-          builder: (_) => LearningProcess(
+          builder: (_) => LearningProcessScreen(
             data: routeSettings.arguments as LearningProcessData,
           ),
         );

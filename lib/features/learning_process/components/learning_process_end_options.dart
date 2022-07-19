@@ -18,9 +18,12 @@ class LearningProcessEndOptions extends StatelessWidget {
       left: 24.0,
       right: 24.0,
       child: Center(
-        child: BlocBuilder<LearningProcessBloc, LearningProcessState>(
-          builder: (_, LearningProcessState state) {
-            return state.areAllFlashcardsRememberedOrNotRemembered
+        child: BlocSelector<LearningProcessBloc, LearningProcessState, bool>(
+          selector: (LearningProcessState state) {
+            return state.areAllFlashcardsRememberedOrNotRemembered;
+          },
+          builder: (_, bool areAllFlashcardsRememberedOrNotRemembered) {
+            return areAllFlashcardsRememberedOrNotRemembered
                 ? const _ResetButton()
                 : const _FlashcardsTypeOptions();
           },

@@ -16,7 +16,8 @@ class FireFlashcardsService {
     return _convertDocumentSnapshotToFireDocument(group);
   }
 
-  Future<FireDocument<GroupDbModel>?> markFlashcardsAsRemembered({
+  Future<FireDocument<GroupDbModel>?>
+      setGivenFlashcardsAsRememberedAndRemainingAsNotRemembered({
     required String groupId,
     required List<int> indexesOfRememberedFlashcards,
   }) async {

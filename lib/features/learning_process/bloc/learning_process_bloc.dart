@@ -1,12 +1,15 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/flashcards/update_flashcards_statuses_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
 import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/entities/session.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/flashcard.dart';
+import '../learning_process_utils.dart';
 import '../../flashcards_stack/bloc/flashcards_stack_models.dart';
 import '../learning_process_data.dart';
 
@@ -14,28 +17,52 @@ part 'learning_process_event.dart';
 
 part 'learning_process_state.dart';
 
-part 'learning_process_status.dart';
-
 class LearningProcessBloc
-    extends Bloc<LearningProcessEvent, LearningProcessState> {
-  late final CoursesInterface _coursesInterface;
-  // late final SessionsBloc _sessionsBloc;
-  late final AchievementsBloc _achievementsBloc;
+    extends Bloc<LearningProcessEvent, LearningProcessState>
+    with LearningProcessUtils {
+  late final GetGroupUseCase _getGroupUseCase;
+  late final GetCourseUseCase _getCourseUseCase;
+  late final UpdateFlashcardsStatusesUseCase _updateFlashcardsStatusesUseCase;
+  late final RemoveSessionUseCase _removeSessionUseCase;
   late final LearningProcessDialogs _dialogs;
-  late final Navigation _navigation;
 
   LearningProcessBloc({
-    required CoursesInterface coursesInterface,
-    // required SessionsBloc sessionsBloc,
-    required AchievementsBloc achievementsBloc,
+    required GetGroupUseCase getGroupUseCase,
+    required GetCourseUseCase getCourseUseCase,
+    required UpdateFlashcardsStatusesUseCase updateFlashcardsStatusesUseCase,
+    required RemoveSessionUseCase removeSessionUseCase,
     required LearningProcessDialogs learningProcessDialogs,
-    required Navigation navigation,
-  }) : super(const LearningProcessState()) {
-    _coursesInterface = coursesInterface;
-    // _sessionsBloc = sessionsBloc;
-    _achievementsBloc = achievementsBloc;
+    BlocStatus status = const BlocStatusInitial(),
+    String? sessionId,
+    String courseName = '',
+    Group? group,
+    Duration? duration,
+    bool areQuestionsAndAnswersSwapped = false,
+    List<int> indexesOfRememberedFlashcards = const [],
+    List<int> indexesOfNotRememberedFlashcards = const [],
+    int indexOfDisplayedFlashcard = 0,
+    FlashcardsType? flashcardsType,
+    int amountOfFlashcardsInStack = 0,
+  }) : super(
+          LearningProcessState(
+            status: status,
+            sessionId: sessionId,
+            courseName: courseName,
+            group: group,
+            duration: duration,
+            areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
+            indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
+            indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
+            indexOfDisplayedFlashcard: indexOfDisplayedFlashcard,
+            flashcardsType: flashcardsType,
+            amountOfFlashcardsInStack: amountOfFlashcardsInStack,
+          ),
+        ) {
+    _getGroupUseCase = getGroupUseCase;
+    _getCourseUseCase = getCourseUseCase;
+    _updateFlashcardsStatusesUseCase = updateFlashcardsStatusesUseCase;
+    _removeSessionUseCase = removeSessionUseCase;
     _dialogs = learningProcessDialogs;
-    _navigation = navigation;
     on<LearningProcessEventInitialize>(_initialize);
     on<LearningProcessEventRememberedFlashcard>(_rememberedFlashcard);
     on<LearningProcessEventForgottenFlashcard>(_forgottenFlashcard);
@@ -49,55 +76,54 @@ class LearningProcessBloc
     LearningProcessEventInitialize event,
     Emitter<LearningProcessState> emit,
   ) async {
-    // final Group? group = _groupsBloc.state.getGroupById(event.data.groupId);
-    // if (group != null) {
-    //   final String courseName =
-    //       await _coursesInterface.getCourseNameById(group.courseId).first;
-    //   final int amountOfFlashcardsInStack =
-    //       FlashcardsUtils.getAmountOfFlashcardsMatchingToFlashcardsType(
-    //     group.flashcards,
-    //     event.data.flashcardsType,
-    //   );
-    //   final List<int> indexesOfRememberedFlashcards =
-    //       FlashcardsUtils.getIndexesOfRememberedFlashcards(group.flashcards);
-    //   final List<int> indexesOfNotRememberedFlashcards =
-    //       FlashcardsUtils.getIndexesOfNotRememberedFlashcards(group.flashcards);
-    //   emit(state.copyWith(
-    //     sessionId: event.data.sessionId,
-    //     courseName: courseNam/e,
-    //     group: group,
-    //     duration: event.data.duration,
-    //     areQuestionsAndAnswersSwapped: event.data.areQuestionsAndAnswersSwapped,
-    //     indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
-    //     indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
-    //     flashcardsType: event.data.flashcardsType,
-    //     amountOfFlashcardsInStack: amountOfFlashcardsInStack,
-    //     status: LearningProcessStatusLoaded(),
-    //   ));
-    // }
+    emit(state.copyWith(status: const BlocStatusLoading()));
+    final Group group = await _getGroup(event.data.groupId);
+    final String courseName = await _getCourseName(group.courseId);
+    final int amountOfFlashcardsInStack =
+        getAmountOfFlashcardsMatchingToFlashcardsType(
+      group.flashcards,
+      event.data.flashcardsType,
+    );
+    final List<int> indexesOfRememberedFlashcards =
+        getIndexesOfRememberedFlashcards(group.flashcards);
+    final List<int> indexesOfNotRememberedFlashcards =
+        getIndexesOfNotRememberedFlashcards(group.flashcards);
+    emit(state.copyWith(
+      status: const BlocStatusComplete<LearningProcessInfoType>(
+        info: LearningProcessInfoType.initialDataHasBeenLoaded,
+      ),
+      sessionId: event.data.sessionId,
+      courseName: courseName,
+      group: group,
+      duration: event.data.duration,
+      areQuestionsAndAnswersSwapped: event.data.areQuestionsAndAnswersSwapped,
+      indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
+      indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
+      flashcardsType: event.data.flashcardsType,
+      amountOfFlashcardsInStack: amountOfFlashcardsInStack,
+    ));
   }
 
   void _rememberedFlashcard(
     LearningProcessEventRememberedFlashcard event,
     Emitter<LearningProcessState> emit,
   ) {
-    final List<int> indexesOfRememberedFlashcards = [
+    List<int> indexesOfRememberedFlashcards = [
       ...state.indexesOfRememberedFlashcards,
     ];
     final List<int> indexesOfNotRememberedFlashcards = [
       ...state.indexesOfNotRememberedFlashcards,
     ];
-    if (!indexesOfRememberedFlashcards.contains(event.flashcardIndex)) {
-      indexesOfRememberedFlashcards.add(event.flashcardIndex);
-    }
+    indexesOfRememberedFlashcards.add(event.flashcardIndex);
+    indexesOfRememberedFlashcards =
+        indexesOfRememberedFlashcards.toSet().toList();
     indexesOfNotRememberedFlashcards.removeWhere(
-      (id) => id == event.flashcardIndex,
+      (index) => index == event.flashcardIndex,
     );
     emit(state.copyWith(
       indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
       indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
       indexOfDisplayedFlashcard: _getNewIndexOfDisplayedFlashcard(),
-      status: LearningProcessStatusInProgress(),
     ));
   }
 
@@ -108,20 +134,19 @@ class LearningProcessBloc
     final List<int> indexesOfRememberedFlashcards = [
       ...state.indexesOfRememberedFlashcards,
     ];
-    final List<int> indexesOfNotRememberedFlashcards = [
+    List<int> indexesOfNotRememberedFlashcards = [
       ...state.indexesOfNotRememberedFlashcards,
     ];
+    indexesOfNotRememberedFlashcards.add(event.flashcardIndex);
+    indexesOfNotRememberedFlashcards =
+        indexesOfNotRememberedFlashcards.toSet().toList();
     indexesOfRememberedFlashcards.removeWhere(
-      (id) => id == event.flashcardIndex,
+      (index) => index == event.flashcardIndex,
     );
-    if (!indexesOfNotRememberedFlashcards.contains(event.flashcardIndex)) {
-      indexesOfNotRememberedFlashcards.add(event.flashcardIndex);
-    }
     emit(state.copyWith(
       indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
       indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
       indexOfDisplayedFlashcard: _getNewIndexOfDisplayedFlashcard(),
-      status: LearningProcessStatusInProgress(),
     ));
   }
 
@@ -130,17 +155,21 @@ class LearningProcessBloc
     Emitter<LearningProcessState> emit,
   ) {
     final FlashcardsType flashcardsType = event.newFlashcardsType;
-    int amountOfFlashcardsInStack = state.flashcards
-        .where((flashcard) => state.doesFlashcardBelongToFlashcardsType(
-              flashcard,
-              flashcardsType,
-            ))
+    int amountOfFlashcardsInStack = (state.group?.flashcards ?? [])
+        .where(
+          (flashcard) => state.doesFlashcardBelongToFlashcardsType(
+            flashcard,
+            flashcardsType,
+          ),
+        )
         .length;
     emit(state.copyWith(
+      status: const BlocStatusComplete<LearningProcessInfoType>(
+        info: LearningProcessInfoType.flashcardsStackHasBeenReset,
+      ),
       indexOfDisplayedFlashcard: 0,
       flashcardsType: flashcardsType,
       amountOfFlashcardsInStack: amountOfFlashcardsInStack,
-      status: LearningProcessStatusReset(),
     ));
   }
 
@@ -148,14 +177,18 @@ class LearningProcessBloc
     LearningProcessEventTimeFinished event,
     Emitter<LearningProcessState> emit,
   ) async {
-    final bool decision = await _dialogs.askForContinuing();
-    if (decision) {
+    if (await _doesUserWantToContinue()) {
       emit(state.copyWith(removedDuration: true));
     } else {
-      _saveFlashcards();
+      emit(state.copyWith(status: const BlocStatusLoading()));
+      await _saveFlashcards();
       _addSessionToAchievements();
-      _removeSession();
-      _navigation.moveBack();
+      await _removeSession();
+      emit(state.copyWith(
+        status: const BlocStatusComplete<LearningProcessInfoType>(
+          info: LearningProcessInfoType.sessionHasBeenFinished,
+        ),
+      ));
     }
   }
 
@@ -163,51 +196,42 @@ class LearningProcessBloc
     LearningProcessEventEndSession event,
     Emitter<LearningProcessState> emit,
   ) async {
-    _saveFlashcards();
+    emit(state.copyWith(status: const BlocStatusLoading()));
+    await _saveFlashcards();
     _addSessionToAchievements();
-    _removeSession();
-    _navigation.moveBack();
+    await _removeSession();
+    emit(state.copyWith(
+      status: const BlocStatusComplete<LearningProcessInfoType>(
+        info: LearningProcessInfoType.sessionHasBeenFinished,
+      ),
+    ));
   }
 
   Future<void> _exit(
     LearningProcessEventExit event,
     Emitter<LearningProcessState> emit,
   ) async {
-    final bool confirmation = await _dialogs.askForSaveConfirmation();
-    if (confirmation) {
-      _saveFlashcards();
+    final bool saveConfirmation = await _dialogs.askForSaveConfirmation();
+    if (saveConfirmation) {
+      emit(state.copyWith(status: const BlocStatusLoading()));
+      await _saveFlashcards();
     }
-    _navigation.moveBack();
+    emit(state.copyWith(
+      status: const BlocStatusComplete<LearningProcessInfoType>(
+        info: LearningProcessInfoType.sessionHasBeenAborted,
+      ),
+    ));
   }
 
-  void _saveFlashcards() {
-    final String? groupId = state.group?.id;
-    if (groupId != null) {
-      // _flashcardsBloc.add(FlashcardsEventSaveRememberedFlashcards(
-      //   groupId: groupId,
-      //   flashcardsIndexes: state.indexesOfRememberedFlashcards,
-      // ));
-      _achievementsBloc.add(AchievementsEventAddRememberedFlashcards(
-        groupId: groupId,
-        rememberedFlashcardsIndexes: state.indexesOfRememberedFlashcards,
-      ));
-    }
+  Future<Group> _getGroup(String groupId) async {
+    return await _getGroupUseCase.execute(groupId: groupId).first;
   }
 
-  void _addSessionToAchievements() {
-    _achievementsBloc.add(
-      AchievementsEventAddSession(sessionId: state.sessionId),
-    );
-  }
-
-  void _removeSession() {
-    final String? sessionId = state.sessionId;
-    if (sessionId != null && sessionId.isNotEmpty) {
-      // _sessionsBloc.add(SessionsEventRemoveSession(
-      //   sessionId: sessionId,
-      //   removeAfterLearningProcess: true,
-      // ));
-    }
+  Future<String> _getCourseName(String courseId) async {
+    return await _getCourseUseCase
+        .execute(courseId: courseId)
+        .map((course) => course.name)
+        .first;
   }
 
   int _getNewIndexOfDisplayedFlashcard() {
@@ -215,5 +239,30 @@ class LearningProcessBloc
       return state.indexOfDisplayedFlashcard + 1;
     }
     return state.indexOfDisplayedFlashcard;
+  }
+
+  Future<bool> _doesUserWantToContinue() async {
+    return await _dialogs.askForContinuing();
+  }
+
+  Future<void> _saveFlashcards() async {
+    final String? groupId = state.group?.id;
+    if (groupId != null) {
+      await _updateFlashcardsStatusesUseCase.execute(
+        groupId: groupId,
+        indexesOfRememberedFlashcards: state.indexesOfRememberedFlashcards,
+      );
+    }
+  }
+
+  void _addSessionToAchievements() {
+    //TODO: should add session to achievements
+  }
+
+  Future<void> _removeSession() async {
+    final String? sessionId = state.sessionId;
+    if (sessionId != null && sessionId.isNotEmpty) {
+      await _removeSessionUseCase.execute(sessionId: sessionId);
+    }
   }
 }

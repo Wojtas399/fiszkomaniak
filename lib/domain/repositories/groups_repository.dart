@@ -129,11 +129,12 @@ class GroupsRepository implements GroupsInterface {
   }
 
   @override
-  Future<void> markFlashcardsAsRemembered({
+  Future<void> setGivenFlashcardsAsRememberedAndRemainingAsNotRemembered({
     required String groupId,
     required List<int> flashcardsIndexes,
   }) async {
-    final groupFromDb = await _fireFlashcardsService.markFlashcardsAsRemembered(
+    final groupFromDb = await _fireFlashcardsService
+        .setGivenFlashcardsAsRememberedAndRemainingAsNotRemembered(
       groupId: groupId,
       indexesOfRememberedFlashcards: flashcardsIndexes,
     );

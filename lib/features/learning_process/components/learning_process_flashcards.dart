@@ -7,7 +7,7 @@ import '../../../features/flashcards_stack/flashcards_stack.dart';
 import '../../../providers/theme_provider.dart';
 
 class LearningProcessFlashcards extends StatelessWidget {
-  const LearningProcessFlashcards({Key? key}) : super(key: key);
+  const LearningProcessFlashcards({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class LearningProcessFlashcards extends StatelessWidget {
 }
 
 class _FlashcardTitle extends StatelessWidget {
-  const _FlashcardTitle({Key? key}) : super(key: key);
+  const _FlashcardTitle();
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class _FlashcardTitle extends StatelessWidget {
 }
 
 class _Side extends StatelessWidget {
-  const _Side({Key? key}) : super(key: key);
+  const _Side();
 
   @override
   Widget build(BuildContext context) {
@@ -69,35 +69,32 @@ class _Side extends StatelessWidget {
 }
 
 class _SideName extends StatelessWidget {
-  const _SideName({Key? key}) : super(key: key);
+  const _SideName();
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LearningProcessBloc, LearningProcessState>(
-      builder: (
-        BuildContext context,
-        LearningProcessState learningProcessState,
-      ) {
-        final FlashcardsStackStatus flashcardsStackStatus = context.select(
-          (FlashcardsStackBloc bloc) => bloc.state.status,
-        );
-        final ThemeProvider themeProvider = context.read<ThemeProvider>();
-        final Color color = themeProvider.isDarkMode
-            ? Colors.white.withOpacity(0.6)
-            : Colors.black.withOpacity(0.6);
-        return Text(
-          '(${_getQuestionOrAnswerName(
-            flashcardsStackStatus,
-            learningProcessState.nameForQuestions,
-            learningProcessState.nameForAnswers,
-          )})',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: color,
-          ),
-        );
-      },
+    final String nameForQuestions =
+        context.read<LearningProcessBloc>().state.nameForQuestions;
+    final String nameForAnswers =
+        context.read<LearningProcessBloc>().state.nameForAnswers;
+    final FlashcardsStackStatus flashcardsStackStatus = context.select(
+      (FlashcardsStackBloc bloc) => bloc.state.status,
+    );
+    final ThemeProvider themeProvider = context.read<ThemeProvider>();
+    final Color color = themeProvider.isDarkMode
+        ? Colors.white.withOpacity(0.6)
+        : Colors.black.withOpacity(0.6);
+    return Text(
+      '(${_getQuestionOrAnswerName(
+        flashcardsStackStatus,
+        nameForQuestions,
+        nameForAnswers,
+      )})',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        color: color,
+      ),
     );
   }
 
