@@ -266,6 +266,9 @@ void main() {
         },
         expect: () => [
           createState(
+            status: const BlocStatusComplete<LearningProcessInfoType>(
+              info: LearningProcessInfoType.flashcardsStackHasBeenReset,
+            ),
             group: group,
             indexesOfRememberedFlashcards: [0, 1],
             indexesOfNotRememberedFlashcards: [2],

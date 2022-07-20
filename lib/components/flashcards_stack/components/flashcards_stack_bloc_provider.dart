@@ -1,6 +1,6 @@
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/flashcards_stack_bloc.dart';
 
 class FlashcardsStackBlocProvider extends StatelessWidget {
   final Widget child;

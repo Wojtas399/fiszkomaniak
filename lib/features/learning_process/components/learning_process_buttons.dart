@@ -1,11 +1,9 @@
-import 'package:fiszkomaniak/components/buttons/button.dart';
-import 'package:fiszkomaniak/config/theme/colors.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../config/theme/colors.dart';
+import '../../../components/buttons/button.dart';
 import '../../../components/buttons/small_button.dart';
+import '../../../components/flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import '../bloc/learning_process_bloc.dart';
 
 class LearningProcessButtons extends StatelessWidget {

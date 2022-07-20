@@ -4,8 +4,7 @@ import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/flashcards/update_flashcards_statuses_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/components/flashcards_stack_bloc_provider.dart';
+import 'package:fiszkomaniak/components/flashcards_stack/components/flashcards_stack_bloc_provider.dart';
 import 'package:fiszkomaniak/features/home/home.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/features/learning_process/components/learning_process_content.dart';
@@ -16,10 +15,8 @@ import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../flashcards_stack/bloc/flashcards_stack_bloc.dart';
-import '../flashcards_stack/bloc/flashcards_stack_models.dart';
-import '../flashcards_stack/bloc/flashcards_stack_state.dart';
-import '../flashcards_stack/bloc/flashcards_stack_status.dart';
+import '../../components/flashcards_stack/bloc/flashcards_stack_bloc.dart';
+import '../../components/flashcards_stack/flashcards_stack_model.dart';
 import 'learning_process_data.dart';
 
 class LearningProcessScreen extends StatelessWidget {

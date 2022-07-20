@@ -1,4 +1,4 @@
-import 'flashcards_stack_models.dart';
+part of 'flashcards_stack_bloc.dart';
 
 abstract class FlashcardsStackEvent {}
 
@@ -14,11 +14,10 @@ class FlashcardsStackEventMoveLeft extends FlashcardsStackEvent {}
 
 class FlashcardsStackEventMoveRight extends FlashcardsStackEvent {}
 
-class FlashcardsStackEventElementAnimationFinished
-    extends FlashcardsStackEvent {
-  final int elementIndex;
+class FlashcardsStackEventCardAnimationFinished extends FlashcardsStackEvent {
+  final int movedCardIndex;
 
-  FlashcardsStackEventElementAnimationFinished({required this.elementIndex});
+  FlashcardsStackEventCardAnimationFinished({required this.movedCardIndex});
 }
 
 class FlashcardsStackEventFlashcardFlipped extends FlashcardsStackEvent {}

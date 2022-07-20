@@ -1,9 +1,9 @@
-import 'package:fiszkomaniak/components/custom_icon_button.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/features/learning_process/components/learning_process_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/custom_icon_button.dart';
+import '../bloc/learning_process_bloc.dart';
+import 'learning_process_timer.dart';
 
 class LearningProcessAppBar extends StatelessWidget
     implements PreferredSizeWidget {

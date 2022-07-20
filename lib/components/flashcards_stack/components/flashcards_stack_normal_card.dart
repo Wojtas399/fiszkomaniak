@@ -4,9 +4,9 @@ class FlashcardsStackNormalCard extends StatelessWidget {
   final String text;
 
   const FlashcardsStackNormalCard({
-    Key? key,
+    super.key,
     required this.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

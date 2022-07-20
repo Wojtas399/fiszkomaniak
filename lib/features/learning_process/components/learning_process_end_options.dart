@@ -1,11 +1,10 @@
-import 'package:fiszkomaniak/components/buttons/button.dart';
-import 'package:fiszkomaniak/ui_extensions/flashcards_type_converters.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_event.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/buttons/button.dart';
+import '../../../components/flashcards_stack/bloc/flashcards_stack_bloc.dart';
+import '../../../domain/entities/session.dart';
+import '../../../ui_extensions/flashcards_type_converters.dart';
+import '../bloc/learning_process_bloc.dart';
 
 class LearningProcessEndOptions extends StatelessWidget {
   const LearningProcessEndOptions({super.key});

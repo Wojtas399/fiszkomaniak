@@ -1,10 +1,9 @@
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_status.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../features/flashcards_stack/flashcards_stack.dart';
+import '../../../components/flashcards_stack/bloc/flashcards_stack_bloc.dart';
+import '../../../components/flashcards_stack/flashcards_stack.dart';
 import '../../../providers/theme_provider.dart';
+import '../bloc/learning_process_bloc.dart';
 
 class LearningProcessFlashcards extends StatelessWidget {
   const LearningProcessFlashcards({super.key});

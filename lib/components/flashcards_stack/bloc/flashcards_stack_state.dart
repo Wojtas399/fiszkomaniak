@@ -1,16 +1,14 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_status.dart';
-import 'flashcards_stack_models.dart';
+part of 'flashcards_stack_bloc.dart';
 
 class FlashcardsStackState extends Equatable {
   final List<StackFlashcard> flashcards;
-  final List<AnimatedElement> animatedElements;
+  final List<AnimatedCard> animatedCards;
   final int indexOfDisplayedFlashcard;
   final FlashcardsStackStatus status;
 
   const FlashcardsStackState({
     this.flashcards = const [],
-    this.animatedElements = const [],
+    this.animatedCards = const [],
     this.indexOfDisplayedFlashcard = 0,
     this.status = const FlashcardsStackStatusQuestion(),
   });
@@ -28,13 +26,13 @@ class FlashcardsStackState extends Equatable {
 
   FlashcardsStackState copyWith({
     List<StackFlashcard>? flashcards,
-    List<AnimatedElement>? animatedElements,
+    List<AnimatedCard>? animatedCards,
     int? indexOfDisplayedFlashcard,
     FlashcardsStackStatus? status,
   }) {
     return FlashcardsStackState(
       flashcards: flashcards ?? this.flashcards,
-      animatedElements: animatedElements ?? this.animatedElements,
+      animatedCards: animatedCards ?? this.animatedCards,
       indexOfDisplayedFlashcard:
           indexOfDisplayedFlashcard ?? this.indexOfDisplayedFlashcard,
       status: status ?? this.status,
@@ -44,7 +42,7 @@ class FlashcardsStackState extends Equatable {
   @override
   List<Object> get props => [
         flashcards,
-        animatedElements,
+        animatedCards,
         indexOfDisplayedFlashcard,
         status,
       ];

@@ -1,16 +1,16 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/flashcards/update_flashcards_statuses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
-import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
-import 'package:fiszkomaniak/domain/entities/group.dart';
-import 'package:fiszkomaniak/domain/entities/session.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/flashcards_stack/flashcards_stack_model.dart';
+import '../../../domain/entities/group.dart';
+import '../../../domain/entities/session.dart';
 import '../../../domain/entities/flashcard.dart';
+import '../../../domain/use_cases/courses/get_course_use_case.dart';
+import '../../../domain/use_cases/flashcards/update_flashcards_statuses_use_case.dart';
+import '../../../domain/use_cases/groups/get_group_use_case.dart';
+import '../../../domain/use_cases/sessions/remove_session_use_case.dart';
+import '../learning_process_dialogs.dart';
+import '../../../models/bloc_status.dart';
 import '../learning_process_utils.dart';
-import '../../flashcards_stack/bloc/flashcards_stack_models.dart';
 import '../learning_process_data.dart';
 
 part 'learning_process_event.dart';

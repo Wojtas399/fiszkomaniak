@@ -1,13 +1,12 @@
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/features/learning_process/components/learning_process_buttons.dart';
-import 'package:fiszkomaniak/features/learning_process/components/learning_process_end_options.dart';
-import 'package:fiszkomaniak/features/learning_process/components/learning_process_flashcards.dart';
-import 'package:fiszkomaniak/features/learning_process/components/learning_process_header.dart';
-import 'package:fiszkomaniak/features/learning_process/components/learning_process_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../features/flashcards_stack/bloc/flashcards_stack_bloc.dart';
-import '../../../features/flashcards_stack/bloc/flashcards_stack_status.dart';
+import '../../../components/flashcards_stack/bloc/flashcards_stack_bloc.dart';
+import '../bloc/learning_process_bloc.dart';
+import 'learning_process_buttons.dart';
+import 'learning_process_end_options.dart';
+import 'learning_process_flashcards.dart';
+import 'learning_process_header.dart';
+import 'learning_process_progress_bar.dart';
 import 'learning_process_app_bar.dart';
 
 class LearningProcessContent extends StatelessWidget {

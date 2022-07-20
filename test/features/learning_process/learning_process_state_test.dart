@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/entities/session.dart';
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_models.dart';
+import 'package:fiszkomaniak/components/flashcards_stack/flashcards_stack_model.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
