@@ -16,8 +16,8 @@ class FireAuthService {
     _fireAvatarService = fireAvatarService;
   }
 
-  Stream<User?> getUserChangesStream() {
-    return FireInstances.auth.userChanges();
+  Stream<bool> isUserLogged() {
+    return FireInstances.auth.userChanges().map((user) => user != null);
   }
 
   Future<void> signIn({
@@ -30,7 +30,7 @@ class FireAuthService {
     );
   }
 
-  Future<String?> signUp({
+  Future<String> signUp({
     required String email,
     required String password,
   }) async {
@@ -43,7 +43,7 @@ class FireAuthService {
     if (user != null) {
       return user.uid;
     }
-    return null;
+    throw FirebaseAuthException(code: 'cannot-register-user');
   }
 
   Future<void> sendPasswordResetEmail({required String email}) async {

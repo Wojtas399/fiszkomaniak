@@ -1,12 +1,11 @@
-import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_event.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignInBloc extends Bloc<SignInEvent, SignInState> {
-  final AuthBloc authBloc;
+  // final AuthBloc authBloc;
 
-  SignInBloc({required this.authBloc}) : super(const SignInState()) {
+  SignInBloc() : super(const SignInState()) {
     on<SignInEventEmailChanged>(_emailChanged);
     on<SignInEventPasswordChanged>(_passwordChanged);
     on<SignInEventSubmit>(_submit);
@@ -32,10 +31,10 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     Emitter<SignInState> emit,
   ) {
     if (state.email.isNotEmpty && state.password.isNotEmpty) {
-      authBloc.add(AuthEventSignIn(
-        email: state.email,
-        password: state.password,
-      ));
+      // authBloc.add(AuthEventSignIn(
+      //   email: state.email,
+      //   password: state.password,
+      // ));
     }
   }
 

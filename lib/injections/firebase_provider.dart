@@ -24,7 +24,7 @@ import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/repositories/user_repository.dart';
 import '../interfaces/notifications_settings_interface.dart';
 import '../interfaces/user_interface.dart';
-import '../repositories/auth_repository.dart';
+import '../domain/repositories/auth_repository.dart';
 import '../domain/repositories/courses_repository.dart';
 
 class FirebaseProvider {
@@ -47,8 +47,6 @@ class FirebaseProvider {
   static AuthInterface provideAuthInterface() {
     return AuthRepository(
       fireAuthService: _fireAuthService,
-      userInterface: provideUserInterface(),
-      achievementsInterface: provideAchievementsInterface(),
     );
   }
 

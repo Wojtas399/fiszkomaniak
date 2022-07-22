@@ -1,13 +1,12 @@
 abstract class AuthInterface {
-  Stream<bool> isLoggedUser();
+  Stream<bool> get isUserLogged$;
 
   Future<void> signIn({
     required String email,
     required String password,
   });
 
-  Future<void> signUp({
-    required String username,
+  Future<String> signUp({
     required String email,
     required String password,
   });

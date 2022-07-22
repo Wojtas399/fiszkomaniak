@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../components/buttons/button.dart';
 import '../../config/slide_right_route_animation.dart';
-import '../../core/auth/auth_bloc.dart';
 import '../initial_home/initial_home.dart';
 
 class HomeErrorScreen extends StatelessWidget {
@@ -67,7 +65,7 @@ class _Button extends StatelessWidget {
     return Button(
       label: 'Wróć do ekranu początkowego',
       onPressed: () {
-        context.read<AuthBloc>().add(AuthEventSignOut());
+        //TODO: sign out
         Navigator.of(context).pushReplacement(
           SlideRightRouteAnimation(page: const InitialHome()),
         );

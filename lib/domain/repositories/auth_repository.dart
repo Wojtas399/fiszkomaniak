@@ -1,35 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiszkomaniak/core/auth/auth_exception_model.dart';
-import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
-import 'package:fiszkomaniak/interfaces/user_interface.dart';
-import '../firebase/services/fire_auth_service.dart';
+import '../../firebase/services/fire_auth_service.dart';
 
 class AuthRepository implements AuthInterface {
   late final FireAuthService _fireAuthService;
-  late final UserInterface _userInterface;
-  late final AchievementsInterface _achievementsInterface;
 
   AuthRepository({
     required FireAuthService fireAuthService,
-    required UserInterface userInterface,
-    required AchievementsInterface achievementsInterface,
   }) {
     _fireAuthService = fireAuthService;
-    _userInterface = userInterface;
-    _achievementsInterface = achievementsInterface;
   }
 
   @override
-  Stream<bool> isLoggedUser() async* {
-    await for (final user in _fireAuthService.getUserChangesStream()) {
-      if (user != null) {
-        yield true;
-      } else {
-        yield false;
-      }
-    }
-  }
+  Stream<bool> get isUserLogged$ => _fireAuthService.isUserLogged();
 
   @override
   Future<void> signIn({
@@ -39,27 +22,23 @@ class AuthRepository implements AuthInterface {
     try {
       await _fireAuthService.signIn(email: email, password: password);
     } on FirebaseAuthException catch (error) {
-      _onFirebaseAuthException(error);
+      throw _getAuthException(error);
     }
   }
 
   @override
-  Future<void> signUp({
-    required String username,
+  Future<String> signUp({
     required String email,
     required String password,
   }) async {
     try {
-      final String? userId = await _fireAuthService.signUp(
+      final String userId = await _fireAuthService.signUp(
         email: email,
         password: password,
       );
-      if (userId != null) {
-        await _userInterface.addUser(userId: userId, username: username);
-        await _achievementsInterface.initializeAchievements();
-      }
+      return userId;
     } on FirebaseAuthException catch (error) {
-      _onFirebaseAuthException(error);
+      throw _getAuthException(error);
     }
   }
 
@@ -68,7 +47,7 @@ class AuthRepository implements AuthInterface {
     try {
       await _fireAuthService.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (error) {
-      _onFirebaseAuthException(error);
+      throw _getAuthException(error);
     }
   }
 
@@ -83,7 +62,7 @@ class AuthRepository implements AuthInterface {
         newPassword: newPassword,
       );
     } on FirebaseAuthException catch (error) {
-      _onFirebaseAuthException(error);
+      throw _getAuthException(error);
     }
   }
 
@@ -92,7 +71,7 @@ class AuthRepository implements AuthInterface {
     try {
       await _fireAuthService.removeLoggedUser(password);
     } on FirebaseAuthException catch (error) {
-      _onFirebaseAuthException(error);
+      throw _getAuthException(error);
     }
   }
 
@@ -101,18 +80,29 @@ class AuthRepository implements AuthInterface {
     await _fireAuthService.signOut();
   }
 
-  void _onFirebaseAuthException(FirebaseAuthException error) {
+  AuthException _getAuthException(FirebaseAuthException error) {
     switch (error.code) {
       case 'user-not-found':
-        throw const AuthException(code: AuthErrorCode.userNotFound);
+        return AuthException.userNotFound;
       case 'wrong-password':
-        throw const AuthException(code: AuthErrorCode.wrongPassword);
+        return AuthException.wrongPassword;
       case 'invalid-email':
-        throw const AuthException(code: AuthErrorCode.invalidEmail);
+        return AuthException.invalidEmail;
       case 'email-already-in-use':
-        throw const AuthException(code: AuthErrorCode.emailAlreadyInUse);
+        return AuthException.emailAlreadyInUse;
+      case 'cannot-register-user':
+        return AuthException.cannotRegisterUser;
       default:
-        throw error;
+        return AuthException.unknown;
     }
   }
+}
+
+enum AuthException {
+  userNotFound,
+  wrongPassword,
+  invalidEmail,
+  emailAlreadyInUse,
+  cannotRegisterUser,
+  unknown,
 }

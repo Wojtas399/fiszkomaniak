@@ -1,4 +1,3 @@
-import 'package:fiszkomaniak/features/initial_home/initial_home_auth_bloc_listener.dart';
 import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/features/initial_home/components/animated_form_card.dart';
 import 'package:fiszkomaniak/features/initial_home/components/animated_forms.dart';
@@ -14,18 +13,16 @@ class InitialHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InitialHomeAuthBlocListener(
-      child: OnTapFocusLoseArea(
-        child: Scaffold(
-          extendBodyBehindAppBar: true,
-          resizeToAvoidBottomInset: false,
-          appBar: const _AppBar(),
-          body: ChangeNotifierProvider(
-            create: (_) => InitialHomeModeProvider(),
-            builder: (context, _) {
-              return const _Body();
-            },
-          ),
+    return OnTapFocusLoseArea(
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        resizeToAvoidBottomInset: false,
+        appBar: const _AppBar(),
+        body: ChangeNotifierProvider(
+          create: (_) => InitialHomeModeProvider(),
+          builder: (context, _) {
+            return const _Body();
+          },
         ),
       ),
     );

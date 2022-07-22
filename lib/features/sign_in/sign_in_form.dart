@@ -1,4 +1,3 @@
-import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
 import 'package:fiszkomaniak/features/sign_in/components/sign_in_submit_button.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,7 @@ class SignInForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SignInBloc(authBloc: context.read<AuthBloc>()),
+      create: (_) => SignInBloc(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

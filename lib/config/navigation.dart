@@ -1,7 +1,6 @@
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/config/routes.dart';
 import 'package:fiszkomaniak/config/slide_right_route_animation.dart';
-import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview_screen.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/home/home_router.dart';
@@ -12,7 +11,6 @@ import 'package:fiszkomaniak/features/reset_password/reset_password_page.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../features/home/home.dart';
 import '../features/learning_process/learning_process_data.dart';
 
@@ -36,10 +34,7 @@ class Navigation {
 
   void navigateToResetPassword(BuildContext context) {
     Navigator.of(context).push(SlideUpRouteAnimation(
-      page: Provider.value(
-        value: context.read<AuthBloc>(),
-        child: const ResetPasswordPage(),
-      ),
+      page: const ResetPasswordPage(),
     ));
   }
 

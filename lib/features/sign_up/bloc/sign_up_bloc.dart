@@ -1,12 +1,11 @@
-import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_event.dart';
 import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
-  final AuthBloc authBloc;
+  // final AuthBloc authBloc;
 
-  SignUpBloc({required this.authBloc}) : super(const SignUpState()) {
+  SignUpBloc() : super(const SignUpState()) {
     on<SignUpEventUsernameChanged>(_usernameChanged);
     on<SignUpEventEmailChanged>(_emailChanged);
     on<SignUpEventPasswordChanged>(_passwordChanged);
@@ -51,11 +50,11 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         state.isCorrectEmail &&
         state.isCorrectPassword &&
         state.isCorrectPasswordConfirmation) {
-      authBloc.add(AuthEventSignUp(
-        username: state.username,
-        email: state.email,
-        password: state.password,
-      ));
+      // authBloc.add(AuthEventSignUp(
+      //   username: state.username,
+      //   email: state.email,
+      //   password: state.password,
+      // ));
     }
   }
 

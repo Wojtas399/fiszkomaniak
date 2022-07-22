@@ -6,7 +6,6 @@ import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../core/auth/auth_bloc.dart';
 import '../../../models/user_model.dart';
 
 part 'profile_event.dart';
@@ -15,7 +14,7 @@ part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   late final UserInterface _userInterface;
-  late final AuthBloc _authBloc;
+  // late final AuthBloc _authBloc;
   late final AchievementsBloc _achievementsBloc;
   late final ProfileDialogs _profileDialogs;
   late final ImagePicker _imagePicker;
@@ -25,7 +24,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   ProfileBloc({
     required UserInterface userInterface,
-    required AuthBloc authBloc,
+    // required AuthBloc authBloc,
     required AchievementsBloc achievementsBloc,
     required ProfileDialogs profileDialogs,
     required ImagePicker imagePicker,
@@ -134,10 +133,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final PasswordEditorReturns? passwordEditorReturnedValues =
         await _profileDialogs.askForNewPassword();
     if (passwordEditorReturnedValues != null) {
-      _authBloc.add(AuthEventChangePassword(
-        currentPassword: passwordEditorReturnedValues.currentPassword,
-        newPassword: passwordEditorReturnedValues.newPassword,
-      ));
+      // _authBloc.add(AuthEventChangePassword(
+      //   currentPassword: passwordEditorReturnedValues.currentPassword,
+      //   newPassword: passwordEditorReturnedValues.newPassword,
+      // ));
     }
   }
 
@@ -147,7 +146,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     final bool confirmation = await _profileDialogs.askForSignOutConfirmation();
     if (confirmation) {
-      _authBloc.add(AuthEventSignOut());
+      // _authBloc.add(AuthEventSignOut());
     }
   }
 
@@ -158,7 +157,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final String? password =
         await _profileDialogs.askForRemoveAccountConfirmationPassword();
     if (password != null) {
-      _authBloc.add(AuthEventRemoveLoggedUser(password: password));
+      // _authBloc.add(AuthEventRemoveLoggedUser(password: password));
     }
   }
 

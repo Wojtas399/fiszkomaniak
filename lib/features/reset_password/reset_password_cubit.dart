@@ -1,11 +1,10 @@
-import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ResetPasswordCubit extends Cubit<String> {
-  late final AuthBloc _authBloc;
+  // late final AuthBloc _authBloc;
 
-  ResetPasswordCubit({required AuthBloc authBloc}) : super('') {
-    _authBloc = authBloc;
+  ResetPasswordCubit() : super('') {
+    // _authBloc = authBloc;
   }
 
   bool get isButtonDisabled => state.isEmpty;
@@ -14,7 +13,7 @@ class ResetPasswordCubit extends Cubit<String> {
 
   void submit() {
     if (state.isNotEmpty) {
-      _authBloc.add(AuthEventSendPasswordResetEmail(email: state));
+      // _authBloc.add(AuthEventSendPasswordResetEmail(email: state));
     }
   }
 }

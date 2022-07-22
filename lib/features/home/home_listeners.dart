@@ -1,5 +1,4 @@
 import 'package:fiszkomaniak/features/home/listeners/achievements_bloc_listener.dart';
-import 'package:fiszkomaniak/features/home/listeners/auth_bloc_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../components/dialogs/dialogs.dart';
@@ -18,7 +17,6 @@ class HomeListeners extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        AuthBlocListener(),
         NotificationsBlocListener(),
         AchievementsBlocListener(),
       ],
