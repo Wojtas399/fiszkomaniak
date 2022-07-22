@@ -1,6 +1,5 @@
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
-import 'package:fiszkomaniak/features/initial_home/initial_home_mode_provider.dart';
 import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,11 +42,9 @@ class _SignUpOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    InitialHomeModeProvider initialHomeModeProvider =
-        Provider.of<InitialHomeModeProvider>(context);
     return GestureDetector(
       onTap: () {
-        initialHomeModeProvider.changeMode(InitialHomeMode.register);
+        // initialHomeModeProvider.changeMode(InitialHomeMode.register);
         Utils.unfocusElements();
         context.read<SignInBloc>().add(SignInEventReset());
       },

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:provider/provider.dart';
-import '../initial_home_mode_provider.dart';
+import '../bloc/initial_home_bloc.dart';
 
-class AnimatedFormCard extends StatelessWidget {
+class InitialHomeAnimatedFormCard extends StatelessWidget {
   final Widget child;
 
-  const AnimatedFormCard({super.key, required this.child});
+  const InitialHomeAnimatedFormCard({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -35,12 +35,13 @@ class _AnimatedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final InitialHomeModeProvider initialHomeModeProvider =
-        Provider.of<InitialHomeModeProvider>(context);
+    final InitialHomeMode mode = context.select(
+      (InitialHomeBloc bloc) => bloc.state.mode,
+    );
     double screenHeight = MediaQuery.of(context).size.height;
     double heightInLoginMode = screenHeight * 0.6;
     double heightInRegisterMode = screenHeight * 0.72;
-    double height = initialHomeModeProvider.isLoginMode
+    double height = mode == InitialHomeMode.login
         ? heightInLoginMode
         : heightInRegisterMode;
     double borderRadius = isKeyboardVisible ? 0 : 40;
@@ -73,12 +74,13 @@ class _AnimatedPadding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final InitialHomeModeProvider initialHomeModeProvider =
-        Provider.of<InitialHomeModeProvider>(context);
+    final InitialHomeMode mode = context.select(
+      (InitialHomeBloc bloc) => bloc.state.mode,
+    );
     final double screenWidth = MediaQuery.of(context).size.width;
     final double loginModeTopPadding = screenWidth * 0.30;
     final double registerModeTopPadding = screenWidth * 0.15;
-    final double topPadding = initialHomeModeProvider.isLoginMode
+    final double topPadding = mode == InitialHomeMode.login
         ? loginModeTopPadding
         : registerModeTopPadding;
     return AnimatedPadding(

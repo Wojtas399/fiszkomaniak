@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../components/buttons/button.dart';
 import '../../utils/utils.dart';
-import '../initial_home/initial_home_mode_provider.dart';
 import 'bloc/sign_up_event.dart';
 
 class SignUpForm extends StatelessWidget {
@@ -90,7 +89,7 @@ class _AlternativeOption extends StatelessWidget {
   }
 
   void _onPressed(BuildContext context) {
-    context.read<InitialHomeModeProvider>().changeMode(InitialHomeMode.login);
+    // context.read<InitialHomeModeProvider>().changeMode(InitialHomeMode.login);
     Utils.unfocusElements();
     context.read<SignUpBloc>().add(SignUpEventReset());
   }
