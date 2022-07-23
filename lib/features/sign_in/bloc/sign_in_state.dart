@@ -1,29 +1,46 @@
-import 'package:equatable/equatable.dart';
+part of 'sign_in_bloc.dart';
 
 class SignInState extends Equatable {
+  final BlocStatus status;
   final String email;
   final String password;
 
-  bool get isButtonDisabled => email.isEmpty || password.isEmpty;
-
   const SignInState({
-    this.email = '',
-    this.password = '',
+    required this.status,
+    required this.email,
+    required this.password,
   });
 
+  @override
+  List<Object> get props => [
+        status,
+        email,
+        password,
+      ];
+
+  bool get isButtonDisabled => email.isEmpty || password.isEmpty;
+
   SignInState copyWith({
+    BlocStatus? status,
     String? email,
     String? password,
   }) {
     return SignInState(
+      status: status ?? const BlocStatusComplete<SignInInfoType>(),
       email: email ?? this.email,
       password: password ?? this.password,
     );
   }
 
-  @override
-  List<Object> get props => [
-        email,
-        password,
-      ];
+  SignInState copyWithInfoType(SignInInfoType infoType) {
+    return copyWith(
+      status: BlocStatusComplete<SignInInfoType>(info: infoType),
+    );
+  }
+}
+
+enum SignInInfoType {
+  userNotFound,
+  invalidEmail,
+  wrongPassword,
 }

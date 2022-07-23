@@ -1,31 +1,25 @@
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
-import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-import '../bloc/sign_in_event.dart';
-import '../bloc/sign_in_state.dart';
+import '../../../config/navigation.dart';
+import '../../../features/initial_home/bloc/initial_home_bloc.dart';
+import '../../../utils/utils.dart';
+import '../bloc/sign_in_bloc.dart';
 
 class AlternativeOptions extends StatelessWidget {
-  const AlternativeOptions({Key? key}) : super(key: key);
+  const AlternativeOptions({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SignInBloc, SignInState>(
-      builder: (context, state) {
-        return SizedBox(
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _SignUpOption(textStyle: _textStyle),
-              const SizedBox(height: 16),
-              _PasswordRecoveryOption(textStyle: _textStyle),
-            ],
-          ),
-        );
-      },
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _SignUpOption(textStyle: _textStyle),
+          const SizedBox(height: 16),
+          _PasswordRecoveryOption(textStyle: _textStyle),
+        ],
+      ),
     );
   }
 
@@ -38,36 +32,39 @@ class AlternativeOptions extends StatelessWidget {
 class _SignUpOption extends StatelessWidget {
   final TextStyle textStyle;
 
-  const _SignUpOption({Key? key, required this.textStyle}) : super(key: key);
+  const _SignUpOption({required this.textStyle});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // initialHomeModeProvider.changeMode(InitialHomeMode.register);
-        Utils.unfocusElements();
-        context.read<SignInBloc>().add(SignInEventReset());
-      },
+      onTap: () => _onPressed(context),
       child: Text('Nie masz konta? Zarejestruj się!', style: textStyle),
     );
+  }
+
+  void _onPressed(BuildContext context) {
+    context.read<InitialHomeBloc>().add(
+          InitialHomeEventChangeMode(mode: InitialHomeMode.register),
+        );
+    Utils.unfocusElements();
+    context.read<SignInBloc>().add(SignInEventReset());
   }
 }
 
 class _PasswordRecoveryOption extends StatelessWidget {
   final TextStyle textStyle;
 
-  const _PasswordRecoveryOption({
-    Key? key,
-    required this.textStyle,
-  }) : super(key: key);
+  const _PasswordRecoveryOption({required this.textStyle});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        context.read<Navigation>().navigateToResetPassword(context);
-      },
+      onTap: () => _onPressed(context),
       child: Text('Zapomniałeś hasła?', style: textStyle),
     );
+  }
+
+  void _onPressed(BuildContext context) {
+    context.read<Navigation>().navigateToResetPassword(context);
   }
 }
