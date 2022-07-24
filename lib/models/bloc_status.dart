@@ -24,11 +24,11 @@ class BlocStatusComplete<T> extends BlocStatus {
   List<Object> get props => [info ?? ''];
 }
 
-class BlocStatusError extends BlocStatus {
-  final String message;
+class BlocStatusError<T> extends BlocStatus {
+  final T? errorType;
 
-  const BlocStatusError({required this.message});
+  const BlocStatusError({required this.errorType});
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [errorType ?? ''];
 }

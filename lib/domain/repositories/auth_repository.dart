@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
+import '../../exceptions/auth_exceptions.dart';
 import '../../firebase/services/fire_auth_service.dart';
 
 class AuthRepository implements AuthInterface {
@@ -96,13 +97,4 @@ class AuthRepository implements AuthInterface {
         return AuthException.unknown;
     }
   }
-}
-
-enum AuthException {
-  userNotFound,
-  wrongPassword,
-  invalidEmail,
-  emailAlreadyInUse,
-  cannotRegisterUser,
-  unknown,
 }

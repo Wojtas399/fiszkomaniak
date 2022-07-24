@@ -1,24 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/models/notification_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
-import '../models/changed_document.dart';
 import '../domain/entities/session.dart';
 import '../utils/utils.dart';
-
-extension FireDocumentChangeTypeExtensions on DocumentChangeType {
-  DbDocChangeType toDbDocChangeType() {
-    switch (this) {
-      case DocumentChangeType.added:
-        return DbDocChangeType.added;
-      case DocumentChangeType.modified:
-        return DbDocChangeType.updated;
-      case DocumentChangeType.removed:
-        return DbDocChangeType.removed;
-    }
-  }
-}
 
 extension FireFlashcardStatusExtensions on FlashcardStatus {
   String toDbString() {

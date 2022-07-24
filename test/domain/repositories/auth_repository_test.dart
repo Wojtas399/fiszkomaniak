@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiszkomaniak/domain/repositories/auth_repository.dart';
+import 'package:fiszkomaniak/exceptions/auth_exceptions.dart';
 import 'package:fiszkomaniak/firebase/services/fire_auth_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
