@@ -49,7 +49,7 @@ void main() {
       final state2 = state.copyWith();
 
       expect(state.status, expectedStatus);
-      expect(state2.status, const BlocStatusComplete<SignInInfoType>());
+      expect(state2.status, const BlocStatusComplete());
     },
   );
 
@@ -80,16 +80,16 @@ void main() {
   );
 
   test(
-    'copy with info type',
+    'copy with error type',
     () {
-      const SignInInfoType expectedInfoType = SignInInfoType.invalidEmail;
+      const SignInErrorType expectedErrorType = SignInErrorType.invalidEmail;
 
-      state = state.copyWithInfoType(expectedInfoType);
+      state = state.copyWithError(expectedErrorType);
 
       expect(
         state.status,
-        const BlocStatusComplete<SignInInfoType>(
-          info: SignInInfoType.invalidEmail,
+        const BlocStatusError<SignInErrorType>(
+          errorType: SignInErrorType.invalidEmail,
         ),
       );
     },

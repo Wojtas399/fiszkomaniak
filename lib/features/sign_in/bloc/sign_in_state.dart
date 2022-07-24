@@ -26,20 +26,24 @@ class SignInState extends Equatable {
     String? password,
   }) {
     return SignInState(
-      status: status ?? const BlocStatusComplete<SignInInfoType>(),
+      status: status ?? const BlocStatusComplete(),
       email: email ?? this.email,
       password: password ?? this.password,
     );
   }
 
-  SignInState copyWithInfoType(SignInInfoType infoType) {
+  SignInState copyWithError(SignInErrorType errorType) {
     return copyWith(
-      status: BlocStatusComplete<SignInInfoType>(info: infoType),
+      status: BlocStatusError<SignInErrorType>(errorType: errorType),
     );
   }
 }
 
 enum SignInInfoType {
+  userHasBeenSignedIn,
+}
+
+enum SignInErrorType {
   userNotFound,
   invalidEmail,
   wrongPassword,

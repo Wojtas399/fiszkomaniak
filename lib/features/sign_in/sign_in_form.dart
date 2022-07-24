@@ -65,9 +65,11 @@ class _SignInBlocListener extends StatelessWidget {
           Dialogs.showLoadingDialog(context: context);
         } else if (blocStatus is BlocStatusComplete) {
           Dialogs.closeLoadingDialog(context);
-          final SignInInfoType? infoType = blocStatus.info;
-          if (infoType != null) {
-            _manageInfoType(infoType, context);
+        } else if (blocStatus is BlocStatusError) {
+          Dialogs.closeLoadingDialog(context);
+          final SignInErrorType? errorType = blocStatus.errorType;
+          if (errorType != null) {
+            _manageErrorType(errorType, context);
           }
         }
       },
@@ -75,9 +77,9 @@ class _SignInBlocListener extends StatelessWidget {
     );
   }
 
-  void _manageInfoType(SignInInfoType infoType, BuildContext context) {
-    switch (infoType) {
-      case SignInInfoType.userNotFound:
+  void _manageErrorType(SignInErrorType errorType, BuildContext context) {
+    switch (errorType) {
+      case SignInErrorType.userNotFound:
         Dialogs.showDialogWithMessage(
           context: context,
           title: 'Brak użytkownika',
@@ -85,13 +87,13 @@ class _SignInBlocListener extends StatelessWidget {
               'Nie znaleziono zarejestrowanego użytkownika o podanym adresie email',
         );
         break;
-      case SignInInfoType.invalidEmail:
+      case SignInErrorType.invalidEmail:
         Dialogs.showDialogWithMessage(
           title: 'Nieprawidłowy adres email',
           message: 'Podano nieprawidłowy adres email',
         );
         break;
-      case SignInInfoType.wrongPassword:
+      case SignInErrorType.wrongPassword:
         Dialogs.showDialogWithMessage(
           context: context,
           title: 'Niepoprawne hasło',

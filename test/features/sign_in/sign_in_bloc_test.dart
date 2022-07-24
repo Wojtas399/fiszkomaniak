@@ -23,7 +23,7 @@ void main() {
   }
 
   SignInState createState({
-    BlocStatus status = const BlocStatusComplete<SignInInfoType>(),
+    BlocStatus status = const BlocStatusComplete(),
     String email = '',
     String password = '',
   }) {
@@ -84,7 +84,9 @@ void main() {
         password: 'password',
       ),
       createState(
-        status: const BlocStatusComplete<SignInInfoType>(),
+        status: const BlocStatusComplete<SignInInfoType>(
+          info: SignInInfoType.userHasBeenSignedIn,
+        ),
         email: 'email',
         password: 'password',
       ),
@@ -179,8 +181,8 @@ void main() {
         password: 'password',
       ),
       createState(
-        status: const BlocStatusComplete<SignInInfoType>(
-          info: SignInInfoType.userNotFound,
+        status: const BlocStatusError<SignInErrorType>(
+          errorType: SignInErrorType.userNotFound,
         ),
         email: 'email',
         password: 'password',
@@ -220,8 +222,8 @@ void main() {
         password: 'password',
       ),
       createState(
-        status: const BlocStatusComplete<SignInInfoType>(
-          info: SignInInfoType.invalidEmail,
+        status: const BlocStatusError<SignInErrorType>(
+          errorType: SignInErrorType.invalidEmail,
         ),
         email: 'email',
         password: 'password',
@@ -261,8 +263,8 @@ void main() {
         password: 'password',
       ),
       createState(
-        status: const BlocStatusComplete<SignInInfoType>(
-          info: SignInInfoType.wrongPassword,
+        status: const BlocStatusError<SignInErrorType>(
+          errorType: SignInErrorType.wrongPassword,
         ),
         email: 'email',
         password: 'password',
