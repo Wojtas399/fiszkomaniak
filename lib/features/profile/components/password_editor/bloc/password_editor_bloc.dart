@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/validators/user_validator.dart';
+import 'package:fiszkomaniak/validators/password_validator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'password_editor_state.dart';
@@ -13,7 +13,12 @@ class PasswordEditorBloc
 
   PasswordEditorBloc({
     required Navigation navigation,
-  }) : super(const PasswordEditorState()) {
+    required PasswordValidator passwordValidator,
+  }) : super(
+          PasswordEditorState(
+            passwordValidator: passwordValidator,
+          ),
+        ) {
     _navigation = navigation;
     on<PasswordEditorEventCurrentPasswordChanged>(_currentPasswordChanged);
     on<PasswordEditorEventNewPasswordChanged>(_newPasswordChanged);

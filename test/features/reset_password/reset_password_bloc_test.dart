@@ -3,20 +3,25 @@ import 'package:fiszkomaniak/domain/use_cases/auth/send_password_reset_email_use
 import 'package:fiszkomaniak/exceptions/auth_exceptions.dart';
 import 'package:fiszkomaniak/features/reset_password/bloc/reset_password_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
+import 'package:fiszkomaniak/validators/email_validator.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockSendPasswordResetEmailUseCase extends Mock
     implements SendPasswordResetEmailUseCase {}
 
+class MockEmailValidator extends Mock implements EmailValidator {}
+
 void main() {
   final sendPasswordResetEmailUseCase = MockSendPasswordResetEmailUseCase();
+  final emailValidator = MockEmailValidator();
 
   ResetPasswordBloc createBloc({
     String email = '',
   }) {
     return ResetPasswordBloc(
       sendPasswordResetEmailUseCase: sendPasswordResetEmailUseCase,
+      emailValidator: emailValidator,
       email: email,
     );
   }
@@ -50,10 +55,13 @@ void main() {
 
   blocTest(
     'submit, should call use case responsible for sending password reset email',
-    build: () => createBloc(email: 'email@example.com'),
+    build: () => createBloc(email: 'email'),
     setUp: () {
       when(
-        () => sendPasswordResetEmailUseCase.execute(email: 'email@example.com'),
+        () => emailValidator.isValid('email'),
+      ).thenReturn(true);
+      when(
+        () => sendPasswordResetEmailUseCase.execute(email: 'email'),
       ).thenAnswer((_) async => '');
     },
     act: (ResetPasswordBloc bloc) {
@@ -62,18 +70,18 @@ void main() {
     expect: () => [
       createState(
         status: const BlocStatusLoading(),
-        email: 'email@example.com',
+        email: 'email',
       ),
       createState(
         status: const BlocStatusComplete<ResetPasswordInfoType>(
           info: ResetPasswordInfoType.emailHasBeenSent,
         ),
-        email: 'email@example.com',
+        email: 'email',
       ),
     ],
     verify: (_) {
       verify(
-        () => sendPasswordResetEmailUseCase.execute(email: 'email@example.com'),
+        () => sendPasswordResetEmailUseCase.execute(email: 'email'),
       ).called(1);
     },
   );
@@ -82,6 +90,9 @@ void main() {
     'submit, should not call use case responsible for sending password reset email if email is not correct',
     build: () => createBloc(email: 'email'),
     setUp: () {
+      when(
+        () => emailValidator.isValid('email'),
+      ).thenReturn(false);
       when(
         () => sendPasswordResetEmailUseCase.execute(email: 'email'),
       ).thenAnswer((_) async => '');
@@ -104,11 +115,14 @@ void main() {
 
   blocTest(
     'submit, should emit user not found error if send password reset email use case throw it',
-    build: () => createBloc(email: 'email@example.com'),
+    build: () => createBloc(email: 'email'),
     setUp: () {
       when(
+        () => emailValidator.isValid('email'),
+      ).thenReturn(true);
+      when(
         () => sendPasswordResetEmailUseCase.execute(
-          email: 'email@example.com',
+          email: 'email',
         ),
       ).thenThrow(AuthException.userNotFound);
     },
@@ -118,19 +132,19 @@ void main() {
     expect: () => [
       createState(
         status: const BlocStatusLoading(),
-        email: 'email@example.com',
+        email: 'email',
       ),
       createState(
         status: const BlocStatusError(
           errorType: ResetPasswordErrorType.userNotFound,
         ),
-        email: 'email@example.com',
+        email: 'email',
       ),
     ],
     verify: (_) {
       verify(
         () => sendPasswordResetEmailUseCase.execute(
-          email: 'email@example.com',
+          email: 'email',
         ),
       ).called(1);
     },

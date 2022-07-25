@@ -1,15 +1,19 @@
 part of 'password_editor_bloc.dart';
 
 class PasswordEditorState extends Equatable {
+  late final PasswordValidator _passwordValidator;
   final String currentPassword;
   final String newPassword;
   final String newPasswordConfirmation;
 
-  const PasswordEditorState({
+  PasswordEditorState({
+    required PasswordValidator passwordValidator,
     this.currentPassword = '',
     this.newPassword = '',
     this.newPasswordConfirmation = '',
-  });
+  }) {
+    _passwordValidator = passwordValidator;
+  }
 
   @override
   List<Object> get props => [
@@ -20,7 +24,7 @@ class PasswordEditorState extends Equatable {
 
   bool get isCurrentPasswordCorrect => currentPassword.isNotEmpty;
 
-  bool get isNewPasswordCorrect => UserValidator.isPasswordCorrect(newPassword);
+  bool get isNewPasswordCorrect => _passwordValidator.isValid(newPassword);
 
   bool get isNewPasswordConfirmationCorrect =>
       newPasswordConfirmation.isNotEmpty &&
@@ -37,6 +41,7 @@ class PasswordEditorState extends Equatable {
     String? newPasswordConfirmation,
   }) {
     return PasswordEditorState(
+      passwordValidator: _passwordValidator,
       currentPassword: currentPassword ?? this.currentPassword,
       newPassword: newPassword ?? this.newPassword,
       newPasswordConfirmation:

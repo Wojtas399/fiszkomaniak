@@ -199,19 +199,4 @@ void main() {
       }
     },
   );
-
-  test(
-    'firebase auth exception cannot register user',
-    () async {
-      when(() => fireAuthService.removeLoggedUser('password')).thenThrow(
-        FirebaseAuthException(code: 'cannot-register-user'),
-      );
-
-      try {
-        await repository.removeLoggedUser(password: 'password');
-      } catch (error) {
-        expect(error, AuthException.cannotRegisterUser);
-      }
-    },
-  );
 }

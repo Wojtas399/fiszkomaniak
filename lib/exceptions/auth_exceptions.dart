@@ -3,6 +3,5 @@ enum AuthException {
   wrongPassword,
   invalidEmail,
   emailAlreadyInUse,
-  cannotRegisterUser,
   unknown,
 }

@@ -21,9 +21,6 @@ class HomeProviders extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
-          create: (_) => FirebaseProvider.provideUserInterface(),
-        ),
-        RepositoryProvider(
           create: (_) => FirebaseProvider.provideCoursesInterface(),
         ),
         RepositoryProvider(
@@ -34,9 +31,6 @@ class HomeProviders extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (_) => NotificationsProvider.provideNotificationsInterface(),
-        ),
-        RepositoryProvider(
-          create: (_) => FirebaseProvider.provideAchievementsInterface(),
         ),
         RepositoryProvider(
           create: (_) =>

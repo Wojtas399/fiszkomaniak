@@ -15,6 +15,12 @@ class GlobalInterfacesProvider extends StatelessWidget {
           create: (_) => FirebaseProvider.provideAuthInterface(),
         ),
         RepositoryProvider(
+          create: (_) => FirebaseProvider.provideUserInterface(),
+        ),
+        RepositoryProvider(
+          create: (_) => FirebaseProvider.provideAchievementsInterface(),
+        ),
+        RepositoryProvider(
           create: (_) => FirebaseProvider.provideAppearanceSettingsInterface(),
         ),
         RepositoryProvider(

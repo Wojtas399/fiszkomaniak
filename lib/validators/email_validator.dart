@@ -1,8 +1,9 @@
-mixin EmailValidator {
-  final String _regexpVal =
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+class EmailValidator {
+  static const String message = 'Niepoprawny adres email';
 
-  bool isEmailValid(String email) {
-    return RegExp(_regexpVal).hasMatch(email);
+  bool isValid(String email) {
+    return RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+    ).hasMatch(email);
   }
 }

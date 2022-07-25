@@ -3,8 +3,8 @@ import 'package:fiszkomaniak/components/buttons/button.dart';
 import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/components/textfields/password_textfield.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/validators/user_validator.dart';
 import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';
+import 'package:fiszkomaniak/validators/password_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -52,6 +52,7 @@ class _PasswordEditorBlocProvider extends StatelessWidget {
     return BlocProvider(
       create: (_) => PasswordEditorBloc(
         navigation: context.read<Navigation>(),
+        passwordValidator: PasswordValidator(),
       ),
       child: child,
     );
@@ -117,7 +118,7 @@ class _NewPassword extends StatelessWidget {
         if (isCorrect) {
           return null;
         }
-        return UserValidator.incorrectPasswordMessage;
+        return PasswordValidator.message;
       },
       onChanged: (String value) => _onChanged(context, value),
     );

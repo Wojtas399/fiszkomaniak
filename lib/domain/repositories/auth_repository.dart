@@ -91,8 +91,6 @@ class AuthRepository implements AuthInterface {
         return AuthException.invalidEmail;
       case 'email-already-in-use':
         return AuthException.emailAlreadyInUse;
-      case 'cannot-register-user':
-        return AuthException.cannotRegisterUser;
       default:
         return AuthException.unknown;
     }

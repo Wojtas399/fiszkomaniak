@@ -1,11 +1,42 @@
-import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_event.dart';
-import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_state.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../domain/use_cases/auth/sign_up_use_case.dart';
+import '../../../exceptions/auth_exceptions.dart';
+import '../../../models/bloc_status.dart';
+import '../../../validators/email_validator.dart';
+import '../../../validators/password_validator.dart';
+import '../../../validators/username_validator.dart';
+
+part 'sign_up_event.dart';
+
+part 'sign_up_state.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
-  // final AuthBloc authBloc;
+  late final SignUpUseCase _signUpUseCase;
 
-  SignUpBloc() : super(const SignUpState()) {
+  SignUpBloc({
+    required SignUpUseCase signUpUseCase,
+    required UsernameValidator usernameValidator,
+    required EmailValidator emailValidator,
+    required PasswordValidator passwordValidator,
+    BlocStatus status = const BlocStatusInitial(),
+    String username = '',
+    String email = '',
+    String password = '',
+    String passwordConfirmation = '',
+  }) : super(
+          SignUpState(
+            usernameValidator: usernameValidator,
+            emailValidator: emailValidator,
+            passwordValidator: passwordValidator,
+            status: status,
+            username: username,
+            email: email,
+            password: password,
+            passwordConfirmation: passwordConfirmation,
+          ),
+        ) {
+    _signUpUseCase = signUpUseCase;
     on<SignUpEventUsernameChanged>(_usernameChanged);
     on<SignUpEventEmailChanged>(_emailChanged);
     on<SignUpEventPasswordChanged>(_passwordChanged);
@@ -42,19 +73,37 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(passwordConfirmation: event.passwordConfirmation));
   }
 
-  void _submit(
+  Future<void> _submit(
     SignUpEventSubmit event,
     Emitter<SignUpState> emit,
-  ) {
-    if (state.isCorrectUsername &&
-        state.isCorrectEmail &&
-        state.isCorrectPassword &&
-        state.isCorrectPasswordConfirmation) {
-      // authBloc.add(AuthEventSignUp(
-      //   username: state.username,
-      //   email: state.email,
-      //   password: state.password,
-      // ));
+  ) async {
+    if (state.isUsernameValid &&
+        state.isEmailValid &&
+        state.isPasswordValid &&
+        state.isPasswordConfirmationValid) {
+      try {
+        emit(state.copyWith(
+          status: const BlocStatusLoading(),
+        ));
+        await _signUpUseCase.execute(
+          username: state.username,
+          email: state.email,
+          password: state.password,
+        );
+        emit(state.copyWith(
+          status: const BlocStatusComplete<SignUpInfoType>(
+            info: SignUpInfoType.userHasBeenSignedUp,
+          ),
+        ));
+      } on AuthException catch (exception) {
+        if (exception == AuthException.emailAlreadyInUse) {
+          emit(state.copyWith(
+            status: const BlocStatusError<SignUpErrorType>(
+              errorType: SignUpErrorType.emailAlreadyInUse,
+            ),
+          ));
+        }
+      }
     }
   }
 
@@ -62,6 +111,11 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     SignUpEventReset event,
     Emitter<SignUpState> emit,
   ) {
-    emit(const SignUpState());
+    emit(state.copyWith(
+      username: '',
+      email: '',
+      password: '',
+      passwordConfirmation: '',
+    ));
   }
 }

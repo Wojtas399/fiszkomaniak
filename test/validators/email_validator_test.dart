@@ -1,44 +1,42 @@
-import 'package:fiszkomaniak/validators/email_validator.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-class EmailValidatorMixin with EmailValidator {}
+import 'package:fiszkomaniak/validators/email_validator.dart';
 
 void main() {
-  final mixin = EmailValidatorMixin();
+  final validator = EmailValidator();
 
   test(
-    'should return false if email does not have monkey mark',
+    'should not be valid if does not have monkey mark',
     () {
-      final bool isCorrect = mixin.isEmailValid('emailexample.com');
+      final bool isValid = validator.isValid('emailexample.com');
 
-      expect(isCorrect, false);
+      expect(isValid, false);
     },
   );
 
   test(
-    'should return false if email does not have domain name',
+    'should not be valid if does not have domain name',
     () {
-      final bool isCorrect = mixin.isEmailValid('email@example.');
+      final bool isValid = validator.isValid('email@example.');
 
-      expect(isCorrect, false);
+      expect(isValid, false);
     },
   );
 
   test(
-    'should return false if email is too short',
+    'should not be valid if is too short',
     () {
-      final bool isCorrect = mixin.isEmailValid('em');
+      final bool isValid = validator.isValid('em');
 
-      expect(isCorrect, false);
+      expect(isValid, false);
     },
   );
 
   test(
-    'should return true if email is correct',
+    'should be valid if matches to email template',
     () {
-      final bool isCorrect = mixin.isEmailValid('email@example.com');
+      final bool isValid = validator.isValid('email@example.com');
 
-      expect(isCorrect, true);
+      expect(isValid, true);
     },
   );
 }

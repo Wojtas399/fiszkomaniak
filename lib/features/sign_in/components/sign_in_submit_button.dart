@@ -1,7 +1,8 @@
-import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/buttons/button.dart';
+import '../../../utils/utils.dart';
+import '../bloc/sign_in_bloc.dart';
 
 class SignInSubmitButton extends StatelessWidget {
   const SignInSubmitButton({super.key});
@@ -14,10 +15,13 @@ class SignInSubmitButton extends StatelessWidget {
     return Center(
       child: Button(
         label: 'Zaloguj',
-        onPressed: isButtonDisabled
-            ? null
-            : () => context.read<SignInBloc>().add(SignInEventSubmit()),
+        onPressed: isButtonDisabled ? null : () => _submit(context),
       ),
     );
+  }
+
+  void _submit(BuildContext context) {
+    context.read<SignInBloc>().add(SignInEventSubmit());
+    Utils.unfocusElements();
   }
 }

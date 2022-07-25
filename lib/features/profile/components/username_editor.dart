@@ -3,9 +3,9 @@ import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
 import 'package:fiszkomaniak/components/buttons/button.dart';
 import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
 import 'package:fiszkomaniak/components/textfields/custom_textfield.dart';
+import 'package:fiszkomaniak/validators/username_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../../core/validators/user_validator.dart';
 
 class UsernameEditor extends StatefulWidget {
   final String currentUsername;
@@ -22,6 +22,7 @@ class UsernameEditor extends StatefulWidget {
 class _UsernameEditor extends State<UsernameEditor> {
   late final String? initialValue;
   final TextEditingController _controller = TextEditingController();
+  final UsernameValidator _usernameValidator = UsernameValidator();
   StreamSubscription? textFieldStatus;
   bool _isButtonDisabled = true;
 
@@ -71,8 +72,8 @@ class _UsernameEditor extends State<UsernameEditor> {
   }
 
   String? _validateUsername(String? value) {
-    return !UserValidator.isUsernameCorrect(value ?? '')
-        ? UserValidator.incorrectUsernameMessage
+    return !_usernameValidator.isValid(value ?? '')
+        ? UsernameValidator.message
         : null;
   }
 
@@ -80,7 +81,7 @@ class _UsernameEditor extends State<UsernameEditor> {
     setState(() {
       _isButtonDisabled = !(value.isNotEmpty &&
           value != initialValue &&
-          UserValidator.isUsernameCorrect(value));
+          _usernameValidator.isValid(value));
     });
   }
 

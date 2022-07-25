@@ -9,12 +9,13 @@ part 'reset_password_event.dart';
 
 part 'reset_password_state.dart';
 
-class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState>
-    with EmailValidator {
+class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
   late final SendPasswordResetEmailUseCase _sendPasswordResetEmailUseCase;
+  late final EmailValidator _emailValidator;
 
   ResetPasswordBloc({
     required SendPasswordResetEmailUseCase sendPasswordResetEmailUseCase,
+    required EmailValidator emailValidator,
     BlocStatus status = const BlocStatusInitial(),
     String email = '',
   }) : super(
@@ -24,6 +25,7 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState>
           ),
         ) {
     _sendPasswordResetEmailUseCase = sendPasswordResetEmailUseCase;
+    _emailValidator = emailValidator;
     on<ResetPasswordEventEmailChanged>(_emailChanged);
     on<ResetPasswordEventSubmit>(_submit);
   }
@@ -41,7 +43,7 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState>
     ResetPasswordEventSubmit event,
     Emitter<ResetPasswordState> emit,
   ) async {
-    if (!isEmailValid(state.email)) {
+    if (!_emailValidator.isValid(state.email)) {
       emit(state.copyWithError(ResetPasswordErrorType.invalidEmail));
     } else {
       try {

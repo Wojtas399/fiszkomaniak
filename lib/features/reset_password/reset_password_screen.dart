@@ -1,5 +1,6 @@
 import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
+import 'package:fiszkomaniak/validators/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/use_cases/auth/send_password_reset_email_use_case.dart';
@@ -32,6 +33,7 @@ class _ResetPasswordBlocProvider extends StatelessWidget {
         sendPasswordResetEmailUseCase: SendPasswordResetEmailUseCase(
           authInterface: context.read<AuthInterface>(),
         ),
+        emailValidator: EmailValidator(),
       ),
       child: child,
     );
