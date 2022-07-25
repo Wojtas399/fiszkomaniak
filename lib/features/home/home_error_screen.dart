@@ -1,4 +1,7 @@
+import 'package:fiszkomaniak/domain/use_cases/auth/sign_out_use_case.dart';
+import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../components/buttons/button.dart';
 import '../../config/slide_right_route_animation.dart';
 import '../initial_home/initial_home.dart';
@@ -62,10 +65,13 @@ class _Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final signOutUseCase = SignOutUseCase(
+      authInterface: context.read<AuthInterface>(),
+    );
     return Button(
       label: 'Wróć do ekranu początkowego',
       onPressed: () {
-        //TODO: sign out
+        signOutUseCase.execute();
         Navigator.of(context).pushReplacement(
           SlideRightRouteAnimation(page: const InitialHome()),
         );
