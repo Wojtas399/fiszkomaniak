@@ -1,11 +1,11 @@
-import 'package:fiszkomaniak/components/learning_progress_chart/learning_progress_chart.dart';
-import 'package:fiszkomaniak/components/section.dart';
-import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
-import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:fiszkomaniak/models/day_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/learning_progress_chart/learning_progress_chart.dart';
+import '../../../components/section.dart';
+import '../../../models/date_model.dart';
+import '../../../models/day_model.dart';
+import '../bloc/profile_bloc.dart';
 
 class ProfileStats extends StatelessWidget {
   const ProfileStats({super.key});
@@ -45,7 +45,7 @@ class _DaysInARow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int daysInARow = context.select(
-      (ProfileBloc bloc) => bloc.state.amountOfDaysInARow,
+      (ProfileBloc bloc) => bloc.state.amountOfDaysStreak,
     );
     return _NumberInfo(
       icon: MdiIcons.medalOutline,
@@ -107,7 +107,7 @@ class _Chart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Day>? days = context.select(
-      (ProfileBloc bloc) => bloc.state.loggedUserData?.days,
+      (ProfileBloc bloc) => bloc.state.user?.days,
     );
     return LearningProgressChart(
       daysFromUser: days,

@@ -20,5 +20,3 @@ class PasswordEditorEventNewPasswordConfirmationChanged
 
   PasswordEditorEventNewPasswordConfirmationChanged({required this.value});
 }
-
-class PasswordEditorEventSubmit extends PasswordEditorEvent {}

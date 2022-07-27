@@ -1,20 +1,22 @@
-import 'package:fiszkomaniak/domain/use_cases/appearance_settings/get_appearance_settings_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/load_all_groups_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/notifications_settings/load_notifications_settings_use_case.dart';
-import 'package:fiszkomaniak/features/home/bloc/home_bloc.dart';
-import 'package:fiszkomaniak/features/home/home_error_screen.dart';
-import 'package:fiszkomaniak/features/home/home_loading_screen.dart';
-import 'package:fiszkomaniak/features/home/home_providers.dart';
-import 'package:fiszkomaniak/features/home/home_router.dart';
-import 'package:fiszkomaniak/interfaces/appearance_settings_interface.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/interfaces/notifications_settings_interface.dart';
-import 'package:fiszkomaniak/interfaces/user_interface.dart';
-import 'package:fiszkomaniak/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import '../../domain/use_cases/appearance_settings/get_appearance_settings_use_case.dart';
+import '../../domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
+import '../../domain/use_cases/groups/load_all_groups_use_case.dart';
+import '../../domain/use_cases/notifications_settings/load_notifications_settings_use_case.dart';
+import '../../domain/use_cases/user/get_user_avatar_url_use_case.dart';
+import '../../domain/use_cases/user/load_user_use_case.dart';
+import '../../interfaces/appearance_settings_interface.dart';
+import '../../interfaces/groups_interface.dart';
+import '../../interfaces/notifications_settings_interface.dart';
+import '../../interfaces/user_interface.dart';
+import '../../providers/theme_provider.dart';
+import 'bloc/home_bloc.dart';
+import 'home_error_screen.dart';
+import 'home_loading_screen.dart';
+import 'home_providers.dart';
+import 'home_router.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -45,7 +47,9 @@ class _HomeBlocProvider extends StatelessWidget {
         context.read<AppearanceSettingsInterface>();
     return BlocProvider(
       create: (BuildContext context) => HomeBloc(
-        userInterface: context.read<UserInterface>(),
+        loadUserUseCase: LoadUserUseCase(
+          userInterface: context.read<UserInterface>(),
+        ),
         loadAllGroupsUseCase: LoadAllGroupsUseCase(
           groupsInterface: context.read<GroupsInterface>(),
         ),
@@ -55,6 +59,9 @@ class _HomeBlocProvider extends StatelessWidget {
         loadNotificationsSettingsUseCase: LoadNotificationsSettingsUseCase(
           notificationsSettingsInterface:
               context.read<NotificationsSettingsInterface>(),
+        ),
+        getUserAvatarUrlUseCase: GetUserAvatarUrlUseCase(
+          userInterface: context.read<UserInterface>(),
         ),
         getAppearanceSettingsUseCase: GetAppearanceSettingsUseCase(
           appearanceSettingsInterface: appearanceSettingsInterface,

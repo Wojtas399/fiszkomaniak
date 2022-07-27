@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
-import 'package:fiszkomaniak/components/buttons/button.dart';
-import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
-import 'package:fiszkomaniak/components/textfields/custom_textfield.dart';
-import 'package:fiszkomaniak/validators/username_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../validators/username_validator.dart';
+import 'buttons/button.dart';
+import 'textfields/custom_textfield.dart';
+import 'on_tap_focus_lose_area.dart';
+import 'app_bar_with_close_button.dart';
 
 class UsernameEditor extends StatefulWidget {
   final String currentUsername;

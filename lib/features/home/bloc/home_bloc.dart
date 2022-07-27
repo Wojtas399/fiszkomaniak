@@ -1,11 +1,13 @@
 import 'dart:async';
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/use_cases/appearance_settings/get_appearance_settings_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/load_all_groups_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/notifications_settings/load_notifications_settings_use_case.dart';
-import 'package:fiszkomaniak/interfaces/user_interface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:equatable/equatable.dart';
+import '../../../domain/use_cases/appearance_settings/get_appearance_settings_use_case.dart';
+import '../../../domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
+import '../../../domain/use_cases/groups/load_all_groups_use_case.dart';
+import '../../../domain/use_cases/notifications_settings/load_notifications_settings_use_case.dart';
+import '../../../domain/use_cases/user/get_user_avatar_url_use_case.dart';
+import '../../../domain/use_cases/user/load_user_use_case.dart';
 import '../../../domain/entities/appearance_settings.dart';
 
 part 'home_event.dart';
@@ -15,25 +17,28 @@ part 'home_state.dart';
 part 'home_status.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  late final UserInterface _userInterface;
+  late final LoadUserUseCase _loadUserUseCase;
   late final LoadAllGroupsUseCase _loadAllGroupsUseCase;
   late final LoadAppearanceSettingsUseCase _loadAppearanceSettingsUseCase;
   late final LoadNotificationsSettingsUseCase _loadNotificationsSettingsUseCase;
+  late final GetUserAvatarUrlUseCase _getUserAvatarUrlUseCase;
   late final GetAppearanceSettingsUseCase _getAppearanceSettingsUseCase;
   StreamSubscription<String>? _loggedUserAvatarUrlListener;
   StreamSubscription<AppearanceSettings>? _appearanceSettingsListener;
 
   HomeBloc({
-    required UserInterface userInterface,
+    required LoadUserUseCase loadUserUseCase,
     required LoadAllGroupsUseCase loadAllGroupsUseCase,
     required LoadAppearanceSettingsUseCase loadAppearanceSettingsUseCase,
     required LoadNotificationsSettingsUseCase loadNotificationsSettingsUseCase,
+    required GetUserAvatarUrlUseCase getUserAvatarUrlUseCase,
     required GetAppearanceSettingsUseCase getAppearanceSettingsUseCase,
   }) : super(const HomeState()) {
-    _userInterface = userInterface;
+    _loadUserUseCase = loadUserUseCase;
     _loadAllGroupsUseCase = loadAllGroupsUseCase;
     _loadAppearanceSettingsUseCase = loadAppearanceSettingsUseCase;
     _loadNotificationsSettingsUseCase = loadNotificationsSettingsUseCase;
+    _getUserAvatarUrlUseCase = getUserAvatarUrlUseCase;
     _getAppearanceSettingsUseCase = getAppearanceSettingsUseCase;
     on<HomeEventInitialize>(_initialize);
     on<HomeEventLoggedUserAvatarUrlUpdated>(_loggedUserAvatarUrlUpdated);
@@ -53,7 +58,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     try {
       emit(state.copyWith(status: HomeStatusLoading()));
-      await _userInterface.loadLoggedUserAvatar();
+      await _loadUserUseCase.execute();
       await _loadAllGroupsUseCase.execute();
       await _loadAppearanceSettingsUseCase.execute();
       await _loadNotificationsSettingsUseCase.execute();
@@ -88,11 +93,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   void _setLoggedUserAvatarUrlListener() {
-    _loggedUserAvatarUrlListener = _userInterface.loggedUserAvatarUrl$.listen(
-      (avatarUrl) => add(
-        HomeEventLoggedUserAvatarUrlUpdated(newLoggedUserAvatarUrl: avatarUrl),
-      ),
-    );
+    _loggedUserAvatarUrlListener =
+        _getUserAvatarUrlUseCase.execute().whereType<String>().listen(
+              (avatarUrl) => add(
+                HomeEventLoggedUserAvatarUrlUpdated(
+                    newLoggedUserAvatarUrl: avatarUrl),
+              ),
+            );
   }
 
   void _setAppearanceSettingsListener() {

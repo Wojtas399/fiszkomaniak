@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
-import 'package:fiszkomaniak/models/user_model.dart';
+import 'package:fiszkomaniak/domain/entities/user.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'achievements_event.dart';

@@ -1,9 +1,10 @@
-import 'package:fiszkomaniak/domain/use_cases/auth/sign_out_use_case.dart';
-import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../components/buttons/button.dart';
 import '../../config/slide_right_route_animation.dart';
+import '../../domain/use_cases/auth/sign_out_use_case.dart';
+import '../../interfaces/auth_interface.dart';
+import '../../interfaces/user_interface.dart';
 import '../initial_home/initial_home.dart';
 
 class HomeErrorScreen extends StatelessWidget {
@@ -67,6 +68,7 @@ class _Button extends StatelessWidget {
   Widget build(BuildContext context) {
     final signOutUseCase = SignOutUseCase(
       authInterface: context.read<AuthInterface>(),
+      userInterface: context.read<UserInterface>(),
     );
     return Button(
       label: 'Wróć do ekranu początkowego',

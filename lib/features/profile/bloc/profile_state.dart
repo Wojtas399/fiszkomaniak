@@ -1,43 +1,65 @@
 part of 'profile_bloc.dart';
 
 class ProfileState extends Equatable {
-  final String loggedUserAvatarUrl;
-  final User? loggedUserData;
-  final int amountOfDaysInARow;
+  final BlocStatus status;
+  final User? user;
+  final int amountOfDaysStreak;
   final int amountOfAllFlashcards;
 
   const ProfileState({
-    this.loggedUserAvatarUrl = '',
-    this.loggedUserData,
-    this.amountOfDaysInARow = 0,
-    this.amountOfAllFlashcards = 0,
+    required this.status,
+    required this.user,
+    required this.amountOfDaysStreak,
+    required this.amountOfAllFlashcards,
   });
 
   @override
   List<Object> get props => [
-        loggedUserAvatarUrl,
-        loggedUserData ?? '',
-        amountOfDaysInARow,
+        status,
+        user ?? '',
+        amountOfDaysStreak,
         amountOfAllFlashcards,
       ];
 
+  String? get avatarUrl => user?.avatarUrl;
+
   ProfileState copyWith({
-    String? loggedUserAvatarUrl,
-    User? loggedUserData,
-    int? amountOfDaysInARow,
+    BlocStatus? status,
+    User? user,
+    int? amountOfDaysStreak,
     int? amountOfAllFlashcards,
   }) {
     return ProfileState(
-      loggedUserAvatarUrl: loggedUserAvatarUrl ?? this.loggedUserAvatarUrl,
-      loggedUserData: loggedUserData ?? this.loggedUserData,
-      amountOfDaysInARow: amountOfDaysInARow ?? this.amountOfDaysInARow,
+      status: status ?? const BlocStatusComplete(),
+      user: user ?? this.user,
+      amountOfDaysStreak: amountOfDaysStreak ?? this.amountOfDaysStreak,
       amountOfAllFlashcards:
           amountOfAllFlashcards ?? this.amountOfAllFlashcards,
     );
   }
+
+  ProfileState copyWithInfoType(ProfileInfoType infoType) {
+    return copyWith(
+      status: BlocStatusComplete<ProfileInfoType>(info: infoType),
+    );
+  }
+
+  ProfileState copyWithErrorType(ProfileErrorType errorType) {
+    return copyWith(
+      status: BlocStatusError<ProfileErrorType>(errorType: errorType),
+    );
+  }
 }
 
-enum AvatarActions {
-  edit,
-  delete,
+enum ProfileInfoType {
+  avatarHasBeenUpdated,
+  avatarHasBeenDeleted,
+  usernameHasBeenUpdated,
+  passwordHasBeenUpdated,
+  userHasBeenSignedOut,
+  userAccountHasBeenDeleted,
+}
+
+enum ProfileErrorType {
+  wrongPassword,
 }

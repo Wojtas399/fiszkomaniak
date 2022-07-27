@@ -1,9 +1,28 @@
-import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:fiszkomaniak/domain/entities/flashcard.dart';
-import 'package:fiszkomaniak/models/notification_model.dart';
-import 'package:fiszkomaniak/models/time_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../domain/entities/flashcard.dart';
 import '../domain/entities/session.dart';
+import '../exceptions/auth_exceptions.dart';
+import '../models/date_model.dart';
+import '../models/notification_model.dart';
+import '../models/time_model.dart';
 import '../utils/utils.dart';
+
+extension FireAuthExceptionExtensions on FirebaseAuthException {
+  AuthException toAuthException() {
+    switch (code) {
+      case 'user-not-found':
+        return AuthException.userNotFound;
+      case 'wrong-password':
+        return AuthException.wrongPassword;
+      case 'invalid-email':
+        return AuthException.invalidEmail;
+      case 'email-already-in-use':
+        return AuthException.emailAlreadyInUse;
+      default:
+        return AuthException.unknown;
+    }
+  }
+}
 
 extension FireFlashcardStatusExtensions on FlashcardStatus {
   String toDbString() {

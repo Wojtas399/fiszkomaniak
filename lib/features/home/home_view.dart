@@ -1,13 +1,13 @@
-import 'package:fiszkomaniak/features/courses_library/courses_library_screen.dart';
-import 'package:fiszkomaniak/features/home/components/home_app_bar.dart';
-import 'package:fiszkomaniak/features/home/components/home_bottom_navigation_bar.dart';
-import 'package:fiszkomaniak/features/home/home_listeners.dart';
-import 'package:fiszkomaniak/features/sessions_list/sessions_list_screen.dart';
-import 'package:fiszkomaniak/features/study/study_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../profile/profile_page.dart';
+import '../courses_library/courses_library_screen.dart';
+import '../sessions_list/sessions_list_screen.dart';
+import '../study/study_screen.dart';
+import '../profile/profile_screen.dart';
+import 'components/home_app_bar.dart';
+import 'components/home_bottom_navigation_bar.dart';
 import 'components/home_action_button.dart';
+import 'home_listeners.dart';
 import 'home.dart';
 
 class HomeView extends StatelessWidget {
@@ -39,7 +39,7 @@ class _PageView extends StatelessWidget {
         StudyScreen(),
         SessionsListScreen(),
         CoursesLibraryScreen(),
-        ProfilePage(),
+        ProfileScreen(),
       ],
     );
   }

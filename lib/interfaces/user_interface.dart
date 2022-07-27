@@ -1,22 +1,24 @@
-import 'package:fiszkomaniak/models/user_model.dart';
+import '../domain/entities/user.dart';
 
 abstract class UserInterface {
-  Stream<String> get loggedUserAvatarUrl$;
+  Stream<User>? get user$;
 
-  Stream<User> get loggedUserData$;
+  Stream<String?>? get avatarUrl$;
 
-  Future<void> loadLoggedUserAvatar();
+  Future<void> loadUser();
 
-  Future<void> loadLoggedUserData();
-
-  Future<void> addUser({
+  Future<void> addUserData({
     required String userId,
     required String username,
   });
 
-  Future<void> saveNewAvatar({required String fullPath});
+  Future<void> updateAvatar({required String imagePath});
 
-  Future<void> removeAvatar();
+  Future<void> updateUsername({required String newUsername});
 
-  Future<void> saveNewUsername({required String newUsername});
+  Future<void> deleteAvatar();
+
+  Future<void> deleteAllUserData();
+
+  void reset();
 }

@@ -11,14 +11,16 @@ abstract class AuthInterface {
     required String password,
   });
 
+  Future<void> reauthenticate({required String password});
+
   Future<void> sendPasswordResetEmail(String email);
 
-  Future<void> changePassword({
+  Future<void> updatePassword({
     required String currentPassword,
     required String newPassword,
   });
 
-  Future<void> removeLoggedUser({required String password});
+  Future<void> deleteLoggedUserAccount();
 
   Future<void> signOut();
 }

@@ -7,24 +7,13 @@ abstract class ProfileEvent extends Equatable {
 
 class ProfileEventInitialize extends ProfileEvent {}
 
-class ProfileEventLoggedUserAvatarUrlChanged extends ProfileEvent {
-  final String newLoggedUserAvatarUrl;
+class ProfileEventUserChanged extends ProfileEvent {
+  final User user;
 
-  ProfileEventLoggedUserAvatarUrlChanged({
-    required this.newLoggedUserAvatarUrl,
-  });
+  ProfileEventUserChanged({required this.user});
 
   @override
-  List<Object> get props => [newLoggedUserAvatarUrl];
-}
-
-class ProfileEventLoggedUserDataChanged extends ProfileEvent {
-  final User newLoggedUserData;
-
-  ProfileEventLoggedUserDataChanged({required this.newLoggedUserData});
-
-  @override
-  List<Object> get props => [newLoggedUserData];
+  List<Object> get props => [user];
 }
 
 class ProfileEventAchievementsStateUpdated extends ProfileEvent {
@@ -40,12 +29,39 @@ class ProfileEventAchievementsStateUpdated extends ProfileEvent {
   List<Object> get props => [daysStreak, allFlashcardsAmount];
 }
 
-class ProfileEventModifyAvatar extends ProfileEvent {}
+class ProfileEventChangeAvatar extends ProfileEvent {
+  final String imagePath;
 
-class ProfileEventChangeUsername extends ProfileEvent {}
+  ProfileEventChangeAvatar({required this.imagePath});
 
-class ProfileEventChangePassword extends ProfileEvent {}
+  @override
+  List<Object> get props => [imagePath];
+}
+
+class ProfileEventDeleteAvatar extends ProfileEvent {}
+
+class ProfileEventChangeUsername extends ProfileEvent {
+  final String newUsername;
+
+  ProfileEventChangeUsername({required this.newUsername});
+
+  @override
+  List<Object> get props => [newUsername];
+}
+
+class ProfileEventChangePassword extends ProfileEvent {
+  final String currentPassword;
+  final String newPassword;
+
+  ProfileEventChangePassword({
+    required this.currentPassword,
+    required this.newPassword,
+  });
+
+  @override
+  List<Object> get props => [currentPassword, newPassword];
+}
 
 class ProfileEventSignOut extends ProfileEvent {}
 
-class ProfileEventRemoveAccount extends ProfileEvent {}
+class ProfileEventDeleteAccount extends ProfileEvent {}

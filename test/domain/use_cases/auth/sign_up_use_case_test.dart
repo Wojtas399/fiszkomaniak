@@ -28,7 +28,7 @@ void main() {
         () => authInterface.signUp(email: 'email', password: 'password'),
       ).thenAnswer((_) async => 'u1');
       when(
-        () => userInterface.addUser(userId: 'u1', username: 'username'),
+        () => userInterface.addUserData(userId: 'u1', username: 'username'),
       ).thenAnswer((_) async => '');
       when(
         () => achievementsInterface.initializeAchievements(),
@@ -44,7 +44,7 @@ void main() {
         () => authInterface.signUp(email: 'email', password: 'password'),
       ).called(1);
       verify(
-        () => userInterface.addUser(userId: 'u1', username: 'username'),
+        () => userInterface.addUserData(userId: 'u1', username: 'username'),
       ).called(1);
       verify(() => achievementsInterface.initializeAchievements()).called(1);
     },

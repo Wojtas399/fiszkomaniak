@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiszkomaniak/interfaces/auth_interface.dart';
-import '../../exceptions/auth_exceptions.dart';
+import '../../firebase/fire_extensions.dart';
+import '../../interfaces/auth_interface.dart';
 import '../../firebase/services/fire_auth_service.dart';
 
 class AuthRepository implements AuthInterface {
@@ -22,8 +22,8 @@ class AuthRepository implements AuthInterface {
   }) async {
     try {
       await _fireAuthService.signIn(email: email, password: password);
-    } on FirebaseAuthException catch (error) {
-      throw _getAuthException(error);
+    } on FirebaseAuthException catch (fireAuthException) {
+      throw fireAuthException.toAuthException();
     }
   }
 
@@ -38,8 +38,17 @@ class AuthRepository implements AuthInterface {
         password: password,
       );
       return userId;
-    } on FirebaseAuthException catch (error) {
-      throw _getAuthException(error);
+    } on FirebaseAuthException catch (fireAuthException) {
+      throw fireAuthException.toAuthException();
+    }
+  }
+
+  @override
+  Future<void> reauthenticate({required String password}) async {
+    try {
+      await _fireAuthService.reauthenticate(password);
+    } on FirebaseAuthException catch (fireAuthException) {
+      throw fireAuthException.toAuthException();
     }
   }
 
@@ -47,13 +56,13 @@ class AuthRepository implements AuthInterface {
   Future<void> sendPasswordResetEmail(String email) async {
     try {
       await _fireAuthService.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (error) {
-      throw _getAuthException(error);
+    } on FirebaseAuthException catch (fireAuthException) {
+      throw fireAuthException.toAuthException();
     }
   }
 
   @override
-  Future<void> changePassword({
+  Future<void> updatePassword({
     required String currentPassword,
     required String newPassword,
   }) async {
@@ -62,37 +71,18 @@ class AuthRepository implements AuthInterface {
         currentPassword: currentPassword,
         newPassword: newPassword,
       );
-    } on FirebaseAuthException catch (error) {
-      throw _getAuthException(error);
+    } on FirebaseAuthException catch (fireAuthException) {
+      throw fireAuthException.toAuthException();
     }
   }
 
   @override
-  Future<void> removeLoggedUser({required String password}) async {
-    try {
-      await _fireAuthService.removeLoggedUser(password);
-    } on FirebaseAuthException catch (error) {
-      throw _getAuthException(error);
-    }
+  Future<void> deleteLoggedUserAccount() async {
+    await _fireAuthService.deleteLoggedUserAccount();
   }
 
   @override
   Future<void> signOut() async {
     await _fireAuthService.signOut();
-  }
-
-  AuthException _getAuthException(FirebaseAuthException error) {
-    switch (error.code) {
-      case 'user-not-found':
-        return AuthException.userNotFound;
-      case 'wrong-password':
-        return AuthException.wrongPassword;
-      case 'invalid-email':
-        return AuthException.invalidEmail;
-      case 'email-already-in-use':
-        return AuthException.emailAlreadyInUse;
-      default:
-        return AuthException.unknown;
-    }
   }
 }

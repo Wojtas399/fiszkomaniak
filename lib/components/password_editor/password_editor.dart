@@ -1,16 +1,16 @@
-import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
-import 'package:fiszkomaniak/components/buttons/button.dart';
-import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
-import 'package:fiszkomaniak/components/textfields/password_textfield.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';
-import 'package:fiszkomaniak/validators/password_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../config/navigation.dart';
+import '../../validators/password_validator.dart';
+import '../app_bar_with_close_button.dart';
+import '../buttons/button.dart';
+import '../on_tap_focus_lose_area.dart';
+import '../textfields/password_textfield.dart';
+import 'bloc/password_editor_bloc.dart';
 
 class PasswordEditor extends StatelessWidget {
-  const PasswordEditor({Key? key}) : super(key: key);
+  const PasswordEditor({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +42,12 @@ class PasswordEditor extends StatelessWidget {
 class _PasswordEditorBlocProvider extends StatelessWidget {
   final Widget child;
 
-  const _PasswordEditorBlocProvider({
-    Key? key,
-    required this.child,
-  }) : super(key: key);
+  const _PasswordEditorBlocProvider({required this.child});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => PasswordEditorBloc(
-        navigation: context.read<Navigation>(),
         passwordValidator: PasswordValidator(),
       ),
       child: child,
@@ -60,7 +56,7 @@ class _PasswordEditorBlocProvider extends StatelessWidget {
 }
 
 class _TextFields extends StatelessWidget {
-  const _TextFields({Key? key}) : super(key: key);
+  const _TextFields();
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +75,7 @@ class _TextFields extends StatelessWidget {
 }
 
 class _CurrentPassword extends StatelessWidget {
-  const _CurrentPassword({Key? key}) : super(key: key);
+  const _CurrentPassword();
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +100,7 @@ class _CurrentPassword extends StatelessWidget {
 }
 
 class _NewPassword extends StatelessWidget {
-  const _NewPassword({Key? key}) : super(key: key);
+  const _NewPassword();
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +128,7 @@ class _NewPassword extends StatelessWidget {
 }
 
 class _NewPasswordConfirmation extends StatelessWidget {
-  const _NewPasswordConfirmation({Key? key}) : super(key: key);
+  const _NewPasswordConfirmation();
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +156,7 @@ class _NewPasswordConfirmation extends StatelessWidget {
 }
 
 class _SubmitButton extends StatelessWidget {
-  const _SubmitButton({Key? key}) : super(key: key);
+  const _SubmitButton();
 
   @override
   Widget build(BuildContext context) {
@@ -174,6 +170,12 @@ class _SubmitButton extends StatelessWidget {
   }
 
   void _onPressed(BuildContext context) {
-    context.read<PasswordEditorBloc>().add(PasswordEditorEventSubmit());
+    final PasswordEditorState state = context.read<PasswordEditorBloc>().state;
+    context.read<Navigation>().moveBack(
+          objectToReturn: PasswordEditorReturns(
+            currentPassword: state.currentPassword,
+            newPassword: state.newPassword,
+          ),
+        );
   }
 }

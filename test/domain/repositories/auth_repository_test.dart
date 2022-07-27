@@ -1,9 +1,9 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiszkomaniak/domain/repositories/auth_repository.dart';
 import 'package:fiszkomaniak/exceptions/auth_exceptions.dart';
 import 'package:fiszkomaniak/firebase/services/fire_auth_service.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockFireAuthService extends Mock implements FireAuthService {}
 
@@ -78,6 +78,19 @@ void main() {
   );
 
   test(
+    'reauthenticate, should call method responsible for authenticating user again',
+    () async {
+      when(
+        () => fireAuthService.reauthenticate('password'),
+      ).thenAnswer((_) async => '');
+
+      await repository.reauthenticate(password: 'password');
+
+      verify(() => fireAuthService.reauthenticate('password')).called(1);
+    },
+  );
+
+  test(
     'send password reset email, should call method responsible for sending email to reset password',
     () async {
       when(
@@ -93,7 +106,7 @@ void main() {
   );
 
   test(
-    'change password, should call method responsible for changing password',
+    'update password, should call method responsible for changing password',
     () async {
       when(
         () => fireAuthService.changePassword(
@@ -102,7 +115,7 @@ void main() {
         ),
       ).thenAnswer((_) async => '');
 
-      await repository.changePassword(
+      await repository.updatePassword(
         currentPassword: 'currentPassword',
         newPassword: 'newPassword',
       );
@@ -117,15 +130,15 @@ void main() {
   );
 
   test(
-    'remove logged user, should call method responsible for removing logged user',
+    'delete logged user, should call method responsible for deleting logged user',
     () async {
       when(
-        () => fireAuthService.removeLoggedUser('password'),
+        () => fireAuthService.deleteLoggedUserAccount(),
       ).thenAnswer((_) async => '');
 
-      await repository.removeLoggedUser(password: 'password');
+      await repository.deleteLoggedUserAccount();
 
-      verify(() => fireAuthService.removeLoggedUser('password')).called(1);
+      verify(() => fireAuthService.deleteLoggedUserAccount()).called(1);
     },
   );
 
@@ -143,12 +156,12 @@ void main() {
   test(
     'firebase auth exception user not found',
     () async {
-      when(() => fireAuthService.removeLoggedUser('password')).thenThrow(
+      when(() => fireAuthService.reauthenticate('password')).thenThrow(
         FirebaseAuthException(code: 'user-not-found'),
       );
 
       try {
-        await repository.removeLoggedUser(password: 'password');
+        await repository.reauthenticate(password: 'password');
       } catch (error) {
         expect(error, AuthException.userNotFound);
       }
@@ -158,12 +171,12 @@ void main() {
   test(
     'firebase auth exception wrong password',
     () async {
-      when(() => fireAuthService.removeLoggedUser('password')).thenThrow(
+      when(() => fireAuthService.reauthenticate('password')).thenThrow(
         FirebaseAuthException(code: 'wrong-password'),
       );
 
       try {
-        await repository.removeLoggedUser(password: 'password');
+        await repository.reauthenticate(password: 'password');
       } catch (error) {
         expect(error, AuthException.wrongPassword);
       }
@@ -173,12 +186,12 @@ void main() {
   test(
     'firebase auth exception invalid email',
     () async {
-      when(() => fireAuthService.removeLoggedUser('password')).thenThrow(
+      when(() => fireAuthService.reauthenticate('password')).thenThrow(
         FirebaseAuthException(code: 'invalid-email'),
       );
 
       try {
-        await repository.removeLoggedUser(password: 'password');
+        await repository.reauthenticate(password: 'password');
       } catch (error) {
         expect(error, AuthException.invalidEmail);
       }
@@ -188,12 +201,12 @@ void main() {
   test(
     'firebase auth exception email already in use',
     () async {
-      when(() => fireAuthService.removeLoggedUser('password')).thenThrow(
+      when(() => fireAuthService.reauthenticate('password')).thenThrow(
         FirebaseAuthException(code: 'email-already-in-use'),
       );
 
       try {
-        await repository.removeLoggedUser(password: 'password');
+        await repository.reauthenticate(password: 'password');
       } catch (error) {
         expect(error, AuthException.emailAlreadyInUse);
       }
