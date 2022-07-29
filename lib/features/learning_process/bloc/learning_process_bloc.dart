@@ -4,12 +4,13 @@ import '../../../components/flashcards_stack/flashcards_stack_model.dart';
 import '../../../domain/entities/group.dart';
 import '../../../domain/entities/session.dart';
 import '../../../domain/entities/flashcard.dart';
+import '../../../domain/use_cases/achievements/add_finished_session_use_case.dart';
 import '../../../domain/use_cases/courses/get_course_use_case.dart';
 import '../../../domain/use_cases/flashcards/update_flashcards_statuses_use_case.dart';
 import '../../../domain/use_cases/groups/get_group_use_case.dart';
 import '../../../domain/use_cases/sessions/remove_session_use_case.dart';
-import '../learning_process_dialogs.dart';
 import '../../../models/bloc_status.dart';
+import '../learning_process_dialogs.dart';
 import '../learning_process_utils.dart';
 import '../learning_process_data.dart';
 
@@ -23,6 +24,7 @@ class LearningProcessBloc
   late final GetGroupUseCase _getGroupUseCase;
   late final GetCourseUseCase _getCourseUseCase;
   late final UpdateFlashcardsStatusesUseCase _updateFlashcardsStatusesUseCase;
+  late final AddFinishedSessionUseCase _addFinishedSessionUseCase;
   late final RemoveSessionUseCase _removeSessionUseCase;
   late final LearningProcessDialogs _dialogs;
 
@@ -30,6 +32,7 @@ class LearningProcessBloc
     required GetGroupUseCase getGroupUseCase,
     required GetCourseUseCase getCourseUseCase,
     required UpdateFlashcardsStatusesUseCase updateFlashcardsStatusesUseCase,
+    required AddFinishedSessionUseCase addFinishedSessionUseCase,
     required RemoveSessionUseCase removeSessionUseCase,
     required LearningProcessDialogs learningProcessDialogs,
     BlocStatus status = const BlocStatusInitial(),
@@ -61,6 +64,7 @@ class LearningProcessBloc
     _getGroupUseCase = getGroupUseCase;
     _getCourseUseCase = getCourseUseCase;
     _updateFlashcardsStatusesUseCase = updateFlashcardsStatusesUseCase;
+    _addFinishedSessionUseCase = addFinishedSessionUseCase;
     _removeSessionUseCase = removeSessionUseCase;
     _dialogs = learningProcessDialogs;
     on<LearningProcessEventInitialize>(_initialize);
@@ -182,7 +186,7 @@ class LearningProcessBloc
     } else {
       emit(state.copyWith(status: const BlocStatusLoading()));
       await _saveFlashcards();
-      _addSessionToAchievements();
+      await _addSessionToAchievements();
       await _removeSession();
       emit(state.copyWith(
         status: const BlocStatusComplete<LearningProcessInfoType>(
@@ -198,7 +202,7 @@ class LearningProcessBloc
   ) async {
     emit(state.copyWith(status: const BlocStatusLoading()));
     await _saveFlashcards();
-    _addSessionToAchievements();
+    await _addSessionToAchievements();
     await _removeSession();
     emit(state.copyWith(
       status: const BlocStatusComplete<LearningProcessInfoType>(
@@ -248,15 +252,18 @@ class LearningProcessBloc
   Future<void> _saveFlashcards() async {
     final String? groupId = state.group?.id;
     if (groupId != null) {
-      await _updateFlashcardsStatusesUseCase.execute(
-        groupId: groupId,
-        indexesOfRememberedFlashcards: state.indexesOfRememberedFlashcards,
-      );
+      // await _updateFlashcardsStatusesUseCase.execute(
+      //   groupId: groupId,
+      //   indexesOfRememberedFlashcards: state.indexesOfRememberedFlashcards,
+      // );
     }
   }
 
-  void _addSessionToAchievements() {
-    //TODO: should add session to achievements
+  Future<void> _addSessionToAchievements() async {
+    final String? sessionId = state.sessionId;
+    if (sessionId != null) {
+      await _addFinishedSessionUseCase.execute(sessionId: sessionId);
+    }
   }
 
   Future<void> _removeSession() async {

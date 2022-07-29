@@ -8,13 +8,7 @@ class MockUserInterface extends Mock implements UserInterface {}
 
 void main() {
   final userInterface = MockUserInterface();
-  late GetUserUseCase useCase;
-
-  setUp(() => useCase = GetUserUseCase(userInterface: userInterface));
-
-  tearDown(() {
-    reset(userInterface);
-  });
+  final useCase = GetUserUseCase(userInterface: userInterface);
 
   test(
     'should return stream with user',
@@ -26,15 +20,6 @@ void main() {
       when(() => userInterface.user$).thenAnswer((_) => Stream.value(user));
 
       expect(await useCase.execute().first, user);
-    },
-  );
-
-  test(
-    'should return stream with null if stream from interface has not been set yet',
-    () async {
-      when(() => userInterface.user$).thenAnswer((_) => null);
-
-      expect(await useCase.execute().first, null);
     },
   );
 }

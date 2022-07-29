@@ -3,6 +3,7 @@ import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/entities/session.dart';
+import 'package:fiszkomaniak/domain/use_cases/achievements/add_finished_session_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/flashcards/update_flashcards_statuses_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
@@ -21,6 +22,9 @@ class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
 class MockUpdateFlashcardsStatusesUseCase extends Mock
     implements UpdateFlashcardsStatusesUseCase {}
 
+class MockAddFinishedSessionUseCase extends Mock
+    implements AddFinishedSessionUseCase {}
+
 class MockRemoveSessionUseCase extends Mock implements RemoveSessionUseCase {}
 
 class MockLearningProcessDialogs extends Mock
@@ -30,6 +34,7 @@ void main() {
   final getGroupUseCase = MockGetGroupUseCase();
   final getCourseUseCase = MockGetCourseUseCase();
   final updateFlashcardsStatusesUseCase = MockUpdateFlashcardsStatusesUseCase();
+  final addFinishedSessionUseCase = MockAddFinishedSessionUseCase();
   final removeSessionUseCase = MockRemoveSessionUseCase();
   final learningProcessDialogs = MockLearningProcessDialogs();
 
@@ -46,6 +51,7 @@ void main() {
       getGroupUseCase: getGroupUseCase,
       getCourseUseCase: getCourseUseCase,
       updateFlashcardsStatusesUseCase: updateFlashcardsStatusesUseCase,
+      addFinishedSessionUseCase: addFinishedSessionUseCase,
       removeSessionUseCase: removeSessionUseCase,
       learningProcessDialogs: learningProcessDialogs,
       sessionId: sessionId,
@@ -90,6 +96,7 @@ void main() {
     reset(getGroupUseCase);
     reset(getCourseUseCase);
     reset(updateFlashcardsStatusesUseCase);
+    reset(addFinishedSessionUseCase);
     reset(removeSessionUseCase);
     reset(learningProcessDialogs);
   });
@@ -303,7 +310,7 @@ void main() {
   );
 
   blocTest(
-    'time finished, should save progress and remove session',
+    'time finished, should save progress, add session to achievements and remove session',
     build: () => createBloc(
       sessionId: 's1',
       group: createGroup(id: 'g1'),
@@ -315,11 +322,14 @@ void main() {
       ).thenAnswer(
         (_) async => false,
       );
+      // when(
+      //   () => updateFlashcardsStatusesUseCase.execute(
+      //     groupId: 'g1',
+      //     indexesOfRememberedFlashcards: [1, 3],
+      //   ),
+      // ).thenAnswer((_) async => '');
       when(
-        () => updateFlashcardsStatusesUseCase.execute(
-          groupId: 'g1',
-          indexesOfRememberedFlashcards: [1, 3],
-        ),
+        () => addFinishedSessionUseCase.execute(sessionId: 's1'),
       ).thenAnswer((_) async => '');
       when(
         () => removeSessionUseCase.execute(sessionId: 's1'),
@@ -346,11 +356,14 @@ void main() {
     ],
     verify: (_) {
       verify(() => learningProcessDialogs.askForContinuing()).called(1);
+      // verify(
+      //   () => updateFlashcardsStatusesUseCase.execute(
+      //     groupId: 'g1',
+      //     indexesOfRememberedFlashcards: [1, 3],
+      //   ),
+      // ).called(1);
       verify(
-        () => updateFlashcardsStatusesUseCase.execute(
-          groupId: 'g1',
-          indexesOfRememberedFlashcards: [1, 3],
-        ),
+        () => addFinishedSessionUseCase.execute(sessionId: 's1'),
       ).called(1);
       verify(() => removeSessionUseCase.execute(sessionId: 's1')).called(1);
     },
@@ -364,11 +377,14 @@ void main() {
       sessionId: 's1',
     ),
     setUp: () {
+      // when(
+      //   () => updateFlashcardsStatusesUseCase.execute(
+      //     groupId: 'g1',
+      //     indexesOfRememberedFlashcards: [1, 2],
+      //   ),
+      // ).thenAnswer((_) async => '');
       when(
-        () => updateFlashcardsStatusesUseCase.execute(
-          groupId: 'g1',
-          indexesOfRememberedFlashcards: [1, 2],
-        ),
+        () => addFinishedSessionUseCase.execute(sessionId: 's1'),
       ).thenAnswer((_) async => '');
       when(
         () => removeSessionUseCase.execute(sessionId: 's1'),
@@ -394,11 +410,14 @@ void main() {
       ),
     ],
     verify: (_) {
+      // verify(
+      //   () => updateFlashcardsStatusesUseCase.execute(
+      //     groupId: 'g1',
+      //     indexesOfRememberedFlashcards: [1, 2],
+      //   ),
+      // ).called(1);
       verify(
-        () => updateFlashcardsStatusesUseCase.execute(
-          groupId: 'g1',
-          indexesOfRememberedFlashcards: [1, 2],
-        ),
+        () => addFinishedSessionUseCase.execute(sessionId: 's1'),
       ).called(1);
       verify(() => removeSessionUseCase.execute(sessionId: 's1')).called(1);
     },
@@ -414,12 +433,12 @@ void main() {
       when(
         () => learningProcessDialogs.askForSaveConfirmation(),
       ).thenAnswer((_) async => true);
-      when(
-        () => updateFlashcardsStatusesUseCase.execute(
-          groupId: 'g1',
-          indexesOfRememberedFlashcards: [1, 2],
-        ),
-      ).thenAnswer((_) async => '');
+      // when(
+      //   () => updateFlashcardsStatusesUseCase.execute(
+      //     groupId: 'g1',
+      //     indexesOfRememberedFlashcards: [1, 2],
+      //   ),
+      // ).thenAnswer((_) async => '');
     },
     act: (LearningProcessBloc bloc) {
       bloc.add(LearningProcessEventExit());
@@ -440,12 +459,12 @@ void main() {
     ],
     verify: (_) {
       verify(() => learningProcessDialogs.askForSaveConfirmation()).called(1);
-      verify(
-        () => updateFlashcardsStatusesUseCase.execute(
-          groupId: 'g1',
-          indexesOfRememberedFlashcards: [1, 2],
-        ),
-      ).called(1);
+      // verify(
+      //   () => updateFlashcardsStatusesUseCase.execute(
+      //     groupId: 'g1',
+      //     indexesOfRememberedFlashcards: [1, 2],
+      //   ),
+      // ).called(1);
     },
   );
 
@@ -459,12 +478,12 @@ void main() {
       when(
         () => learningProcessDialogs.askForSaveConfirmation(),
       ).thenAnswer((_) async => false);
-      when(
-        () => updateFlashcardsStatusesUseCase.execute(
-          groupId: 'g1',
-          indexesOfRememberedFlashcards: [1, 2],
-        ),
-      ).thenAnswer((_) async => '');
+      // when(
+      //   () => updateFlashcardsStatusesUseCase.execute(
+      //     groupId: 'g1',
+      //     indexesOfRememberedFlashcards: [1, 2],
+      //   ),
+      // ).thenAnswer((_) async => '');
     },
     act: (LearningProcessBloc bloc) {
       bloc.add(LearningProcessEventExit());
@@ -480,12 +499,12 @@ void main() {
     ],
     verify: (_) {
       verify(() => learningProcessDialogs.askForSaveConfirmation()).called(1);
-      verifyNever(
-        () => updateFlashcardsStatusesUseCase.execute(
-          groupId: 'g1',
-          indexesOfRememberedFlashcards: [1, 2],
-        ),
-      );
+      // verifyNever(
+      //   () => updateFlashcardsStatusesUseCase.execute(
+      //     groupId: 'g1',
+      //     indexesOfRememberedFlashcards: [1, 2],
+      //   ),
+      // );
     },
   );
 }

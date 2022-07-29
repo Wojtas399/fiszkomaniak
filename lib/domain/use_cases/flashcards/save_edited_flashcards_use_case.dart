@@ -1,11 +1,17 @@
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
+import '../../../interfaces/groups_interface.dart';
+import '../../../interfaces/achievements_interface.dart';
 import '../../entities/flashcard.dart';
 
 class SaveEditedFlashcardsUseCase {
   late final GroupsInterface _groupsInterface;
+  late final AchievementsInterface _achievementsInterface;
 
-  SaveEditedFlashcardsUseCase({required GroupsInterface groupsInterface}) {
+  SaveEditedFlashcardsUseCase({
+    required GroupsInterface groupsInterface,
+    required AchievementsInterface achievementsInterface,
+  }) {
     _groupsInterface = groupsInterface;
+    _achievementsInterface = achievementsInterface;
   }
 
   Future<void> execute({
@@ -16,6 +22,9 @@ class SaveEditedFlashcardsUseCase {
       groupId: groupId,
       flashcards: flashcards,
     );
-    //TODO: this use case should also save new flashcards to achievements
+    await _achievementsInterface.addFlashcards(
+      groupId: groupId,
+      flashcards: flashcards,
+    );
   }
 }

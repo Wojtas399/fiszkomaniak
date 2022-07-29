@@ -52,7 +52,7 @@ void main() {
     () async {
       await repository.loadUser();
 
-      expect(await repository.user$?.first, user);
+      expect(await repository.user$.first, user);
     },
   );
 
@@ -62,7 +62,7 @@ void main() {
       await repository.loadUser();
 
       expect(
-        await repository.avatarUrl$?.first,
+        await repository.avatarUrl$.first,
         user.avatarUrl,
       );
     },
@@ -110,7 +110,7 @@ void main() {
       await repository.updateAvatar(imagePath: 'imagePath');
 
       expect(
-        await repository.user$?.first,
+        await repository.user$.first,
         user.copyWithAvatarUrl('new/url'),
       );
       verify(
@@ -131,7 +131,7 @@ void main() {
       await repository.updateUsername(newUsername: 'newUsername');
 
       expect(
-        await repository.user$?.first,
+        await repository.user$.first,
         user.copyWith(username: 'newUsername'),
       );
       verify(
@@ -151,7 +151,7 @@ void main() {
       await repository.deleteAvatar();
 
       expect(
-        await repository.user$?.first,
+        await repository.user$.first,
         user.copyWithAvatarUrl(null),
       );
       verify(() => fireAvatarService.removeLoggedUserAvatar()).called(1);
@@ -172,13 +172,13 @@ void main() {
   );
 
   test(
-    'reset, should set user stream as null',
+    'reset, should set initial user stream value',
     () async {
       await repository.loadUser();
-      expect(await repository.user$?.first, user);
+      expect(await repository.user$.first, user);
 
       repository.reset();
-      expect(repository.user$, null);
+      expect(await repository.user$.first, null);
     },
   );
 }

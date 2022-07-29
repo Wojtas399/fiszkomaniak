@@ -8,6 +8,6 @@ class GetUserAvatarUrlUseCase {
   }
 
   Stream<String?> execute() {
-    return _userInterface.avatarUrl$ ?? Stream.value(null);
+    return _userInterface.avatarUrl$;
   }
 }

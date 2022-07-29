@@ -7,26 +7,13 @@ abstract class ProfileEvent extends Equatable {
 
 class ProfileEventInitialize extends ProfileEvent {}
 
-class ProfileEventUserChanged extends ProfileEvent {
-  final User user;
+class ProfileEventListenedParamsUpdated extends ProfileEvent {
+  final ProfileStateListenedParams params;
 
-  ProfileEventUserChanged({required this.user});
-
-  @override
-  List<Object> get props => [user];
-}
-
-class ProfileEventAchievementsStateUpdated extends ProfileEvent {
-  final int daysStreak;
-  final int allFlashcardsAmount;
-
-  ProfileEventAchievementsStateUpdated({
-    required this.daysStreak,
-    required this.allFlashcardsAmount,
-  });
+  ProfileEventListenedParamsUpdated({required this.params});
 
   @override
-  List<Object> get props => [daysStreak, allFlashcardsAmount];
+  List<Object> get props => [params];
 }
 
 class ProfileEventChangeAvatar extends ProfileEvent {

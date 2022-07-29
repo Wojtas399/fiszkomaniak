@@ -14,7 +14,7 @@ import '../entities/user.dart';
 class UserRepository implements UserInterface {
   late final FireUserService _fireUserService;
   late final FireAvatarService _fireAvatarService;
-  BehaviorSubject<User?>? _user$;
+  final BehaviorSubject<User?> _user$ = BehaviorSubject<User?>.seeded(null);
 
   UserRepository({
     required FireUserService fireUserService,
@@ -25,19 +25,17 @@ class UserRepository implements UserInterface {
   }
 
   @override
-  Stream<User>? get user$ => _user$?.stream.whereType<User>();
+  Stream<User?> get user$ => _user$.stream;
 
   @override
-  Stream<String?>? get avatarUrl$ => user$?.map((user) => user.avatarUrl);
+  Stream<String?> get avatarUrl$ => user$.map((user) => user?.avatarUrl);
 
   @override
   Future<void> loadUser() async {
-    if (_user$ == null) {
-      final userFromDb = await _fireUserService.loadLoggedUserData();
-      final avatarUrl = await _fireAvatarService.loadLoggedUserAvatarUrl();
-      final User? user = _convertUserFromDbToModel(userFromDb, avatarUrl);
-      _user$ = BehaviorSubject<User?>.seeded(user);
-    }
+    final userFromDb = await _fireUserService.loadLoggedUserData();
+    final avatarUrl = await _fireAvatarService.loadLoggedUserAvatarUrl();
+    final User? user = _convertUserFromDbToModel(userFromDb, avatarUrl);
+    _user$.add(user);
   }
 
   @override
@@ -52,24 +50,24 @@ class UserRepository implements UserInterface {
   Future<void> updateAvatar({required String imagePath}) async {
     await _fireAvatarService.saveNewLoggedUserAvatar(imagePath);
     final newAvatarUrl = await _fireAvatarService.loadLoggedUserAvatarUrl();
-    _user$?.add(
-      _user$?.value?.copyWithAvatarUrl(newAvatarUrl),
+    _user$.add(
+      _user$.value?.copyWithAvatarUrl(newAvatarUrl),
     );
   }
 
   @override
   Future<void> updateUsername({required String newUsername}) async {
     await _fireUserService.saveNewUsername(newUsername);
-    _user$?.add(
-      _user$?.value?.copyWith(username: newUsername),
+    _user$.add(
+      _user$.value?.copyWith(username: newUsername),
     );
   }
 
   @override
   Future<void> deleteAvatar() async {
     await _fireAvatarService.removeLoggedUserAvatar();
-    _user$?.add(
-      _user$?.value?.copyWithAvatarUrl(null),
+    _user$.add(
+      _user$.value?.copyWithAvatarUrl(null),
     );
   }
 
@@ -80,8 +78,7 @@ class UserRepository implements UserInterface {
 
   @override
   void reset() {
-    _user$?.close();
-    _user$ = null;
+    _user$.add(null);
   }
 
   User? _convertUserFromDbToModel(

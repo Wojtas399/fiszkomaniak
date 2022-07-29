@@ -1,15 +1,13 @@
-import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/notifications/achievements_notifications_bloc.dart';
-import 'package:fiszkomaniak/core/notifications/sessions_notifications_bloc.dart';
-import 'package:fiszkomaniak/injections/notifications_provider.dart';
-import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
-import 'package:fiszkomaniak/interfaces/achievements_notifications_interface.dart';
-import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
-import 'package:fiszkomaniak/interfaces/sessions_notifications_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../core/notifications/achievements_notifications_bloc.dart';
+import '../../core/notifications/sessions_notifications_bloc.dart';
 import '../../core/notifications/notifications_bloc.dart';
+import '../../injections/notifications_provider.dart';
 import '../../injections/firebase_provider.dart';
+import '../../interfaces/achievements_notifications_interface.dart';
+import '../../interfaces/notifications_interface.dart';
+import '../../interfaces/sessions_notifications_interface.dart';
 
 class HomeProviders extends StatelessWidget {
   final Widget child;
@@ -43,11 +41,6 @@ class HomeProviders extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider<AchievementsBloc>(
-            create: (BuildContext context) => AchievementsBloc(
-              achievementsInterface: context.read<AchievementsInterface>(),
-            )..add(AchievementsEventInitialize()),
-          ),
           BlocProvider<NotificationsBloc>(
             create: (BuildContext context) => NotificationsBloc(
               notificationsInterface: context.read<NotificationsInterface>(),
@@ -58,7 +51,6 @@ class HomeProviders extends StatelessWidget {
               achievementsNotificationsBloc: AchievementsNotificationsBloc(
                 achievementsNotificationsInterface:
                     context.read<AchievementsNotificationsInterface>(),
-                achievementsBloc: context.read<AchievementsBloc>(),
               ),
             )..add(NotificationsEventInitialize()),
           ),

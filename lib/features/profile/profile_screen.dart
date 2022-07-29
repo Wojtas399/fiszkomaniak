@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../components/dialogs/dialogs.dart';
 import '../../config/navigation.dart';
+import '../../domain/use_cases/achievements/get_all_flashcards_amount_use_case.dart';
+import '../../domain/use_cases/achievements/load_all_flashcards_amount_use_case.dart';
 import '../../domain/use_cases/auth/sign_out_use_case.dart';
 import '../../domain/use_cases/auth/update_password_use_case.dart';
 import '../../domain/use_cases/user/get_user_use_case.dart';
@@ -9,6 +11,7 @@ import '../../domain/use_cases/auth/delete_logged_user_account_use_case.dart';
 import '../../domain/use_cases/user/update_user_username_use_case.dart';
 import '../../domain/use_cases/user/delete_avatar_use_case.dart';
 import '../../domain/use_cases/user/update_avatar_use_case.dart';
+import '../../interfaces/achievements_interface.dart';
 import '../../interfaces/auth_interface.dart';
 import '../../interfaces/user_interface.dart';
 import '../../models/bloc_status.dart';
@@ -47,10 +50,12 @@ class _ProfileBlocProvider extends StatelessWidget {
         signOutUseCase: SignOutUseCase(
           authInterface: context.read<AuthInterface>(),
           userInterface: context.read<UserInterface>(),
+          achievementsInterface: context.read<AchievementsInterface>(),
         ),
         deleteLoggedUserAccountUseCase: DeleteLoggedUserAccountUseCase(
           userInterface: context.read<UserInterface>(),
           authInterface: context.read<AuthInterface>(),
+          achievementsInterface: context.read<AchievementsInterface>(),
         ),
         getUserUseCase: GetUserUseCase(
           userInterface: context.read<UserInterface>(),
@@ -61,7 +66,12 @@ class _ProfileBlocProvider extends StatelessWidget {
         deleteAvatarUseCase: DeleteAvatarUseCase(
           userInterface: context.read<UserInterface>(),
         ),
-        // achievementsBloc: context.read<AchievementsBloc>(),
+        getAllFlashcardsAmountUseCase: GetAllFlashcardsAmountUseCase(
+          achievementsInterface: context.read<AchievementsInterface>(),
+        ),
+        loadAllFlashcardsAmountUseCase: LoadAllFlashcardsAmountUseCase(
+          achievementsInterface: context.read<AchievementsInterface>(),
+        ),
         profileDialogs: ProfileDialogs(),
       )..add(ProfileEventInitialize()),
       child: child,

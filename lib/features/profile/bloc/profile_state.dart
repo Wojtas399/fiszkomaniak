@@ -51,6 +51,22 @@ class ProfileState extends Equatable {
   }
 }
 
+class ProfileStateListenedParams extends Equatable {
+  final User? user;
+  final int allFlashcardsAmount;
+
+  const ProfileStateListenedParams({
+    required this.user,
+    required this.allFlashcardsAmount,
+  });
+
+  @override
+  List<Object> get props => [
+        user ?? '',
+        allFlashcardsAmount,
+      ];
+}
+
 enum ProfileInfoType {
   avatarHasBeenUpdated,
   avatarHasBeenDeleted,

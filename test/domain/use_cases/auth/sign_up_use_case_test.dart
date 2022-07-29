@@ -1,9 +1,9 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/use_cases/auth/sign_up_use_case.dart';
 import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockAuthInterface extends Mock implements AuthInterface {}
 
@@ -31,7 +31,7 @@ void main() {
         () => userInterface.addUserData(userId: 'u1', username: 'username'),
       ).thenAnswer((_) async => '');
       when(
-        () => achievementsInterface.initializeAchievements(),
+        () => achievementsInterface.setInitialAchievements(),
       ).thenAnswer((_) async => '');
 
       await useCase.execute(
@@ -46,7 +46,7 @@ void main() {
       verify(
         () => userInterface.addUserData(userId: 'u1', username: 'username'),
       ).called(1);
-      verify(() => achievementsInterface.initializeAchievements()).called(1);
+      verify(() => achievementsInterface.setInitialAchievements()).called(1);
     },
   );
 }

@@ -1,9 +1,9 @@
 import '../domain/entities/user.dart';
 
 abstract class UserInterface {
-  Stream<User>? get user$;
+  Stream<User?> get user$;
 
-  Stream<String?>? get avatarUrl$;
+  Stream<String?> get avatarUrl$;
 
   Future<void> loadUser();
 

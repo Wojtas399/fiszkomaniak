@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
 import 'package:fiszkomaniak/interfaces/achievements_notifications_interface.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
@@ -9,17 +8,17 @@ import 'package:rxdart/rxdart.dart';
 class AchievementsNotificationsBloc {
   late final AchievementsNotificationsInterface
       _achievementsNotificationsInterface;
-  late final AchievementsBloc _achievementsBloc;
-  StreamSubscription<AchievementsState>? _achievementsStateListener;
+  // late final AchievementsBloc _achievementsBloc;
+  // StreamSubscription<AchievementsState>? _achievementsStateListener;
   final BehaviorSubject<String> errorStream = BehaviorSubject<String>();
 
   AchievementsNotificationsBloc({
     required AchievementsNotificationsInterface
         achievementsNotificationsInterface,
-    required AchievementsBloc achievementsBloc,
+    // required AchievementsBloc achievementsBloc,
   }) {
     _achievementsNotificationsInterface = achievementsNotificationsInterface;
-    _achievementsBloc = achievementsBloc;
+    // _achievementsBloc = achievementsBloc;
   }
 
   void initialize() {
@@ -27,7 +26,7 @@ class AchievementsNotificationsBloc {
   }
 
   void dispose() {
-    _achievementsStateListener?.cancel();
+    // _achievementsStateListener?.cancel();
     errorStream.close();
   }
 
@@ -59,14 +58,14 @@ class AchievementsNotificationsBloc {
   }
 
   void _setAchievementsStateListener() {
-    _achievementsStateListener ??= _achievementsBloc.stream.listen(
-      (state) async {
-        final AchievementsStatus status = state.status;
-        if (status is AchievementsStatusDaysStreakUpdated) {
-          await _updateDaysStreakLoseNotification();
-        }
-      },
-    );
+    // _achievementsStateListener ??= _achievementsBloc.stream.listen(
+    //   (state) async {
+    //     final AchievementsStatus status = state.status;
+    //     if (status is AchievementsStatusDaysStreakUpdated) {
+    //       await _updateDaysStreakLoseNotification();
+    //     }
+    //   },
+    // );
   }
 
   Future<void> _updateDaysStreakLoseNotification() async {

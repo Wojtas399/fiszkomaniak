@@ -7,15 +7,7 @@ class MockUserInterface extends Mock implements UserInterface {}
 
 void main() {
   final userInterface = MockUserInterface();
-  late GetUserAvatarUrlUseCase useCase;
-
-  setUp(
-    () => useCase = GetUserAvatarUrlUseCase(userInterface: userInterface),
-  );
-
-  tearDown(() {
-    reset(userInterface);
-  });
+  final useCase = GetUserAvatarUrlUseCase(userInterface: userInterface);
 
   test(
     'should return stream with logged user avatar url',
@@ -28,15 +20,6 @@ void main() {
         await useCase.execute().first,
         'avatar/url',
       );
-    },
-  );
-
-  test(
-    'should return stream with null if stream from interface has not been set yet',
-    () async {
-      when(() => userInterface.avatarUrl$).thenAnswer((_) => null);
-
-      expect(await useCase.execute().first, null);
     },
   );
 }

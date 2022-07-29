@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rxdart/rxdart.dart';
 import '../../../domain/entities/user.dart';
+import '../../../domain/use_cases/achievements/get_all_flashcards_amount_use_case.dart';
+import '../../../domain/use_cases/achievements/load_all_flashcards_amount_use_case.dart';
 import '../../../domain/use_cases/auth/sign_out_use_case.dart';
 import '../../../domain/use_cases/auth/update_password_use_case.dart';
 import '../../../domain/use_cases/user/get_user_use_case.dart';
@@ -25,12 +28,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   late final GetUserUseCase _getUserUseCase;
   late final UpdateAvatarUseCase _updateAvatarUseCase;
   late final DeleteAvatarUseCase _deleteAvatarUseCase;
-
-  // late final AchievementsBloc _achievementsBloc;
+  late final GetAllFlashcardsAmountUseCase _getAllFlashcardsAmountUseCase;
+  late final LoadAllFlashcardsAmountUseCase _loadAllFlashcardsAmountUseCase;
   late final ProfileDialogs _profileDialogs;
-  StreamSubscription<User?>? _userListener;
-
-  // StreamSubscription<AchievementsState>? _achievementsStateListener;
+  StreamSubscription<ProfileStateListenedParams>? _paramsListener;
 
   ProfileBloc({
     required UpdateUserUsernameUseCase updateUserUsernameUseCase,
@@ -40,7 +41,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     required GetUserUseCase getUserUseCase,
     required UpdateAvatarUseCase updateAvatarUseCase,
     required DeleteAvatarUseCase deleteAvatarUseCase,
-    // required AchievementsBloc achievementsBloc,
+    required GetAllFlashcardsAmountUseCase getAllFlashcardsAmountUseCase,
+    required LoadAllFlashcardsAmountUseCase loadAllFlashcardsAmountUseCase,
     required ProfileDialogs profileDialogs,
     BlocStatus status = const BlocStatusInitial(),
     User? user,
@@ -61,11 +63,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     _getUserUseCase = getUserUseCase;
     _updateAvatarUseCase = updateAvatarUseCase;
     _deleteAvatarUseCase = deleteAvatarUseCase;
-    // _achievementsBloc = achievementsBloc;
+    _getAllFlashcardsAmountUseCase = getAllFlashcardsAmountUseCase;
+    _loadAllFlashcardsAmountUseCase = loadAllFlashcardsAmountUseCase;
     _profileDialogs = profileDialogs;
     on<ProfileEventInitialize>(_initialize);
-    on<ProfileEventUserChanged>(_userChanged);
-    on<ProfileEventAchievementsStateUpdated>(_achievementsStateUpdated);
+    on<ProfileEventListenedParamsUpdated>(_listenedParamsUpdated);
     on<ProfileEventChangeAvatar>(_changeAvatar);
     on<ProfileEventDeleteAvatar>(_deleteAvatar);
     on<ProfileEventChangeUsername>(_changeUsername);
@@ -76,40 +78,26 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   @override
   Future<void> close() {
-    _userListener?.cancel();
-    // _achievementsStateListener?.cancel();
+    _paramsListener?.cancel();
     return super.close();
   }
 
-  void _initialize(
+  Future<void> _initialize(
     ProfileEventInitialize event,
     Emitter<ProfileState> emit,
-  ) {
-    // emit(state.copyWith(
-    //   amountOfDaysStreak: _achievementsBloc.state.daysStreak,
-    //   amountOfAllFlashcards: _achievementsBloc.state.allFlashcardsAmount,
-    // ));
-    _setUserListener();
-    // _setAchievementsStateListener();
+  ) async {
+    await _loadAllFlashcardsAmountUseCase.execute();
+    _setParamsListener();
   }
 
-  void _userChanged(
-    ProfileEventUserChanged event,
+  void _listenedParamsUpdated(
+    ProfileEventListenedParamsUpdated event,
     Emitter<ProfileState> emit,
   ) {
     emit(state.copyWith(
-      user: event.user,
+      user: event.params.user,
+      amountOfAllFlashcards: event.params.allFlashcardsAmount,
     ));
-  }
-
-  void _achievementsStateUpdated(
-    ProfileEventAchievementsStateUpdated event,
-    Emitter<ProfileState> emit,
-  ) {
-    // emit(state.copyWith(
-    //   amountOfDaysStreak: event.daysStreak,
-    //   amountOfAllFlashcards: event.allFlashcardsAmount,
-    // ));
   }
 
   Future<void> _changeAvatar(
@@ -219,23 +207,17 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  void _setUserListener() {
-    _userListener ??= _getUserUseCase.execute().listen(
-      (user) {
-        if (user != null) {
-          add(ProfileEventUserChanged(user: user));
-        }
-      },
+  void _setParamsListener() {
+    _paramsListener ??= Rx.combineLatest2(
+      _getUserUseCase.execute(),
+      _getAllFlashcardsAmountUseCase.execute().whereType<int>(),
+      (User? user, int allFlashcardsAmount) => ProfileStateListenedParams(
+        user: user,
+        allFlashcardsAmount: allFlashcardsAmount,
+      ),
+    ).listen(
+      (params) => add(ProfileEventListenedParamsUpdated(params: params)),
     );
-  }
-
-  void _setAchievementsStateListener() {
-    // _achievementsStateListener ??= _achievementsBloc.stream.listen((state) {
-    //   add(ProfileEventAchievementsStateUpdated(
-    //     daysStreak: state.daysStreak,
-    //     allFlashcardsAmount: state.allFlashcardsAmount,
-    //   ));
-    // });
   }
 
   Future<bool> _hasNewAvatarBeenConfirmed(String imgPath) async {

@@ -1,4 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/domain/use_cases/achievements/get_all_flashcards_amount_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/achievements/load_all_flashcards_amount_use_case.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/entities/user.dart';
@@ -30,6 +32,12 @@ class MockUpdateAvatarUseCase extends Mock implements UpdateAvatarUseCase {}
 
 class MockDeleteAvatarUseCase extends Mock implements DeleteAvatarUseCase {}
 
+class MockGetAllFlashcardsAmountUseCase extends Mock
+    implements GetAllFlashcardsAmountUseCase {}
+
+class MockLoadAllFlashcardsAmountUseCase extends Mock
+    implements LoadAllFlashcardsAmountUseCase {}
+
 class MockProfileDialogs extends Mock implements ProfileDialogs {}
 
 void main() {
@@ -40,6 +48,8 @@ void main() {
   final getUserUseCase = MockGetUserUseCase();
   final updateAvatarUseCase = MockUpdateAvatarUseCase();
   final deleteAvatarUseCase = MockDeleteAvatarUseCase();
+  final getAllFlashcardsAmountUseCase = MockGetAllFlashcardsAmountUseCase();
+  final loadAllFlashcardsAmountUseCase = MockLoadAllFlashcardsAmountUseCase();
   final profileDialogs = MockProfileDialogs();
 
   ProfileBloc createBloc({
@@ -56,6 +66,8 @@ void main() {
       getUserUseCase: getUserUseCase,
       updateAvatarUseCase: updateAvatarUseCase,
       deleteAvatarUseCase: deleteAvatarUseCase,
+      getAllFlashcardsAmountUseCase: getAllFlashcardsAmountUseCase,
+      loadAllFlashcardsAmountUseCase: loadAllFlashcardsAmountUseCase,
       profileDialogs: profileDialogs,
       status: status,
       user: user,
@@ -86,6 +98,8 @@ void main() {
     reset(getUserUseCase);
     reset(updateAvatarUseCase);
     reset(deleteAvatarUseCase);
+    reset(getAllFlashcardsAmountUseCase);
+    reset(loadAllFlashcardsAmountUseCase);
     reset(profileDialogs);
   });
 
@@ -93,41 +107,64 @@ void main() {
     'initialize',
     () {
       final User user = createUser(username: 'username');
+      const int flashcardsAmount = 200;
 
       blocTest(
-        'should set user listener',
+        'should set user and all flashcards amount listener',
         build: () => createBloc(),
         setUp: () {
           when(
+            () => loadAllFlashcardsAmountUseCase.execute(),
+          ).thenAnswer((_) async => '');
+          when(
             () => getUserUseCase.execute(),
           ).thenAnswer((_) => Stream.value(user));
+          when(
+            () => getAllFlashcardsAmountUseCase.execute(),
+          ).thenAnswer((_) => Stream.value(flashcardsAmount));
         },
         act: (ProfileBloc bloc) {
           bloc.add(ProfileEventInitialize());
         },
         expect: () => [
-          createState(user: user),
+          createState(
+            user: user,
+            amountOfAllFlashcards: flashcardsAmount,
+          ),
         ],
         verify: (_) {
+          verify(() => loadAllFlashcardsAmountUseCase.execute()).called(1);
           verify(() => getUserUseCase.execute()).called(1);
+          verify(() => getAllFlashcardsAmountUseCase.execute()).called(1);
         },
       );
     },
   );
 
   group(
-    'user changed',
+    'listened params updated',
     () {
       final User user = createUser(username: 'username');
+      const int allFlashcardsAmount = 200;
 
       blocTest(
-        'should update user in state',
+        'should update user and all flashcards amount in state',
         build: () => createBloc(),
         act: (ProfileBloc bloc) {
-          bloc.add(ProfileEventUserChanged(user: user));
+          bloc.add(
+            ProfileEventListenedParamsUpdated(
+              params: ProfileStateListenedParams(
+                user: user,
+                allFlashcardsAmount: allFlashcardsAmount,
+              ),
+            ),
+          );
         },
         expect: () => [
-          createState(user: user),
+          createState(
+            user: user,
+            amountOfAllFlashcards: allFlashcardsAmount,
+          ),
         ],
       );
     },

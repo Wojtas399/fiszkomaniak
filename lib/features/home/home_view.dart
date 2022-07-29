@@ -15,8 +15,8 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HomeListeners(
-      child: const Scaffold(
+    return const HomeListeners(
+      child: Scaffold(
         extendBody: true,
         appBar: HomeAppBar(),
         body: _PageView(),

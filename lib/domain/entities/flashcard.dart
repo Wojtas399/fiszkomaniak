@@ -40,6 +40,10 @@ class Flashcard extends Equatable {
         answer,
         status,
       ];
+
+  String getId({required String groupId}) {
+    return '$groupId$index';
+  }
 }
 
 Flashcard createFlashcard({

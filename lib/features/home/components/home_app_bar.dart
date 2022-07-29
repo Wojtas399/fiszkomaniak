@@ -1,12 +1,11 @@
-import 'package:fiszkomaniak/components/avatar/avatar.dart';
-import 'package:fiszkomaniak/components/avatar/avatar_image_type.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/config/theme/global_theme.dart';
-import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/features/home/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/avatar/avatar.dart';
+import '../../../components/avatar/avatar_image_type.dart';
+import '../../../config/navigation.dart';
+import '../../../config/theme/global_theme.dart';
+import '../bloc/home_bloc.dart';
 import '../home.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -114,11 +113,11 @@ class _DaysInARow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int daysStreak = context.select(
-      (AchievementsBloc bloc) => bloc.state.daysStreak,
-    );
+    // final int daysStreak = context.select(
+    //   (AchievementsBloc bloc) => bloc.state.daysStreak,
+    // );
     return Text(
-      _convertStreakToString(daysStreak),
+      _convertStreakToString(0),
       style: Theme.of(context).textTheme.subtitle1,
       overflow: TextOverflow.ellipsis,
     );

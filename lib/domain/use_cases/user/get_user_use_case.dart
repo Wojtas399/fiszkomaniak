@@ -9,6 +9,6 @@ class GetUserUseCase {
   }
 
   Stream<User?> execute() {
-    return _userInterface.user$ ?? Stream.value(null);
+    return _userInterface.user$;
   }
 }

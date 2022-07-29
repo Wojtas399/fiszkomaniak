@@ -27,6 +27,6 @@ class SignUpUseCase {
       password: password,
     );
     await _userInterface.addUserData(userId: userId, username: username);
-    await _achievementsInterface.initializeAchievements();
+    await _achievementsInterface.setInitialAchievements();
   }
 }

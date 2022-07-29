@@ -1,3 +1,4 @@
+import '../domain/repositories/achievements_repository.dart';
 import '../domain/repositories/appearance_settings_repository.dart';
 import '../domain/repositories/auth_repository.dart';
 import '../domain/repositories/courses_repository.dart';
@@ -24,7 +25,6 @@ import '../interfaces/groups_interface.dart';
 import '../interfaces/notifications_settings_interface.dart';
 import '../interfaces/sessions_interface.dart';
 import '../interfaces/user_interface.dart';
-import '../repositories/achievements_repository.dart';
 
 class FirebaseProvider {
   static final _fireAchievementsService = FireAchievementsService();
