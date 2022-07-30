@@ -27,7 +27,7 @@ class BlocStatusComplete<T> extends BlocStatus {
 class BlocStatusError<T> extends BlocStatus {
   final T? errorType;
 
-  const BlocStatusError({required this.errorType});
+  const BlocStatusError({this.errorType});
 
   @override
   List<Object> get props => [errorType ?? ''];

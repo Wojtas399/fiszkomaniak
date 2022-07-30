@@ -6,15 +6,15 @@ import '../../../domain/use_cases/appearance_settings/get_appearance_settings_us
 import '../../../domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
 import '../../../domain/use_cases/groups/load_all_groups_use_case.dart';
 import '../../../domain/use_cases/notifications_settings/load_notifications_settings_use_case.dart';
+import '../../../domain/use_cases/user/get_days_streak_use_case.dart';
 import '../../../domain/use_cases/user/get_user_avatar_url_use_case.dart';
 import '../../../domain/use_cases/user/load_user_use_case.dart';
 import '../../../domain/entities/appearance_settings.dart';
+import '../../../models/bloc_status.dart';
 
 part 'home_event.dart';
 
 part 'home_state.dart';
-
-part 'home_status.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   late final LoadUserUseCase _loadUserUseCase;
@@ -23,8 +23,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   late final LoadNotificationsSettingsUseCase _loadNotificationsSettingsUseCase;
   late final GetUserAvatarUrlUseCase _getUserAvatarUrlUseCase;
   late final GetAppearanceSettingsUseCase _getAppearanceSettingsUseCase;
-  StreamSubscription<String>? _loggedUserAvatarUrlListener;
-  StreamSubscription<AppearanceSettings>? _appearanceSettingsListener;
+  late final GetDaysStreakUseCase _getDaysStreakUseCase;
+  StreamSubscription<HomeStateListenedParams>? _paramsListener;
 
   HomeBloc({
     required LoadUserUseCase loadUserUseCase,
@@ -33,22 +33,36 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required LoadNotificationsSettingsUseCase loadNotificationsSettingsUseCase,
     required GetUserAvatarUrlUseCase getUserAvatarUrlUseCase,
     required GetAppearanceSettingsUseCase getAppearanceSettingsUseCase,
-  }) : super(const HomeState()) {
+    required GetDaysStreakUseCase getDaysStreakUseCase,
+    BlocStatus status = const BlocStatusInitial(),
+    String loggedUserAvatarUrl = '',
+    bool isDarkModeOn = false,
+    bool isDarkModeCompatibilityWithSystemOn = false,
+    int daysStreak = 0,
+  }) : super(
+          HomeState(
+            status: status,
+            loggedUserAvatarUrl: loggedUserAvatarUrl,
+            isDarkModeOn: isDarkModeOn,
+            isDarkModeCompatibilityWithSystemOn:
+                isDarkModeCompatibilityWithSystemOn,
+            daysStreak: daysStreak,
+          ),
+        ) {
     _loadUserUseCase = loadUserUseCase;
     _loadAllGroupsUseCase = loadAllGroupsUseCase;
     _loadAppearanceSettingsUseCase = loadAppearanceSettingsUseCase;
     _loadNotificationsSettingsUseCase = loadNotificationsSettingsUseCase;
     _getUserAvatarUrlUseCase = getUserAvatarUrlUseCase;
     _getAppearanceSettingsUseCase = getAppearanceSettingsUseCase;
+    _getDaysStreakUseCase = getDaysStreakUseCase;
     on<HomeEventInitialize>(_initialize);
-    on<HomeEventLoggedUserAvatarUrlUpdated>(_loggedUserAvatarUrlUpdated);
-    on<HomeEventAppearanceSettingsUpdated>(_appearanceSettingsUpdated);
+    on<HomeEventListenedParamsUpdated>(_listenedParamsUpdated);
   }
 
   @override
   Future<void> close() {
-    _loggedUserAvatarUrlListener?.cancel();
-    _appearanceSettingsListener?.cancel();
+    _paramsListener?.cancel();
     return super.close();
   }
 
@@ -57,58 +71,50 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     try {
-      emit(state.copyWith(status: HomeStatusLoading()));
+      emit(state.copyWith(status: const BlocStatusLoading()));
       await _loadUserUseCase.execute();
       await _loadAllGroupsUseCase.execute();
       await _loadAppearanceSettingsUseCase.execute();
       await _loadNotificationsSettingsUseCase.execute();
-      emit(state.copyWith(status: HomeStatusLoaded()));
-    } catch (error) {
-      emit(state.copyWith(
-        status: HomeStatusError(message: error.toString()),
-      ));
+      emit(state.copyWith(status: const BlocStatusComplete()));
+      _setParamsListener();
+    } catch (_) {
+      emit(state.copyWith(status: const BlocStatusError()));
     }
-    _setLoggedUserAvatarUrlListener();
-    _setAppearanceSettingsListener();
   }
 
-  void _loggedUserAvatarUrlUpdated(
-    HomeEventLoggedUserAvatarUrlUpdated event,
+  void _listenedParamsUpdated(
+    HomeEventListenedParamsUpdated event,
     Emitter<HomeState> emit,
   ) {
     emit(state.copyWith(
-      loggedUserAvatarUrl: event.newLoggedUserAvatarUrl,
-    ));
-  }
-
-  void _appearanceSettingsUpdated(
-    HomeEventAppearanceSettingsUpdated event,
-    Emitter<HomeState> emit,
-  ) {
-    emit(state.copyWith(
-      isDarkModeOn: event.appearanceSettings.isDarkModeOn,
+      loggedUserAvatarUrl: event.params.loggedUserAvatarUrl,
+      isDarkModeOn: event.params.appearanceSettings.isDarkModeOn,
       isDarkModeCompatibilityWithSystemOn:
-          event.appearanceSettings.isDarkModeCompatibilityWithSystemOn,
+          event.params.appearanceSettings.isDarkModeCompatibilityWithSystemOn,
+      daysStreak: event.params.daysStreak,
     ));
   }
 
-  void _setLoggedUserAvatarUrlListener() {
-    _loggedUserAvatarUrlListener =
-        _getUserAvatarUrlUseCase.execute().whereType<String>().listen(
-              (avatarUrl) => add(
-                HomeEventLoggedUserAvatarUrlUpdated(
-                    newLoggedUserAvatarUrl: avatarUrl),
-              ),
-            );
-  }
-
-  void _setAppearanceSettingsListener() {
-    _appearanceSettingsListener = _getAppearanceSettingsUseCase
-        .execute()
-        .listen(
-          (settings) => add(
-            HomeEventAppearanceSettingsUpdated(appearanceSettings: settings),
-          ),
-        );
+  void _setParamsListener() {
+    _paramsListener ??= Rx.combineLatest3(
+      _getUserAvatarUrlUseCase.execute(),
+      _getAppearanceSettingsUseCase.execute(),
+      _getDaysStreakUseCase.execute(),
+      (
+        String? userAvatarUrl,
+        AppearanceSettings appearanceSettings,
+        int daysStreak,
+      ) =>
+          HomeStateListenedParams(
+        loggedUserAvatarUrl: userAvatarUrl,
+        appearanceSettings: appearanceSettings,
+        daysStreak: daysStreak,
+      ),
+    ).listen(
+      (HomeStateListenedParams params) => add(
+        HomeEventListenedParamsUpdated(params: params),
+      ),
+    );
   }
 }

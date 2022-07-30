@@ -5,6 +5,7 @@ import '../../domain/use_cases/appearance_settings/get_appearance_settings_use_c
 import '../../domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
 import '../../domain/use_cases/groups/load_all_groups_use_case.dart';
 import '../../domain/use_cases/notifications_settings/load_notifications_settings_use_case.dart';
+import '../../domain/use_cases/user/get_days_streak_use_case.dart';
 import '../../domain/use_cases/user/get_user_avatar_url_use_case.dart';
 import '../../domain/use_cases/user/load_user_use_case.dart';
 import '../../interfaces/appearance_settings_interface.dart';
@@ -12,6 +13,7 @@ import '../../interfaces/groups_interface.dart';
 import '../../interfaces/notifications_settings_interface.dart';
 import '../../interfaces/user_interface.dart';
 import '../../providers/theme_provider.dart';
+import '../../models/bloc_status.dart';
 import 'bloc/home_bloc.dart';
 import 'home_error_screen.dart';
 import 'home_loading_screen.dart';
@@ -66,6 +68,9 @@ class _HomeBlocProvider extends StatelessWidget {
         getAppearanceSettingsUseCase: GetAppearanceSettingsUseCase(
           appearanceSettingsInterface: appearanceSettingsInterface,
         ),
+        getDaysStreakUseCase: GetDaysStreakUseCase(
+          userInterface: context.read<UserInterface>(),
+        ),
       )..add(HomeEventInitialize()),
       child: child,
     );
@@ -100,12 +105,12 @@ class _View extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HomeStatus homeStatus = context.select(
+    final BlocStatus blocStatus = context.select(
       (HomeBloc bloc) => bloc.state.status,
     );
-    if (homeStatus is HomeStatusLoading) {
+    if (blocStatus is BlocStatusLoading) {
       return const HomeLoadingScreen();
-    } else if (homeStatus is HomeStatusLoaded) {
+    } else if (blocStatus is BlocStatusComplete) {
       return ChangeNotifierProvider(
         create: (_) => HomePageController(),
         child: const HomeRouter(),

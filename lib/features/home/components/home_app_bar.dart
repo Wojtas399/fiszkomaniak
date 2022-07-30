@@ -5,6 +5,7 @@ import '../../../components/avatar/avatar.dart';
 import '../../../components/avatar/avatar_image_type.dart';
 import '../../../config/navigation.dart';
 import '../../../config/theme/global_theme.dart';
+import '../../../ui_extensions/ui_number_extensions.dart';
 import '../bloc/home_bloc.dart';
 import '../home.dart';
 
@@ -113,20 +114,13 @@ class _DaysInARow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final int daysStreak = context.select(
-    //   (AchievementsBloc bloc) => bloc.state.daysStreak,
-    // );
+    final int daysStreak = context.select(
+      (HomeBloc bloc) => bloc.state.daysStreak,
+    );
     return Text(
-      _convertStreakToString(0),
+      daysStreak.toDaysStreakUIFormat(),
       style: Theme.of(context).textTheme.subtitle1,
       overflow: TextOverflow.ellipsis,
     );
-  }
-
-  String _convertStreakToString(int value) {
-    if (value >= 1000) {
-      return '999+';
-    }
-    return '$value';
   }
 }
