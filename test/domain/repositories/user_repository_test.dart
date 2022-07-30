@@ -10,7 +10,9 @@ import 'package:fiszkomaniak/firebase/models/user_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_days_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_user_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_avatar_service.dart';
+import 'package:fiszkomaniak/firebase/fire_extensions.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
+import 'package:fiszkomaniak/utils/days_streak_utils.dart';
 
 class MockFireUserService extends Mock implements FireUserService {}
 
@@ -18,15 +20,39 @@ class MockFireAvatarService extends Mock implements FireAvatarService {}
 
 class MockFireDaysService extends Mock implements FireDaysService {}
 
+class MockDaysStreakUtils extends Mock implements DaysStreakUtils {}
+
 void main() {
   final fireUserService = MockFireUserService();
   final fireAvatarService = MockFireAvatarService();
   final fireDaysService = MockFireDaysService();
+  final daysStreakUtils = MockDaysStreakUtils();
   late UserRepository repository;
+  const List<Date> dates = [
+    Date(year: 2022, month: 5, day: 6),
+    Date(year: 2022, month: 5, day: 5),
+    Date(year: 2022, month: 5, day: 4),
+  ];
+  final FireDoc<UserDbModel> dbUser = FireDoc(
+    id: 'u1',
+    doc: UserDbModel(
+      username: 'username',
+      days: [
+        createDayDbModel(date: dates[0].toDbString()),
+        createDayDbModel(date: dates[1].toDbString()),
+        createDayDbModel(date: dates[2].toDbString()),
+      ],
+    ),
+  );
   final User user = createUser(
     avatarUrl: 'avatar/url',
     username: 'username',
     email: 'email',
+    days: [
+      createDay(date: dates[0]),
+      createDay(date: dates[1]),
+      createDay(date: dates[2]),
+    ],
   );
 
   setUp(
@@ -34,6 +60,7 @@ void main() {
       fireUserService: fireUserService,
       fireAvatarService: fireAvatarService,
       fireDaysService: fireDaysService,
+      daysStreakUtils: daysStreakUtils,
     ),
   );
 
@@ -41,20 +68,22 @@ void main() {
     reset(fireUserService);
     reset(fireAvatarService);
     reset(fireDaysService);
+    reset(daysStreakUtils);
   });
 
   setUp(() {
-    const FireDoc<UserDbModel> dbUser = FireDoc(
-      id: 'u1',
-      doc: UserDbModel(username: 'username'),
-    );
     when(
       () => fireUserService.loadLoggedUserData(),
     ).thenAnswer((_) async => dbUser);
     when(
       () => fireAvatarService.loadLoggedUserAvatarUrl(),
     ).thenAnswer((_) async => user.avatarUrl);
-    when(() => fireUserService.getLoggedUserEmail()).thenReturn(user.email);
+    when(
+      () => fireUserService.getLoggedUserEmail(),
+    ).thenReturn(user.email);
+    when(
+      () => daysStreakUtils.getStreak(user.days),
+    ).thenReturn(3);
   });
 
   test(
@@ -75,6 +104,15 @@ void main() {
         await repository.avatarUrl$.first,
         user.avatarUrl,
       );
+    },
+  );
+
+  test(
+    'days streak, should return amount of days in a row',
+    () async {
+      await repository.loadUser();
+
+      expect(await repository.daysStreak$.first, 3);
     },
   );
 

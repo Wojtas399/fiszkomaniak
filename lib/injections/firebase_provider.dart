@@ -25,6 +25,7 @@ import '../interfaces/groups_interface.dart';
 import '../interfaces/notifications_settings_interface.dart';
 import '../interfaces/sessions_interface.dart';
 import '../interfaces/user_interface.dart';
+import '../utils/days_streak_utils.dart';
 
 class FirebaseProvider {
   static AchievementsInterface provideAchievementsInterface() {
@@ -72,6 +73,7 @@ class FirebaseProvider {
       fireUserService: FireUserService(),
       fireAvatarService: FireAvatarService(),
       fireDaysService: FireDaysService(),
+      daysStreakUtils: DaysStreakUtils(),
     );
   }
 }

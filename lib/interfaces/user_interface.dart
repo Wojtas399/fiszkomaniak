@@ -9,6 +9,8 @@ abstract class UserInterface {
 
   Stream<List<Day>?> get days$;
 
+  Stream<int?> get daysStreak$;
+
   Future<void> loadUser();
 
   Future<void> addUserData({

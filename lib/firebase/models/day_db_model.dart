@@ -41,3 +41,13 @@ class DayDbModel extends Equatable {
         rememberedFlashcardsIds,
       ];
 }
+
+DayDbModel createDayDbModel({
+  String date = '',
+  List<String> rememberedFlashcardsIds = const [],
+}) {
+  return DayDbModel(
+    date: date,
+    rememberedFlashcardsIds: rememberedFlashcardsIds,
+  );
+}

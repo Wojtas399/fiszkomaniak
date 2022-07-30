@@ -7,6 +7,7 @@ import '../../domain/use_cases/achievements/load_all_flashcards_amount_use_case.
 import '../../domain/use_cases/auth/sign_out_use_case.dart';
 import '../../domain/use_cases/auth/update_password_use_case.dart';
 import '../../domain/use_cases/user/get_user_use_case.dart';
+import '../../domain/use_cases/user/get_days_streak_use_case.dart';
 import '../../domain/use_cases/auth/delete_logged_user_account_use_case.dart';
 import '../../domain/use_cases/user/update_user_username_use_case.dart';
 import '../../domain/use_cases/user/delete_avatar_use_case.dart';
@@ -41,11 +42,26 @@ class _ProfileBlocProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => ProfileBloc(
+        loadAllFlashcardsAmountUseCase: LoadAllFlashcardsAmountUseCase(
+          achievementsInterface: context.read<AchievementsInterface>(),
+        ),
+        getUserUseCase: GetUserUseCase(
+          userInterface: context.read<UserInterface>(),
+        ),
+        getAllFlashcardsAmountUseCase: GetAllFlashcardsAmountUseCase(
+          achievementsInterface: context.read<AchievementsInterface>(),
+        ),
+        getDaysStreakUseCase: GetDaysStreakUseCase(
+          userInterface: context.read<UserInterface>(),
+        ),
         updateUserUsernameUseCase: UpdateUserUsernameUseCase(
           userInterface: context.read<UserInterface>(),
         ),
         updatePasswordUseCase: UpdatePasswordUseCase(
           authInterface: context.read<AuthInterface>(),
+        ),
+        updateAvatarUseCase: UpdateAvatarUseCase(
+          userInterface: context.read<UserInterface>(),
         ),
         signOutUseCase: SignOutUseCase(
           authInterface: context.read<AuthInterface>(),
@@ -57,20 +73,8 @@ class _ProfileBlocProvider extends StatelessWidget {
           authInterface: context.read<AuthInterface>(),
           achievementsInterface: context.read<AchievementsInterface>(),
         ),
-        getUserUseCase: GetUserUseCase(
-          userInterface: context.read<UserInterface>(),
-        ),
-        updateAvatarUseCase: UpdateAvatarUseCase(
-          userInterface: context.read<UserInterface>(),
-        ),
         deleteAvatarUseCase: DeleteAvatarUseCase(
           userInterface: context.read<UserInterface>(),
-        ),
-        getAllFlashcardsAmountUseCase: GetAllFlashcardsAmountUseCase(
-          achievementsInterface: context.read<AchievementsInterface>(),
-        ),
-        loadAllFlashcardsAmountUseCase: LoadAllFlashcardsAmountUseCase(
-          achievementsInterface: context.read<AchievementsInterface>(),
         ),
         profileDialogs: ProfileDialogs(),
       )..add(ProfileEventInitialize()),

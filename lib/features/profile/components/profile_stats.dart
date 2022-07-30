@@ -45,7 +45,7 @@ class _DaysInARow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int daysInARow = context.select(
-      (ProfileBloc bloc) => bloc.state.amountOfDaysStreak,
+      (ProfileBloc bloc) => bloc.state.daysStreak,
     );
     return _NumberInfo(
       icon: MdiIcons.medalOutline,

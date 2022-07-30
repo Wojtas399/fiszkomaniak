@@ -3,13 +3,13 @@ part of 'profile_bloc.dart';
 class ProfileState extends Equatable {
   final BlocStatus status;
   final User? user;
-  final int amountOfDaysStreak;
+  final int daysStreak;
   final int amountOfAllFlashcards;
 
   const ProfileState({
     required this.status,
     required this.user,
-    required this.amountOfDaysStreak,
+    required this.daysStreak,
     required this.amountOfAllFlashcards,
   });
 
@@ -17,7 +17,7 @@ class ProfileState extends Equatable {
   List<Object> get props => [
         status,
         user ?? '',
-        amountOfDaysStreak,
+        daysStreak,
         amountOfAllFlashcards,
       ];
 
@@ -26,13 +26,13 @@ class ProfileState extends Equatable {
   ProfileState copyWith({
     BlocStatus? status,
     User? user,
-    int? amountOfDaysStreak,
+    int? daysStreak,
     int? amountOfAllFlashcards,
   }) {
     return ProfileState(
       status: status ?? const BlocStatusComplete(),
       user: user ?? this.user,
-      amountOfDaysStreak: amountOfDaysStreak ?? this.amountOfDaysStreak,
+      daysStreak: daysStreak ?? this.daysStreak,
       amountOfAllFlashcards:
           amountOfAllFlashcards ?? this.amountOfAllFlashcards,
     );
@@ -54,16 +54,19 @@ class ProfileState extends Equatable {
 class ProfileStateListenedParams extends Equatable {
   final User? user;
   final int allFlashcardsAmount;
+  final int daysStreak;
 
   const ProfileStateListenedParams({
     required this.user,
     required this.allFlashcardsAmount,
+    required this.daysStreak,
   });
 
   @override
   List<Object> get props => [
         user ?? '',
         allFlashcardsAmount,
+        daysStreak,
       ];
 }
 

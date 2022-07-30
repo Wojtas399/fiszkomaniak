@@ -10,6 +10,7 @@ import '../../../domain/use_cases/auth/update_password_use_case.dart';
 import '../../../domain/use_cases/user/get_user_use_case.dart';
 import '../../../domain/use_cases/auth/delete_logged_user_account_use_case.dart';
 import '../../../domain/use_cases/user/delete_avatar_use_case.dart';
+import '../../../domain/use_cases/user/get_days_streak_use_case.dart';
 import '../../../domain/use_cases/user/update_avatar_use_case.dart';
 import '../../../domain/use_cases/user/update_user_username_use_case.dart';
 import '../../../exceptions/auth_exceptions.dart';
@@ -21,50 +22,53 @@ part 'profile_event.dart';
 part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
+  late final LoadAllFlashcardsAmountUseCase _loadAllFlashcardsAmountUseCase;
+  late final GetUserUseCase _getUserUseCase;
+  late final GetAllFlashcardsAmountUseCase _getAllFlashcardsAmountUseCase;
+  late final GetDaysStreakUseCase _getDaysStreakUseCase;
   late final UpdateUserUsernameUseCase _updateUserUsernameUseCase;
   late final UpdatePasswordUseCase _updatePasswordUseCase;
+  late final UpdateAvatarUseCase _updateAvatarUseCase;
   late final SignOutUseCase _signOutUseCase;
   late final DeleteLoggedUserAccountUseCase _deleteLoggedUserAccountUseCase;
-  late final GetUserUseCase _getUserUseCase;
-  late final UpdateAvatarUseCase _updateAvatarUseCase;
   late final DeleteAvatarUseCase _deleteAvatarUseCase;
-  late final GetAllFlashcardsAmountUseCase _getAllFlashcardsAmountUseCase;
-  late final LoadAllFlashcardsAmountUseCase _loadAllFlashcardsAmountUseCase;
   late final ProfileDialogs _profileDialogs;
   StreamSubscription<ProfileStateListenedParams>? _paramsListener;
 
   ProfileBloc({
+    required LoadAllFlashcardsAmountUseCase loadAllFlashcardsAmountUseCase,
+    required GetUserUseCase getUserUseCase,
+    required GetAllFlashcardsAmountUseCase getAllFlashcardsAmountUseCase,
+    required GetDaysStreakUseCase getDaysStreakUseCase,
     required UpdateUserUsernameUseCase updateUserUsernameUseCase,
     required UpdatePasswordUseCase updatePasswordUseCase,
+    required UpdateAvatarUseCase updateAvatarUseCase,
     required SignOutUseCase signOutUseCase,
     required DeleteLoggedUserAccountUseCase deleteLoggedUserAccountUseCase,
-    required GetUserUseCase getUserUseCase,
-    required UpdateAvatarUseCase updateAvatarUseCase,
     required DeleteAvatarUseCase deleteAvatarUseCase,
-    required GetAllFlashcardsAmountUseCase getAllFlashcardsAmountUseCase,
-    required LoadAllFlashcardsAmountUseCase loadAllFlashcardsAmountUseCase,
     required ProfileDialogs profileDialogs,
     BlocStatus status = const BlocStatusInitial(),
     User? user,
-    int amountOfDaysStreak = 0,
+    int daysStreak = 0,
     int amountOfAllFlashcards = 0,
   }) : super(
           ProfileState(
             status: status,
             user: user,
-            amountOfDaysStreak: amountOfDaysStreak,
+            daysStreak: daysStreak,
             amountOfAllFlashcards: amountOfAllFlashcards,
           ),
         ) {
+    _loadAllFlashcardsAmountUseCase = loadAllFlashcardsAmountUseCase;
+    _getUserUseCase = getUserUseCase;
+    _getAllFlashcardsAmountUseCase = getAllFlashcardsAmountUseCase;
+    _getDaysStreakUseCase = getDaysStreakUseCase;
     _updateUserUsernameUseCase = updateUserUsernameUseCase;
     _updatePasswordUseCase = updatePasswordUseCase;
+    _updateAvatarUseCase = updateAvatarUseCase;
     _signOutUseCase = signOutUseCase;
     _deleteLoggedUserAccountUseCase = deleteLoggedUserAccountUseCase;
-    _getUserUseCase = getUserUseCase;
-    _updateAvatarUseCase = updateAvatarUseCase;
     _deleteAvatarUseCase = deleteAvatarUseCase;
-    _getAllFlashcardsAmountUseCase = getAllFlashcardsAmountUseCase;
-    _loadAllFlashcardsAmountUseCase = loadAllFlashcardsAmountUseCase;
     _profileDialogs = profileDialogs;
     on<ProfileEventInitialize>(_initialize);
     on<ProfileEventListenedParamsUpdated>(_listenedParamsUpdated);
@@ -96,6 +100,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) {
     emit(state.copyWith(
       user: event.params.user,
+      daysStreak: event.params.daysStreak,
       amountOfAllFlashcards: event.params.allFlashcardsAmount,
     ));
   }
@@ -208,12 +213,19 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   }
 
   void _setParamsListener() {
-    _paramsListener ??= Rx.combineLatest2(
+    _paramsListener ??= Rx.combineLatest3(
       _getUserUseCase.execute(),
-      _getAllFlashcardsAmountUseCase.execute().whereType<int>(),
-      (User? user, int allFlashcardsAmount) => ProfileStateListenedParams(
+      _getAllFlashcardsAmountUseCase.execute(),
+      _getDaysStreakUseCase.execute(),
+      (
+        User? user,
+        int allFlashcardsAmount,
+        int daysStreak,
+      ) =>
+          ProfileStateListenedParams(
         user: user,
         allFlashcardsAmount: allFlashcardsAmount,
+        daysStreak: daysStreak,
       ),
     ).listen(
       (params) => add(ProfileEventListenedParamsUpdated(params: params)),

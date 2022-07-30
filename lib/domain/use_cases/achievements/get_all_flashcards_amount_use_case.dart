@@ -1,3 +1,4 @@
+import 'package:rxdart/rxdart.dart';
 import '../../../interfaces/achievements_interface.dart';
 
 class GetAllFlashcardsAmountUseCase {
@@ -9,7 +10,7 @@ class GetAllFlashcardsAmountUseCase {
     _achievementsInterface = achievementsInterface;
   }
 
-  Stream<int?> execute() {
-    return _achievementsInterface.allFlashcardsAmount$;
+  Stream<int> execute() {
+    return _achievementsInterface.allFlashcardsAmount$.whereType<int>();
   }
 }

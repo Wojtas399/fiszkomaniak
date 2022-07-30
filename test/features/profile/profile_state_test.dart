@@ -10,7 +10,7 @@ void main() {
     () => state = const ProfileState(
       status: BlocStatusInitial(),
       user: null,
-      amountOfDaysStreak: 0,
+      daysStreak: 0,
       amountOfAllFlashcards: 0,
     ),
   );
@@ -53,15 +53,15 @@ void main() {
   );
 
   test(
-    'copy with amount of days streak',
+    'copy with days streak',
     () {
       const int expectedAmount = 20;
 
-      state = state.copyWith(amountOfDaysStreak: expectedAmount);
+      state = state.copyWith(daysStreak: expectedAmount);
       final state2 = state.copyWith();
 
-      expect(state.amountOfDaysStreak, expectedAmount);
-      expect(state2.amountOfDaysStreak, expectedAmount);
+      expect(state.daysStreak, expectedAmount);
+      expect(state2.daysStreak, expectedAmount);
     },
   );
 

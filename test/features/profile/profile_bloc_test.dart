@@ -1,13 +1,14 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/domain/use_cases/achievements/get_all_flashcards_amount_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/achievements/load_all_flashcards_amount_use_case.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:fiszkomaniak/domain/use_cases/achievements/get_all_flashcards_amount_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/achievements/load_all_flashcards_amount_use_case.dart';
 import 'package:fiszkomaniak/domain/entities/user.dart';
 import 'package:fiszkomaniak/domain/use_cases/auth/delete_logged_user_account_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/auth/sign_out_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/auth/update_password_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/user/get_user_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/user/get_days_streak_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/user/delete_avatar_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/user/update_avatar_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/user/update_user_username_use_case.dart';
@@ -16,62 +17,66 @@ import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
 import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 
+class MockLoadAllFlashcardsAmountUseCase extends Mock
+    implements LoadAllFlashcardsAmountUseCase {}
+
+class MockGetUserUseCase extends Mock implements GetUserUseCase {}
+
+class MockGetAllFlashcardsAmountUseCase extends Mock
+    implements GetAllFlashcardsAmountUseCase {}
+
+class MockGetDaysStreakUseCase extends Mock implements GetDaysStreakUseCase {}
+
 class MockUpdateUserUsernameUseCase extends Mock
     implements UpdateUserUsernameUseCase {}
 
 class MockUpdatePasswordUseCase extends Mock implements UpdatePasswordUseCase {}
+
+class MockUpdateAvatarUseCase extends Mock implements UpdateAvatarUseCase {}
 
 class MockSignOutUseCase extends Mock implements SignOutUseCase {}
 
 class MockDeleteLoggedUserAccountUseCase extends Mock
     implements DeleteLoggedUserAccountUseCase {}
 
-class MockGetUserUseCase extends Mock implements GetUserUseCase {}
-
-class MockUpdateAvatarUseCase extends Mock implements UpdateAvatarUseCase {}
-
 class MockDeleteAvatarUseCase extends Mock implements DeleteAvatarUseCase {}
-
-class MockGetAllFlashcardsAmountUseCase extends Mock
-    implements GetAllFlashcardsAmountUseCase {}
-
-class MockLoadAllFlashcardsAmountUseCase extends Mock
-    implements LoadAllFlashcardsAmountUseCase {}
 
 class MockProfileDialogs extends Mock implements ProfileDialogs {}
 
 void main() {
+  final loadAllFlashcardsAmountUseCase = MockLoadAllFlashcardsAmountUseCase();
+  final getUserUseCase = MockGetUserUseCase();
+  final getAllFlashcardsAmountUseCase = MockGetAllFlashcardsAmountUseCase();
+  final getDaysStreakUseCase = MockGetDaysStreakUseCase();
   final updateUserUsernameUseCase = MockUpdateUserUsernameUseCase();
   final updatePasswordUseCase = MockUpdatePasswordUseCase();
+  final updateAvatarUseCase = MockUpdateAvatarUseCase();
   final signOutUseCase = MockSignOutUseCase();
   final deleteLoggedUserAccountUseCase = MockDeleteLoggedUserAccountUseCase();
-  final getUserUseCase = MockGetUserUseCase();
-  final updateAvatarUseCase = MockUpdateAvatarUseCase();
   final deleteAvatarUseCase = MockDeleteAvatarUseCase();
-  final getAllFlashcardsAmountUseCase = MockGetAllFlashcardsAmountUseCase();
-  final loadAllFlashcardsAmountUseCase = MockLoadAllFlashcardsAmountUseCase();
   final profileDialogs = MockProfileDialogs();
 
   ProfileBloc createBloc({
     BlocStatus status = const BlocStatusInitial(),
     User? user,
-    int amountOfDaysStreak = 0,
+    int daysStreak = 0,
     int amountOfAllFlashcards = 0,
   }) {
     return ProfileBloc(
+      loadAllFlashcardsAmountUseCase: loadAllFlashcardsAmountUseCase,
+      getUserUseCase: getUserUseCase,
+      getAllFlashcardsAmountUseCase: getAllFlashcardsAmountUseCase,
+      getDaysStreakUseCase: getDaysStreakUseCase,
       updateUserUsernameUseCase: updateUserUsernameUseCase,
       updatePasswordUseCase: updatePasswordUseCase,
+      updateAvatarUseCase: updateAvatarUseCase,
       signOutUseCase: signOutUseCase,
       deleteLoggedUserAccountUseCase: deleteLoggedUserAccountUseCase,
-      getUserUseCase: getUserUseCase,
-      updateAvatarUseCase: updateAvatarUseCase,
       deleteAvatarUseCase: deleteAvatarUseCase,
-      getAllFlashcardsAmountUseCase: getAllFlashcardsAmountUseCase,
-      loadAllFlashcardsAmountUseCase: loadAllFlashcardsAmountUseCase,
       profileDialogs: profileDialogs,
       status: status,
       user: user,
-      amountOfDaysStreak: amountOfDaysStreak,
+      daysStreak: daysStreak,
       amountOfAllFlashcards: amountOfAllFlashcards,
     );
   }
@@ -79,27 +84,28 @@ void main() {
   ProfileState createState({
     BlocStatus status = const BlocStatusComplete(),
     User? user,
-    int amountOfDaysStreak = 0,
+    int daysStreak = 0,
     int amountOfAllFlashcards = 0,
   }) {
     return ProfileState(
       status: status,
       user: user,
-      amountOfDaysStreak: amountOfDaysStreak,
+      daysStreak: daysStreak,
       amountOfAllFlashcards: amountOfAllFlashcards,
     );
   }
 
   tearDown(() {
+    reset(loadAllFlashcardsAmountUseCase);
+    reset(getUserUseCase);
+    reset(getAllFlashcardsAmountUseCase);
+    reset(getDaysStreakUseCase);
     reset(updateUserUsernameUseCase);
     reset(updatePasswordUseCase);
+    reset(updateAvatarUseCase);
     reset(signOutUseCase);
     reset(deleteLoggedUserAccountUseCase);
-    reset(getUserUseCase);
-    reset(updateAvatarUseCase);
     reset(deleteAvatarUseCase);
-    reset(getAllFlashcardsAmountUseCase);
-    reset(loadAllFlashcardsAmountUseCase);
     reset(profileDialogs);
   });
 
@@ -108,9 +114,10 @@ void main() {
     () {
       final User user = createUser(username: 'username');
       const int flashcardsAmount = 200;
+      const int daysStreak = 6;
 
       blocTest(
-        'should set user and all flashcards amount listener',
+        'should set user, all flashcards amount and days streak listener',
         build: () => createBloc(),
         setUp: () {
           when(
@@ -122,6 +129,9 @@ void main() {
           when(
             () => getAllFlashcardsAmountUseCase.execute(),
           ).thenAnswer((_) => Stream.value(flashcardsAmount));
+          when(
+            () => getDaysStreakUseCase.execute(),
+          ).thenAnswer((_) => Stream.value(daysStreak));
         },
         act: (ProfileBloc bloc) {
           bloc.add(ProfileEventInitialize());
@@ -130,12 +140,14 @@ void main() {
           createState(
             user: user,
             amountOfAllFlashcards: flashcardsAmount,
+            daysStreak: daysStreak,
           ),
         ],
         verify: (_) {
           verify(() => loadAllFlashcardsAmountUseCase.execute()).called(1);
           verify(() => getUserUseCase.execute()).called(1);
           verify(() => getAllFlashcardsAmountUseCase.execute()).called(1);
+          verify(() => getDaysStreakUseCase.execute()).called(1);
         },
       );
     },
@@ -146,9 +158,10 @@ void main() {
     () {
       final User user = createUser(username: 'username');
       const int allFlashcardsAmount = 200;
+      const int daysStreak = 6;
 
       blocTest(
-        'should update user and all flashcards amount in state',
+        'should update user, all flashcards amount and days streak in state',
         build: () => createBloc(),
         act: (ProfileBloc bloc) {
           bloc.add(
@@ -156,6 +169,7 @@ void main() {
               params: ProfileStateListenedParams(
                 user: user,
                 allFlashcardsAmount: allFlashcardsAmount,
+                daysStreak: daysStreak,
               ),
             ),
           );
@@ -164,6 +178,7 @@ void main() {
           createState(
             user: user,
             amountOfAllFlashcards: allFlashcardsAmount,
+            daysStreak: daysStreak,
           ),
         ],
       );

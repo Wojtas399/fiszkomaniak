@@ -7,6 +7,7 @@ import '../../firebase/services/fire_user_service.dart';
 import '../../firebase/services/fire_days_service.dart';
 import '../../firebase/fire_extensions.dart';
 import '../../interfaces/user_interface.dart';
+import '../../utils/days_streak_utils.dart';
 import '../entities/day.dart';
 import '../entities/flashcard.dart';
 import '../entities/user.dart';
@@ -15,16 +16,19 @@ class UserRepository implements UserInterface {
   late final FireUserService _fireUserService;
   late final FireAvatarService _fireAvatarService;
   late final FireDaysService _fireDaysService;
+  late final DaysStreakUtils _daysStreakUtils;
   final BehaviorSubject<User?> _user$ = BehaviorSubject<User?>.seeded(null);
 
   UserRepository({
     required FireUserService fireUserService,
     required FireAvatarService fireAvatarService,
     required FireDaysService fireDaysService,
+    required DaysStreakUtils daysStreakUtils,
   }) {
     _fireUserService = fireUserService;
     _fireAvatarService = fireAvatarService;
     _fireDaysService = fireDaysService;
+    _daysStreakUtils = daysStreakUtils;
   }
 
   @override
@@ -35,6 +39,9 @@ class UserRepository implements UserInterface {
 
   @override
   Stream<List<Day>?> get days$ => user$.map((User? user) => user?.days);
+
+  @override
+  Stream<int?> get daysStreak$ => days$.map(_daysStreakUtils.getStreak);
 
   @override
   Future<void> loadUser() async {
