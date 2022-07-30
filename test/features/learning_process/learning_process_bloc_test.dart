@@ -7,7 +7,7 @@ import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:fiszkomaniak/domain/use_cases/achievements/add_finished_session_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/flashcards/update_flashcards_statuses_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/save_session_progress_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
@@ -19,8 +19,8 @@ class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
 
 class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
 
-class MockUpdateFlashcardsStatusesUseCase extends Mock
-    implements UpdateFlashcardsStatusesUseCase {}
+class MockSaveSessionProgressUseCase extends Mock
+    implements SaveSessionProgressUseCase {}
 
 class MockAddFinishedSessionUseCase extends Mock
     implements AddFinishedSessionUseCase {}
@@ -33,7 +33,7 @@ class MockLearningProcessDialogs extends Mock
 void main() {
   final getGroupUseCase = MockGetGroupUseCase();
   final getCourseUseCase = MockGetCourseUseCase();
-  final updateFlashcardsStatusesUseCase = MockUpdateFlashcardsStatusesUseCase();
+  final saveSessionProgressUseCase = MockSaveSessionProgressUseCase();
   final addFinishedSessionUseCase = MockAddFinishedSessionUseCase();
   final removeSessionUseCase = MockRemoveSessionUseCase();
   final learningProcessDialogs = MockLearningProcessDialogs();
@@ -61,7 +61,7 @@ void main() {
     return LearningProcessBloc(
       getGroupUseCase: getGroupUseCase,
       getCourseUseCase: getCourseUseCase,
-      updateFlashcardsStatusesUseCase: updateFlashcardsStatusesUseCase,
+      saveSessionProgressUseCase: saveSessionProgressUseCase,
       addFinishedSessionUseCase: addFinishedSessionUseCase,
       removeSessionUseCase: removeSessionUseCase,
       learningProcessDialogs: learningProcessDialogs,
@@ -106,7 +106,7 @@ void main() {
   tearDown(() {
     reset(getGroupUseCase);
     reset(getCourseUseCase);
-    reset(updateFlashcardsStatusesUseCase);
+    reset(saveSessionProgressUseCase);
     reset(addFinishedSessionUseCase);
     reset(removeSessionUseCase);
     reset(learningProcessDialogs);
@@ -313,7 +313,7 @@ void main() {
         (_) async => false,
       );
       when(
-        () => updateFlashcardsStatusesUseCase.execute(
+        () => saveSessionProgressUseCase.execute(
           groupId: 'g1',
           rememberedFlashcards: [flashcards[0], flashcards[2]],
         ),
@@ -347,7 +347,7 @@ void main() {
     verify: (_) {
       verify(() => learningProcessDialogs.askForContinuing()).called(1);
       verify(
-        () => updateFlashcardsStatusesUseCase.execute(
+        () => saveSessionProgressUseCase.execute(
           groupId: 'g1',
           rememberedFlashcards: [flashcards[0], flashcards[2]],
         ),
@@ -360,7 +360,7 @@ void main() {
   );
 
   blocTest(
-    'end session, should save progress and remove session',
+    'end session, should save progress, add session to achievements and remove session',
     build: () => createBloc(
       group: createGroup(id: 'g1'),
       rememberedFlashcards: [flashcards[0], flashcards[2]],
@@ -368,7 +368,7 @@ void main() {
     ),
     setUp: () {
       when(
-        () => updateFlashcardsStatusesUseCase.execute(
+        () => saveSessionProgressUseCase.execute(
           groupId: 'g1',
           rememberedFlashcards: [flashcards[0], flashcards[2]],
         ),
@@ -401,7 +401,7 @@ void main() {
     ],
     verify: (_) {
       verify(
-        () => updateFlashcardsStatusesUseCase.execute(
+        () => saveSessionProgressUseCase.execute(
           groupId: 'g1',
           rememberedFlashcards: [flashcards[0], flashcards[2]],
         ),
@@ -414,8 +414,9 @@ void main() {
   );
 
   blocTest(
-    'exit, confirmed, should save progress',
+    'exit, confirmed, should save progress and add session to achievements',
     build: () => createBloc(
+      sessionId: 's1',
       group: createGroup(id: 'g1'),
       rememberedFlashcards: [flashcards[0], flashcards[2]],
     ),
@@ -424,10 +425,13 @@ void main() {
         () => learningProcessDialogs.askForSaveConfirmation(),
       ).thenAnswer((_) async => true);
       when(
-        () => updateFlashcardsStatusesUseCase.execute(
+        () => saveSessionProgressUseCase.execute(
           groupId: 'g1',
           rememberedFlashcards: [flashcards[0], flashcards[2]],
         ),
+      ).thenAnswer((_) async => '');
+      when(
+        () => addFinishedSessionUseCase.execute(sessionId: 's1'),
       ).thenAnswer((_) async => '');
     },
     act: (LearningProcessBloc bloc) {
@@ -436,6 +440,7 @@ void main() {
     expect: () => [
       createState(
         status: const BlocStatusLoading(),
+        sessionId: 's1',
         group: createGroup(id: 'g1'),
         rememberedFlashcards: [flashcards[0], flashcards[2]],
       ),
@@ -443,6 +448,7 @@ void main() {
         status: const BlocStatusComplete<LearningProcessInfoType>(
           info: LearningProcessInfoType.sessionHasBeenAborted,
         ),
+        sessionId: 's1',
         group: createGroup(id: 'g1'),
         rememberedFlashcards: [flashcards[0], flashcards[2]],
       ),
@@ -450,17 +456,21 @@ void main() {
     verify: (_) {
       verify(() => learningProcessDialogs.askForSaveConfirmation()).called(1);
       verify(
-        () => updateFlashcardsStatusesUseCase.execute(
+        () => saveSessionProgressUseCase.execute(
           groupId: 'g1',
           rememberedFlashcards: [flashcards[0], flashcards[2]],
         ),
+      ).called(1);
+      verify(
+        () => addFinishedSessionUseCase.execute(sessionId: 's1'),
       ).called(1);
     },
   );
 
   blocTest(
-    'exit, cancelled, should not save progress',
+    'exit, cancelled, should not save progress and should not add session to achievements',
     build: () => createBloc(
+      sessionId: 's1',
       group: createGroup(id: 'g1'),
       rememberedFlashcards: [flashcards[0], flashcards[2]],
     ),
@@ -469,10 +479,13 @@ void main() {
         () => learningProcessDialogs.askForSaveConfirmation(),
       ).thenAnswer((_) async => false);
       when(
-        () => updateFlashcardsStatusesUseCase.execute(
+        () => saveSessionProgressUseCase.execute(
           groupId: 'g1',
           rememberedFlashcards: [flashcards[0], flashcards[2]],
         ),
+      ).thenAnswer((_) async => '');
+      when(
+        () => addFinishedSessionUseCase.execute(sessionId: 's1'),
       ).thenAnswer((_) async => '');
     },
     act: (LearningProcessBloc bloc) {
@@ -483,6 +496,7 @@ void main() {
         status: const BlocStatusComplete<LearningProcessInfoType>(
           info: LearningProcessInfoType.sessionHasBeenAborted,
         ),
+        sessionId: 's1',
         group: createGroup(id: 'g1'),
         rememberedFlashcards: [flashcards[0], flashcards[2]],
       ),
@@ -490,10 +504,13 @@ void main() {
     verify: (_) {
       verify(() => learningProcessDialogs.askForSaveConfirmation()).called(1);
       verifyNever(
-        () => updateFlashcardsStatusesUseCase.execute(
+        () => saveSessionProgressUseCase.execute(
           groupId: 'g1',
           rememberedFlashcards: [flashcards[0], flashcards[2]],
         ),
+      );
+      verifyNever(
+        () => addFinishedSessionUseCase.execute(sessionId: 's1'),
       );
     },
   );

@@ -1,34 +1,40 @@
 import 'package:rxdart/rxdart.dart';
 import '../../firebase/models/fire_doc_model.dart';
-import '../../firebase/models/day_flashcard_db_model.dart';
 import '../../firebase/models/day_db_model.dart';
 import '../../firebase/models/user_db_model.dart';
 import '../../firebase/services/fire_avatar_service.dart';
 import '../../firebase/services/fire_user_service.dart';
+import '../../firebase/services/fire_days_service.dart';
 import '../../firebase/fire_extensions.dart';
 import '../../interfaces/user_interface.dart';
-import '../../models/day_flashcard_model.dart';
-import '../../models/day_model.dart';
+import '../entities/day.dart';
+import '../entities/flashcard.dart';
 import '../entities/user.dart';
 
 class UserRepository implements UserInterface {
   late final FireUserService _fireUserService;
   late final FireAvatarService _fireAvatarService;
+  late final FireDaysService _fireDaysService;
   final BehaviorSubject<User?> _user$ = BehaviorSubject<User?>.seeded(null);
 
   UserRepository({
     required FireUserService fireUserService,
     required FireAvatarService fireAvatarService,
+    required FireDaysService fireDaysService,
   }) {
     _fireUserService = fireUserService;
     _fireAvatarService = fireAvatarService;
+    _fireDaysService = fireDaysService;
   }
 
   @override
   Stream<User?> get user$ => _user$.stream;
 
   @override
-  Stream<String?> get avatarUrl$ => user$.map((user) => user?.avatarUrl);
+  Stream<String?> get avatarUrl$ => user$.map((User? user) => user?.avatarUrl);
+
+  @override
+  Stream<List<Day>?> get days$ => user$.map((User? user) => user?.days);
 
   @override
   Future<void> loadUser() async {
@@ -61,6 +67,24 @@ class UserRepository implements UserInterface {
     _user$.add(
       _user$.value?.copyWith(username: newUsername),
     );
+  }
+
+  @override
+  Future<void> addRememberedFlashcardsToCurrentDay({
+    required String groupId,
+    required List<Flashcard> rememberedFlashcards,
+  }) async {
+    final List<DayDbModel>? updatedDays =
+        await _fireDaysService.saveRememberedFlashcardsToCurrentDay(
+      flashcardsIds: _getFlashcardsIds(rememberedFlashcards, groupId),
+    );
+    if (updatedDays != null) {
+      _user$.add(
+        _user$.value?.copyWith(
+          days: _convertFireDaysToDayModel(updatedDays),
+        ),
+      );
+    }
   }
 
   @override
@@ -103,24 +127,18 @@ class UserRepository implements UserInterface {
         .map(
           (day) => Day(
             date: day.date.toDate(),
-            rememberedFlashcards: _convertFireDayFlashcardsToDayFlashcardsModel(
-              day.rememberedFlashcards,
-            ),
+            amountOfRememberedFlashcards: day.rememberedFlashcardsIds.length,
           ),
         )
         .toList();
   }
 
-  List<DayFlashcard> _convertFireDayFlashcardsToDayFlashcardsModel(
-    List<DayFlashcardDbModel> flashcards,
+  List<String> _getFlashcardsIds(
+    List<Flashcard> flashcards,
+    String groupId,
   ) {
     return flashcards
-        .map(
-          (flashcard) => DayFlashcard(
-            groupId: flashcard.groupId,
-            flashcardIndex: flashcard.flashcardIndex,
-          ),
-        )
+        .map((Flashcard flashcard) => flashcard.getId(groupId: groupId))
         .toList();
   }
 }

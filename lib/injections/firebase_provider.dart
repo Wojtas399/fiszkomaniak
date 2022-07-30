@@ -27,63 +27,51 @@ import '../interfaces/sessions_interface.dart';
 import '../interfaces/user_interface.dart';
 
 class FirebaseProvider {
-  static final _fireAchievementsService = FireAchievementsService();
-  static final _fireAppearanceSettingsService = FireAppearanceSettingsService();
-  static final _fireAuthService = FireAuthService();
-  static final _fireAvatarService = FireAvatarService();
-  static final _fireCoursesService = FireCoursesService();
-  static final _fireDaysService = FireDaysService();
-  static final _fireFlashcardsService = FireFlashcardsService();
-  static final _fireGroupsService = FireGroupsService();
-  static final _fireNotificationsSettingsService =
-      FireNotificationsSettingsService();
-  static final _fireSessionsService = FireSessionsService();
-  static final _fireUserService = FireUserService();
-
   static AchievementsInterface provideAchievementsInterface() {
     return AchievementsRepository(
-      fireAchievementsService: _fireAchievementsService,
+      fireAchievementsService: FireAchievementsService(),
     );
   }
 
   static AppearanceSettingsInterface provideAppearanceSettingsInterface() {
     return AppearanceSettingsRepository(
-      fireAppearanceSettingsService: _fireAppearanceSettingsService,
+      fireAppearanceSettingsService: FireAppearanceSettingsService(),
     );
   }
 
   static AuthInterface provideAuthInterface() {
     return AuthRepository(
-      fireAuthService: _fireAuthService,
+      fireAuthService: FireAuthService(),
     );
   }
 
   static CoursesInterface provideCoursesInterface() {
-    return CoursesRepository(fireCoursesService: _fireCoursesService);
+    return CoursesRepository(fireCoursesService: FireCoursesService());
   }
 
   static GroupsInterface provideGroupsInterface() {
     return GroupsRepository(
-      fireGroupsService: _fireGroupsService,
-      fireFlashcardsService: _fireFlashcardsService,
+      fireGroupsService: FireGroupsService(),
+      fireFlashcardsService: FireFlashcardsService(),
     );
   }
 
   static NotificationsSettingsInterface
       provideNotificationsSettingsInterface() {
     return NotificationsSettingsRepository(
-      fireNotificationsSettingsService: _fireNotificationsSettingsService,
+      fireNotificationsSettingsService: FireNotificationsSettingsService(),
     );
   }
 
   static SessionsInterface provideSessionsInterface() {
-    return SessionsRepository(fireSessionsService: _fireSessionsService);
+    return SessionsRepository(fireSessionsService: FireSessionsService());
   }
 
   static UserInterface provideUserInterface() {
     return UserRepository(
-      fireUserService: _fireUserService,
-      fireAvatarService: _fireAvatarService,
+      fireUserService: FireUserService(),
+      fireAvatarService: FireAvatarService(),
+      fireDaysService: FireDaysService(),
     );
   }
 }

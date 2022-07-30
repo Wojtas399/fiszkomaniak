@@ -7,7 +7,7 @@ import '../../components/flashcards_stack/components/flashcards_stack_bloc_provi
 import '../../config/navigation.dart';
 import '../../domain/use_cases/achievements/add_finished_session_use_case.dart';
 import '../../domain/use_cases/courses/get_course_use_case.dart';
-import '../../domain/use_cases/flashcards/update_flashcards_statuses_use_case.dart';
+import '../../domain/use_cases/sessions/save_session_progress_use_case.dart';
 import '../../domain/use_cases/groups/get_group_use_case.dart';
 import '../../domain/use_cases/sessions/remove_session_use_case.dart';
 import '../../features/home/home.dart';
@@ -15,6 +15,7 @@ import '../../interfaces/achievements_interface.dart';
 import '../../interfaces/courses_interface.dart';
 import '../../interfaces/groups_interface.dart';
 import '../../interfaces/sessions_interface.dart';
+import '../../interfaces/user_interface.dart';
 import '../../models/bloc_status.dart';
 import 'bloc/learning_process_bloc.dart';
 import 'components/learning_process_content.dart';
@@ -72,9 +73,10 @@ class _LearningProcessBlocProvider extends StatelessWidget {
         getCourseUseCase: GetCourseUseCase(
           coursesInterface: context.read<CoursesInterface>(),
         ),
-        updateFlashcardsStatusesUseCase: UpdateFlashcardsStatusesUseCase(
+        saveSessionProgressUseCase: SaveSessionProgressUseCase(
           groupsInterface: context.read<GroupsInterface>(),
           achievementsInterface: context.read<AchievementsInterface>(),
+          userInterface: context.read<UserInterface>(),
         ),
         addFinishedSessionUseCase: AddFinishedSessionUseCase(
           achievementsInterface: context.read<AchievementsInterface>(),

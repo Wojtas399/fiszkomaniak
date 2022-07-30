@@ -4,7 +4,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../../../components/learning_progress_chart/learning_progress_chart.dart';
 import '../../../components/section.dart';
 import '../../../models/date_model.dart';
-import '../../../models/day_model.dart';
+import '../../../domain/entities/day.dart';
 import '../bloc/profile_bloc.dart';
 
 class ProfileStats extends StatelessWidget {

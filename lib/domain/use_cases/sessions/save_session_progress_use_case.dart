@@ -1,17 +1,21 @@
 import '../../../interfaces/groups_interface.dart';
 import '../../../interfaces/achievements_interface.dart';
+import '../../../interfaces/user_interface.dart';
 import '../../entities/flashcard.dart';
 
-class UpdateFlashcardsStatusesUseCase {
+class SaveSessionProgressUseCase {
   late final GroupsInterface _groupsInterface;
   late final AchievementsInterface _achievementsInterface;
+  late final UserInterface _userInterface;
 
-  UpdateFlashcardsStatusesUseCase({
+  SaveSessionProgressUseCase({
     required GroupsInterface groupsInterface,
     required AchievementsInterface achievementsInterface,
+    required UserInterface userInterface,
   }) {
     _groupsInterface = groupsInterface;
     _achievementsInterface = achievementsInterface;
+    _userInterface = userInterface;
   }
 
   Future<void> execute({
@@ -24,6 +28,10 @@ class UpdateFlashcardsStatusesUseCase {
       flashcardsIndexes: _getIndexesOfFlashcards(rememberedFlashcards),
     );
     await _achievementsInterface.addRememberedFlashcards(
+      groupId: groupId,
+      rememberedFlashcards: rememberedFlashcards,
+    );
+    await _userInterface.addRememberedFlashcardsToCurrentDay(
       groupId: groupId,
       rememberedFlashcards: rememberedFlashcards,
     );

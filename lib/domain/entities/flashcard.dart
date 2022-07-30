@@ -42,7 +42,7 @@ class Flashcard extends Equatable {
       ];
 
   String getId({required String groupId}) {
-    return '$groupId$index';
+    return '$groupId-$index';
   }
 }
 

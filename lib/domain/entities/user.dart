@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../models/day_model.dart';
+import 'day.dart';
 
 class User extends Equatable {
   final String? avatarUrl;

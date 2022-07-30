@@ -79,7 +79,9 @@ void main() {
         createFlashcard(index: 1),
       ];
       const String groupId = 'group1';
-      const List<String> flashcardsIds = ['group10', 'group11'];
+      final List<String> flashcardsIds = flashcards
+          .map((Flashcard flashcard) => flashcard.getId(groupId: groupId))
+          .toList();
       const String allFlashcardsAmountId = 'allFlashcardsAmount';
 
       setUp(() {
@@ -205,7 +207,9 @@ void main() {
         createFlashcard(index: 0),
         createFlashcard(index: 1),
       ];
-      const List<String> flashcardsIds = ['g10', 'g11'];
+      final List<String> flashcardsIds = flashcards
+          .map((Flashcard flashcard) => flashcard.getId(groupId: groupId))
+          .toList();
       const String rememberedFlashcardsId = 'rememberedFlashcardsId';
 
       setUp(() {

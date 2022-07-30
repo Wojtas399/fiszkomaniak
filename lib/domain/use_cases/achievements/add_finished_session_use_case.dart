@@ -9,7 +9,7 @@ class AddFinishedSessionUseCase {
     _achievementsInterface = achievementsInterface;
   }
 
-  Future<void> execute({required String sessionId}) async {
+  Future<void> execute({required String? sessionId}) async {
     await _achievementsInterface.addFinishedSession(sessionId: sessionId);
   }
 }

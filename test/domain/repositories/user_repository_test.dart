@@ -1,19 +1,27 @@
-import 'package:fiszkomaniak/domain/entities/user.dart';
-import 'package:fiszkomaniak/firebase/models/fire_doc_model.dart';
-import 'package:fiszkomaniak/firebase/models/user_db_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:fiszkomaniak/domain/entities/day.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
+import 'package:fiszkomaniak/domain/entities/user.dart';
+import 'package:fiszkomaniak/domain/repositories/user_repository.dart';
+import 'package:fiszkomaniak/firebase/models/day_db_model.dart';
+import 'package:fiszkomaniak/firebase/models/fire_doc_model.dart';
+import 'package:fiszkomaniak/firebase/models/user_db_model.dart';
+import 'package:fiszkomaniak/firebase/services/fire_days_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_user_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_avatar_service.dart';
-import 'package:fiszkomaniak/domain/repositories/user_repository.dart';
+import 'package:fiszkomaniak/models/date_model.dart';
 
 class MockFireUserService extends Mock implements FireUserService {}
 
 class MockFireAvatarService extends Mock implements FireAvatarService {}
 
+class MockFireDaysService extends Mock implements FireDaysService {}
+
 void main() {
   final fireUserService = MockFireUserService();
   final fireAvatarService = MockFireAvatarService();
+  final fireDaysService = MockFireDaysService();
   late UserRepository repository;
   final User user = createUser(
     avatarUrl: 'avatar/url',
@@ -25,12 +33,14 @@ void main() {
     () => repository = UserRepository(
       fireUserService: fireUserService,
       fireAvatarService: fireAvatarService,
+      fireDaysService: fireDaysService,
     ),
   );
 
   tearDown(() {
     reset(fireUserService);
     reset(fireAvatarService);
+    reset(fireDaysService);
   });
 
   setUp(() {
@@ -136,6 +146,53 @@ void main() {
       );
       verify(
         () => fireUserService.saveNewUsername('newUsername'),
+      ).called(1);
+    },
+  );
+
+  test(
+    'add remembered flashcards to current day, should call method responsible for saving remembered flashcards to current day and should update days in stream',
+    () async {
+      const String groupId = 'g1';
+      final List<Flashcard> rememberedFlashcards = [
+        createFlashcard(index: 0),
+        createFlashcard(index: 1),
+      ];
+      final List<String> flashcardsIds = rememberedFlashcards
+          .map((Flashcard flashcard) => flashcard.getId(groupId: groupId))
+          .toList();
+      final List<DayDbModel> updatedDbDays = [
+        DayDbModel(
+          date: '2022-07-30',
+          rememberedFlashcardsIds: flashcardsIds,
+        ),
+      ];
+      final List<Day> updatedDays = [
+        createDay(
+          date: const Date(year: 2022, month: 7, day: 30),
+          amountOfRememberedFlashcards: 2,
+        ),
+      ];
+      when(
+        () => fireDaysService.saveRememberedFlashcardsToCurrentDay(
+          flashcardsIds: flashcardsIds,
+        ),
+      ).thenAnswer((_) async => updatedDbDays);
+
+      await repository.loadUser();
+      await repository.addRememberedFlashcardsToCurrentDay(
+        groupId: groupId,
+        rememberedFlashcards: rememberedFlashcards,
+      );
+
+      expect(
+        await repository.user$.first,
+        user.copyWith(days: updatedDays),
+      );
+      verify(
+        () => fireDaysService.saveRememberedFlashcardsToCurrentDay(
+          flashcardsIds: flashcardsIds,
+        ),
       ).called(1);
     },
   );
