@@ -1,10 +1,10 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:fiszkomaniak/components/flashcards_stack/flashcards_stack_model.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late LearningProcessState state;
@@ -17,8 +17,8 @@ void main() {
       group: null,
       duration: null,
       areQuestionsAndAnswersSwapped: false,
-      indexesOfRememberedFlashcards: [],
-      indexesOfNotRememberedFlashcards: [],
+      rememberedFlashcards: [],
+      notRememberedFlashcards: [],
       indexOfDisplayedFlashcard: 0,
       flashcardsType: null,
       amountOfFlashcardsInStack: 0,
@@ -86,7 +86,7 @@ void main() {
       state = state.copyWith(
         group: group,
         flashcardsType: FlashcardsType.remembered,
-        indexesOfRememberedFlashcards: [0, 2],
+        rememberedFlashcards: [group.flashcards[0], group.flashcards[2]],
       );
 
       expect(state.stackFlashcards, expectedStackFlashcards);
@@ -121,7 +121,10 @@ void main() {
     'amount of remembered flashcards',
     () {
       state = state.copyWith(
-        indexesOfRememberedFlashcards: [2, 5],
+        rememberedFlashcards: [
+          createFlashcard(index: 0),
+          createFlashcard(index: 1),
+        ],
       );
 
       expect(state.amountOfRememberedFlashcards, 2);
@@ -212,11 +215,11 @@ void main() {
       );
 
       test(
-        'should be true if all indexes of flashcards are in array of indexes of remembered flashcards',
+        'should be true if all flashcards are in array of remembered flashcards',
         () {
           state = state.copyWith(
             group: group,
-            indexesOfRememberedFlashcards: [2, 1, 0],
+            rememberedFlashcards: group.flashcards,
           );
 
           expect(state.areAllFlashcardsRememberedOrNotRemembered, true);
@@ -224,11 +227,11 @@ void main() {
       );
 
       test(
-        'should be true if all indexes of flashcards are in array of indexes of not remembered flashcards',
+        'should be true if all flashcards are in array of not remembered flashcards',
         () {
           state = state.copyWith(
             group: group,
-            indexesOfNotRememberedFlashcards: [1, 0, 2],
+            notRememberedFlashcards: group.flashcards,
           );
 
           expect(state.areAllFlashcardsRememberedOrNotRemembered, true);
@@ -236,12 +239,12 @@ void main() {
       );
 
       test(
-        'should be false if all indexes of flashcards are not in array of indexes of remembered flashcards or in array of indexes of not remembered flashcards',
+        'should be false if all flashcards are not in array of remembered flashcards or in array of not remembered flashcards',
         () {
           state = state.copyWith(
             group: group,
-            indexesOfRememberedFlashcards: [1, 0],
-            indexesOfNotRememberedFlashcards: [2],
+            rememberedFlashcards: [group.flashcards[1], group.flashcards[0]],
+            notRememberedFlashcards: [group.flashcards[2]],
           );
 
           expect(state.areAllFlashcardsRememberedOrNotRemembered, false);
@@ -332,28 +335,34 @@ void main() {
   );
 
   test(
-    'copy with indexes of remembered flashcards',
+    'copy with remembered flashcards',
     () {
-      const List<int> expectedIndexes = [1, 0];
+      final List<Flashcard> expectedFlashcards = [
+        createFlashcard(index: 0),
+        createFlashcard(index: 1),
+      ];
 
-      state = state.copyWith(indexesOfRememberedFlashcards: expectedIndexes);
+      state = state.copyWith(rememberedFlashcards: expectedFlashcards);
       final state2 = state.copyWith();
 
-      expect(state.indexesOfRememberedFlashcards, expectedIndexes);
-      expect(state2.indexesOfRememberedFlashcards, expectedIndexes);
+      expect(state.rememberedFlashcards, expectedFlashcards);
+      expect(state2.rememberedFlashcards, expectedFlashcards);
     },
   );
 
   test(
-    'copy with indexes of not remembered flashcards',
+    'copy with not remembered flashcards',
     () {
-      const List<int> expectedIndexes = [0, 2];
+      final List<Flashcard> expectedFlashcards = [
+        createFlashcard(index: 0),
+        createFlashcard(index: 1),
+      ];
 
-      state = state.copyWith(indexesOfNotRememberedFlashcards: expectedIndexes);
+      state = state.copyWith(notRememberedFlashcards: expectedFlashcards);
       final state2 = state.copyWith();
 
-      expect(state.indexesOfNotRememberedFlashcards, expectedIndexes);
-      expect(state2.indexesOfNotRememberedFlashcards, expectedIndexes);
+      expect(state.notRememberedFlashcards, expectedFlashcards);
+      expect(state2.notRememberedFlashcards, expectedFlashcards);
     },
   );
 

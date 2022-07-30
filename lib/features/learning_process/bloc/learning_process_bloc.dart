@@ -41,8 +41,8 @@ class LearningProcessBloc
     Group? group,
     Duration? duration,
     bool areQuestionsAndAnswersSwapped = false,
-    List<int> indexesOfRememberedFlashcards = const [],
-    List<int> indexesOfNotRememberedFlashcards = const [],
+    List<Flashcard> rememberedFlashcards = const [],
+    List<Flashcard> notRememberedFlashcards = const [],
     int indexOfDisplayedFlashcard = 0,
     FlashcardsType? flashcardsType,
     int amountOfFlashcardsInStack = 0,
@@ -54,8 +54,8 @@ class LearningProcessBloc
             group: group,
             duration: duration,
             areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
-            indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
-            indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
+            rememberedFlashcards: rememberedFlashcards,
+            notRememberedFlashcards: notRememberedFlashcards,
             indexOfDisplayedFlashcard: indexOfDisplayedFlashcard,
             flashcardsType: flashcardsType,
             amountOfFlashcardsInStack: amountOfFlashcardsInStack,
@@ -83,15 +83,6 @@ class LearningProcessBloc
     emit(state.copyWith(status: const BlocStatusLoading()));
     final Group group = await _getGroup(event.data.groupId);
     final String courseName = await _getCourseName(group.courseId);
-    final int amountOfFlashcardsInStack =
-        getAmountOfFlashcardsMatchingToFlashcardsType(
-      group.flashcards,
-      event.data.flashcardsType,
-    );
-    final List<int> indexesOfRememberedFlashcards =
-        getIndexesOfRememberedFlashcards(group.flashcards);
-    final List<int> indexesOfNotRememberedFlashcards =
-        getIndexesOfNotRememberedFlashcards(group.flashcards);
     emit(state.copyWith(
       status: const BlocStatusComplete<LearningProcessInfoType>(
         info: LearningProcessInfoType.initialDataHasBeenLoaded,
@@ -101,10 +92,13 @@ class LearningProcessBloc
       group: group,
       duration: event.data.duration,
       areQuestionsAndAnswersSwapped: event.data.areQuestionsAndAnswersSwapped,
-      indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
-      indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
+      rememberedFlashcards: getRememberedFlashcards(group.flashcards),
+      notRememberedFlashcards: getNotRememberedFlashcards(group.flashcards),
       flashcardsType: event.data.flashcardsType,
-      amountOfFlashcardsInStack: amountOfFlashcardsInStack,
+      amountOfFlashcardsInStack: getAmountOfFlashcardsMatchingToFlashcardsType(
+        group.flashcards,
+        event.data.flashcardsType,
+      ),
     ));
   }
 
@@ -112,21 +106,19 @@ class LearningProcessBloc
     LearningProcessEventRememberedFlashcard event,
     Emitter<LearningProcessState> emit,
   ) {
-    List<int> indexesOfRememberedFlashcards = [
-      ...state.indexesOfRememberedFlashcards,
+    final List<Flashcard> originalFlashcards = state.group?.flashcards ?? [];
+    List<Flashcard> rememberedFlashcards = [...state.rememberedFlashcards];
+    final List<Flashcard> notRememberedFlashcards = [
+      ...state.notRememberedFlashcards,
     ];
-    final List<int> indexesOfNotRememberedFlashcards = [
-      ...state.indexesOfNotRememberedFlashcards,
-    ];
-    indexesOfRememberedFlashcards.add(event.flashcardIndex);
-    indexesOfRememberedFlashcards =
-        indexesOfRememberedFlashcards.toSet().toList();
-    indexesOfNotRememberedFlashcards.removeWhere(
-      (index) => index == event.flashcardIndex,
+    rememberedFlashcards.add(originalFlashcards[event.flashcardIndex]);
+    rememberedFlashcards = rememberedFlashcards.toSet().toList();
+    notRememberedFlashcards.removeWhere(
+      (Flashcard flashcard) => flashcard.index == event.flashcardIndex,
     );
     emit(state.copyWith(
-      indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
-      indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
+      rememberedFlashcards: rememberedFlashcards,
+      notRememberedFlashcards: notRememberedFlashcards,
       indexOfDisplayedFlashcard: _getNewIndexOfDisplayedFlashcard(),
     ));
   }
@@ -135,21 +127,21 @@ class LearningProcessBloc
     LearningProcessEventForgottenFlashcard event,
     Emitter<LearningProcessState> emit,
   ) {
-    final List<int> indexesOfRememberedFlashcards = [
-      ...state.indexesOfRememberedFlashcards,
+    final List<Flashcard> originalFlashcards = state.group?.flashcards ?? [];
+    final List<Flashcard> rememberedFlashcards = [
+      ...state.rememberedFlashcards
     ];
-    List<int> indexesOfNotRememberedFlashcards = [
-      ...state.indexesOfNotRememberedFlashcards,
+    List<Flashcard> notRememberedFlashcards = [
+      ...state.notRememberedFlashcards,
     ];
-    indexesOfNotRememberedFlashcards.add(event.flashcardIndex);
-    indexesOfNotRememberedFlashcards =
-        indexesOfNotRememberedFlashcards.toSet().toList();
-    indexesOfRememberedFlashcards.removeWhere(
-      (index) => index == event.flashcardIndex,
+    notRememberedFlashcards.add(originalFlashcards[event.flashcardIndex]);
+    notRememberedFlashcards = notRememberedFlashcards.toSet().toList();
+    rememberedFlashcards.removeWhere(
+      (Flashcard flashcard) => flashcard.index == event.flashcardIndex,
     );
     emit(state.copyWith(
-      indexesOfRememberedFlashcards: indexesOfRememberedFlashcards,
-      indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards,
+      rememberedFlashcards: rememberedFlashcards,
+      notRememberedFlashcards: notRememberedFlashcards,
       indexOfDisplayedFlashcard: _getNewIndexOfDisplayedFlashcard(),
     ));
   }
@@ -252,10 +244,10 @@ class LearningProcessBloc
   Future<void> _saveFlashcards() async {
     final String? groupId = state.group?.id;
     if (groupId != null) {
-      // await _updateFlashcardsStatusesUseCase.execute(
-      //   groupId: groupId,
-      //   indexesOfRememberedFlashcards: state.indexesOfRememberedFlashcards,
-      // );
+      await _updateFlashcardsStatusesUseCase.execute(
+        groupId: groupId,
+        rememberedFlashcards: state.rememberedFlashcards,
+      );
     }
   }
 

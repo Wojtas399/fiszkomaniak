@@ -2,12 +2,12 @@ import '../../domain/entities/flashcard.dart';
 import '../../domain/entities/session.dart';
 
 mixin LearningProcessUtils {
-  List<int> getIndexesOfRememberedFlashcards(List<Flashcard> flashcards) {
-    return _getIndexesByStatus(flashcards, FlashcardStatus.remembered);
+  List<Flashcard> getRememberedFlashcards(List<Flashcard> flashcards) {
+    return _getFlashcardsByStatus(flashcards, FlashcardStatus.remembered);
   }
 
-  List<int> getIndexesOfNotRememberedFlashcards(List<Flashcard> flashcards) {
-    return _getIndexesByStatus(flashcards, FlashcardStatus.notRemembered);
+  List<Flashcard> getNotRememberedFlashcards(List<Flashcard> flashcards) {
+    return _getFlashcardsByStatus(flashcards, FlashcardStatus.notRemembered);
   }
 
   int getAmountOfFlashcardsMatchingToFlashcardsType(
@@ -24,14 +24,11 @@ mixin LearningProcessUtils {
         .length;
   }
 
-  List<int> _getIndexesByStatus(
+  List<Flashcard> _getFlashcardsByStatus(
     List<Flashcard> flashcards,
     FlashcardStatus status,
   ) {
-    return flashcards
-        .where((flashcard) => flashcard.status == status)
-        .map((flashcard) => flashcard.index)
-        .toList();
+    return flashcards.where((flashcard) => flashcard.status == status).toList();
   }
 
   bool _doesFlashcardStatusMatchFlashcardsType(

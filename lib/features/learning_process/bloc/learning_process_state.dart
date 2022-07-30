@@ -7,8 +7,8 @@ class LearningProcessState extends Equatable {
   final Group? group;
   final Duration? duration;
   final bool areQuestionsAndAnswersSwapped;
-  final List<int> indexesOfRememberedFlashcards;
-  final List<int> indexesOfNotRememberedFlashcards;
+  final List<Flashcard> rememberedFlashcards;
+  final List<Flashcard> notRememberedFlashcards;
   final int indexOfDisplayedFlashcard;
   final FlashcardsType? flashcardsType;
   final int amountOfFlashcardsInStack;
@@ -20,8 +20,8 @@ class LearningProcessState extends Equatable {
     required this.group,
     required this.duration,
     required this.areQuestionsAndAnswersSwapped,
-    required this.indexesOfRememberedFlashcards,
-    required this.indexesOfNotRememberedFlashcards,
+    required this.rememberedFlashcards,
+    required this.notRememberedFlashcards,
     required this.indexOfDisplayedFlashcard,
     required this.flashcardsType,
     required this.amountOfFlashcardsInStack,
@@ -35,8 +35,8 @@ class LearningProcessState extends Equatable {
         group ?? '',
         duration ?? '',
         areQuestionsAndAnswersSwapped,
-        indexesOfRememberedFlashcards,
-        indexesOfNotRememberedFlashcards,
+        rememberedFlashcards,
+        notRememberedFlashcards,
         indexOfDisplayedFlashcard,
         flashcardsType ?? '',
         amountOfFlashcardsInStack,
@@ -60,7 +60,7 @@ class LearningProcessState extends Equatable {
 
   int get amountOfAllFlashcards => group?.flashcards.length ?? 0;
 
-  int get amountOfRememberedFlashcards => indexesOfRememberedFlashcards.length;
+  int get amountOfRememberedFlashcards => rememberedFlashcards.length;
 
   String get nameForQuestions {
     final Group? group = this.group;
@@ -92,8 +92,8 @@ class LearningProcessState extends Equatable {
     Group? group,
     Duration? duration,
     bool? areQuestionsAndAnswersSwapped,
-    List<int>? indexesOfRememberedFlashcards,
-    List<int>? indexesOfNotRememberedFlashcards,
+    List<Flashcard>? rememberedFlashcards,
+    List<Flashcard>? notRememberedFlashcards,
     int? indexOfDisplayedFlashcard,
     FlashcardsType? flashcardsType,
     int? amountOfFlashcardsInStack,
@@ -107,10 +107,9 @@ class LearningProcessState extends Equatable {
       duration: removedDuration ? null : duration ?? this.duration,
       areQuestionsAndAnswersSwapped:
           areQuestionsAndAnswersSwapped ?? this.areQuestionsAndAnswersSwapped,
-      indexesOfRememberedFlashcards:
-          indexesOfRememberedFlashcards ?? this.indexesOfRememberedFlashcards,
-      indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards ??
-          this.indexesOfNotRememberedFlashcards,
+      rememberedFlashcards: rememberedFlashcards ?? this.rememberedFlashcards,
+      notRememberedFlashcards:
+          notRememberedFlashcards ?? this.notRememberedFlashcards,
       indexOfDisplayedFlashcard:
           indexOfDisplayedFlashcard ?? this.indexOfDisplayedFlashcard,
       flashcardsType: flashcardsType ?? this.flashcardsType,
@@ -127,9 +126,9 @@ class LearningProcessState extends Equatable {
       case FlashcardsType.all:
         return true;
       case FlashcardsType.remembered:
-        return indexesOfRememberedFlashcards.contains(flashcard.index);
+        return rememberedFlashcards.contains(flashcard);
       case FlashcardsType.notRemembered:
-        return indexesOfNotRememberedFlashcards.contains(flashcard.index);
+        return notRememberedFlashcards.contains(flashcard);
     }
   }
 
@@ -150,12 +149,12 @@ class LearningProcessState extends Equatable {
   }
 
   bool _areAllFlashcardsNotRemembered() {
-    final List<int> indexesOfFlashcards = _getIndexesOfFlashcards();
-    if (indexesOfNotRememberedFlashcards.length != indexesOfFlashcards.length) {
+    final List<Flashcard> originalFlashcards = group?.flashcards ?? [];
+    if (notRememberedFlashcards.length != originalFlashcards.length) {
       return false;
     }
-    for (int flashcardIndex in indexesOfFlashcards) {
-      if (!indexesOfNotRememberedFlashcards.contains(flashcardIndex)) {
+    for (final Flashcard flashcard in originalFlashcards) {
+      if (!notRememberedFlashcards.contains(flashcard)) {
         return false;
       }
     }
@@ -163,22 +162,16 @@ class LearningProcessState extends Equatable {
   }
 
   bool _areAllFlashcardsRemembered() {
-    final List<int> indexesOfFlashcards = _getIndexesOfFlashcards();
-    if (indexesOfRememberedFlashcards.length != indexesOfFlashcards.length) {
+    final List<Flashcard> originalFlashcards = group?.flashcards ?? [];
+    if (rememberedFlashcards.length != originalFlashcards.length) {
       return false;
     }
-    for (int flashcardIndex in indexesOfFlashcards) {
-      if (!indexesOfRememberedFlashcards.contains(flashcardIndex)) {
+    for (final Flashcard flashcard in originalFlashcards) {
+      if (!rememberedFlashcards.contains(flashcard)) {
         return false;
       }
     }
     return true;
-  }
-
-  List<int> _getIndexesOfFlashcards() {
-    return (group?.flashcards ?? [])
-        .map((flashcard) => flashcard.index)
-        .toList();
   }
 }
 
