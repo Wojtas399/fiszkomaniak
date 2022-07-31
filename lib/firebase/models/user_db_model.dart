@@ -13,8 +13,8 @@ class UserDbModel extends Equatable {
   UserDbModel.fromJson(Map<String, Object?> json)
       : this(
           username: json['username']! as String,
-          days: (json['days'] as List)
-              .map((day) => DayDbModel.fromJson(day))
+          days: (json['days'] as List?)
+              ?.map((day) => DayDbModel.fromJson(day))
               .toList(),
         );
 
