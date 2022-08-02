@@ -79,11 +79,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     try {
       emit(state.copyWith(status: const BlocStatusLoading()));
-      await _loadUserUseCase.execute();
-      await _loadAllGroupsUseCase.execute();
-      await _loadAppearanceSettingsUseCase.execute();
-      await _loadNotificationsSettingsUseCase.execute();
-      await _initializeNotificationsSettingsUseCase.execute();
+      await _loadData().timeout(const Duration(seconds: 6));
       emit(state.copyWith(status: const BlocStatusComplete()));
       _setParamsListener();
     } catch (_) {
@@ -102,6 +98,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           event.params.appearanceSettings.isDarkModeCompatibilityWithSystemOn,
       daysStreak: event.params.daysStreak,
     ));
+  }
+
+  Future<void> _loadData() async {
+    await _loadUserUseCase.execute();
+    await _loadAllGroupsUseCase.execute();
+    await _loadAppearanceSettingsUseCase.execute();
+    await _loadNotificationsSettingsUseCase.execute();
+    await _initializeNotificationsSettingsUseCase.execute();
   }
 
   void _setParamsListener() {
