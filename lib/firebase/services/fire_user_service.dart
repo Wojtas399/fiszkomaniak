@@ -43,6 +43,7 @@ class FireUserService {
     final courses = await FireReferences.coursesRef.get();
     final groups = await FireReferences.groupsRef.get();
     final achievements = await FireReferences.achievementsRef.get();
+    final sessions = await FireReferences.sessionsRef.get();
     for (final course in courses.docs) {
       batch.delete(course.reference);
     }
@@ -51,6 +52,9 @@ class FireUserService {
     }
     for (final achievement in achievements.docs) {
       batch.delete(achievement.reference);
+    }
+    for (final session in sessions.docs) {
+      batch.delete(session.reference);
     }
     batch.delete(FireReferences.appearanceSettingsRef);
     batch.delete(FireReferences.notificationsSettingsRef);
