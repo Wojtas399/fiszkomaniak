@@ -45,6 +45,11 @@ class GroupsRepository implements GroupsInterface {
   }
 
   @override
+  Stream<String> getGroupName({required String groupId}) {
+    return getGroupById(groupId: groupId).map((Group group) => group.name);
+  }
+
+  @override
   Future<void> loadAllGroups() async {
     final groups = await _fireGroupsService.loadAllGroups();
     _allGroups$.add(

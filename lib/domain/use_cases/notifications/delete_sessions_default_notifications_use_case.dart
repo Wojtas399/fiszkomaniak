@@ -1,11 +1,12 @@
+import '../../../domain/entities/session.dart';
 import '../../../interfaces/sessions_interface.dart';
 import '../../../interfaces/notifications_interface.dart';
 
-class RemoveSessionUseCase {
+class DeleteSessionsDefaultNotificationsUseCase {
   late final SessionsInterface _sessionsInterface;
   late final NotificationsInterface _notificationsInterface;
 
-  RemoveSessionUseCase({
+  DeleteSessionsDefaultNotificationsUseCase({
     required SessionsInterface sessionsInterface,
     required NotificationsInterface notificationsInterface,
   }) {
@@ -13,13 +14,12 @@ class RemoveSessionUseCase {
     _notificationsInterface = notificationsInterface;
   }
 
-  Future<void> execute({required String sessionId}) async {
-    await _sessionsInterface.removeSession(sessionId);
-    await _notificationsInterface.deleteDefaultNotificationForSession(
-      sessionId: sessionId,
-    );
-    await _notificationsInterface.deleteScheduledNotificationForSession(
-      sessionId: sessionId,
-    );
+  Future<void> execute() async {
+    final List<Session> sessions = await _sessionsInterface.allSessions$.first;
+    for (final Session session in sessions) {
+      await _notificationsInterface.deleteDefaultNotificationForSession(
+        sessionId: session.id,
+      );
+    }
   }
 }

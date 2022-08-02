@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/domain/entities/group.dart';
+import '../domain/entities/group.dart';
 import '../domain/entities/flashcard.dart';
 
 abstract class GroupsInterface {
@@ -7,6 +7,8 @@ abstract class GroupsInterface {
   Stream<Group> getGroupById({required String groupId});
 
   Stream<List<Group>> getGroupsByCourseId({required String courseId});
+
+  Stream<String> getGroupName({required String groupId});
 
   Future<void> loadAllGroups();
 

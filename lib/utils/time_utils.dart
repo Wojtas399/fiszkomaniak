@@ -3,7 +3,7 @@ import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:fiszkomaniak/utils/date_utils.dart';
 
 class TimeUtils {
-  static int compareTimes(Time time1, Time time2) {
+  int compareTimes(Time time1, Time time2) {
     if (time1.hour == time2.hour) {
       if (time1.minute == time2.minute) {
         return 0;
@@ -15,7 +15,7 @@ class TimeUtils {
     }
   }
 
-  static bool isPastTime(Time time, Date date) {
+  bool isPastTime(Time time, Date date) {
     return DateUtils.isPastDate(date) ||
         DateUtils.isTodayDate(date) &&
             isTime1EarlierThanTime2(
@@ -24,11 +24,11 @@ class TimeUtils {
             );
   }
 
-  static bool isNow(Time time, Date date) {
+  bool isNow(Time time, Date date) {
     return date == Date.now() && time == Time.now();
   }
 
-  static bool isTime1EarlierThanTime2({
+  bool isTime1EarlierThanTime2({
     required Time time1,
     required Time time2,
   }) {

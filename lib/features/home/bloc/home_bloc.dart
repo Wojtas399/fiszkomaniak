@@ -6,6 +6,7 @@ import '../../../domain/use_cases/appearance_settings/get_appearance_settings_us
 import '../../../domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
 import '../../../domain/use_cases/groups/load_all_groups_use_case.dart';
 import '../../../domain/use_cases/notifications_settings/load_notifications_settings_use_case.dart';
+import '../../../domain/use_cases/notifications/initialize_notifications_settings_use_case.dart';
 import '../../../domain/use_cases/user/get_days_streak_use_case.dart';
 import '../../../domain/use_cases/user/get_user_avatar_url_use_case.dart';
 import '../../../domain/use_cases/user/load_user_use_case.dart';
@@ -21,6 +22,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   late final LoadAllGroupsUseCase _loadAllGroupsUseCase;
   late final LoadAppearanceSettingsUseCase _loadAppearanceSettingsUseCase;
   late final LoadNotificationsSettingsUseCase _loadNotificationsSettingsUseCase;
+  late final InitializeNotificationsSettingsUseCase
+      _initializeNotificationsSettingsUseCase;
   late final GetUserAvatarUrlUseCase _getUserAvatarUrlUseCase;
   late final GetAppearanceSettingsUseCase _getAppearanceSettingsUseCase;
   late final GetDaysStreakUseCase _getDaysStreakUseCase;
@@ -31,6 +34,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required LoadAllGroupsUseCase loadAllGroupsUseCase,
     required LoadAppearanceSettingsUseCase loadAppearanceSettingsUseCase,
     required LoadNotificationsSettingsUseCase loadNotificationsSettingsUseCase,
+    required InitializeNotificationsSettingsUseCase
+        initializeNotificationsSettingsUseCase,
     required GetUserAvatarUrlUseCase getUserAvatarUrlUseCase,
     required GetAppearanceSettingsUseCase getAppearanceSettingsUseCase,
     required GetDaysStreakUseCase getDaysStreakUseCase,
@@ -53,6 +58,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _loadAllGroupsUseCase = loadAllGroupsUseCase;
     _loadAppearanceSettingsUseCase = loadAppearanceSettingsUseCase;
     _loadNotificationsSettingsUseCase = loadNotificationsSettingsUseCase;
+    _initializeNotificationsSettingsUseCase =
+        initializeNotificationsSettingsUseCase;
     _getUserAvatarUrlUseCase = getUserAvatarUrlUseCase;
     _getAppearanceSettingsUseCase = getAppearanceSettingsUseCase;
     _getDaysStreakUseCase = getDaysStreakUseCase;
@@ -76,6 +83,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       await _loadAllGroupsUseCase.execute();
       await _loadAppearanceSettingsUseCase.execute();
       await _loadNotificationsSettingsUseCase.execute();
+      await _initializeNotificationsSettingsUseCase.execute();
       emit(state.copyWith(status: const BlocStatusComplete()));
       _setParamsListener();
     } catch (_) {

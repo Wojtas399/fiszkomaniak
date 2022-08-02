@@ -1,3 +1,5 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/repositories/groups_repository.dart';
@@ -6,8 +8,6 @@ import 'package:fiszkomaniak/firebase/models/flashcard_db_model.dart';
 import 'package:fiszkomaniak/firebase/models/group_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_flashcards_service.dart';
 import 'package:fiszkomaniak/firebase/services/fire_groups_service.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockFireGroupsService extends Mock implements FireGroupsService {}
 
@@ -123,6 +123,27 @@ void main() {
           createGroup(id: 'g1', courseId: 'c1'),
           createGroup(id: 'g4', courseId: 'c1'),
         ],
+      );
+    },
+  );
+
+  test(
+    'get group name, should return stream which contains name of specific group',
+    () async {
+      final FireDocument<GroupDbModel> groupFromDb = FireDocument(
+        id: 'g1',
+        data: createGroupDbModel(name: 'group 1', courseId: 'c1'),
+      );
+      when(
+        () => fireGroupsService.loadAllGroups(),
+      ).thenAnswer((_) async => [groupFromDb]);
+
+      await repository.loadAllGroups();
+      final Stream<String> groupName$ = repository.getGroupName(groupId: 'g1');
+
+      expect(
+        await groupName$.first,
+        groupFromDb.data.name,
       );
     },
   );

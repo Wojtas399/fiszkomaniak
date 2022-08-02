@@ -30,6 +30,7 @@ class SessionCreatorBloc
   late final GetGroupsByCourseIdUseCase _getGroupsByCourseIdUseCase;
   late final AddSessionUseCase _addSessionUseCase;
   late final UpdateSessionUseCase _updateSessionUseCase;
+  late final TimeUtils _timeUtils;
 
   SessionCreatorBloc({
     required LoadAllCoursesUseCase loadAllCoursesUseCase,
@@ -39,6 +40,7 @@ class SessionCreatorBloc
     required GetGroupsByCourseIdUseCase getGroupsByCourseIdUseCase,
     required AddSessionUseCase addSessionUseCase,
     required UpdateSessionUseCase updateSessionUseCase,
+    required TimeUtils timeUtils,
     BlocStatus status = const BlocStatusInitial(),
     SessionCreatorMode mode = const SessionCreatorCreateMode(),
     List<Course> courses = const [],
@@ -74,6 +76,7 @@ class SessionCreatorBloc
     _getGroupsByCourseIdUseCase = getGroupsByCourseIdUseCase;
     _addSessionUseCase = addSessionUseCase;
     _updateSessionUseCase = updateSessionUseCase;
+    _timeUtils = timeUtils;
     on<SessionCreatorEventInitialize>(_initialize);
     on<SessionCreatorEventCourseSelected>(_courseSelected);
     on<SessionCreatorEventGroupSelected>(_groupSelected);
@@ -291,18 +294,18 @@ class SessionCreatorBloc
 
   bool _isChosenDateWithStartTimeFromThePast(Date date) {
     final Time? startTime = state.startTime;
-    return startTime != null && TimeUtils.isPastTime(startTime, date);
+    return startTime != null && _timeUtils.isPastTime(startTime, date);
   }
 
   bool _isChosenDateWithNotificationTimeFromThePast(Date date) {
     final Time? notificationTime = state.notificationTime;
     return notificationTime != null &&
-        TimeUtils.isPastTime(notificationTime, date);
+        _timeUtils.isPastTime(notificationTime, date);
   }
 
   bool _checkIfChosenTimeIsFromThePast(Time time) {
     final Date? date = state.date;
-    return date != null && TimeUtils.isPastTime(time, date);
+    return date != null && _timeUtils.isPastTime(time, date);
   }
 
   bool _checkIfChosenStartTimeIsEarlierThanNotificationTime(
@@ -310,7 +313,7 @@ class SessionCreatorBloc
   ) {
     final Time? notificationTime = state.notificationTime;
     return notificationTime != null &&
-        TimeUtils.isTime1EarlierThanTime2(
+        _timeUtils.isTime1EarlierThanTime2(
           time1: startTime,
           time2: notificationTime,
         );
@@ -321,7 +324,7 @@ class SessionCreatorBloc
   ) {
     final Time? startTime = state.startTime;
     return startTime != null &&
-        TimeUtils.isTime1EarlierThanTime2(
+        _timeUtils.isTime1EarlierThanTime2(
           time1: startTime,
           time2: notificationTime,
         );

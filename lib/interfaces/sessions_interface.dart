@@ -9,7 +9,7 @@ abstract class SessionsInterface {
 
   Future<void> loadAllSessions();
 
-  Future<void> addNewSession({
+  Future<String?> addNewSession({
     required String groupId,
     required FlashcardsType flashcardsType,
     required bool areQuestionsAndAnswersSwapped,
@@ -19,7 +19,7 @@ abstract class SessionsInterface {
     required Time? notificationTime,
   });
 
-  Future<void> updateSession({
+  Future<Session?> updateSession({
     required String sessionId,
     String? groupId,
     FlashcardsType? flashcardsType,

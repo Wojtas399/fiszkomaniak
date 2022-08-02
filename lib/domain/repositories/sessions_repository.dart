@@ -49,7 +49,7 @@ class SessionsRepository implements SessionsInterface {
   }
 
   @override
-  Future<void> addNewSession({
+  Future<String?> addNewSession({
     required String groupId,
     required FlashcardsType flashcardsType,
     required bool areQuestionsAndAnswersSwapped,
@@ -71,10 +71,11 @@ class SessionsRepository implements SessionsInterface {
     if (session != null) {
       _addSessionToList(session);
     }
+    return dbSession?.id;
   }
 
   @override
-  Future<void> updateSession({
+  Future<Session?> updateSession({
     required String sessionId,
     String? groupId,
     FlashcardsType? flashcardsType,
@@ -100,6 +101,7 @@ class SessionsRepository implements SessionsInterface {
     if (updatedSession != null) {
       _updateSessionInList(updatedSession);
     }
+    return updatedSession;
   }
 
   @override

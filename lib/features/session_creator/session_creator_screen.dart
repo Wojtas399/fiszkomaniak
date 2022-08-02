@@ -13,8 +13,11 @@ import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.
 import 'package:fiszkomaniak/features/session_creator/components/session_creator_content.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
+import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
+import 'package:fiszkomaniak/interfaces/notifications_settings_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
+import 'package:fiszkomaniak/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -48,29 +51,38 @@ class _SessionCreatorBlocProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CoursesInterface coursesInterface = context.read<CoursesInterface>();
-    final GroupsInterface groupsInterface = context.read<GroupsInterface>();
-    final SessionsInterface sessionsInterface =
-        context.read<SessionsInterface>();
     return BlocProvider(
       create: (BuildContext context) => SessionCreatorBloc(
         loadAllCoursesUseCase: LoadAllCoursesUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
         getAllCoursesUseCase: GetAllCoursesUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
-        getCourseUseCase: GetCourseUseCase(coursesInterface: coursesInterface),
-        getGroupUseCase: GetGroupUseCase(groupsInterface: groupsInterface),
+        getCourseUseCase: GetCourseUseCase(
+          coursesInterface: context.read<CoursesInterface>(),
+        ),
+        getGroupUseCase: GetGroupUseCase(
+          groupsInterface: context.read<GroupsInterface>(),
+        ),
         getGroupsByCourseIdUseCase: GetGroupsByCourseIdUseCase(
-          groupsInterface: groupsInterface,
+          groupsInterface: context.read<GroupsInterface>(),
         ),
         addSessionUseCase: AddSessionUseCase(
-          sessionsInterface: sessionsInterface,
+          sessionsInterface: context.read<SessionsInterface>(),
+          groupsInterface: context.read<GroupsInterface>(),
+          notificationsInterface: context.read<NotificationsInterface>(),
+          notificationsSettingsInterface:
+              context.read<NotificationsSettingsInterface>(),
         ),
         updateSessionUseCase: UpdateSessionUseCase(
-          sessionsInterface: sessionsInterface,
+          sessionsInterface: context.read<SessionsInterface>(),
+          groupsInterface: context.read<GroupsInterface>(),
+          notificationsInterface: context.read<NotificationsInterface>(),
+          notificationsSettingsInterface:
+              context.read<NotificationsSettingsInterface>(),
         ),
+        timeUtils: TimeUtils(),
       )..add(SessionCreatorEventInitialize(mode: mode)),
       child: child,
     );

@@ -3,7 +3,6 @@ import '../domain/entities/flashcard.dart';
 import '../domain/entities/session.dart';
 import '../exceptions/auth_exceptions.dart';
 import '../models/date_model.dart';
-import '../models/notification_model.dart';
 import '../models/time_model.dart';
 import '../utils/utils.dart';
 
@@ -117,16 +116,5 @@ extension FireStringExtensions on String {
     final int minutes = int.parse(splitByDoubleDot[1]);
     final int hours = int.parse(splitByDoubleDot[0]);
     return Duration(hours: hours, minutes: minutes);
-  }
-
-  Notification? convertToNotification() {
-    if (contains('session')) {
-      return SessionNotification(
-        sessionId: split(' ')[1],
-      );
-    } else if (this == 'daysStreakLose') {
-      return DaysStreakLoseNotification();
-    }
-    return null;
   }
 }

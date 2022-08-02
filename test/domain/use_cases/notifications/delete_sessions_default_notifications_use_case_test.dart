@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
+import 'package:fiszkomaniak/domain/entities/session.dart';
+import 'package:fiszkomaniak/domain/use_cases/notifications/delete_sessions_default_notifications_use_case.dart';
 import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 
@@ -12,41 +13,40 @@ class MockNotificationsInterface extends Mock
 void main() {
   final sessionsInterface = MockSessionsInterface();
   final notificationsInterface = MockNotificationsInterface();
-  final useCase = RemoveSessionUseCase(
+  final useCase = DeleteSessionsDefaultNotificationsUseCase(
     sessionsInterface: sessionsInterface,
     notificationsInterface: notificationsInterface,
   );
 
   test(
-    'should call method responsible for deleting session, deleting session default notification and for deleting session scheduled notification',
+    'for all sessions should call method responsible for deleting default notification',
     () async {
+      final List<Session> sessions = [
+        createSession(id: 's1'),
+        createSession(id: 's2'),
+      ];
       when(
-        () => sessionsInterface.removeSession('s1'),
-      ).thenAnswer((_) async => '');
+        () => sessionsInterface.allSessions$,
+      ).thenAnswer((_) => Stream.value(sessions));
       when(
         () => notificationsInterface.deleteDefaultNotificationForSession(
-          sessionId: 's1',
-        ),
-      ).thenAnswer((_) async => '');
-      when(
-        () => notificationsInterface.deleteScheduledNotificationForSession(
-          sessionId: 's1',
+          sessionId: any(named: 'sessionId'),
         ),
       ).thenAnswer((_) async => '');
 
-      await useCase.execute(sessionId: 's1');
+      await useCase.execute();
 
       verify(
-        () => sessionsInterface.removeSession('s1'),
+        () => sessionsInterface.allSessions$,
       ).called(1);
       verify(
         () => notificationsInterface.deleteDefaultNotificationForSession(
-          sessionId: 's1',
+          sessionId: sessions[0].id,
         ),
       ).called(1);
       verify(
-        () => notificationsInterface.deleteScheduledNotificationForSession(
-          sessionId: 's1',
+        () => notificationsInterface.deleteDefaultNotificationForSession(
+          sessionId: sessions[1].id,
         ),
       ).called(1);
     },

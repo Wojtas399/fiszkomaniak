@@ -16,6 +16,7 @@ import '../../interfaces/courses_interface.dart';
 import '../../interfaces/groups_interface.dart';
 import '../../interfaces/sessions_interface.dart';
 import '../../interfaces/user_interface.dart';
+import '../../interfaces/notifications_interface.dart';
 import '../../models/bloc_status.dart';
 import 'bloc/learning_process_bloc.dart';
 import 'components/learning_process_content.dart';
@@ -83,6 +84,7 @@ class _LearningProcessBlocProvider extends StatelessWidget {
         ),
         removeSessionUseCase: RemoveSessionUseCase(
           sessionsInterface: context.read<SessionsInterface>(),
+          notificationsInterface: context.read<NotificationsInterface>(),
         ),
         learningProcessDialogs: LearningProcessDialogs(),
       )..add(LearningProcessEventInitialize(data: data)),

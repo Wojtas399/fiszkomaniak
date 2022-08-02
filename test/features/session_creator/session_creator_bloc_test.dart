@@ -15,6 +15,7 @@ import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
+import 'package:fiszkomaniak/utils/time_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -33,6 +34,8 @@ class MockAddSessionUseCase extends Mock implements AddSessionUseCase {}
 
 class MockUpdateSessionUseCase extends Mock implements UpdateSessionUseCase {}
 
+class MockTimeUtils extends Mock implements TimeUtils {}
+
 void main() {
   final loadAllCoursesUseCase = MockLoadAllCoursesUseCase();
   final getAllCoursesUseCase = MockGetAllCoursesUseCase();
@@ -41,6 +44,7 @@ void main() {
   final getGroupsByCourseIdUseCase = MockGetGroupsByCourseIdUseCase();
   final addSessionUseCase = MockAddSessionUseCase();
   final updateSessionUseCase = MockUpdateSessionUseCase();
+  final timeUtils = MockTimeUtils();
 
   SessionCreatorBloc createBloc({
     BlocStatus status = const BlocStatusInitial(),
@@ -64,6 +68,7 @@ void main() {
       getGroupsByCourseIdUseCase: getGroupsByCourseIdUseCase,
       addSessionUseCase: addSessionUseCase,
       updateSessionUseCase: updateSessionUseCase,
+      timeUtils: timeUtils,
       status: status,
       mode: mode,
       courses: courses,
@@ -117,6 +122,7 @@ void main() {
     reset(getGroupsByCourseIdUseCase);
     reset(addSessionUseCase);
     reset(updateSessionUseCase);
+    reset(timeUtils);
   });
 
   group(
@@ -366,6 +372,14 @@ void main() {
     build: () => createBloc(
       startTime: const Time(hour: 12, minute: 30),
     ),
+    setUp: () {
+      when(
+        () => timeUtils.isPastTime(
+          const Time(hour: 12, minute: 30),
+          const Date(year: 2022, month: 1, day: 1),
+        ),
+      ).thenReturn(true);
+    },
     act: (SessionCreatorBloc bloc) {
       bloc.add(
         SessionCreatorEventDateSelected(
@@ -388,6 +402,14 @@ void main() {
     build: () => createBloc(
       notificationTime: const Time(hour: 12, minute: 30),
     ),
+    setUp: () {
+      when(
+        () => timeUtils.isPastTime(
+          const Time(hour: 12, minute: 30),
+          const Date(year: 2022, month: 1, day: 1),
+        ),
+      ).thenReturn(true);
+    },
     act: (SessionCreatorBloc bloc) {
       bloc.add(
         SessionCreatorEventDateSelected(
@@ -427,6 +449,14 @@ void main() {
     build: () => createBloc(
       date: const Date(year: 2022, month: 1, day: 1),
     ),
+    setUp: () {
+      when(
+        () => timeUtils.isPastTime(
+          const Time(hour: 12, minute: 30),
+          const Date(year: 2022, month: 1, day: 1),
+        ),
+      ).thenReturn(true);
+    },
     act: (SessionCreatorBloc bloc) {
       bloc.add(
         SessionCreatorEventStartTimeSelected(
@@ -449,6 +479,14 @@ void main() {
     build: () => createBloc(
       notificationTime: const Time(hour: 19, minute: 45),
     ),
+    setUp: () {
+      when(
+        () => timeUtils.isTime1EarlierThanTime2(
+          time1: const Time(hour: 12, minute: 10),
+          time2: const Time(hour: 19, minute: 45),
+        ),
+      ).thenReturn(true);
+    },
     act: (SessionCreatorBloc bloc) {
       bloc.add(
         SessionCreatorEventStartTimeSelected(
@@ -506,6 +544,14 @@ void main() {
     build: () => createBloc(
       date: const Date(year: 2022, month: 1, day: 1),
     ),
+    setUp: () {
+      when(
+        () => timeUtils.isPastTime(
+          const Time(hour: 12, minute: 30),
+          const Date(year: 2022, month: 1, day: 1),
+        ),
+      ).thenReturn(true);
+    },
     act: (SessionCreatorBloc bloc) {
       bloc.add(
         SessionCreatorEventNotificationTimeSelected(
@@ -528,6 +574,14 @@ void main() {
     build: () => createBloc(
       startTime: const Time(hour: 12, minute: 45),
     ),
+    setUp: () {
+      when(
+        () => timeUtils.isTime1EarlierThanTime2(
+          time1: const Time(hour: 12, minute: 45),
+          time2: const Time(hour: 13, minute: 0),
+        ),
+      ).thenReturn(true);
+    },
     act: (SessionCreatorBloc bloc) {
       bloc.add(
         SessionCreatorEventNotificationTimeSelected(

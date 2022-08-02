@@ -6,6 +6,7 @@ import 'package:fiszkomaniak/domain/use_cases/appearance_settings/get_appearance
 import 'package:fiszkomaniak/domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/load_all_groups_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/notifications_settings/load_notifications_settings_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/notifications/initialize_notifications_settings_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/user/get_days_streak_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/user/get_user_avatar_url_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/user/load_user_use_case.dart';
@@ -22,6 +23,9 @@ class MockLoadAppearanceSettingsUseCase extends Mock
 class MockLoadNotificationsSettingsUseCase extends Mock
     implements LoadNotificationsSettingsUseCase {}
 
+class MockInitializeNotificationsSettingsUseCase extends Mock
+    implements InitializeNotificationsSettingsUseCase {}
+
 class MockGetUserAvatarUrlUseCase extends Mock
     implements GetUserAvatarUrlUseCase {}
 
@@ -36,6 +40,8 @@ void main() {
   final loadAppearanceSettingsUseCase = MockLoadAppearanceSettingsUseCase();
   final loadNotificationsSettingsUseCase =
       MockLoadNotificationsSettingsUseCase();
+  final initializeNotificationsSettingsUseCase =
+      MockInitializeNotificationsSettingsUseCase();
   final getUserAvatarUrlUseCase = MockGetUserAvatarUrlUseCase();
   final getAppearanceSettingsUseCase = MockGetAppearanceSettingsUseCase();
   final getDaysStreakUseCase = MockGetDaysStreakUseCase();
@@ -53,6 +59,8 @@ void main() {
       loadAllGroupsUseCase: loadAllGroupsUseCase,
       loadAppearanceSettingsUseCase: loadAppearanceSettingsUseCase,
       loadNotificationsSettingsUseCase: loadNotificationsSettingsUseCase,
+      initializeNotificationsSettingsUseCase:
+          initializeNotificationsSettingsUseCase,
       getUserAvatarUrlUseCase: getUserAvatarUrlUseCase,
       getAppearanceSettingsUseCase: getAppearanceSettingsUseCase,
       getDaysStreakUseCase: getDaysStreakUseCase,
@@ -102,6 +110,9 @@ void main() {
           () => loadNotificationsSettingsUseCase.execute(),
         ).thenAnswer((_) async => '');
         when(
+          () => initializeNotificationsSettingsUseCase.execute(),
+        ).thenAnswer((_) async => '');
+        when(
           () => getUserAvatarUrlUseCase.execute(),
         ).thenAnswer((_) => Stream.value(userAvatarUrl));
         when(
@@ -113,7 +124,7 @@ void main() {
       });
 
       blocTest(
-        'should call use cases responsible for loading user, all groups, appearance and notifications settings and should set params listener',
+        'should call use cases responsible for loading user, all groups, appearance and notifications settings, use case responsible for initializing notifications settings and should set params listener',
         build: () => createBloc(),
         act: (HomeBloc bloc) {
           bloc.add(HomeEventInitialize());
@@ -142,11 +153,14 @@ void main() {
           verify(
             () => loadNotificationsSettingsUseCase.execute(),
           ).called(1);
+          verify(
+            () => initializeNotificationsSettingsUseCase.execute(),
+          ).called(1);
         },
       );
 
       blocTest(
-        'should emit error if one of use cases responsible for loading data throws error',
+        'should emit error if one of use cases responsible for loading data or initializing settings throws error',
         build: () => createBloc(),
         setUp: () {
           when(

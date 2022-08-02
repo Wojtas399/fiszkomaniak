@@ -10,6 +10,7 @@ import 'package:fiszkomaniak/features/session_preview/session_preview_dialogs.da
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
+import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,7 @@ class _SessionPreviewBlocProvider extends StatelessWidget {
         ),
         removeSessionUseCase: RemoveSessionUseCase(
           sessionsInterface: context.read<SessionsInterface>(),
+          notificationsInterface: context.read<NotificationsInterface>(),
         ),
         sessionPreviewDialogs: SessionPreviewDialogs(),
       )..add(SessionPreviewEventInitialize(mode: mode)),

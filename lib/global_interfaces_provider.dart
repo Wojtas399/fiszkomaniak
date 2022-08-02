@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'injections/firebase_provider.dart';
+import 'providers/firebase_provider.dart';
 
 class GlobalInterfacesProvider extends StatelessWidget {
   final Widget child;
