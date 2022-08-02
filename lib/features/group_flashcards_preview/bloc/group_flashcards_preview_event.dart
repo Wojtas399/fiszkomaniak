@@ -1,3 +1,5 @@
+part of 'group_flashcards_preview_bloc.dart';
+
 abstract class GroupFlashcardsPreviewEvent {}
 
 class GroupFlashcardsPreviewEventInitialize
@@ -14,14 +16,9 @@ class GroupFlashcardsPreviewEventSearchValueChanged
   GroupFlashcardsPreviewEventSearchValueChanged({required this.searchValue});
 }
 
-class GroupFlashcardsPreviewEventShowFlashcardDetails
+class GroupFlashcardsPreviewEventGroupChanged
     extends GroupFlashcardsPreviewEvent {
-  final int flashcardIndex;
+  final Group group;
 
-  GroupFlashcardsPreviewEventShowFlashcardDetails({
-    required this.flashcardIndex,
-  });
+  GroupFlashcardsPreviewEventGroupChanged({required this.group});
 }
-
-class GroupFlashcardsPreviewEventFlashcardsStateUpdated
-    extends GroupFlashcardsPreviewEvent {}

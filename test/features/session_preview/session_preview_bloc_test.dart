@@ -1,255 +1,344 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/domain/entities/session.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/get_session_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
-import 'package:fiszkomaniak/models/time_model.dart';
+import 'package:fiszkomaniak/features/session_preview/session_preview_dialogs.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockCoursesBloc extends Mock implements CoursesBloc {}
+class MockGetSessionUseCase extends Mock implements GetSessionUseCase {}
 
-class MockGroupsBloc extends Mock implements GroupsBloc {}
+class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
 
-class MockSessionsBloc extends Mock implements SessionsBloc {}
+class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
+
+class MockRemoveSessionUseCase extends Mock implements RemoveSessionUseCase {}
 
 class MockSessionPreviewDialogs extends Mock implements SessionPreviewDialogs {}
 
-class MockNavigation extends Mock implements Navigation {}
-
 void main() {
-  final CoursesBloc coursesBloc = MockCoursesBloc();
-  final GroupsBloc groupsBloc = MockGroupsBloc();
-  final SessionsBloc sessionsBloc = MockSessionsBloc();
-  final SessionPreviewDialogs sessionPreviewDialogs =
-      MockSessionPreviewDialogs();
-  final Navigation navigation = MockNavigation();
-  late SessionPreviewBloc bloc;
-  final SessionPreviewMode mode = SessionPreviewModeNormal(sessionId: 's1');
-  final SessionsState sessionsState = SessionsState(
-    allSessions: [
-      createSession(
-        id: 's1',
-        groupId: 'g1',
-        time: createTime(hour: 12, minute: 30),
-        duration: const Duration(minutes: 25),
-        notificationTime: createTime(hour: 8, minute: 0),
-      ),
-      createSession(id: 's2', groupId: 'g2'),
-    ],
-  );
-  final GroupsState groupsState = GroupsState(
-    allGroups: [
-      createGroup(id: 'g1', courseId: 'c1'),
-      createGroup(id: 'g2', courseId: 'c2'),
-    ],
-  );
-  final CoursesState coursesState = CoursesState(
-    allCourses: [
-      createCourse(id: 'c1', name: 'course 1 name'),
-      createCourse(id: 'c2'),
-    ],
-  );
-  final SessionPreviewState initialState = SessionPreviewState(
-    mode: SessionPreviewModeNormal(sessionId: 's1'),
-    session: sessionsState.allSessions[0],
-    group: groupsState.allGroups[0],
-    courseName: 'course 1 name',
-    duration: sessionsState.allSessions[0].duration,
-    flashcardsType: FlashcardsType.all,
-    areQuestionsAndAnswersSwapped: false,
-  );
+  final getSessionUseCase = MockGetSessionUseCase();
+  final getGroupUseCase = MockGetGroupUseCase();
+  final getCourseUseCase = MockGetCourseUseCase();
+  final removeSessionUseCase = MockRemoveSessionUseCase();
+  final sessionPreviewDialogs = MockSessionPreviewDialogs();
 
-  setUp(() {
-    bloc = SessionPreviewBloc(
-      coursesBloc: coursesBloc,
-      groupsBloc: groupsBloc,
-      sessionsBloc: sessionsBloc,
+  SessionPreviewBloc createBloc({
+    BlocStatus status = const BlocStatusInitial(),
+    Session? session,
+    Duration? duration,
+    bool areQuestionsAndAnswersSwapped = false,
+  }) {
+    return SessionPreviewBloc(
+      getSessionUseCase: getSessionUseCase,
+      getGroupUseCase: getGroupUseCase,
+      getCourseUseCase: getCourseUseCase,
+      removeSessionUseCase: removeSessionUseCase,
       sessionPreviewDialogs: sessionPreviewDialogs,
-      navigation: navigation,
+      status: status,
+      session: session,
+      duration: duration,
+      areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
     );
-    when(() => sessionsBloc.state).thenReturn(sessionsState);
-    when(() => groupsBloc.state).thenReturn(groupsState);
-    when(() => coursesBloc.state).thenReturn(coursesState);
-    when(() => sessionsBloc.stream).thenAnswer((_) => const Stream.empty());
-  });
+  }
+
+  SessionPreviewState createState({
+    BlocStatus status = const BlocStatusComplete<SessionPreviewInfoType>(),
+    SessionPreviewMode? mode,
+    Session? session,
+    Group? group,
+    String? courseName,
+    Duration? duration,
+    FlashcardsType flashcardsType = FlashcardsType.all,
+    bool areQuestionsAndAnswersSwapped = false,
+  }) {
+    return SessionPreviewState(
+      status: status,
+      mode: mode,
+      session: session,
+      group: group,
+      courseName: courseName,
+      duration: duration,
+      flashcardsType: flashcardsType,
+      areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
+    );
+  }
 
   tearDown(() {
-    reset(coursesBloc);
-    reset(groupsBloc);
-    reset(sessionsBloc);
+    reset(getSessionUseCase);
+    reset(getGroupUseCase);
+    reset(getCourseUseCase);
+    reset(removeSessionUseCase);
     reset(sessionPreviewDialogs);
-    reset(navigation);
   });
 
-  blocTest(
-    'initialize normal mode',
-    build: () => bloc,
-    act: (_) => bloc.add(SessionPreviewEventInitialize(mode: mode)),
-    expect: () => [initialState],
-  );
-
-  blocTest(
-    'initialize quick mode',
-    build: () => bloc,
-    act: (_) => bloc.add(SessionPreviewEventInitialize(
-      mode: SessionPreviewModeQuick(groupId: 'g1'),
-    )),
-    expect: () => [
-      SessionPreviewState(
-        mode: SessionPreviewModeQuick(groupId: 'g1'),
-        group: groupsState.allGroups[0],
-        courseName: 'course 1 name',
-        flashcardsType: FlashcardsType.all,
-        areQuestionsAndAnswersSwapped: false,
-      ),
-    ],
-  );
-
-  blocTest(
-    'initialize, elements not found',
-    build: () => bloc,
-    act: (_) => bloc.add(SessionPreviewEventInitialize(
-      mode: SessionPreviewModeNormal(sessionId: 's3'),
-    )),
-    expect: () => [],
-  );
-
-  blocTest(
-    'duration changed',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(SessionPreviewEventInitialize(mode: mode));
-      bloc.add(SessionPreviewEventDurationChanged(
-        duration: const Duration(hours: 1),
-      ));
-    },
-    expect: () => [
-      initialState,
-      initialState.copyWith(
-        duration: const Duration(hours: 1),
-      ),
-    ],
-  );
-
-  blocTest(
-    'flashcards type changed',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(SessionPreviewEventInitialize(mode: mode));
-      bloc.add(SessionPreviewEventFlashcardsTypeChanged(
+  group(
+    'initialize',
+    () {
+      final Session session = createSession(
+        id: 's1',
+        groupId: 'g1',
+        duration: const Duration(minutes: 30),
         flashcardsType: FlashcardsType.remembered,
-      ));
-    },
-    expect: () => [
-      initialState,
-      initialState.copyWith(
-        duration: initialState.duration,
-        flashcardsType: FlashcardsType.remembered,
-      ),
-    ],
-  );
-
-  blocTest(
-    'swap questions and answers',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(SessionPreviewEventInitialize(mode: mode));
-      bloc.add(SessionPreviewEventSwapQuestionsAndAnswers());
-    },
-    expect: () => [
-      initialState,
-      initialState.copyWith(
-        duration: initialState.duration,
         areQuestionsAndAnswersSwapped: true,
-      ),
-    ],
+      );
+      final Group group = createGroup(
+        id: 'g1',
+        courseId: 'c1',
+        name: 'group 1',
+      );
+      final Course course = createCourse(id: 'c1', name: 'course name');
+
+      setUp(() {
+        when(
+          () => getGroupUseCase.execute(groupId: 'g1'),
+        ).thenAnswer((_) => Stream.value(group));
+        when(
+          () => getCourseUseCase.execute(courseId: 'c1'),
+        ).thenAnswer((_) => Stream.value(course));
+      });
+
+      blocTest(
+        'normal mode, should update state with session, matching group and course name',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => getSessionUseCase.execute(sessionId: 's1'),
+          ).thenAnswer((_) => Stream.value(session));
+        },
+        act: (SessionPreviewBloc bloc) {
+          bloc.add(
+            SessionPreviewEventInitialize(
+              mode: SessionPreviewModeNormal(sessionId: 's1'),
+            ),
+          );
+        },
+        expect: () => [
+          createState(status: const BlocStatusLoading()),
+          createState(mode: SessionPreviewModeNormal(sessionId: 's1')),
+          createState(
+            mode: SessionPreviewModeNormal(sessionId: 's1'),
+            session: session,
+            group: group,
+            courseName: course.name,
+            duration: session.duration,
+            flashcardsType: session.flashcardsType,
+            areQuestionsAndAnswersSwapped:
+                session.areQuestionsAndAnswersSwapped,
+          ),
+        ],
+        verify: (_) {
+          verify(() => getSessionUseCase.execute(sessionId: 's1')).called(1);
+          verify(() => getGroupUseCase.execute(groupId: 'g1')).called(1);
+          verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
+        },
+      );
+
+      blocTest(
+        'quick mode, should update state only with matching group and course name',
+        build: () => createBloc(),
+        act: (SessionPreviewBloc bloc) {
+          bloc.add(
+            SessionPreviewEventInitialize(
+              mode: SessionPreviewModeQuick(groupId: 'g1'),
+            ),
+          );
+        },
+        expect: () => [
+          createState(status: const BlocStatusLoading()),
+          createState(
+            mode: SessionPreviewModeQuick(groupId: 'g1'),
+            group: group,
+            courseName: course.name,
+          ),
+        ],
+        verify: (_) {
+          verify(() => getGroupUseCase.execute(groupId: 'g1')).called(1);
+          verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
+        },
+      );
+    },
   );
 
-  blocTest(
-    'edit session, session assigned',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => navigation.navigateToSessionCreator(
-          SessionCreatorEditMode(session: sessionsState.allSessions[0]),
-        ),
-      ).thenReturn(null);
-    },
-    act: (_) {
-      bloc.add(SessionPreviewEventInitialize(mode: mode));
-      bloc.add(SessionPreviewEventEditSession());
-    },
-    verify: (_) {
-      verify(
-        () => navigation.navigateToSessionCreator(
-          SessionCreatorEditMode(session: sessionsState.allSessions[0]),
-        ),
-      ).called(1);
-    },
-  );
+  group(
+    'session updated',
+    () {
+      final Session session = createSession(
+        id: 's1',
+        groupId: 'g1',
+        duration: const Duration(minutes: 30),
+        flashcardsType: FlashcardsType.notRemembered,
+        areQuestionsAndAnswersSwapped: false,
+      );
+      final Group group = createGroup(id: 'g1', courseId: 'c1', name: 'group1');
+      final Course course = createCourse(id: 'c1', name: 'course name');
 
-  blocTest(
-    'edit session, session not assigned',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => navigation.navigateToSessionCreator(
-          SessionCreatorEditMode(session: sessionsState.allSessions[0]),
-        ),
-      ).thenReturn(null);
-    },
-    act: (_) => bloc.add(SessionPreviewEventEditSession()),
-    verify: (_) {
-      verifyNever(
-        () => navigation.navigateToSessionCreator(
-          SessionCreatorEditMode(session: sessionsState.allSessions[0]),
-        ),
+      blocTest(
+        'should update state with session, its matching params, group and course name',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => getGroupUseCase.execute(groupId: 'g1'),
+          ).thenAnswer((_) => Stream.value(group));
+          when(
+            () => getCourseUseCase.execute(courseId: 'c1'),
+          ).thenAnswer((_) => Stream.value(course));
+        },
+        act: (SessionPreviewBloc bloc) {
+          bloc.add(SessionPreviewEventSessionUpdated(session: session));
+        },
+        expect: () => [
+          createState(
+            session: session,
+            group: group,
+            courseName: course.name,
+            duration: session.duration,
+            flashcardsType: session.flashcardsType,
+            areQuestionsAndAnswersSwapped:
+                session.areQuestionsAndAnswersSwapped,
+          ),
+        ],
+        verify: (_) {
+          verify(() => getGroupUseCase.execute(groupId: 'g1')).called(1);
+          verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
+        },
       );
     },
   );
 
   blocTest(
-    'delete session, confirmed',
-    build: () => bloc,
-    setUp: () {
-      when(() => sessionPreviewDialogs.askForDeleteConfirmation())
-          .thenAnswer((_) async => true);
+    'duration changed, should update duration in state',
+    build: () => createBloc(),
+    act: (SessionPreviewBloc bloc) {
+      bloc.add(
+        SessionPreviewEventDurationChanged(
+          duration: const Duration(minutes: 30),
+        ),
+      );
     },
-    act: (_) {
-      bloc.add(SessionPreviewEventInitialize(mode: mode));
-      bloc.add(SessionPreviewEventDeleteSession());
-    },
-    verify: (_) {
-      verify(
-        () => sessionsBloc.add(SessionsEventRemoveSession(sessionId: 's1')),
-      ).called(1);
-    },
+    expect: () => [
+      createState(
+        duration: const Duration(minutes: 30),
+      ),
+    ],
   );
 
   blocTest(
-    'delete session, cancelled',
-    build: () => bloc,
-    setUp: () {
-      when(() => sessionPreviewDialogs.askForDeleteConfirmation())
-          .thenAnswer((_) async => false);
+    'reset duration, should set duration as null in state',
+    build: () => createBloc(
+      status: const BlocStatusComplete<SessionPreviewInfoType>(),
+      duration: const Duration(minutes: 30),
+    ),
+    act: (SessionPreviewBloc bloc) {
+      bloc.add(SessionPreviewEventResetDuration());
     },
-    act: (_) {
-      bloc.add(SessionPreviewEventInitialize(mode: mode));
-      bloc.add(SessionPreviewEventDeleteSession());
+    expect: () => [
+      createState(duration: null),
+    ],
+  );
+
+  blocTest(
+    'flashcards type changed, should update flashcards type in state',
+    build: () => createBloc(),
+    act: (SessionPreviewBloc bloc) {
+      bloc.add(
+        SessionPreviewEventFlashcardsTypeChanged(
+          flashcardsType: FlashcardsType.remembered,
+        ),
+      );
     },
-    verify: (_) {
-      verifyNever(
-        () => sessionsBloc.add(SessionsEventRemoveSession(sessionId: 's1')),
+    expect: () => [
+      createState(
+        flashcardsType: FlashcardsType.remembered,
+      ),
+    ],
+  );
+
+  blocTest(
+    'swap questions and answers, should negate actual value',
+    build: () => createBloc(
+      areQuestionsAndAnswersSwapped: true,
+    ),
+    act: (SessionPreviewBloc bloc) {
+      bloc.add(SessionPreviewEventSwapQuestionsAndAnswers());
+    },
+    expect: () => [
+      createState(
+        areQuestionsAndAnswersSwapped: false,
+      ),
+    ],
+  );
+
+  group(
+    'remove session',
+    () {
+      final Session session = createSession(id: 's1', groupId: 'g1');
+
+      setUp(() {
+        when(
+          () => removeSessionUseCase.execute(sessionId: 's1'),
+        ).thenAnswer((_) async => '');
+      });
+
+      blocTest(
+        'confirmed, should call use case responsible for removing session',
+        build: () => createBloc(
+          session: session,
+        ),
+        setUp: () {
+          when(
+            () => sessionPreviewDialogs.askForDeleteConfirmation(),
+          ).thenAnswer((_) async => true);
+        },
+        act: (SessionPreviewBloc bloc) {
+          bloc.add(SessionPreviewEventRemoveSession());
+        },
+        expect: () => [
+          createState(
+            status: const BlocStatusLoading(),
+            session: session,
+          ),
+          createState(
+            status: const BlocStatusComplete<SessionPreviewInfoType>(
+              info: SessionPreviewInfoType.sessionHasBeenDeleted,
+            ),
+            session: session,
+          )
+        ],
+        verify: (_) {
+          verify(
+            () => sessionPreviewDialogs.askForDeleteConfirmation(),
+          ).called(1);
+          verify(() => removeSessionUseCase.execute(sessionId: 's1')).called(1);
+        },
+      );
+
+      blocTest(
+        'cancelled, should not call use case responsible for removing session',
+        build: () => createBloc(
+          session: session,
+        ),
+        setUp: () {
+          when(
+            () => sessionPreviewDialogs.askForDeleteConfirmation(),
+          ).thenAnswer((_) async => false);
+        },
+        act: (SessionPreviewBloc bloc) {
+          bloc.add(SessionPreviewEventRemoveSession());
+        },
+        expect: () => [],
+        verify: (_) {
+          verify(
+            () => sessionPreviewDialogs.askForDeleteConfirmation(),
+          ).called(1);
+        },
       );
     },
   );

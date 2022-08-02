@@ -1,23 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiszkomaniak/firebase/fire_user.dart';
-import 'package:fiszkomaniak/firebase/services/fire_avatar_service.dart';
-import 'package:fiszkomaniak/firebase/services/fire_user_service.dart';
+import '../fire_user.dart';
 import '../fire_instances.dart';
 
 class FireAuthService {
-  late final FireUserService _fireUserService;
-  late final FireAvatarService _fireAvatarService;
-
-  FireAuthService({
-    required FireUserService fireUserService,
-    required FireAvatarService fireAvatarService,
-  }) {
-    _fireUserService = fireUserService;
-    _fireAvatarService = fireAvatarService;
-  }
-
-  Stream<User?> getUserChangesStream() {
-    return FireInstances.auth.userChanges();
+  Stream<bool> isUserLogged() {
+    return FireInstances.auth.userChanges().map((user) => user != null);
   }
 
   Future<void> signIn({
@@ -30,7 +17,7 @@ class FireAuthService {
     );
   }
 
-  Future<String?> signUp({
+  Future<String> signUp({
     required String email,
     required String password,
   }) async {
@@ -43,38 +30,10 @@ class FireAuthService {
     if (user != null) {
       return user.uid;
     }
-    return null;
+    throw FirebaseAuthException(code: 'cannot-register-user');
   }
 
-  Future<void> sendPasswordResetEmail({required String email}) async {
-    await FireInstances.auth.sendPasswordResetEmail(email: email);
-  }
-
-  Future<void> changePassword({
-    required String currentPassword,
-    required String newPassword,
-  }) async {
-    await _reauthenticate(currentPassword);
-    await FireUser.loggedUser?.updatePassword(newPassword);
-  }
-
-  Future<void> removeLoggedUser(String password) async {
-    final User? loggedUser = FireUser.loggedUser;
-    if (loggedUser != null) {
-      await _reauthenticate(password);
-      await _fireUserService.removeLoggedUserData();
-      if (await _fireAvatarService.doesLoggedUserAvatarExist()) {
-        await _fireAvatarService.removeLoggedUserAvatar();
-      }
-      await loggedUser.delete();
-    }
-  }
-
-  Future<void> signOut() async {
-    await FireInstances.auth.signOut();
-  }
-
-  Future<void> _reauthenticate(String password) async {
+  Future<void> reauthenticate(String password) async {
     final User? loggedUser = FireUser.loggedUser;
     final String? loggedUserEmail = loggedUser?.email;
     if (loggedUser != null && loggedUserEmail != null) {
@@ -86,5 +45,25 @@ class FireAuthService {
     } else {
       throw FireUser.noLoggedUserMessage;
     }
+  }
+
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    await FireInstances.auth.sendPasswordResetEmail(email: email);
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await reauthenticate(currentPassword);
+    await FireUser.loggedUser?.updatePassword(newPassword);
+  }
+
+  Future<void> deleteLoggedUserAccount() async {
+    await FireUser.loggedUser?.delete();
+  }
+
+  Future<void> signOut() async {
+    await FireInstances.auth.signOut();
   }
 }

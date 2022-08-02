@@ -1,12 +1,29 @@
-import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
-import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_event.dart';
-import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_state.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../domain/use_cases/auth/sign_in_use_case.dart';
+import '../../../exceptions/auth_exceptions.dart';
+import '../../../models/bloc_status.dart';
+
+part 'sign_in_event.dart';
+
+part 'sign_in_state.dart';
 
 class SignInBloc extends Bloc<SignInEvent, SignInState> {
-  final AuthBloc authBloc;
+  late final SignInUseCase _signInUseCase;
 
-  SignInBloc({required this.authBloc}) : super(const SignInState()) {
+  SignInBloc({
+    required SignInUseCase signInUseCase,
+    BlocStatus status = const BlocStatusInitial(),
+    String email = '',
+    String password = '',
+  }) : super(
+          SignInState(
+            status: status,
+            email: email,
+            password: password,
+          ),
+        ) {
+    _signInUseCase = signInUseCase;
     on<SignInEventEmailChanged>(_emailChanged);
     on<SignInEventPasswordChanged>(_passwordChanged);
     on<SignInEventSubmit>(_submit);
@@ -27,15 +44,37 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     emit(state.copyWith(password: event.password));
   }
 
-  void _submit(
+  Future<void> _submit(
     SignInEventSubmit event,
     Emitter<SignInState> emit,
-  ) {
+  ) async {
     if (state.email.isNotEmpty && state.password.isNotEmpty) {
-      authBloc.add(AuthEventSignIn(
-        email: state.email,
-        password: state.password,
-      ));
+      try {
+        emit(state.copyWith(status: const BlocStatusLoading()));
+        await _signInUseCase.execute(
+          email: state.email,
+          password: state.password,
+        );
+        emit(state.copyWith(
+          status: const BlocStatusComplete<SignInInfoType>(
+            info: SignInInfoType.userHasBeenSignedIn,
+          ),
+        ));
+      } on AuthException catch (exception) {
+        if (exception == AuthException.userNotFound) {
+          emit(state.copyWithError(
+            SignInErrorType.userNotFound,
+          ));
+        } else if (exception == AuthException.invalidEmail) {
+          emit(state.copyWithError(
+            SignInErrorType.invalidEmail,
+          ));
+        } else if (exception == AuthException.wrongPassword) {
+          emit(state.copyWithError(
+            SignInErrorType.wrongPassword,
+          ));
+        }
+      }
     }
   }
 
@@ -43,6 +82,9 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     SignInEventReset event,
     Emitter<SignInState> emit,
   ) {
-    emit(const SignInState());
+    emit(state.copyWith(
+      email: '',
+      password: '',
+    ));
   }
 }

@@ -1,17 +1,22 @@
 import 'dart:math';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fiszkomaniak/firebase/fire_instances.dart';
-import 'package:fiszkomaniak/firebase/fire_references.dart';
-import 'package:fiszkomaniak/firebase/models/achievement_db_model.dart';
+import '../fire_instances.dart';
+import '../fire_references.dart';
+import '../models/achievement_db_model.dart';
 
 class FireAchievementsService {
   final String allFlashcardsAmountId = 'AllFlashcardsAmount';
   final String rememberedFlashcardsAmountId = 'RememberedFlashcardsAmount';
   final String finishedSessionsAmountId = 'FinishedSessionsAmount';
 
-  Stream<QuerySnapshot<AchievementDbModel>> getSnapshots() {
-    return FireReferences.achievementsRefWithConverter.snapshots();
+  Future<AchievementDbModel?> loadAllFlashcardsAmount() async {
+    final doc = await FireReferences.achievementsRefWithConverter
+        .doc('AllFlashcardsAmount')
+        .get();
+    final data = doc.data();
+    if (data != null) {
+      return data;
+    }
+    return null;
   }
 
   Future<void> initializeAchievements() async {

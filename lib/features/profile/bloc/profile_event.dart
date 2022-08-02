@@ -1,31 +1,54 @@
 part of 'profile_bloc.dart';
 
-abstract class ProfileEvent {}
+abstract class ProfileEvent extends Equatable {
+  @override
+  List<Object> get props => [];
+}
 
 class ProfileEventInitialize extends ProfileEvent {}
 
-class ProfileEventUserStateUpdated extends ProfileEvent {
-  final User? newUserData;
+class ProfileEventListenedParamsUpdated extends ProfileEvent {
+  final ProfileStateListenedParams params;
 
-  ProfileEventUserStateUpdated({required this.newUserData});
+  ProfileEventListenedParamsUpdated({required this.params});
+
+  @override
+  List<Object> get props => [params];
 }
 
-class ProfileEventAchievementsStateUpdated extends ProfileEvent {
-  final int daysStreak;
-  final int allFlashcardsAmount;
+class ProfileEventChangeAvatar extends ProfileEvent {
+  final String imagePath;
 
-  ProfileEventAchievementsStateUpdated({
-    required this.daysStreak,
-    required this.allFlashcardsAmount,
+  ProfileEventChangeAvatar({required this.imagePath});
+
+  @override
+  List<Object> get props => [imagePath];
+}
+
+class ProfileEventDeleteAvatar extends ProfileEvent {}
+
+class ProfileEventChangeUsername extends ProfileEvent {
+  final String newUsername;
+
+  ProfileEventChangeUsername({required this.newUsername});
+
+  @override
+  List<Object> get props => [newUsername];
+}
+
+class ProfileEventChangePassword extends ProfileEvent {
+  final String currentPassword;
+  final String newPassword;
+
+  ProfileEventChangePassword({
+    required this.currentPassword,
+    required this.newPassword,
   });
+
+  @override
+  List<Object> get props => [currentPassword, newPassword];
 }
-
-class ProfileEventModifyAvatar extends ProfileEvent {}
-
-class ProfileEventChangeUsername extends ProfileEvent {}
-
-class ProfileEventChangePassword extends ProfileEvent {}
 
 class ProfileEventSignOut extends ProfileEvent {}
 
-class ProfileEventRemoveAccount extends ProfileEvent {}
+class ProfileEventDeleteAccount extends ProfileEvent {}

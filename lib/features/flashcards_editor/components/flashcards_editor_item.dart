@@ -104,13 +104,13 @@ class _Flashcard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            FlashcardMultiLinesTextField(
+            MultiLinesTextField(
               controller: questionController,
               hintText: 'Pytanie ($nameForQuestion)',
               onChanged: onQuestionChanged,
             ),
             const Divider(thickness: 1),
-            FlashcardMultiLinesTextField(
+            MultiLinesTextField(
               controller: answerController,
               hintText: 'Odpowiedź ($nameForAnswer)',
               onChanged: onAnswerChanged,

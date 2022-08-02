@@ -1,66 +1,121 @@
 import 'dart:async';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/core/sessions/sessions_bloc.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_dialogs.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
+import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/get_session_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
+import 'package:fiszkomaniak/features/session_preview/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../models/session_model.dart';
-import '../../learning_process/learning_process_data.dart';
+import '../../../models/date_model.dart';
+import '../../../domain/entities/session.dart';
+import '../../../utils/group_utils.dart';
+
+part 'session_preview_event.dart';
+
+part 'session_preview_state.dart';
 
 class SessionPreviewBloc
     extends Bloc<SessionPreviewEvent, SessionPreviewState> {
-  late final CoursesBloc _coursesBloc;
-  late final GroupsBloc _groupsBloc;
-  late final SessionsBloc _sessionsBloc;
+  late final GetSessionUseCase _getSessionUseCase;
+  late final GetGroupUseCase _getGroupUseCase;
+  late final GetCourseUseCase _getCourseUseCase;
+  late final RemoveSessionUseCase _removeSessionUseCase;
   late final SessionPreviewDialogs _sessionPreviewDialogs;
-  late final Navigation _navigation;
-  StreamSubscription? _sessionsStateSubscription;
+  StreamSubscription<Session>? _sessionListener;
 
   SessionPreviewBloc({
-    required CoursesBloc coursesBloc,
-    required GroupsBloc groupsBloc,
-    required SessionsBloc sessionsBloc,
+    required GetSessionUseCase getSessionUseCase,
+    required GetGroupUseCase getGroupUseCase,
+    required GetCourseUseCase getCourseUseCase,
+    required RemoveSessionUseCase removeSessionUseCase,
     required SessionPreviewDialogs sessionPreviewDialogs,
-    required Navigation navigation,
-  }) : super(const SessionPreviewState()) {
-    _coursesBloc = coursesBloc;
-    _groupsBloc = groupsBloc;
-    _sessionsBloc = sessionsBloc;
+    BlocStatus status = const BlocStatusInitial(),
+    SessionPreviewMode? mode,
+    Session? session,
+    Group? group,
+    String? courseName,
+    Duration? duration,
+    FlashcardsType flashcardsType = FlashcardsType.all,
+    bool areQuestionsAndAnswersSwapped = false,
+  }) : super(
+          SessionPreviewState(
+            status: status,
+            mode: mode,
+            session: session,
+            group: group,
+            courseName: courseName,
+            duration: duration,
+            flashcardsType: flashcardsType,
+            areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
+          ),
+        ) {
+    _getSessionUseCase = getSessionUseCase;
+    _getGroupUseCase = getGroupUseCase;
+    _getCourseUseCase = getCourseUseCase;
+    _removeSessionUseCase = removeSessionUseCase;
     _sessionPreviewDialogs = sessionPreviewDialogs;
-    _navigation = navigation;
     on<SessionPreviewEventInitialize>(_initialize);
+    on<SessionPreviewEventSessionUpdated>(_sessionUpdated);
     on<SessionPreviewEventDurationChanged>(_durationChanged);
+    on<SessionPreviewEventResetDuration>(_resetDuration);
     on<SessionPreviewEventFlashcardsTypeChanged>(_flashcardsTypeChanged);
     on<SessionPreviewEventSwapQuestionsAndAnswers>(_swapQuestionsAndAnswers);
-    on<SessionPreviewEventEditSession>(_editSession);
-    on<SessionPreviewEventDeleteSession>(_deleteSession);
-    on<SessionPreviewEventStartLearning>(_startLearning);
-    on<SessionPreviewEventSessionsStateUpdated>(_sessionsStateUpdated);
+    on<SessionPreviewEventRemoveSession>(_removeSession);
   }
 
-  void _initialize(
+  @override
+  Future<void> close() {
+    _sessionListener?.cancel();
+    return super.close();
+  }
+
+  Future<void> _initialize(
     SessionPreviewEventInitialize event,
     Emitter<SessionPreviewState> emit,
-  ) {
+  ) async {
     final SessionPreviewMode mode = event.mode;
+    emit(state.copyWith(status: const BlocStatusLoading()));
     if (mode is SessionPreviewModeNormal) {
-      _initializeNormalMode(mode, emit);
+      await _initializeNormalMode(mode, emit);
     } else if (mode is SessionPreviewModeQuick) {
-      _initializeQuickMode(mode, emit);
+      await _initializeQuickMode(mode, emit);
     }
+  }
+
+  Future<void> _sessionUpdated(
+    SessionPreviewEventSessionUpdated event,
+    Emitter<SessionPreviewState> emit,
+  ) async {
+    final Group group = await _getGroup(event.session.groupId);
+    final String courseName = await _getCourseName(group.courseId);
+    emit(state.copyWith(
+      session: event.session,
+      group: group,
+      courseName: courseName,
+      duration: event.session.duration,
+      flashcardsType: event.session.flashcardsType,
+      areQuestionsAndAnswersSwapped:
+          event.session.areQuestionsAndAnswersSwapped,
+    ));
   }
 
   void _durationChanged(
     SessionPreviewEventDurationChanged event,
     Emitter<SessionPreviewState> emit,
   ) {
-    emit(state.copyWith(duration: event.duration));
+    emit(state.copyWith(
+      duration: event.duration,
+    ));
+  }
+
+  void _resetDuration(
+    SessionPreviewEventResetDuration event,
+    Emitter<SessionPreviewState> emit,
+  ) {
+    emit(state.copyWithDurationAsNull());
   }
 
   void _flashcardsTypeChanged(
@@ -69,7 +124,6 @@ class SessionPreviewBloc
   ) {
     emit(state.copyWith(
       flashcardsType: event.flashcardsType,
-      duration: state.duration,
     ));
   }
 
@@ -79,114 +133,68 @@ class SessionPreviewBloc
   ) {
     emit(state.copyWith(
       areQuestionsAndAnswersSwapped: !state.areQuestionsAndAnswersSwapped,
-      duration: state.duration,
     ));
   }
 
-  void _editSession(
-    SessionPreviewEventEditSession event,
-    Emitter<SessionPreviewState> emit,
-  ) {
-    final Session? session = state.session;
-    if (session != null) {
-      _navigation.navigateToSessionCreator(
-        SessionCreatorEditMode(session: session),
-      );
-    }
-  }
-
-  Future<void> _deleteSession(
-    SessionPreviewEventDeleteSession event,
+  Future<void> _removeSession(
+    SessionPreviewEventRemoveSession event,
     Emitter<SessionPreviewState> emit,
   ) async {
     final Session? session = state.session;
-    final bool confirmation =
-        await _sessionPreviewDialogs.askForDeleteConfirmation();
-    if (confirmation && session != null) {
-      _sessionsBloc.add(SessionsEventRemoveSession(sessionId: session.id));
-    }
-  }
-
-  void _startLearning(
-    SessionPreviewEventStartLearning event,
-    Emitter<SessionPreviewState> emit,
-  ) {
-    final Group? group = state.group;
-    if (group != null) {
-      _navigation.navigateToLearningProcess(LearningProcessData(
-        groupId: group.id,
-        flashcardsType: state.flashcardsType,
-        areQuestionsAndAnswersSwapped: state.areQuestionsAndAnswersSwapped,
-        sessionId: state.session?.id,
-        duration: state.duration,
+    if (session != null && await _hasSessionRemovalBeenConfirmed()) {
+      emit(state.copyWith(status: const BlocStatusLoading()));
+      await _removeSessionUseCase.execute(sessionId: session.id);
+      emit(state.copyWith(
+        status: const BlocStatusComplete<SessionPreviewInfoType>(
+          info: SessionPreviewInfoType.sessionHasBeenDeleted,
+        ),
       ));
     }
   }
 
-  void _sessionsStateUpdated(
-    SessionPreviewEventSessionsStateUpdated event,
-    Emitter<SessionPreviewState> emit,
-  ) {
-    final String? sessionId = state.session?.id;
-    final SessionPreviewMode? mode = state.mode;
-    if (sessionId != null && mode != null && mode is SessionPreviewModeNormal) {
-      _initializeNormalMode(mode.copyWith(sessionId: sessionId), emit);
-    }
-  }
-
-  void _initializeNormalMode(
+  Future<void> _initializeNormalMode(
     SessionPreviewModeNormal mode,
     Emitter<SessionPreviewState> emit,
-  ) {
-    final Session? session = _sessionsBloc.state.getSessionById(
-      mode.sessionId,
-    );
-    final Group? group = _groupsBloc.state.getGroupById(session?.groupId);
-    final String? courseName = _coursesBloc.state.getCourseNameById(
-      group?.courseId,
-    );
-    if (session != null && group != null && courseName != null) {
-      emit(state.copyWith(
-        mode: mode,
-        session: session,
-        group: group,
-        courseName: courseName,
-        duration: session.duration,
-        flashcardsType: session.flashcardsType,
-        areQuestionsAndAnswersSwapped: session.areQuestionsAndAnswersSwapped,
-      ));
-    }
-    _setSessionsStateListener();
+  ) async {
+    _setSessionListener(mode.sessionId);
+    emit(state.copyWith(
+      mode: mode,
+    ));
   }
 
-  void _initializeQuickMode(
+  Future<void> _initializeQuickMode(
     SessionPreviewModeQuick mode,
     Emitter<SessionPreviewState> emit,
-  ) {
-    final Group? group = _groupsBloc.state.getGroupById(mode.groupId);
-    final String? courseName = _coursesBloc.state.getCourseNameById(
-      group?.courseId,
-    );
-    if (group != null && courseName != null) {
-      emit(state.copyWith(
-        mode: mode,
-        group: group,
-        courseName: courseName,
-        flashcardsType: FlashcardsType.all,
-        areQuestionsAndAnswersSwapped: false,
-      ));
-    }
+  ) async {
+    final Group group = await _getGroup(mode.groupId);
+    final String courseName = await _getCourseName(group.courseId);
+    emit(state.copyWith(
+      mode: mode,
+      group: group,
+      courseName: courseName,
+    ));
   }
 
-  void _setSessionsStateListener() {
-    _sessionsStateSubscription ??= _sessionsBloc.stream.listen((_) {
-      add(SessionPreviewEventSessionsStateUpdated());
-    });
+  void _setSessionListener(String sessionId) {
+    _sessionListener = _getSessionUseCase.execute(sessionId: sessionId).listen(
+          (session) => add(
+            SessionPreviewEventSessionUpdated(session: session),
+          ),
+        );
   }
 
-  @override
-  Future<void> close() {
-    _sessionsStateSubscription?.cancel();
-    return super.close();
+  Future<Group> _getGroup(String groupId) async {
+    return _getGroupUseCase.execute(groupId: groupId).first;
+  }
+
+  Future<String> _getCourseName(String courseId) async {
+    return _getCourseUseCase
+        .execute(courseId: courseId)
+        .map((course) => course.name)
+        .first;
+  }
+
+  Future<bool> _hasSessionRemovalBeenConfirmed() async {
+    return await _sessionPreviewDialogs.askForDeleteConfirmation();
   }
 }

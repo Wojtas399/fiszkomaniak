@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
-import 'package:fiszkomaniak/models/settings/notifications_settings_model.dart';
+part of 'settings_bloc.dart';
 
 class SettingsState extends Equatable {
   final AppearanceSettings appearanceSettings;
@@ -8,19 +6,17 @@ class SettingsState extends Equatable {
   final bool areAllNotificationsOn;
 
   const SettingsState({
-    this.appearanceSettings = const AppearanceSettings(
-      isDarkModeOn: false,
-      isDarkModeCompatibilityWithSystemOn: false,
-      isSessionTimerInvisibilityOn: false,
-    ),
-    this.notificationsSettings = const NotificationsSettings(
-      areSessionsPlannedNotificationsOn: false,
-      areSessionsDefaultNotificationsOn: false,
-      areAchievementsNotificationsOn: false,
-      areDaysStreakLoseNotificationsOn: false,
-    ),
-    this.areAllNotificationsOn = false,
+    required this.appearanceSettings,
+    required this.notificationsSettings,
+    required this.areAllNotificationsOn,
   });
+
+  @override
+  List<Object> get props => [
+        appearanceSettings,
+        notificationsSettings,
+        areAllNotificationsOn,
+      ];
 
   SettingsState copyWith({
     AppearanceSettings? appearanceSettings,
@@ -35,11 +31,4 @@ class SettingsState extends Equatable {
           areAllNotificationsOn ?? this.areAllNotificationsOn,
     );
   }
-
-  @override
-  List<Object> get props => [
-        appearanceSettings,
-        notificationsSettings,
-        areAllNotificationsOn,
-      ];
 }

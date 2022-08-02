@@ -1,89 +1,95 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/components/group_item/group_item.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
 import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_event.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_state.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockCoursesBloc extends Mock implements CoursesBloc {}
+class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
 
-class MockGroupsBloc extends Mock implements GroupsBloc {}
+class MockGetGroupsByCourseIdUseCase extends Mock
+    implements GetGroupsByCourseIdUseCase {}
 
 void main() {
-  final CoursesBloc coursesBloc = MockCoursesBloc();
-  final GroupsBloc groupsBloc = MockGroupsBloc();
+  final getCourseUseCase = MockGetCourseUseCase();
+  final getGroupsByCourseIdUseCase = MockGetGroupsByCourseIdUseCase();
   late CourseGroupsPreviewBloc bloc;
-  final List<Course> courses = [
-    createCourse(id: 'c1'),
-    createCourse(id: 'c2'),
-    createCourse(id: 'c3'),
-  ];
-  final List<Group> groups = [
-    createGroup(id: 'g1', courseId: 'c1'),
-    createGroup(id: 'g2', courseId: 'c2'),
-    createGroup(id: 'g3', courseId: 'c2'),
-    createGroup(id: 'g4', courseId: 'c3'),
-    createGroup(id: 'g5', courseId: 'c1'),
-  ];
 
   setUp(() {
     bloc = CourseGroupsPreviewBloc(
-      coursesBloc: coursesBloc,
-      groupsBloc: groupsBloc,
+      getCourseUseCase: getCourseUseCase,
+      getGroupsByCourseIdUseCase: getGroupsByCourseIdUseCase,
     );
   });
 
   tearDown(() {
-    reset(coursesBloc);
-    reset(groupsBloc);
+    reset(getCourseUseCase);
+    reset(getGroupsByCourseIdUseCase);
   });
 
   blocTest(
-    'initialize, course exists',
+    'initialize, should set course name and groups listeners',
     build: () => bloc,
     setUp: () {
-      when(() => coursesBloc.state).thenReturn(
-        CoursesState(allCourses: courses),
-      );
-      when(() => groupsBloc.state).thenReturn(GroupsState(allGroups: groups));
-      when(() => groupsBloc.stream).thenAnswer(
-        (_) => Stream.value(GroupsState(allGroups: groups)),
-      );
+      when(
+        () => getCourseUseCase.execute(courseId: 'c1'),
+      ).thenAnswer((_) => const Stream.empty());
+      when(
+        () => getGroupsByCourseIdUseCase.execute(courseId: 'c1'),
+      ).thenAnswer((_) => const Stream.empty());
     },
-    act: (_) => bloc.add(CourseGroupsPreviewEventInitialize(courseId: 'c2')),
+    act: (_) => bloc.add(CourseGroupsPreviewEventInitialize(courseId: 'c1')),
+    verify: (_) {
+      verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
+      verify(
+        () => getGroupsByCourseIdUseCase.execute(courseId: 'c1'),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'course name updated, should update course name in state',
+    build: () => bloc,
+    act: (_) => bloc.add(
+      CourseGroupsPreviewEventCourseNameUpdated(
+        updatedCourseName: 'new course name',
+      ),
+    ),
     expect: () => [
-      CourseGroupsPreviewState(course: courses[1]),
+      CourseGroupsPreviewState(courseName: 'new course name'),
+    ],
+  );
+
+  blocTest(
+    'groups updated, should update groups in state',
+    build: () => bloc,
+    act: (_) => bloc.add(
+      CourseGroupsPreviewEventGroupsUpdated(updatedGroups: [
+        createGroupItemParams(id: 'g1', name: 'group 1'),
+        createGroupItemParams(id: 'g2', name: 'group 2'),
+      ]),
+    ),
+    expect: () => [
       CourseGroupsPreviewState(
-        course: courses[1],
-        groupsFromCourse: [groups[1], groups[2]],
+        groupsFromCourse: [
+          createGroupItemParams(id: 'g1', name: 'group 1'),
+          createGroupItemParams(id: 'g2', name: 'group 2'),
+        ],
       ),
     ],
   );
 
   blocTest(
-    'initialize, course does not exist',
-    build: () => bloc,
-    setUp: () {
-      when(() => coursesBloc.state).thenReturn(
-        CoursesState(allCourses: courses),
-      );
-    },
-    act: (_) => bloc.add(CourseGroupsPreviewEventInitialize(courseId: 'c4')),
-    expect: () => [],
-  );
-
-  blocTest(
-    'search value changed',
+    'search value changed, should update search value in state',
     build: () => bloc,
     act: (_) => bloc.add(
-      CourseGroupsPreviewEventSearchValueChanged(searchValue: 'searchValue'),
+      CourseGroupsPreviewEventSearchValueChanged(
+        searchValue: 'new search value',
+      ),
     ),
     expect: () => [
-      const CourseGroupsPreviewState(searchValue: 'searchValue'),
+      CourseGroupsPreviewState(searchValue: 'new search value'),
     ],
   );
 }

@@ -1,11 +1,7 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
-import '../../../models/date_model.dart';
-import '../../../models/group_model.dart';
-import '../../../utils/group_utils.dart';
+part of 'session_preview_bloc.dart';
 
 class SessionPreviewState extends Equatable {
+  final BlocStatus status;
   final SessionPreviewMode? mode;
   final Session? session;
   final Group? group;
@@ -15,14 +11,27 @@ class SessionPreviewState extends Equatable {
   final bool areQuestionsAndAnswersSwapped;
 
   const SessionPreviewState({
-    this.mode,
-    this.session,
-    this.group,
-    this.courseName,
-    this.duration,
-    this.flashcardsType = FlashcardsType.all,
-    this.areQuestionsAndAnswersSwapped = false,
+    required this.status,
+    required this.mode,
+    required this.session,
+    required this.group,
+    required this.courseName,
+    required this.duration,
+    required this.flashcardsType,
+    required this.areQuestionsAndAnswersSwapped,
   });
+
+  @override
+  List<Object> get props => [
+        status,
+        mode ?? '',
+        session ?? '',
+        group ?? '',
+        courseName ?? '',
+        duration ?? '',
+        flashcardsType,
+        areQuestionsAndAnswersSwapped,
+      ];
 
   Date? get date {
     if (mode is SessionPreviewModeNormal) {
@@ -42,14 +51,15 @@ class SessionPreviewState extends Equatable {
       : group?.nameForAnswers;
 
   List<FlashcardsType> get availableFlashcardsTypes {
-    final Group? assignedGroup = group;
-    if (assignedGroup == null) {
+    final Group? group = this.group;
+    if (group == null) {
       return FlashcardsType.values;
     }
-    return GroupUtils.getAvailableFlashcardsTypes(assignedGroup);
+    return GroupUtils.getAvailableFlashcardsTypes(group);
   }
 
   SessionPreviewState copyWith({
+    BlocStatus? status,
     SessionPreviewMode? mode,
     Session? session,
     Group? group,
@@ -59,25 +69,32 @@ class SessionPreviewState extends Equatable {
     bool? areQuestionsAndAnswersSwapped,
   }) {
     return SessionPreviewState(
+      status: status ?? const BlocStatusComplete<SessionPreviewInfoType>(),
       mode: mode ?? this.mode,
       session: session ?? this.session,
       group: group ?? this.group,
       courseName: courseName ?? this.courseName,
-      duration: duration,
+      duration: duration ?? this.duration,
       flashcardsType: flashcardsType ?? this.flashcardsType,
       areQuestionsAndAnswersSwapped:
           areQuestionsAndAnswersSwapped ?? this.areQuestionsAndAnswersSwapped,
     );
   }
 
-  @override
-  List<Object> get props => [
-        mode ?? '',
-        session ?? '',
-        group ?? '',
-        courseName ?? '',
-        duration ?? '',
-        flashcardsType,
-        areQuestionsAndAnswersSwapped,
-      ];
+  SessionPreviewState copyWithDurationAsNull() {
+    return SessionPreviewState(
+      status: status,
+      mode: mode,
+      session: session,
+      group: group,
+      courseName: courseName,
+      duration: null,
+      flashcardsType: flashcardsType,
+      areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
+    );
+  }
+}
+
+enum SessionPreviewInfoType {
+  sessionHasBeenDeleted,
 }

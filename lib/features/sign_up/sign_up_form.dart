@@ -1,38 +1,114 @@
-import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
-import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_bloc.dart';
-import 'package:fiszkomaniak/features/sign_up/components/sign_up_inputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/buttons/button.dart';
-import '../../utils/utils.dart';
-import '../initial_home/initial_home_mode_provider.dart';
-import 'bloc/sign_up_event.dart';
+import '../../../components/dialogs/dialogs.dart';
+import '../../../domain/use_cases/auth/sign_up_use_case.dart';
+import '../../../interfaces/achievements_interface.dart';
+import '../../../interfaces/auth_interface.dart';
+import '../../../interfaces/user_interface.dart';
+import '../../../interfaces/appearance_settings_interface.dart';
+import '../../../interfaces/notifications_settings_interface.dart';
+import '../../../models/bloc_status.dart';
+import '../../../validators/email_validator.dart';
+import '../../../validators/password_validator.dart';
+import '../../../validators/username_validator.dart';
+import 'bloc/sign_up_bloc.dart';
+import 'components/sign_up_inputs.dart';
+import 'components/sign_up_alternative_option.dart';
+import 'components/sign_up_submit_button.dart';
 
 class SignUpForm extends StatelessWidget {
-  const SignUpForm({Key? key}) : super(key: key);
+  const SignUpForm({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => SignUpBloc(authBloc: context.read<AuthBloc>()),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          _Header(),
-          SizedBox(height: 24),
-          SignUpInputs(),
-          SizedBox(height: 16),
-          _SubmitButton(),
-          SizedBox(height: 16),
-          _AlternativeOption(),
-        ],
+    return _SignUpBlocProvider(
+      child: _SignUpBlocListener(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            _Header(),
+            SizedBox(height: 24),
+            SignUpInputs(),
+            SizedBox(height: 16),
+            SignUpSubmitButton(),
+            SizedBox(height: 16),
+            SignUpAlternativeOption(),
+          ],
+        ),
       ),
     );
   }
 }
 
+class _SignUpBlocProvider extends StatelessWidget {
+  final Widget child;
+
+  const _SignUpBlocProvider({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (BuildContext context) => SignUpBloc(
+        signUpUseCase: SignUpUseCase(
+          authInterface: context.read<AuthInterface>(),
+          userInterface: context.read<UserInterface>(),
+          achievementsInterface: context.read<AchievementsInterface>(),
+          appearanceSettingsInterface:
+              context.read<AppearanceSettingsInterface>(),
+          notificationsSettingsInterface:
+              context.read<NotificationsSettingsInterface>(),
+        ),
+        usernameValidator: UsernameValidator(),
+        emailValidator: EmailValidator(),
+        passwordValidator: PasswordValidator(),
+      ),
+      child: child,
+    );
+  }
+}
+
+class _SignUpBlocListener extends StatelessWidget {
+  final Widget child;
+
+  const _SignUpBlocListener({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<SignUpBloc, SignUpState>(
+      listener: (BuildContext context, SignUpState state) {
+        final BlocStatus blocStatus = state.status;
+        if (blocStatus is BlocStatusLoading) {
+          Dialogs.showLoadingDialog(context: context);
+        } else if (blocStatus is BlocStatusComplete) {
+          Dialogs.closeLoadingDialog(context);
+        } else if (blocStatus is BlocStatusError) {
+          Dialogs.closeLoadingDialog(context);
+          final SignUpErrorType? errorType = blocStatus.errorType;
+          if (errorType != null) {
+            _manageErrorType(errorType, context);
+          }
+        }
+      },
+      child: child,
+    );
+  }
+
+  void _manageErrorType(SignUpErrorType errorType, BuildContext context) {
+    switch (errorType) {
+      case SignUpErrorType.emailAlreadyInUse:
+        Dialogs.showDialogWithMessage(
+          context: context,
+          title: 'Zajęty email',
+          message:
+              'Podany adres email jest już zajęty przez innego użytkownika',
+        );
+        break;
+    }
+  }
+}
+
 class _Header extends StatelessWidget {
-  const _Header({Key? key}) : super(key: key);
+  const _Header();
 
   @override
   Widget build(BuildContext context) {
@@ -44,55 +120,5 @@ class _Header extends StatelessWidget {
         fontWeight: FontWeight.bold,
       ),
     );
-  }
-}
-
-class _SubmitButton extends StatelessWidget {
-  const _SubmitButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final bool isDisabled = context.select(
-      (SignUpBloc bloc) => bloc.state.isDisabledButton,
-    );
-    return Center(
-      child: Button(
-        label: 'Zarejestruj',
-        onPressed: isDisabled ? null : () => _submit(context),
-      ),
-    );
-  }
-
-  void _submit(BuildContext context) {
-    context.read<SignUpBloc>().add(SignUpEventSubmit());
-  }
-}
-
-class _AlternativeOption extends StatelessWidget {
-  const _AlternativeOption({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Center(
-        child: GestureDetector(
-          onTap: () => _onPressed(context),
-          child: const Text(
-            'Masz już konto? Zaloguj się!',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _onPressed(BuildContext context) {
-    context.read<InitialHomeModeProvider>().changeMode(InitialHomeMode.login);
-    Utils.unfocusElements();
-    context.read<SignUpBloc>().add(SignUpEventReset());
   }
 }

@@ -1,47 +1,108 @@
+import 'package:fiszkomaniak/domain/entities/user.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
-import 'package:fiszkomaniak/models/user_model.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late ProfileState state;
 
-  setUp(() {
-    state = const ProfileState();
-  });
+  setUp(
+    () => state = const ProfileState(
+      status: BlocStatusInitial(),
+      user: null,
+      daysStreak: 0,
+      amountOfAllFlashcards: 0,
+    ),
+  );
 
-  test('initial state', () {
-    expect(state.loggedUserData, null);
-    expect(state.amountOfDaysInARow, 0);
-    expect(state.amountOfAllFlashcards, 0);
-  });
+  test(
+    'avatar url, should return url of user avatar',
+    () {
+      final User user = createUser(avatarUrl: 'avatar/url');
 
-  test('copy with data', () {
-    final User userData = createUser(avatarUrl: 'avatar/url');
+      state = state.copyWith(user: user);
 
-    final ProfileState state2 = state.copyWith(loggedUserData: userData);
-    final ProfileState state3 = state2.copyWith();
+      expect(state.avatarUrl, user.avatarUrl);
+    },
+  );
 
-    expect(state2.loggedUserData, userData);
-    expect(state3.loggedUserData, userData);
-  });
+  test(
+    'copy with status',
+    () {
+      const BlocStatus expectedStatus = BlocStatusLoading();
 
-  test('copy with amount of days in a row', () {
-    const int amount = 4;
+      state = state.copyWith(status: expectedStatus);
+      final state2 = state.copyWith();
 
-    final ProfileState state2 = state.copyWith(amountOfDaysInARow: amount);
-    final ProfileState state3 = state2.copyWith();
+      expect(state.status, expectedStatus);
+      expect(state2.status, const BlocStatusComplete());
+    },
+  );
 
-    expect(state2.amountOfDaysInARow, amount);
-    expect(state3.amountOfDaysInARow, amount);
-  });
+  test(
+    'copy with user',
+    () {
+      final User expectedUser = createUser(username: 'username');
 
-  test('copy with amount of all flashcards', () {
-    const int amount = 100;
+      state = state.copyWith(user: expectedUser);
+      final state2 = state.copyWith();
 
-    final ProfileState state2 = state.copyWith(amountOfAllFlashcards: amount);
-    final ProfileState state3 = state2.copyWith();
+      expect(state.user, expectedUser);
+      expect(state2.user, expectedUser);
+    },
+  );
 
-    expect(state2.amountOfAllFlashcards, amount);
-    expect(state3.amountOfAllFlashcards, amount);
-  });
+  test(
+    'copy with days streak',
+    () {
+      const int expectedAmount = 20;
+
+      state = state.copyWith(daysStreak: expectedAmount);
+      final state2 = state.copyWith();
+
+      expect(state.daysStreak, expectedAmount);
+      expect(state2.daysStreak, expectedAmount);
+    },
+  );
+
+  test(
+    'copy with amount of all flashcards',
+    () {
+      const int expectedAmount = 200;
+
+      state = state.copyWith(amountOfAllFlashcards: expectedAmount);
+      final state2 = state.copyWith();
+
+      expect(state.amountOfAllFlashcards, expectedAmount);
+      expect(state2.amountOfAllFlashcards, expectedAmount);
+    },
+  );
+
+  test(
+    'copy with info type',
+    () {
+      state = state.copyWithInfoType(ProfileInfoType.userHasBeenSignedOut);
+
+      expect(
+        state.status,
+        const BlocStatusComplete<ProfileInfoType>(
+          info: ProfileInfoType.userHasBeenSignedOut,
+        ),
+      );
+    },
+  );
+
+  test(
+    'copy with error type',
+    () {
+      state = state.copyWithErrorType(ProfileErrorType.wrongPassword);
+
+      expect(
+        state.status,
+        const BlocStatusError<ProfileErrorType>(
+          errorType: ProfileErrorType.wrongPassword,
+        ),
+      );
+    },
+  );
 }

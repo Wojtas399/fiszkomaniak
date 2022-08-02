@@ -1,25 +1,23 @@
-import 'package:fiszkomaniak/features/course_creator/course_creator.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/course_groups_preview.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_state.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
-import 'package:fiszkomaniak/features/group_flashcards_preview/group_flashcards_preview.dart';
-import 'package:fiszkomaniak/features/group_selection/group_selection.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
-import 'package:fiszkomaniak/features/group_creator/group_creator_page.dart';
-import 'package:fiszkomaniak/features/group_preview/group_preview_page.dart';
-import 'package:fiszkomaniak/features/home/home.dart';
-import 'package:fiszkomaniak/features/home/home_view.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:fiszkomaniak/features/session_creator/session_creator.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/session_preview.dart';
-import 'package:fiszkomaniak/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
+import '../../features/course_creator/course_creator_screen.dart';
+import '../../features/course_creator/course_creator_mode.dart';
+import '../../features/course_groups_preview/course_groups_preview_screen.dart';
+import '../../features/flashcard_preview/flashcard_preview_screen.dart';
+import '../../features/flashcards_editor/flashcards_editor_screen.dart';
+import '../../features/group_flashcards_preview/group_flashcards_preview_screen.dart';
+import '../../features/group_selection/group_selection_screen.dart';
+import '../../features/group_creator/bloc/group_creator_mode.dart';
+import '../../features/group_creator/group_creator_screen.dart';
+import '../../features/group_preview/group_preview_screen.dart';
+import '../../features/home/home.dart';
+import '../../features/home/home_view.dart';
+import '../../features/session_creator/bloc/session_creator_mode.dart';
+import '../../features/session_creator/session_creator_screen.dart';
+import '../../features/session_preview/bloc/session_preview_mode.dart';
+import '../../features/session_preview/session_preview_screen.dart';
+import '../../features/settings/settings_screen.dart';
 import '../../config/routes.dart';
-import '../learning_process/learning_process.dart';
+import '../learning_process/learning_process_screen.dart';
 import '../learning_process/learning_process_data.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -51,72 +49,75 @@ class _HomeRouterState extends State<HomeRouter> {
     switch (routeSettings.name) {
       case Routes.home:
         return MaterialPageRoute(
-          builder: (_) => HomeView(),
+          builder: (_) => const HomeView(),
           settings: routeSettings,
         );
       case Routes.settings:
-        return MaterialPageRoute(builder: (_) => const SettingsPage());
+        return MaterialPageRoute(
+          builder: (_) => const SettingsScreen(),
+        );
       case Routes.courseCreator:
         return MaterialPageRoute(
-          builder: (_) => CourseCreator(
+          builder: (_) => CourseCreatorScreen(
             mode: routeSettings.arguments as CourseCreatorMode,
           ),
         );
       case Routes.groupCreator:
         return MaterialPageRoute(
-          builder: (_) => GroupCreator(
+          builder: (_) => GroupCreatorScreen(
             mode: routeSettings.arguments as GroupCreatorMode,
           ),
         );
       case Routes.sessionCreator:
         return MaterialPageRoute(
-          builder: (_) => SessionCreator(
+          builder: (_) => SessionCreatorScreen(
             mode: routeSettings.arguments as SessionCreatorMode,
           ),
         );
       case Routes.groupSelection:
         return MaterialPageRoute(
-          builder: (_) => GroupSelection(),
+          builder: (_) => const GroupSelectionScreen(),
         );
       case Routes.flashcardsEditor:
         return MaterialPageRoute(
-          builder: (_) => FlashcardsEditor(
-            mode: routeSettings.arguments as FlashcardsEditorMode,
+          builder: (_) => FlashcardsEditorScreen(
+            groupId: routeSettings.arguments as String,
           ),
         );
       case Routes.courseGroupsPreview:
         return MaterialPageRoute(
-          builder: (_) => CourseGroupsPreview(
+          builder: (_) => CourseGroupsPreviewScreen(
             courseId: routeSettings.arguments as String,
           ),
         );
       case Routes.groupFlashcardsPreview:
         return MaterialPageRoute(
-          builder: (_) => GroupFlashcardsPreview(
+          builder: (_) => GroupFlashcardsPreviewScreen(
             groupId: routeSettings.arguments as String,
           ),
         );
       case Routes.groupPreview:
         return MaterialPageRoute(
-          builder: (_) => GroupPreview(
+          builder: (_) => GroupPreviewScreen(
             groupId: routeSettings.arguments as String,
           ),
         );
       case Routes.flashcardPreview:
         return MaterialPageRoute(
-          builder: (_) => FlashcardPreview(
-            params: routeSettings.arguments as FlashcardPreviewParams,
+          builder: (_) => FlashcardPreviewScreen(
+            arguments:
+                routeSettings.arguments as FlashcardPreviewScreenArguments,
           ),
         );
       case Routes.sessionPreview:
         return MaterialPageRoute(
-          builder: (_) => SessionPreview(
+          builder: (_) => SessionPreviewScreen(
             mode: routeSettings.arguments as SessionPreviewMode,
           ),
         );
       case Routes.session:
         return MaterialPageRoute(
-          builder: (_) => LearningProcess(
+          builder: (_) => LearningProcessScreen(
             data: routeSettings.arguments as LearningProcessData,
           ),
         );

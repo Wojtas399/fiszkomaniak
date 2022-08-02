@@ -1,10 +1,10 @@
-import 'package:fiszkomaniak/components/flashcards_progress_bar.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/flashcards_progress_bar.dart';
+import '../bloc/learning_process_bloc.dart';
 
 class LearningProcessProgressBar extends StatelessWidget {
-  const LearningProcessProgressBar({Key? key}) : super(key: key);
+  const LearningProcessProgressBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +21,20 @@ class LearningProcessProgressBar extends StatelessWidget {
 }
 
 class _ProgressBar extends StatelessWidget {
-  const _ProgressBar({Key? key}) : super(key: key);
+  const _ProgressBar();
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LearningProcessBloc, LearningProcessState>(
-      builder: (_, LearningProcessState state) {
-        return FlashcardsProgressBar(
-          amountOfRememberedFlashcards: state.amountOfRememberedFlashcards,
-          amountOfAllFlashcards: state.amountOfAllFlashcards,
-          barHeight: 16,
-        );
-      },
+    final int amountOfRememberedFlashcards = context.select(
+      (LearningProcessBloc bloc) => bloc.state.amountOfRememberedFlashcards,
+    );
+    final int amountOfAllFlashcards = context.select(
+      (LearningProcessBloc bloc) => bloc.state.amountOfAllFlashcards,
+    );
+    return FlashcardsProgressBar(
+      amountOfRememberedFlashcards: amountOfRememberedFlashcards,
+      amountOfAllFlashcards: amountOfAllFlashcards,
+      barHeight: 16,
     );
   }
 }

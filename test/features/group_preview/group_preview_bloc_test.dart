@@ -1,285 +1,169 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/remove_group_use_case.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
-import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_dialogs.dart';
-import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_event.dart';
-import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/features/group_preview/group_preview_dialogs.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockGroupsBloc extends Mock implements GroupsBloc {}
+class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
 
-class MockCoursesBloc extends Mock implements CoursesBloc {}
+class MockRemoveGroupUseCase extends Mock implements RemoveGroupUseCase {}
+
+class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
 
 class MockGroupPreviewDialogs extends Mock implements GroupPreviewDialogs {}
 
-class MockNavigation extends Mock implements Navigation {}
-
 void main() {
-  final GroupsBloc groupsBloc = MockGroupsBloc();
-  final CoursesBloc coursesBloc = MockCoursesBloc();
-  final GroupPreviewDialogs groupPreviewDialogs = MockGroupPreviewDialogs();
-  final Navigation navigation = MockNavigation();
+  final getGroupUseCase = MockGetGroupUseCase();
+  final removeGroupUseCase = MockRemoveGroupUseCase();
+  final getCourseUseCase = MockGetCourseUseCase();
+  final groupPreviewDialogs = MockGroupPreviewDialogs();
   late GroupPreviewBloc bloc;
-  final CoursesState coursesState = CoursesState(
-    allCourses: [
-      createCourse(id: 'c1'),
-      createCourse(id: 'c2'),
-    ],
-  );
-  final GroupsState groupsState = GroupsState(
-    allGroups: [
-      createGroup(id: 'g1', courseId: 'c1'),
-      createGroup(id: 'g2', courseId: 'c1'),
-      createGroup(id: 'g3', courseId: 'c2'),
-    ],
-  );
 
   setUp(() {
     bloc = GroupPreviewBloc(
-      groupsBloc: groupsBloc,
-      coursesBloc: coursesBloc,
+      getGroupUseCase: getGroupUseCase,
+      removeGroupUseCase: removeGroupUseCase,
+      getCourseUseCase: getCourseUseCase,
       groupPreviewDialogs: groupPreviewDialogs,
-      navigation: navigation,
     );
-    when(() => groupsBloc.state).thenReturn(groupsState);
-    when(() => groupsBloc.stream).thenAnswer((_) => const Stream.empty());
-    when(() => coursesBloc.state).thenReturn(coursesState);
   });
 
   tearDown(() {
-    reset(groupsBloc);
-    reset(coursesBloc);
+    reset(getGroupUseCase);
+    reset(removeGroupUseCase);
+    reset(getCourseUseCase);
     reset(groupPreviewDialogs);
-    reset(navigation);
   });
 
   blocTest(
-    'initialize',
+    'initialize, should set group listener',
     build: () => bloc,
+    setUp: () {
+      when(
+        () => getGroupUseCase.execute(groupId: 'g1'),
+      ).thenAnswer(
+        (_) => Stream.value(
+          createGroup(id: 'g1', courseId: 'c1', name: 'group 1'),
+        ),
+      );
+      when(
+        () => getCourseUseCase.execute(courseId: 'c1'),
+      ).thenAnswer(
+        (_) => Stream.value(
+          createCourse(id: 'c1', name: 'course 1'),
+        ),
+      );
+    },
     act: (_) => bloc.add(GroupPreviewEventInitialize(groupId: 'g1')),
     expect: () => [
       GroupPreviewState(
-        group: groupsState.allGroups[0],
-        courseName: coursesState.allCourses[0].name,
+        status: const BlocStatusComplete<GroupPreviewInfoType>(),
+        group: createGroup(id: 'g1', courseId: 'c1', name: 'group 1'),
+      ),
+      GroupPreviewState(
+        status: const BlocStatusComplete<GroupPreviewInfoType>(),
+        group: createGroup(id: 'g1', courseId: 'c1', name: 'group 1'),
+        course: createCourse(id: 'c1', name: 'course 1'),
       ),
     ],
   );
 
   blocTest(
-    'edit, group assigned',
+    'group updated, should update group in state',
+    build: () => bloc,
+    act: (_) => bloc.add(
+      GroupPreviewEventGroupUpdated(
+        group: createGroup(id: 'g1', courseId: 'c1', name: 'group 1'),
+      ),
+    ),
+    expect: () => [
+      GroupPreviewState(
+        status: const BlocStatusComplete<GroupPreviewInfoType>(),
+        group: createGroup(id: 'g1', courseId: 'c1', name: 'group 1'),
+      )
+    ],
+  );
+
+  blocTest(
+    'course changed, should get course from repo and update state',
     build: () => bloc,
     setUp: () {
       when(
-        () => navigation.navigateToGroupCreator(
-          GroupCreatorEditMode(group: groupsState.allGroups[0]),
-        ),
+        () => getCourseUseCase.execute(courseId: 'c1'),
+      ).thenAnswer(
+        (_) => Stream.value(createCourse(id: 'c1', name: 'course 1')),
+      );
+    },
+    act: (_) => bloc.add(GroupPreviewEventCourseChanged(courseId: 'c1')),
+    expect: () => [
+      GroupPreviewState(
+        status: const BlocStatusComplete<GroupPreviewInfoType>(),
+        course: createCourse(id: 'c1', name: 'course 1'),
+      )
+    ],
+    verify: (_) {
+      verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
+    },
+  );
+
+  blocTest(
+    'remove group, cancelled, should not remove group',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => groupPreviewDialogs.askForDeleteConfirmation(),
+      ).thenAnswer((_) async => false);
+    },
+    act: (_) {
+      bloc.add(GroupPreviewEventGroupUpdated(group: createGroup(id: 'g1')));
+      bloc.add(GroupPreviewEventRemoveGroup());
+    },
+    verify: (_) {
+      verify(() => groupPreviewDialogs.askForDeleteConfirmation()).called(1);
+      verifyNever(() => removeGroupUseCase.execute(groupId: 'g1'));
+    },
+  );
+
+  blocTest(
+    'remove group, confirmed, should remove group',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => groupPreviewDialogs.askForDeleteConfirmation(),
+      ).thenAnswer((_) async => true);
+      when(
+        () => removeGroupUseCase.execute(groupId: 'g1'),
       ).thenAnswer((_) async => '');
     },
     act: (_) {
-      bloc.add(GroupPreviewEventInitialize(groupId: 'g1'));
-      bloc.add(GroupPreviewEventEdit());
+      bloc.add(GroupPreviewEventGroupUpdated(group: createGroup(id: 'g1')));
+      bloc.add(GroupPreviewEventRemoveGroup());
     },
-    verify: (_) {
-      verify(
-        () => navigation.navigateToGroupCreator(
-          GroupCreatorEditMode(group: groupsState.allGroups[0]),
+    expect: () => [
+      GroupPreviewState(
+        status: const BlocStatusComplete<GroupPreviewInfoType>(),
+        group: createGroup(id: 'g1'),
+      ),
+      GroupPreviewState(
+        status: const BlocStatusLoading(),
+        group: createGroup(id: 'g1'),
+      ),
+      GroupPreviewState(
+        status: const BlocStatusComplete<GroupPreviewInfoType>(
+          info: GroupPreviewInfoType.groupHasBeenRemoved,
         ),
-      ).called(1);
-    },
-  );
-
-  blocTest(
-    'edit, group not assigned',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => navigation.navigateToGroupCreator(
-          GroupCreatorEditMode(group: groupsState.allGroups[0]),
-        ),
-      ).thenAnswer((_) async => '');
-    },
-    act: (_) => bloc.add(GroupPreviewEventEdit()),
+        group: createGroup(id: 'g1'),
+      ),
+    ],
     verify: (_) {
-      verifyNever(
-        () => navigation.navigateToGroupCreator(
-          GroupCreatorEditMode(group: groupsState.allGroups[0]),
-        ),
-      );
-    },
-  );
-
-  blocTest(
-    'remove, group exists, confirmed',
-    build: () => bloc,
-    setUp: () {
-      when(() => groupPreviewDialogs.askForDeleteConfirmation())
-          .thenAnswer((_) async => true);
-    },
-    act: (_) {
-      bloc.add(GroupPreviewEventInitialize(groupId: 'g1'));
-      bloc.add(GroupPreviewEventRemove());
-    },
-    verify: (_) {
-      verify(
-        () => groupsBloc.add(GroupsEventRemoveGroup(groupId: 'g1')),
-      ).called(1);
-    },
-  );
-
-  blocTest(
-    'remove, group exists, cancelled',
-    build: () => bloc,
-    setUp: () {
-      when(() => groupPreviewDialogs.askForDeleteConfirmation())
-          .thenAnswer((_) async => false);
-    },
-    act: (_) {
-      bloc.add(GroupPreviewEventInitialize(groupId: 'g1'));
-      bloc.add(GroupPreviewEventRemove());
-    },
-    verify: (_) {
-      verifyNever(() => groupsBloc.add(GroupsEventRemoveGroup(groupId: 'g1')));
-    },
-  );
-
-  blocTest(
-    'remove, group does not exist',
-    build: () => bloc,
-    setUp: () {
-      when(() => groupPreviewDialogs.askForDeleteConfirmation())
-          .thenAnswer((_) async => true);
-    },
-    act: (_) {
-      bloc.add(GroupPreviewEventRemove());
-    },
-    expect: () => [],
-    verify: (_) {
-      verifyNever(() => groupsBloc.add(GroupsEventRemoveGroup(groupId: 'g1')));
-    },
-  );
-
-  blocTest(
-    'edit flashcards, group assigned',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => navigation.navigateToFlashcardsEditor(
-          const FlashcardsEditorEditMode(groupId: 'g1'),
-        ),
-      ).thenReturn(null);
-    },
-    act: (_) {
-      bloc.add(GroupPreviewEventInitialize(groupId: 'g1'));
-      bloc.add(GroupPreviewEventEditFlashcards());
-    },
-    verify: (_) {
-      verify(
-        () => navigation.navigateToFlashcardsEditor(
-          const FlashcardsEditorEditMode(groupId: 'g1'),
-        ),
-      ).called(1);
-    },
-  );
-
-  blocTest(
-    'edit flashcards, group not assigned',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => navigation.navigateToFlashcardsEditor(
-          const FlashcardsEditorEditMode(groupId: 'g1'),
-        ),
-      ).thenReturn(null);
-    },
-    act: (_) => bloc.add(GroupPreviewEventEditFlashcards()),
-    verify: (_) {
-      verifyNever(
-        () => navigation.navigateToFlashcardsEditor(
-          const FlashcardsEditorEditMode(groupId: 'g1'),
-        ),
-      );
-    },
-  );
-
-  blocTest(
-    'review flashcards, group assigned',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => navigation.navigateToGroupFlashcardsPreview('g1'),
-      ).thenReturn(null);
-    },
-    act: (_) {
-      bloc.add(GroupPreviewEventInitialize(groupId: 'g1'));
-      bloc.add(GroupPreviewEventReviewFlashcards());
-    },
-    verify: (_) {
-      verify(() => navigation.navigateToGroupFlashcardsPreview('g1')).called(1);
-    },
-  );
-
-  blocTest(
-    'review flashcards, group not assigned',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => navigation.navigateToGroupFlashcardsPreview('g1'),
-      ).thenReturn(null);
-    },
-    act: (_) => bloc.add(GroupPreviewEventReviewFlashcards()),
-    verify: (_) {
-      verifyNever(() => navigation.navigateToGroupFlashcardsPreview('g1'));
-    },
-  );
-
-  blocTest(
-    'create quick session, group assigned',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => navigation.navigateToSessionPreview(
-          SessionPreviewModeQuick(groupId: 'g1'),
-        ),
-      ).thenReturn(null);
-    },
-    act: (_) {
-      bloc.add(GroupPreviewEventInitialize(groupId: 'g1'));
-      bloc.add(GroupPreviewEventCreateQuickSession());
-    },
-    verify: (_) {
-      verify(
-        () => navigation.navigateToSessionPreview(
-          SessionPreviewModeQuick(groupId: 'g1'),
-        ),
-      ).called(1);
-    },
-  );
-
-  blocTest(
-    'create quick session, group not assigned',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => navigation.navigateToSessionPreview(
-          SessionPreviewModeQuick(groupId: 'g1'),
-        ),
-      ).thenReturn(null);
-    },
-    act: (_) => bloc.add(GroupPreviewEventCreateQuickSession()),
-    verify: (_) {
-      verifyNever(
-        () => navigation.navigateToSessionPreview(
-          SessionPreviewModeQuick(groupId: 'g1'),
-        ),
-      );
+      verify(() => groupPreviewDialogs.askForDeleteConfirmation()).called(1);
+      verify(() => removeGroupUseCase.execute(groupId: 'g1')).called(1);
     },
   );
 }

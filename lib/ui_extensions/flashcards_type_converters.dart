@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/models/session_model.dart';
+import 'package:fiszkomaniak/domain/entities/session.dart';
 
 String convertFlashcardsTypeToViewFormat(FlashcardsType? type) {
   switch (type) {

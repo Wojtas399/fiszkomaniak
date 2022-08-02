@@ -2,9 +2,7 @@ import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:fiszkomaniak/components/item_with_icon.dart';
 import 'package:fiszkomaniak/components/time_picker.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_event.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_state.dart';
 import 'package:fiszkomaniak/ui_extensions/ui_duration_extensions.dart';
 import 'package:fiszkomaniak/ui_extensions/ui_time_extensions.dart';
 import 'package:flutter/material.dart';
@@ -17,60 +15,78 @@ class SessionPreviewTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SessionPreviewBloc, SessionPreviewState>(
-      builder: (BuildContext context, SessionPreviewState state) {
-        return Column(
-          children: [
-            state.mode is SessionPreviewModeQuick
-                ? const SizedBox()
-                : ItemWithIcon(
-                    icon: MdiIcons.clockStart,
-                    label: 'Godzina rozpoczęcia',
-                    text: state.session?.time.toUIFormat() ?? '--',
-                    paddingLeft: 8.0,
-                    paddingRight: 8.0,
-                  ),
-            Stack(
-              children: [
-                TimePicker(
-                  icon: MdiIcons.clockOutline,
-                  label: 'Czas trwania',
-                  helpText: 'WYBIERZ CZAS TRWANIA',
-                  value: state.duration.toUIFormat(),
-                  initialTime: Time(
-                    hour: state.duration?.inHours ?? 0,
-                    minute: state.duration?.inMinutes.remainder(60) ?? 0,
-                  ),
-                  paddingLeft: 8.0,
-                  paddingRight: 8.0,
-                  onSelect: state.mode is SessionPreviewModeQuick
-                      ? (Time value) => _durationChanged(context, value)
-                      : null,
+    return Column(
+      children: const [
+        _StartTime(),
+        _Duration(),
+        _NotificationTime(),
+      ],
+    );
+  }
+}
+
+class _StartTime extends StatelessWidget {
+  const _StartTime();
+
+  @override
+  Widget build(BuildContext context) {
+    final SessionPreviewMode? mode = context.select(
+      (SessionPreviewBloc bloc) => bloc.state.mode,
+    );
+    final Time? startTime = context.select(
+      (SessionPreviewBloc bloc) => bloc.state.session?.startTime,
+    );
+    return mode is SessionPreviewModeQuick
+        ? const SizedBox()
+        : ItemWithIcon(
+            icon: MdiIcons.clockStart,
+            label: 'Godzina rozpoczęcia',
+            text: startTime.toUIFormat(),
+            paddingLeft: 8.0,
+            paddingRight: 8.0,
+          );
+  }
+}
+
+class _Duration extends StatelessWidget {
+  const _Duration();
+
+  @override
+  Widget build(BuildContext context) {
+    final Duration? duration = context.select(
+      (SessionPreviewBloc bloc) => bloc.state.duration,
+    );
+    final SessionPreviewMode? mode = context.select(
+      (SessionPreviewBloc bloc) => bloc.state.mode,
+    );
+    return Stack(
+      children: [
+        TimePicker(
+          icon: MdiIcons.clockOutline,
+          label: 'Czas trwania',
+          helpText: 'WYBIERZ CZAS TRWANIA',
+          value: duration.toUIFormat(),
+          initialTime: Time(
+            hour: duration?.inHours ?? 0,
+            minute: duration?.inMinutes.remainder(60) ?? 0,
+          ),
+          paddingLeft: 8.0,
+          paddingRight: 8.0,
+          onSelect: mode is SessionPreviewModeQuick
+              ? (Time value) => _durationChanged(context, value)
+              : null,
+        ),
+        mode is SessionPreviewModeQuick && duration != null
+            ? Positioned(
+                right: 0.0,
+                bottom: 8.0,
+                child: CustomIconButton(
+                  icon: MdiIcons.close,
+                  onPressed: () => _cleanDuration(context),
                 ),
-                state.mode is SessionPreviewModeQuick && state.duration != null
-                    ? Positioned(
-                        right: 0.0,
-                        bottom: 8.0,
-                        child: CustomIconButton(
-                          icon: MdiIcons.close,
-                          onPressed: () => _cleanDuration(context),
-                        ),
-                      )
-                    : const SizedBox(),
-              ],
-            ),
-            state.mode is SessionPreviewModeQuick
-                ? const SizedBox()
-                : ItemWithIcon(
-                    icon: MdiIcons.bellRingOutline,
-                    label: 'Godzina przypomnienia',
-                    text: state.session?.notificationTime.toUIFormat() ?? '--',
-                    paddingLeft: 8.0,
-                    paddingRight: 8.0,
-                  ),
-          ],
-        );
-      },
+              )
+            : const SizedBox(),
+      ],
     );
   }
 
@@ -83,8 +99,29 @@ class SessionPreviewTime extends StatelessWidget {
   }
 
   void _cleanDuration(BuildContext context) {
-    context
-        .read<SessionPreviewBloc>()
-        .add(SessionPreviewEventDurationChanged(duration: null));
+    context.read<SessionPreviewBloc>().add(SessionPreviewEventResetDuration());
+  }
+}
+
+class _NotificationTime extends StatelessWidget {
+  const _NotificationTime();
+
+  @override
+  Widget build(BuildContext context) {
+    final SessionPreviewMode? mode = context.select(
+      (SessionPreviewBloc bloc) => bloc.state.mode,
+    );
+    final Time? notificationTime = context.select(
+      (SessionPreviewBloc bloc) => bloc.state.session?.notificationTime,
+    );
+    return mode is SessionPreviewModeQuick
+        ? const SizedBox()
+        : ItemWithIcon(
+            icon: MdiIcons.bellRingOutline,
+            label: 'Godzina przypomnienia',
+            text: notificationTime.toUIFormat(),
+            paddingLeft: 8.0,
+            paddingRight: 8.0,
+          );
   }
 }

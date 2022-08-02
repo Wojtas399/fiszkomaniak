@@ -1,41 +1,50 @@
 import 'package:fiszkomaniak/components/flashcards_progress_bar.dart';
 import 'package:fiszkomaniak/components/section.dart';
+import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
-import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_event.dart';
-import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GroupPreviewFlashcardsState extends StatelessWidget {
-  const GroupPreviewFlashcardsState({Key? key}) : super(key: key);
+  const GroupPreviewFlashcardsState({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GroupPreviewBloc, GroupPreviewState>(
-      builder: (_, GroupPreviewState state) {
-        return Section(
-          title: 'Stan fiszek',
-          child: Column(
-            children: [
-              const SizedBox(height: 8.0),
-              FlashcardsProgressBar(
-                amountOfRememberedFlashcards:
-                    state.amountOfRememberedFlashcards,
-                amountOfAllFlashcards: state.amountOfAllFlashcards,
-                barHeight: 16,
-              ),
-              const SizedBox(height: 8.0),
-              const _FlashcardsOptions(),
-            ],
-          ),
-        );
-      },
+    const Widget gap = SizedBox(height: 8.0);
+    return Section(
+      title: 'Stan fiszek',
+      child: Column(
+        children: const [
+          gap,
+          _FlashcardsProgressBar(),
+          gap,
+          _FlashcardsOptions(),
+        ],
+      ),
+    );
+  }
+}
+
+class _FlashcardsProgressBar extends StatelessWidget {
+  const _FlashcardsProgressBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final int amountOfAllFlashcards = context.select(
+      (GroupPreviewBloc bloc) => bloc.state.amountOfAllFlashcards,
+    );
+    final int amountOfRememberedFlashcards = context.select(
+      (GroupPreviewBloc bloc) => bloc.state.amountOfRememberedFlashcards,
+    );
+    return FlashcardsProgressBar(
+      amountOfRememberedFlashcards: amountOfRememberedFlashcards,
+      amountOfAllFlashcards: amountOfAllFlashcards,
     );
   }
 }
 
 class _FlashcardsOptions extends StatelessWidget {
-  const _FlashcardsOptions({Key? key}) : super(key: key);
+  const _FlashcardsOptions();
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +67,17 @@ class _FlashcardsOptions extends StatelessWidget {
   }
 
   void _editFlashcards(BuildContext context) {
-    context.read<GroupPreviewBloc>().add(GroupPreviewEventEditFlashcards());
+    final String? groupId = context.read<GroupPreviewBloc>().state.group?.id;
+    if (groupId != null) {
+      context.read<Navigation>().navigateToFlashcardsEditor(groupId);
+    }
   }
 
   void _reviewFlashcards(BuildContext context) {
-    context.read<GroupPreviewBloc>().add(GroupPreviewEventReviewFlashcards());
+    final String? groupId = context.read<GroupPreviewBloc>().state.group?.id;
+    if (groupId != null) {
+      context.read<Navigation>().navigateToGroupFlashcardsPreview(groupId);
+    }
   }
 }
 
@@ -71,10 +86,9 @@ class _TextButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const _TextButton({
-    Key? key,
     required this.text,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

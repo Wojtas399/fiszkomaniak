@@ -1,53 +1,97 @@
-import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_state.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 
 void main() {
   late SignInState state;
 
   setUp(() {
-    state = const SignInState();
+    state = const SignInState(
+      status: BlocStatusInitial(),
+      email: '',
+      password: '',
+    );
   });
 
-  test('initial state', () {
-    expect(state.email, '');
-    expect(state.password, '');
-  });
+  test(
+    'is button disabled, should be true if email is empty',
+    () {
+      state = state.copyWith(email: '', password: 'password');
 
-  test('copy with email', () {
-    const String email = 'email';
+      expect(state.isButtonDisabled, true);
+    },
+  );
 
-    final SignInState state2 = state.copyWith(email: email);
-    final SignInState state3 = state2.copyWith();
+  test(
+    'is button disabled, should be true if password is empty',
+    () {
+      state = state.copyWith(password: 'password');
 
-    expect(state2.email, email);
-    expect(state3.email, email);
-  });
+      expect(state.isButtonDisabled, true);
+    },
+  );
 
-  test('copy with password', () {
-    const String password = 'password';
+  test(
+    'is button disabled, should be false if email and password are not empty',
+    () {
+      state = state.copyWith(email: 'email', password: 'password');
 
-    final SignInState state2 = state.copyWith(password: password);
-    final SignInState state3 = state2.copyWith();
+      expect(state.isButtonDisabled, false);
+    },
+  );
 
-    expect(state2.password, password);
-    expect(state3.password, password);
-  });
+  test(
+    'copy with status',
+    () {
+      const BlocStatus expectedStatus = BlocStatusLoading();
 
-  test('is button disabled, email is empty', () {
-    state = state.copyWith(password: 'password');
+      state = state.copyWith(status: expectedStatus);
+      final state2 = state.copyWith();
 
-    expect(state.isButtonDisabled, true);
-  });
+      expect(state.status, expectedStatus);
+      expect(state2.status, const BlocStatusInProgress());
+    },
+  );
 
-  test('is button disabled, password is empty', () {
-    state = state.copyWith(email: 'email');
+  test(
+    'copy with email',
+    () {
+      const String expectedEmail = 'email';
 
-    expect(state.isButtonDisabled, true);
-  });
+      state = state.copyWith(email: expectedEmail);
+      final state2 = state.copyWith();
 
-  test('is button disabled, email and password are not empty', () {
-    state = state.copyWith(email: 'email', password: 'password');
+      expect(state.email, expectedEmail);
+      expect(state2.email, expectedEmail);
+    },
+  );
 
-    expect(state.isButtonDisabled, false);
-  });
+  test(
+    'copy with password',
+    () {
+      const String expectedPassword = 'password';
+
+      state = state.copyWith(password: expectedPassword);
+      final state2 = state.copyWith();
+
+      expect(state.password, expectedPassword);
+      expect(state2.password, expectedPassword);
+    },
+  );
+
+  test(
+    'copy with error type',
+    () {
+      const SignInErrorType expectedErrorType = SignInErrorType.invalidEmail;
+
+      state = state.copyWithError(expectedErrorType);
+
+      expect(
+        state.status,
+        const BlocStatusError<SignInErrorType>(
+          errorType: SignInErrorType.invalidEmail,
+        ),
+      );
+    },
+  );
 }

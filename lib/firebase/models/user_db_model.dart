@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/firebase/models/day_db_model.dart';
+import 'day_db_model.dart';
 
 class UserDbModel extends Equatable {
   final String username;
@@ -12,10 +12,11 @@ class UserDbModel extends Equatable {
 
   UserDbModel.fromJson(Map<String, Object?> json)
       : this(
-            username: json['username']! as String,
-            days: (json['days'] as List?)
-                ?.map((day) => DayDbModel.fromJson(day))
-                .toList());
+          username: json['username']! as String,
+          days: (json['days'] as List?)
+              ?.map((day) => DayDbModel.fromJson(day))
+              .toList(),
+        );
 
   Map<String, Object?> toJson() {
     return {

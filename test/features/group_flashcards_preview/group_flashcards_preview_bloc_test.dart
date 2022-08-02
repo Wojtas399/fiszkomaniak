@@ -1,108 +1,126 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_bloc.dart';
-import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_event.dart';
-import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_state.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockGroupsBloc extends Mock implements GroupsBloc {}
-
-class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
-
-class MockNavigation extends Mock implements Navigation {}
+class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
 
 void main() {
-  final GroupsBloc groupsBloc = MockGroupsBloc();
-  final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
-  final Navigation navigation = MockNavigation();
-  late GroupFlashcardsPreviewBloc bloc;
-  final GroupsState groupsState = GroupsState(
-    allGroups: [
-      createGroup(
+  final getGroupUseCase = MockGetGroupUseCase();
+
+  GroupFlashcardsPreviewBloc createBloc({
+    String? groupId,
+    String? groupName,
+    List<Flashcard>? flashcards,
+    String? searchValue,
+  }) {
+    return GroupFlashcardsPreviewBloc(
+      getGroupUseCase: getGroupUseCase,
+      groupId: groupId,
+      groupName: groupName,
+      flashcards: flashcards,
+      searchValue: searchValue,
+    );
+  }
+
+  GroupFlashcardsPreviewState createState({
+    String groupId = '',
+    String groupName = '',
+    List<Flashcard> flashcardsFromGroup = const [],
+    String searchValue = '',
+  }) {
+    return GroupFlashcardsPreviewState(
+      groupId: groupId,
+      groupName: groupName,
+      flashcardsFromGroup: flashcardsFromGroup,
+      searchValue: searchValue,
+    );
+  }
+
+  tearDown(() {
+    reset(getGroupUseCase);
+  });
+
+  group(
+    'initialize',
+    () {
+      final Group group = createGroup(
         id: 'g1',
-        name: 'group name 1',
-        flashcards: [
-          createFlashcard(index: 0, question: 'question0', answer: 'answer0'),
-          createFlashcard(index: 1, question: 'question1', answer: 'answer1'),
-        ],
-      ),
-      createGroup(
-        id: 'g2',
-        name: 'group name 2',
+        name: 'group name',
         flashcards: [
           createFlashcard(index: 0, question: 'q0', answer: 'a0'),
           createFlashcard(index: 1, question: 'q1', answer: 'a1'),
         ],
-      ),
-    ],
-  );
-  final FlashcardsState flashcardsState = FlashcardsState(
-    groupsState: groupsState,
-  );
+      );
 
-  setUp(() {
-    bloc = GroupFlashcardsPreviewBloc(
-      groupsBloc: groupsBloc,
-      flashcardsBloc: flashcardsBloc,
-      navigation: navigation,
-    );
-    when(() => groupsBloc.state).thenReturn(groupsState);
-    when(() => flashcardsBloc.state).thenReturn(flashcardsState);
-    when(() => flashcardsBloc.stream).thenAnswer((_) => const Stream.empty());
-  });
-
-  tearDown(() {
-    reset(groupsBloc);
-    reset(flashcardsBloc);
-    reset(navigation);
-  });
-
-  blocTest(
-    'initialize',
-    build: () => bloc,
-    act: (_) => bloc.add(GroupFlashcardsPreviewEventInitialize(groupId: 'g1')),
-    expect: () => [
-      GroupFlashcardsPreviewState(
-        groupId: 'g1',
-        groupName: 'group name 1',
-        flashcardsFromGroup: groupsState.allGroups[0].flashcards,
-      ),
-    ],
-  );
-
-  blocTest(
-    'search value changed',
-    build: () => bloc,
-    act: (_) => bloc.add(
-      GroupFlashcardsPreviewEventSearchValueChanged(
-        searchValue: 'search value',
-      ),
-    ),
-    expect: () => [
-      const GroupFlashcardsPreviewState(searchValue: 'search value'),
-    ],
-  );
-
-  blocTest(
-    'show flashcard details',
-    build: () => bloc,
-    setUp: () {
-      when(() => navigation.navigateToFlashcardPreview('g1', 0))
-          .thenReturn(null);
-    },
-    act: (_) {
-      bloc.add(GroupFlashcardsPreviewEventInitialize(groupId: 'g1'));
-      bloc.add(
-        GroupFlashcardsPreviewEventShowFlashcardDetails(flashcardIndex: 0),
+      blocTest(
+        'should load group, update group id, name and flashcards in state and should set group listener',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => getGroupUseCase.execute(groupId: 'g1'),
+          ).thenAnswer((_) => Stream.value(group));
+        },
+        act: (GroupFlashcardsPreviewBloc bloc) {
+          bloc.add(GroupFlashcardsPreviewEventInitialize(groupId: 'g1'));
+        },
+        expect: () => [
+          createState(
+            groupId: group.id,
+            groupName: group.name,
+            flashcardsFromGroup: group.flashcards,
+          ),
+        ],
+        verify: (_) {
+          verify(() => getGroupUseCase.execute(groupId: 'g1')).called(2);
+        },
       );
     },
-    verify: (_) {
-      verify(() => navigation.navigateToFlashcardPreview('g1', 0)).called(1);
+  );
+
+  blocTest(
+    'search value changed, should update search value in state',
+    build: () => createBloc(),
+    act: (GroupFlashcardsPreviewBloc bloc) {
+      bloc.add(
+        GroupFlashcardsPreviewEventSearchValueChanged(
+          searchValue: 'searchValue',
+        ),
+      );
+    },
+    expect: () => [
+      createState(searchValue: 'searchValue'),
+    ],
+  );
+
+  group(
+    'group changed',
+    () {
+      final Group group = createGroup(
+        id: 'g1',
+        name: 'group name',
+        flashcards: [
+          createFlashcard(index: 0, question: 'q0', answer: 'a0'),
+        ],
+      );
+
+      blocTest(
+        'should update group id, name and flashcards in state',
+        build: () => createBloc(),
+        act: (GroupFlashcardsPreviewBloc bloc) {
+          bloc.add(GroupFlashcardsPreviewEventGroupChanged(group: group));
+        },
+        expect: () => [
+          createState(
+            groupId: group.id,
+            groupName: group.name,
+            flashcardsFromGroup: group.flashcards,
+          ),
+        ],
+      );
     },
   );
 }

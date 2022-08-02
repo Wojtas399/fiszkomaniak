@@ -1,20 +1,35 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:fiszkomaniak/models/notification_model.dart';
-import 'package:fiszkomaniak/models/time_model.dart';
-import '../models/changed_document.dart';
-import '../models/session_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../domain/entities/flashcard.dart';
+import '../domain/entities/session.dart';
+import '../exceptions/auth_exceptions.dart';
+import '../models/date_model.dart';
+import '../models/time_model.dart';
 import '../utils/utils.dart';
 
-extension FireDocumentChangeTypeExtensions on DocumentChangeType {
-  DbDocChangeType toDbDocChangeType() {
+extension FireAuthExceptionExtensions on FirebaseAuthException {
+  AuthException toAuthException() {
+    switch (code) {
+      case 'user-not-found':
+        return AuthException.userNotFound;
+      case 'wrong-password':
+        return AuthException.wrongPassword;
+      case 'invalid-email':
+        return AuthException.invalidEmail;
+      case 'email-already-in-use':
+        return AuthException.emailAlreadyInUse;
+      default:
+        return AuthException.unknown;
+    }
+  }
+}
+
+extension FireFlashcardStatusExtensions on FlashcardStatus {
+  String toDbString() {
     switch (this) {
-      case DocumentChangeType.added:
-        return DbDocChangeType.added;
-      case DocumentChangeType.modified:
-        return DbDocChangeType.updated;
-      case DocumentChangeType.removed:
-        return DbDocChangeType.removed;
+      case FlashcardStatus.remembered:
+        return 'remembered';
+      case FlashcardStatus.notRemembered:
+        return 'notRemembered';
     }
   }
 }
@@ -70,6 +85,17 @@ extension FireStringExtensions on String {
     }
   }
 
+  FlashcardStatus? toFlashcardStatus() {
+    switch (this) {
+      case 'remembered':
+        return FlashcardStatus.remembered;
+      case 'notRemembered':
+        return FlashcardStatus.notRemembered;
+      default:
+        return null;
+    }
+  }
+
   Date toDate() {
     final List<String> splitDate = split('-');
     final int year = int.parse(splitDate[0]);
@@ -90,16 +116,5 @@ extension FireStringExtensions on String {
     final int minutes = int.parse(splitByDoubleDot[1]);
     final int hours = int.parse(splitByDoubleDot[0]);
     return Duration(hours: hours, minutes: minutes);
-  }
-
-  Notification? convertToNotification() {
-    if (contains('session')) {
-      return SessionNotification(
-        sessionId: split(' ')[1],
-      );
-    } else if (this == 'daysStreakLose') {
-      return DaysStreakLoseNotification();
-    }
-    return null;
   }
 }

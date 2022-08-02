@@ -1,53 +1,46 @@
-import 'package:fiszkomaniak/features/courses_library/courses_library_page.dart';
-import 'package:fiszkomaniak/features/home/components/home_app_bar.dart';
-import 'package:fiszkomaniak/features/home/components/home_bottom_navigation_bar.dart';
-import 'package:fiszkomaniak/features/home/home_listeners.dart';
-import 'package:fiszkomaniak/features/sessions_list/sessions_list_page.dart';
-import 'package:fiszkomaniak/features/study/study_page.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
-import '../profile/profile_page.dart';
+import 'package:provider/provider.dart';
+import '../courses_library/courses_library_screen.dart';
+import '../sessions_list/sessions_list_screen.dart';
+import '../study/study_screen.dart';
+import '../profile/profile_screen.dart';
+import 'components/home_app_bar.dart';
+import 'components/home_bottom_navigation_bar.dart';
 import 'components/home_action_button.dart';
+import 'home_listeners.dart';
+import 'home.dart';
 
 class HomeView extends StatelessWidget {
-  final PageController _pageController = PageController(initialPage: 0);
-  final _displayingPageNumber = BehaviorSubject<int>();
-
-  HomeView({Key? key}) : super(key: key);
+  const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return HomeListeners(
-      pageController: _pageController,
-      child: StreamBuilder(
-        stream: _displayingPageNumber,
-        builder: (_, AsyncSnapshot<int> snapshot) {
-          int displayingPageNumber = snapshot.data ?? 0;
-          return Scaffold(
-            extendBody: true,
-            appBar: HomeAppBar(displayingPageNumber: displayingPageNumber),
-            body: PageView(
-              controller: _pageController,
-              onPageChanged: (int number) {
-                _displayingPageNumber.add(number);
-              },
-              children: const [
-                StudyPage(),
-                SessionsListPage(),
-                CoursesLibraryPage(),
-                ProfilePage(),
-              ],
-            ),
-            floatingActionButton: const HomeActionButton(),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
-            bottomNavigationBar: HomeBottomNavigationBar(
-              pageController: _pageController,
-              displayingPageNumber: displayingPageNumber,
-            ),
-          );
-        },
+    return const HomeListeners(
+      child: Scaffold(
+        extendBody: true,
+        appBar: HomeAppBar(),
+        body: _PageView(),
+        floatingActionButton: HomeActionButton(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: HomeBottomNavigationBar(),
       ),
+    );
+  }
+}
+
+class _PageView extends StatelessWidget {
+  const _PageView();
+
+  @override
+  Widget build(BuildContext context) {
+    return PageView(
+      controller: context.read<HomePageController>().controller,
+      children: const [
+        StudyScreen(),
+        SessionsListScreen(),
+        CoursesLibraryScreen(),
+        ProfileScreen(),
+      ],
     );
   }
 }

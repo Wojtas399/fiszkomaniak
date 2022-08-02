@@ -1,18 +1,16 @@
-import 'package:fiszkomaniak/components/avatar/avatar.dart';
-import 'package:fiszkomaniak/components/avatar/avatar_image_type.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/config/theme/global_theme.dart';
-import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/avatar/avatar.dart';
+import '../../../components/avatar/avatar_image_type.dart';
+import '../../../config/navigation.dart';
+import '../../../config/theme/global_theme.dart';
+import '../../../ui_extensions/ui_number_extensions.dart';
+import '../bloc/home_bloc.dart';
+import '../home.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final int displayingPageNumber;
-  final List<String> _pageNames = ['Nauka', 'Sesje', 'Kursy', 'Profil'];
-
-  HomeAppBar({super.key, required this.displayingPageNumber});
+  const HomeAppBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -22,7 +20,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Theme(
       data: GlobalTheme.lightTheme,
       child: AppBar(
-        title: Text(_pageNames[displayingPageNumber]),
+        title: const _Title(),
         centerTitle: true,
         leadingWidth: 200,
         leading: const _AvatarAndDays(),
@@ -40,6 +38,31 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   void _onSettingsPressed(BuildContext context) {
     context.read<Navigation>().navigateToSettings();
+  }
+}
+
+class _Title extends StatelessWidget {
+  const _Title();
+
+  @override
+  Widget build(BuildContext context) {
+    final pageNumber = context.watch<HomePageController>().pageNumber;
+    return Text(_getPageTitle(pageNumber));
+  }
+
+  String _getPageTitle(int pageNumber) {
+    switch (pageNumber) {
+      case 0:
+        return 'Nauka';
+      case 1:
+        return 'Sesje';
+      case 2:
+        return 'Kursy';
+      case 3:
+        return 'Profil';
+      default:
+        return '';
+    }
   }
 }
 
@@ -75,10 +98,12 @@ class _LoggedUserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String? avatarUrl = context.select(
-      (UserBloc bloc) => bloc.state.loggedUser?.avatarUrl,
+      (HomeBloc bloc) => bloc.state.loggedUserAvatarUrl,
     );
     return Avatar(
-      imageType: avatarUrl != null ? AvatarImageTypeUrl(url: avatarUrl) : null,
+      imageType: avatarUrl != null && avatarUrl.isNotEmpty
+          ? AvatarImageTypeUrl(url: avatarUrl)
+          : null,
       size: 42.0,
     );
   }
@@ -90,19 +115,12 @@ class _DaysInARow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int daysStreak = context.select(
-      (AchievementsBloc bloc) => bloc.state.daysStreak,
+      (HomeBloc bloc) => bloc.state.daysStreak,
     );
     return Text(
-      _convertStreakToString(daysStreak),
+      daysStreak.toDaysStreakUIFormat(),
       style: Theme.of(context).textTheme.subtitle1,
       overflow: TextOverflow.ellipsis,
     );
-  }
-
-  String _convertStreakToString(int value) {
-    if (value >= 1000) {
-      return '999+';
-    }
-    return '$value';
   }
 }

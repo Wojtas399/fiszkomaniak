@@ -1,18 +1,31 @@
+import '../domain/entities/flashcard.dart';
+
 abstract class AchievementsInterface {
-  Future<void> initializeAchievements();
+  Stream<int?> get allFlashcardsAmount$;
 
-  Future<void> addNewFlashcards({
-    required List<String> flashcardsIds,
-    Function(int achievedConditionValue)? onAchievedNextCondition,
+  Stream<int?> get allFlashcardsAchievedCondition$;
+
+  Stream<int?> get rememberedFlashcardsAchievedCondition$;
+
+  Stream<int?> get finishedSessionsAchievedCondition$;
+
+  Future<void> loadAllFlashcardsAmount();
+
+  Future<void> setInitialAchievements();
+
+  Future<void> addFlashcards({
+    required String groupId,
+    required List<Flashcard> flashcards,
   });
 
-  Future<void> addNewRememberedFlashcards({
-    required List<String> flashcardsIds,
-    Function(int achievedConditionValue)? onAchievedNextCondition,
+  Future<void> addRememberedFlashcards({
+    required String groupId,
+    required List<Flashcard> rememberedFlashcards,
   });
 
-  Future<void> addNewFinishedSession({
+  Future<void> addFinishedSession({
     required String? sessionId,
-    Function(int achievedConditionValue)? onAchievedNextCondition,
   });
+
+  void reset();
 }

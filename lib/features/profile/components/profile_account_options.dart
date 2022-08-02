@@ -1,9 +1,9 @@
-import 'package:fiszkomaniak/components/item_with_icon.dart';
-import 'package:fiszkomaniak/components/section.dart';
-import 'package:fiszkomaniak/config/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/item_with_icon.dart';
+import '../../../components/section.dart';
+import '../../../config/theme/colors.dart';
 import '../bloc/profile_bloc.dart';
 
 class ProfileAccountOptions extends StatelessWidget {
@@ -39,6 +39,6 @@ class ProfileAccountOptions extends StatelessWidget {
   }
 
   void _onRemoveAccountPressed(BuildContext context) {
-    context.read<ProfileBloc>().add(ProfileEventRemoveAccount());
+    context.read<ProfileBloc>().add(ProfileEventDeleteAccount());
   }
 }

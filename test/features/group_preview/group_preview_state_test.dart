@@ -1,54 +1,90 @@
-import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_state.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late GroupPreviewState state;
-  final Group group = createGroup(id: 'g1', flashcards: [
-    createFlashcard(index: 0, status: FlashcardStatus.remembered),
-    createFlashcard(index: 1, status: FlashcardStatus.remembered),
-    createFlashcard(index: 2, status: FlashcardStatus.notRemembered),
-  ]);
 
-  setUp(() {
-    state = const GroupPreviewState();
-  });
+  setUp(() => state = const GroupPreviewState());
 
-  test('initial state', () {
-    expect(state.group, null);
-    expect(state.courseName, '');
-    expect(state.amountOfAllFlashcards, 0);
-    expect(state.amountOfRememberedFlashcards, 0);
-  });
+  test(
+    'initial state',
+    () {
+      expect(state.status, const BlocStatusInitial());
+      expect(state.group, null);
+      expect(state.course, null);
+    },
+  );
 
-  test('copy with group', () {
-    final GroupPreviewState state2 = state.copyWith(group: group);
-    final GroupPreviewState state3 = state2.copyWith();
+  test(
+    'copy with status',
+    () {
+      const BlocStatus expectedStatus = BlocStatusLoading();
 
-    expect(state2.group, group);
-    expect(state3.group, group);
-  });
+      final state2 = state.copyWith(status: expectedStatus);
+      final state3 = state2.copyWith();
 
-  test('copy with course name', () {
-    const String courseName = 'course name';
+      expect(state2.status, expectedStatus);
+      expect(state3.status, const BlocStatusComplete<GroupPreviewInfoType>());
+    },
+  );
 
-    final GroupPreviewState state2 = state.copyWith(courseName: courseName);
-    final GroupPreviewState state3 = state2.copyWith();
+  test(
+    'copy with group',
+    () {
+      final Group expectedGroup = createGroup(id: 'g1', name: 'group 1');
 
-    expect(state2.courseName, courseName);
-    expect(state3.courseName, courseName);
-  });
+      final state2 = state.copyWith(group: expectedGroup);
+      final state3 = state2.copyWith();
 
-  test('amount of all flashcards', () {
-    final GroupPreviewState updatedState = state.copyWith(group: group);
+      expect(state2.group, expectedGroup);
+      expect(state3.group, expectedGroup);
+    },
+  );
 
-    expect(updatedState.amountOfAllFlashcards, 3);
-  });
+  test(
+    'copy with course',
+    () {
+      final Course expectedCourse = createCourse(id: 'c1', name: 'course 1');
 
-  test('amount of remembered flashcards', () {
-    final GroupPreviewState updatedState = state.copyWith(group: group);
+      final state2 = state.copyWith(course: expectedCourse);
+      final state3 = state2.copyWith();
 
-    expect(updatedState.amountOfRememberedFlashcards, 2);
-  });
+      expect(state2.course, expectedCourse);
+      expect(state3.course, expectedCourse);
+    },
+  );
+
+  test(
+    'amount of all flashcards, should return amount of all flashcards from group',
+    () {
+      final Group group = createGroup(flashcards: [
+        createFlashcard(index: 0, status: FlashcardStatus.remembered),
+        createFlashcard(index: 1, status: FlashcardStatus.remembered),
+        createFlashcard(index: 2, status: FlashcardStatus.notRemembered),
+      ]);
+
+      state = state.copyWith(group: group);
+
+      expect(state.amountOfAllFlashcards, 3);
+    },
+  );
+
+  test(
+    'amount of remembered flashcards, should return amount of remembered flashcards from group',
+    () {
+      final Group group = createGroup(flashcards: [
+        createFlashcard(index: 0, status: FlashcardStatus.remembered),
+        createFlashcard(index: 1, status: FlashcardStatus.remembered),
+        createFlashcard(index: 2, status: FlashcardStatus.notRemembered),
+      ]);
+
+      state = state.copyWith(group: group);
+
+      expect(state.amountOfRememberedFlashcards, 2);
+    },
+  );
 }

@@ -1,141 +1,228 @@
-import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_state.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_bloc.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late GroupSelectionState state;
-  final List<Course> courses = [
-    createCourse(id: 'c1'),
-    createCourse(id: 'c2'),
-    createCourse(id: 'c3'),
-  ];
-  final List<Group> groups = [
-    createGroup(
-      id: 'g1',
-      nameForQuestions: 'questions',
-      nameForAnswers: 'answers',
-      flashcards: [
-        createFlashcard(index: 0, status: FlashcardStatus.remembered),
-        createFlashcard(index: 1, status: FlashcardStatus.remembered),
-        createFlashcard(index: 2, status: FlashcardStatus.notRemembered),
-      ],
-    ),
-    createGroup(id: 'g2'),
-    createGroup(id: 'g3'),
-    createGroup(id: 'g4'),
-  ];
 
-  setUp(() {
-    state = GroupSelectionState();
-  });
+  setUp(() => state = GroupSelectionState());
 
-  test('initial state', () {
-    expect(
-      state,
-      GroupSelectionState(
-        allCourses: const [],
-        groupsFromCourse: const [],
+  test(
+    'initial state',
+    () {
+      expect(state.status, const BlocStatusInitial());
+      expect(state.coursesToSelect, {});
+      expect(state.groupsFromCourseToSelect, {});
+      expect(state.selectedCourse, null);
+      expect(state.selectedGroup, null);
+    },
+  );
+
+  test(
+    'courses to select, should be a map in which keys are courses ids and values are courses names',
+    () {
+      final List<Course> courses = [
+        createCourse(id: 'c1', name: 'course 1'),
+        createCourse(id: 'c2', name: 'course 2'),
+      ];
+
+      state = state.copyWith(allCourses: courses);
+
+      expect(
+        state.coursesToSelect,
+        {
+          'c1': 'course 1',
+          'c2': 'course 2',
+        },
+      );
+    },
+  );
+
+  test(
+    'groups from course to select, should be a map in which keys are groups ids and values are groups names',
+    () {
+      final List<Group> groups = [
+        createGroup(id: 'g1', name: 'group one'),
+        createGroup(id: 'g2', name: 'group two'),
+      ];
+
+      state = state.copyWith(groupsFromCourse: groups);
+
+      expect(
+        state.groupsFromCourseToSelect,
+        {
+          'g1': 'group one',
+          'g2': 'group two',
+        },
+      );
+    },
+  );
+
+  test(
+    'amount of all flashcards, should be a number which represents the amount of all flashcards in selected group',
+    () {
+      final Group group = createGroup(
+        flashcards: [
+          createFlashcard(index: 0, status: FlashcardStatus.remembered),
+          createFlashcard(index: 1, status: FlashcardStatus.notRemembered),
+          createFlashcard(index: 2, status: FlashcardStatus.remembered),
+        ],
+      );
+
+      state = state.copyWith(selectedGroup: group);
+
+      expect(state.amountOfAllFlashcards, 3);
+    },
+  );
+
+  test(
+    'amount of remembered flashcards, should be a number which represents the amount of remembered flashcards in selected group',
+    () {
+      final Group group = createGroup(
+        flashcards: [
+          createFlashcard(index: 0, status: FlashcardStatus.remembered),
+          createFlashcard(index: 1, status: FlashcardStatus.notRemembered),
+          createFlashcard(index: 2, status: FlashcardStatus.remembered),
+        ],
+      );
+
+      state = state.copyWith(selectedGroup: group);
+
+      expect(state.amountOfRememberedFlashcards, 2);
+    },
+  );
+
+  test(
+    'is button disabled, should be true if course has not been selected',
+    () {
+      state = state.copyWith(
         selectedCourse: null,
+        selectedGroup: createGroup(id: 'g1'),
+      );
+
+      expect(state.isButtonDisabled, true);
+    },
+  );
+
+  test(
+    'is button disabled, should be true if group has not been selected',
+    () {
+      state = state.copyWith(
+        selectedCourse: createCourse(id: 'c1'),
         selectedGroup: null,
-      ),
-    );
-    expect(state.coursesToSelect, {});
-    expect(state.groupsFromCourseToSelect, {});
-    expect(state.nameForQuestions, null);
-    expect(state.nameForAnswers, null);
-    expect(state.isButtonDisabled, true);
-    expect(state.amountOfAllFlashcards, 0);
-    expect(state.amountOfRememberedFlashcards, 0);
-  });
+      );
 
-  test('copy with all courses', () {
-    final Map<String, String> coursesAsMap = {
-      for (final course in courses) course.id: course.name,
-    };
-    final GroupSelectionState state2 = state.copyWith(allCourses: courses);
-    final GroupSelectionState state3 = state2.copyWith();
+      expect(state.isButtonDisabled, true);
+    },
+  );
 
-    expect(state2.coursesToSelect, coursesAsMap);
-    expect(state3.coursesToSelect, coursesAsMap);
-  });
+  test(
+    'is button disabled, should be false if course and group have been selected',
+    () {
+      state = state.copyWith(
+        selectedCourse: createCourse(id: 'c1'),
+        selectedGroup: createGroup(id: 'g1'),
+      );
 
-  test('copy with groups from course', () {
-    final Map<String, String> groupsAsMap = {
-      for (final group in groups) group.id: group.name,
-    };
-    final GroupSelectionState state2 = state.copyWith(groupsFromCourse: groups);
-    final GroupSelectionState state3 = state2.copyWith();
+      expect(state.isButtonDisabled, false);
+    },
+  );
 
-    expect(state2.groupsFromCourseToSelect, groupsAsMap);
-    expect(state3.groupsFromCourseToSelect, groupsAsMap);
-  });
+  test(
+    'copy with status',
+    () {
+      const BlocStatus expectedStatus = BlocStatusLoading();
 
-  test('copy with selected course', () {
-    final GroupSelectionState state2 = state.copyWith(
-      selectedCourse: courses[0],
-    );
-    final GroupSelectionState state3 = state2.copyWith();
+      final state2 = state.copyWith(status: expectedStatus);
+      final state3 = state2.copyWith();
 
-    expect(state2.selectedCourse, courses[0]);
-    expect(state3.selectedCourse, courses[0]);
-  });
+      expect(state2.status, expectedStatus);
+      expect(state3.status, const BlocStatusComplete());
+    },
+  );
 
-  test('copy with selected group', () {
-    final GroupSelectionState state2 = state.copyWith(selectedGroup: groups[0]);
-    final GroupSelectionState state3 = state2.copyWith();
+  test(
+    'copy with courses',
+    () {
+      final List<Course> courses = [
+        createCourse(id: 'c1', name: 'course 1'),
+        createCourse(id: 'c2', name: 'course 2'),
+      ];
 
-    expect(state2.selectedGroup, groups[0]);
-    expect(state3.selectedGroup, null);
-  });
+      final state2 = state.copyWith(allCourses: courses);
+      final state3 = state2.copyWith();
 
-  test('name for questions, group selected', () {
-    final GroupSelectionState updatedState = state.copyWith(
-      selectedGroup: groups[0],
-    );
+      expect(
+        state2.coursesToSelect,
+        {
+          'c1': 'course 1',
+          'c2': 'course 2',
+        },
+      );
+      expect(
+        state3.coursesToSelect,
+        {
+          'c1': 'course 1',
+          'c2': 'course 2',
+        },
+      );
+    },
+  );
 
-    expect(updatedState.nameForQuestions, groups[0].nameForQuestions);
-  });
+  test(
+    'copy with groups from course',
+    () {
+      final List<Group> groups = [
+        createGroup(id: 'g1', name: 'group 1'),
+        createGroup(id: 'g2', name: 'group 2'),
+      ];
 
-  test('name for answers, group selected', () {
-    final GroupSelectionState updatedState = state.copyWith(
-      selectedGroup: groups[0],
-    );
+      final state2 = state.copyWith(groupsFromCourse: groups);
+      final state3 = state2.copyWith();
 
-    expect(updatedState.nameForAnswers, groups[0].nameForAnswers);
-  });
+      expect(
+        state2.groupsFromCourseToSelect,
+        {
+          'g1': 'group 1',
+          'g2': 'group 2',
+        },
+      );
+      expect(
+        state3.groupsFromCourseToSelect,
+        {
+          'g1': 'group 1',
+          'g2': 'group 2',
+        },
+      );
+    },
+  );
 
-  test('amount of all flashcards', () {
-    final GroupSelectionState updatedState = state.copyWith(
-      selectedGroup: groups[0],
-    );
+  test(
+    'copy with selected course',
+    () {
+      final Course expectedCourse = createCourse(id: 'c1');
 
-    expect(updatedState.amountOfAllFlashcards, 3);
-  });
+      final state2 = state.copyWith(selectedCourse: expectedCourse);
+      final state3 = state2.copyWith();
 
-  test('amount of remembered flashcards', () {
-    final GroupSelectionState updatedState = state.copyWith(
-      selectedGroup: groups[0],
-    );
+      expect(state2.selectedCourse, expectedCourse);
+      expect(state3.selectedCourse, expectedCourse);
+    },
+  );
 
-    expect(updatedState.amountOfRememberedFlashcards, 2);
-  });
+  test(
+    'copy with selected group',
+    () {
+      final Group expectedGroup = createGroup(id: 'c1');
 
-  test('is button disabled, course or group not selected', () {
-    final GroupSelectionState updatedState = state.copyWith(
-      selectedGroup: groups[0],
-    );
+      final state2 = state.copyWith(selectedGroup: expectedGroup);
+      final state3 = state2.copyWith();
 
-    expect(updatedState.isButtonDisabled, true);
-  });
-
-  test('is button disabled, course and group selected', () {
-    final GroupSelectionState updatedState = state.copyWith(
-      selectedCourse: courses[0],
-      selectedGroup: groups[0],
-    );
-
-    expect(updatedState.isButtonDisabled, false);
-  });
+      expect(state2.selectedGroup, expectedGroup);
+      expect(state3.selectedGroup, null);
+    },
+  );
 }

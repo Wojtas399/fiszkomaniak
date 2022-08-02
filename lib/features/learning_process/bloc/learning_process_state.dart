@@ -1,50 +1,66 @@
 part of 'learning_process_bloc.dart';
 
 class LearningProcessState extends Equatable {
-  final LearningProcessStatus status;
+  final BlocStatus status;
   final String? sessionId;
   final String courseName;
   final Group? group;
   final Duration? duration;
   final bool areQuestionsAndAnswersSwapped;
-  final List<int> indexesOfRememberedFlashcards;
-  final List<int> indexesOfNotRememberedFlashcards;
+  final List<Flashcard> rememberedFlashcards;
+  final List<Flashcard> notRememberedFlashcards;
   final int indexOfDisplayedFlashcard;
   final FlashcardsType? flashcardsType;
   final int amountOfFlashcardsInStack;
 
   const LearningProcessState({
-    this.status = const LearningProcessStatusInitial(),
-    this.sessionId,
-    this.courseName = '',
-    this.group,
-    this.duration,
-    this.areQuestionsAndAnswersSwapped = false,
-    this.indexesOfRememberedFlashcards = const [],
-    this.indexesOfNotRememberedFlashcards = const [],
-    this.indexOfDisplayedFlashcard = 0,
-    this.flashcardsType,
-    this.amountOfFlashcardsInStack = 0,
+    required this.status,
+    required this.sessionId,
+    required this.courseName,
+    required this.group,
+    required this.duration,
+    required this.areQuestionsAndAnswersSwapped,
+    required this.rememberedFlashcards,
+    required this.notRememberedFlashcards,
+    required this.indexOfDisplayedFlashcard,
+    required this.flashcardsType,
+    required this.amountOfFlashcardsInStack,
   });
 
-  List<Flashcard> get flashcards => group?.flashcards ?? [];
+  @override
+  List<Object> get props => [
+        status,
+        sessionId ?? '',
+        courseName,
+        group ?? '',
+        duration ?? '',
+        areQuestionsAndAnswersSwapped,
+        rememberedFlashcards,
+        notRememberedFlashcards,
+        indexOfDisplayedFlashcard,
+        flashcardsType ?? '',
+        amountOfFlashcardsInStack,
+      ];
 
-  List<FlashcardInfo> get flashcardsToLearn {
-    final FlashcardsType? type = flashcardsType;
-    if (type == null) {
+  List<StackFlashcard> get stackFlashcards {
+    final FlashcardsType? flashcardsType = this.flashcardsType;
+    if (flashcardsType == null) {
       return [];
     }
     final List<Flashcard> flashcards = (group?.flashcards ?? [])
         .where(
-          (flashcard) => doesFlashcardBelongToFlashcardsType(flashcard, type),
+          (flashcard) => doesFlashcardBelongToFlashcardsType(
+            flashcard,
+            flashcardsType,
+          ),
         )
         .toList();
     return _getBasicInfoOfFlashcards(flashcards);
   }
 
-  int get amountOfAllFlashcards => flashcards.length;
+  int get amountOfAllFlashcards => group?.flashcards.length ?? 0;
 
-  int get amountOfRememberedFlashcards => indexesOfRememberedFlashcards.length;
+  int get amountOfRememberedFlashcards => rememberedFlashcards.length;
 
   String get nameForQuestions {
     final Group? group = this.group;
@@ -66,37 +82,34 @@ class LearningProcessState extends Equatable {
         : group.nameForAnswers;
   }
 
-  bool get areAllFlashcardsRememberedOrNotRemembered {
-    return indexesOfNotRememberedFlashcards.length == amountOfAllFlashcards ||
-        amountOfRememberedFlashcards == amountOfAllFlashcards;
-  }
+  bool get areAllFlashcardsRememberedOrNotRemembered =>
+      _areAllFlashcardsRemembered() || _areAllFlashcardsNotRemembered();
 
   LearningProcessState copyWith({
+    BlocStatus? status,
     String? sessionId,
-    LearningProcessStatus? status,
     String? courseName,
     Group? group,
     Duration? duration,
     bool? areQuestionsAndAnswersSwapped,
-    List<int>? indexesOfRememberedFlashcards,
-    List<int>? indexesOfNotRememberedFlashcards,
+    List<Flashcard>? rememberedFlashcards,
+    List<Flashcard>? notRememberedFlashcards,
     int? indexOfDisplayedFlashcard,
     FlashcardsType? flashcardsType,
     int? amountOfFlashcardsInStack,
     bool removedDuration = false,
   }) {
     return LearningProcessState(
+      status: status ?? const BlocStatusComplete<LearningProcessInfoType>(),
       sessionId: sessionId ?? this.sessionId,
-      status: status ?? this.status,
       courseName: courseName ?? this.courseName,
       group: group ?? this.group,
       duration: removedDuration ? null : duration ?? this.duration,
       areQuestionsAndAnswersSwapped:
           areQuestionsAndAnswersSwapped ?? this.areQuestionsAndAnswersSwapped,
-      indexesOfRememberedFlashcards:
-          indexesOfRememberedFlashcards ?? this.indexesOfRememberedFlashcards,
-      indexesOfNotRememberedFlashcards: indexesOfNotRememberedFlashcards ??
-          this.indexesOfNotRememberedFlashcards,
+      rememberedFlashcards: rememberedFlashcards ?? this.rememberedFlashcards,
+      notRememberedFlashcards:
+          notRememberedFlashcards ?? this.notRememberedFlashcards,
       indexOfDisplayedFlashcard:
           indexOfDisplayedFlashcard ?? this.indexOfDisplayedFlashcard,
       flashcardsType: flashcardsType ?? this.flashcardsType,
@@ -113,16 +126,16 @@ class LearningProcessState extends Equatable {
       case FlashcardsType.all:
         return true;
       case FlashcardsType.remembered:
-        return indexesOfRememberedFlashcards.contains(flashcard.index);
+        return rememberedFlashcards.contains(flashcard);
       case FlashcardsType.notRemembered:
-        return indexesOfNotRememberedFlashcards.contains(flashcard.index);
+        return notRememberedFlashcards.contains(flashcard);
     }
   }
 
-  List<FlashcardInfo> _getBasicInfoOfFlashcards(List<Flashcard> flashcards) {
+  List<StackFlashcard> _getBasicInfoOfFlashcards(List<Flashcard> flashcards) {
     return flashcards
         .map(
-          (flashcard) => FlashcardInfo(
+          (flashcard) => StackFlashcard(
             index: flashcard.index,
             question: areQuestionsAndAnswersSwapped
                 ? flashcard.answer
@@ -135,18 +148,36 @@ class LearningProcessState extends Equatable {
         .toList();
   }
 
-  @override
-  List<Object> get props => [
-        sessionId ?? '',
-        status,
-        courseName,
-        group ?? '',
-        duration ?? '',
-        areQuestionsAndAnswersSwapped,
-        indexesOfRememberedFlashcards,
-        indexesOfNotRememberedFlashcards,
-        indexOfDisplayedFlashcard,
-        flashcardsType ?? '',
-        amountOfFlashcardsInStack,
-      ];
+  bool _areAllFlashcardsNotRemembered() {
+    final List<Flashcard> originalFlashcards = group?.flashcards ?? [];
+    if (notRememberedFlashcards.length != originalFlashcards.length) {
+      return false;
+    }
+    for (final Flashcard flashcard in originalFlashcards) {
+      if (!notRememberedFlashcards.contains(flashcard)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool _areAllFlashcardsRemembered() {
+    final List<Flashcard> originalFlashcards = group?.flashcards ?? [];
+    if (rememberedFlashcards.length != originalFlashcards.length) {
+      return false;
+    }
+    for (final Flashcard flashcard in originalFlashcards) {
+      if (!rememberedFlashcards.contains(flashcard)) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+enum LearningProcessInfoType {
+  initialDataHasBeenLoaded,
+  flashcardsStackHasBeenReset,
+  sessionHasBeenFinished,
+  sessionHasBeenAborted,
 }

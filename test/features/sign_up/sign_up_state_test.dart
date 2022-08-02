@@ -1,132 +1,199 @@
-import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_state.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_bloc.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
+import 'package:fiszkomaniak/validators/email_validator.dart';
+import 'package:fiszkomaniak/validators/password_validator.dart';
+import 'package:fiszkomaniak/validators/username_validator.dart';
+
+class MockUsernameValidator extends Mock implements UsernameValidator {}
+
+class MockEmailValidator extends Mock implements EmailValidator {}
+
+class MockPasswordValidator extends Mock implements PasswordValidator {}
 
 void main() {
+  final usernameValidator = MockUsernameValidator();
+  final emailValidator = MockEmailValidator();
+  final passwordValidator = MockPasswordValidator();
   late SignUpState state;
 
-  setUp(() {
-    state = const SignUpState();
-  });
+  setUp(
+    () => state = SignUpState(
+      usernameValidator: usernameValidator,
+      emailValidator: emailValidator,
+      passwordValidator: passwordValidator,
+      status: const BlocStatusInitial(),
+      username: '',
+      email: '',
+      password: '',
+      passwordConfirmation: '',
+    ),
+  );
 
-  test('initial state', () {
-    expect(state.username, '');
-    expect(state.email, '');
-    expect(state.password, '');
-    expect(state.passwordConfirmation, '');
-  });
+  test(
+    'is password confirmation valid, should be false if passwords are not the same',
+    () {
+      state = state.copyWith(
+        password: 'password123',
+        passwordConfirmation: 'password',
+      );
 
-  test('copy with username', () {
-    const String username = 'username';
+      expect(state.isPasswordConfirmationValid, false);
+    },
+  );
 
-    final SignUpState state2 = state.copyWith(username: username);
-    final SignUpState state3 = state2.copyWith();
+  test(
+    'is password confirmation valid, should be true if passwords are the same',
+    () {
+      state = state.copyWith(
+        password: 'password123',
+        passwordConfirmation: 'password123',
+      );
 
-    expect(state2.username, username);
-    expect(state3.username, username);
-  });
+      expect(state.isPasswordConfirmationValid, true);
+    },
+  );
 
-  test('copy with email', () {
-    const String email = 'email';
+  group(
+    'is button disabled',
+    () {
+      setUp(() {
+        state = state.copyWith(
+          username: 'username',
+          email: 'email',
+          password: 'password',
+          passwordConfirmation: 'password',
+        );
 
-    final SignUpState state2 = state.copyWith(email: email);
-    final SignUpState state3 = state2.copyWith();
+        when(
+          () => usernameValidator.isValid('username'),
+        ).thenReturn(true);
+        when(
+          () => emailValidator.isValid('email'),
+        ).thenReturn(true);
+        when(
+          () => passwordValidator.isValid('password'),
+        ).thenReturn(true);
+      });
 
-    expect(state2.email, email);
-    expect(state3.email, email);
-  });
+      test(
+        'is button disabled, should be false if all required values are valid',
+        () {
+          expect(state.isButtonDisabled, false);
+        },
+      );
 
-  test('copy with password', () {
-    const String password = 'password';
+      test(
+        'is button disabled, should be true if username is not valid',
+        () {
+          when(
+            () => usernameValidator.isValid('username'),
+          ).thenReturn(false);
 
-    final SignUpState state2 = state.copyWith(password: password);
-    final SignUpState state3 = state2.copyWith();
+          expect(state.isButtonDisabled, true);
+        },
+      );
 
-    expect(state2.password, password);
-    expect(state3.password, password);
-  });
+      test(
+        'is button disabled, should be true if email is not valid',
+        () {
+          when(
+            () => emailValidator.isValid('email'),
+          ).thenReturn(false);
 
-  test('copy with password confirmation', () {
-    const String passwordConfirmation = 'password confirmation';
+          expect(state.isButtonDisabled, true);
+        },
+      );
 
-    final SignUpState state2 = state.copyWith(
-      passwordConfirmation: passwordConfirmation,
-    );
-    final SignUpState state3 = state2.copyWith();
+      test(
+        'is button disabled, should be true if password is not valid',
+        () {
+          when(
+            () => passwordValidator.isValid('password'),
+          ).thenReturn(false);
 
-    expect(state2.passwordConfirmation, passwordConfirmation);
-    expect(state3.passwordConfirmation, passwordConfirmation);
-  });
+          expect(state.isButtonDisabled, true);
+        },
+      );
 
-  test('is correct password confirmation, passwords are not the same', () {
-    state = state.copyWith(
-      password: 'password',
-      passwordConfirmation: 'pass',
-    );
+      test(
+        'is button disabled, should be true if passwords are not the same',
+        () {
+          state = state.copyWith(
+            passwordConfirmation: 'password123',
+          );
 
-    expect(state.isCorrectPasswordConfirmation, false);
-  });
+          expect(state.isButtonDisabled, true);
+        },
+      );
+    },
+  );
 
-  test('is correct password confirmation, passwords are the same', () {
-    state = state.copyWith(
-      password: 'password',
-      passwordConfirmation: 'password',
-    );
+  test(
+    'copy with status',
+    () {
+      const BlocStatus expectedStatus = BlocStatusLoading();
 
-    expect(state.isCorrectPasswordConfirmation, true);
-  });
+      state = state.copyWith(status: expectedStatus);
+      final state2 = state.copyWith();
 
-  test('is button disabled, incorrect username', () {
-    state = state.copyWith(
-      username: 'use',
-      email: 'email@example.com',
-      password: 'password',
-      passwordConfirmation: 'password',
-    );
+      expect(state.status, expectedStatus);
+      expect(state2.status, const BlocStatusInProgress());
+    },
+  );
 
-    expect(state.isDisabledButton, true);
-  });
+  test(
+    'copy with username',
+    () {
+      const String expectedUsername = 'username';
 
-  test('is button disabled, incorrect email', () {
-    state = state.copyWith(
-      username: 'username',
-      email: 'email@example',
-      password: 'password',
-      passwordConfirmation: 'password',
-    );
+      state = state.copyWith(username: expectedUsername);
+      final state2 = state.copyWith();
 
-    expect(state.isDisabledButton, true);
-  });
+      expect(state.username, expectedUsername);
+      expect(state2.username, expectedUsername);
+    },
+  );
 
-  test('is button disabled, incorrect password', () {
-    state = state.copyWith(
-      username: 'username',
-      email: 'email@example.com',
-      password: 'passw',
-      passwordConfirmation: 'password',
-    );
+  test(
+    'copy with email',
+    () {
+      const String expectedEmail = 'email';
 
-    expect(state.isDisabledButton, true);
-  });
+      state = state.copyWith(email: expectedEmail);
+      final state2 = state.copyWith();
 
-  test('is button disabled, incorrect password confirmation', () {
-    state = state.copyWith(
-      username: 'username',
-      email: 'email@example.com',
-      password: 'password',
-      passwordConfirmation: 'password123',
-    );
+      expect(state.email, expectedEmail);
+      expect(state2.email, expectedEmail);
+    },
+  );
 
-    expect(state.isDisabledButton, true);
-  });
+  test(
+    'copy with password',
+    () {
+      const String expectedPassword = 'password';
 
-  test('is button disabled, all values are correct', () {
-    state = state.copyWith(
-      username: 'username',
-      email: 'email@example.com',
-      password: 'password',
-      passwordConfirmation: 'password',
-    );
+      state = state.copyWith(password: expectedPassword);
+      final state2 = state.copyWith();
 
-    expect(state.isDisabledButton, false);
-  });
+      expect(state.password, expectedPassword);
+      expect(state2.password, expectedPassword);
+    },
+  );
+
+  test(
+    'copy with password confirmation',
+    () {
+      const String expectedPasswordConfirmation = 'password';
+
+      state = state.copyWith(
+        passwordConfirmation: expectedPasswordConfirmation,
+      );
+      final state2 = state.copyWith();
+
+      expect(state.passwordConfirmation, expectedPasswordConfirmation);
+      expect(state2.passwordConfirmation, expectedPasswordConfirmation);
+    },
+  );
 }

@@ -1,180 +1,240 @@
-import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_dialogs.dart';
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_event.dart';
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bloc_test/bloc_test.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/add_new_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/check_course_name_usage_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/update_course_name_use_case.dart';
+import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 
-class MockCoursesBloc extends Mock implements CoursesBloc {}
+class MockAddNewCourseUseCase extends Mock implements AddNewCourseUseCase {}
 
-class MockCourseCreatorDialogs extends Mock implements CourseCreatorDialogs {}
+class MockCheckCourseNameUsageUseCase extends Mock
+    implements CheckCourseNameUsageUseCase {}
+
+class MockUpdateCourseNameUseCase extends Mock
+    implements UpdateCourseNameUseCase {}
 
 void main() {
-  final CoursesBloc coursesBloc = MockCoursesBloc();
-  final CourseCreatorDialogs courseCreatorDialogs = MockCourseCreatorDialogs();
-  late CourseCreatorBloc courseCreatorBloc;
-  final CoursesState coursesState = CoursesState(allCourses: [
-    createCourse(id: 'c1', name: 'course 1'),
-    createCourse(id: 'c2', name: 'course 2'),
-  ]);
+  final addNewCourseUseCase = MockAddNewCourseUseCase();
+  final checkCourseNameUsageUseCase = MockCheckCourseNameUsageUseCase();
+  final updateCourseNameUseCase = MockUpdateCourseNameUseCase();
 
-  setUp(() {
-    courseCreatorBloc = CourseCreatorBloc(
-      coursesBloc: coursesBloc,
-      courseCreatorDialogs: courseCreatorDialogs,
+  CourseCreatorBloc createBloc({
+    CourseCreatorMode mode = const CourseCreatorCreateMode(),
+    String courseName = '',
+  }) {
+    return CourseCreatorBloc(
+      addNewCourseUseCase: addNewCourseUseCase,
+      checkCourseNameUsageUseCase: checkCourseNameUsageUseCase,
+      updateCourseNameUseCase: updateCourseNameUseCase,
+      mode: mode,
+      courseName: courseName,
     );
-    when(() => coursesBloc.state).thenReturn(coursesState);
-  });
+  }
+
+  CourseCreatorState createState({
+    BlocStatus status = const BlocStatusInProgress(),
+    CourseCreatorMode mode = const CourseCreatorCreateMode(),
+    String courseName = '',
+  }) {
+    return CourseCreatorState(
+      status: status,
+      mode: mode,
+      courseName: courseName,
+    );
+  }
 
   tearDown(() {
-    reset(coursesBloc);
-    reset(courseCreatorDialogs);
+    reset(addNewCourseUseCase);
+    reset(checkCourseNameUsageUseCase);
+    reset(updateCourseNameUseCase);
   });
 
   blocTest(
-    'initialize, create mode',
-    build: () => courseCreatorBloc,
-    setUp: () {
-      when(() => coursesBloc.stream).thenAnswer(
-        (_) => Stream.value(CoursesState()),
+    'initialize, create mode, should update mode',
+    build: () => createBloc(),
+    act: (CourseCreatorBloc bloc) {
+      bloc.add(
+        CourseCreatorEventInitialize(
+          mode: const CourseCreatorCreateMode(),
+        ),
       );
     },
-    act: (_) => courseCreatorBloc.add(
-      CourseCreatorEventInitialize(mode: const CourseCreatorCreateMode()),
-    ),
     expect: () => [
-      const CourseCreatorState(mode: CourseCreatorCreateMode()),
+      createState(
+        mode: const CourseCreatorCreateMode(),
+      ),
     ],
   );
 
-  blocTest(
+  group(
     'initialize, edit mode',
-    build: () => courseCreatorBloc,
-    setUp: () {
-      when(() => coursesBloc.stream).thenAnswer(
-        (_) => Stream.value(CoursesState()),
+    () {
+      final Course course = createCourse(
+        id: 'c1',
+        name: 'course name',
+      );
+      blocTest(
+        'initialize, edit mode, should update mode and course name',
+        build: () => createBloc(),
+        act: (CourseCreatorBloc bloc) {
+          bloc.add(
+            CourseCreatorEventInitialize(
+              mode: CourseCreatorEditMode(course: course),
+            ),
+          );
+        },
+        expect: () => [
+          createState(
+            mode: CourseCreatorEditMode(course: course),
+            courseName: course.name,
+          ),
+        ],
       );
     },
-    act: (_) => courseCreatorBloc.add(
-      CourseCreatorEventInitialize(
-        mode: CourseCreatorEditMode(course: createCourse(name: 'c123')),
-      ),
-    ),
-    expect: () => [
-      CourseCreatorState(
-        mode: CourseCreatorEditMode(course: createCourse(name: 'c123')),
-        courseName: 'c123',
-      ),
-    ],
   );
 
   blocTest(
-    'course name changed',
-    build: () => courseCreatorBloc,
-    act: (_) {
-      courseCreatorBloc.add(CourseCreatorEventCourseNameChanged(
-        courseName: 'course',
-      ));
-      courseCreatorBloc.add(CourseCreatorEventCourseNameChanged(
-        courseName: 'course name',
-      ));
+    'course name changed, should update course name',
+    build: () => createBloc(),
+    act: (CourseCreatorBloc bloc) {
+      bloc.add(
+        CourseCreatorEventCourseNameChanged(courseName: 'new course name'),
+      );
     },
     expect: () => [
-      const CourseCreatorState(courseName: 'course'),
-      const CourseCreatorState(courseName: 'course name'),
+      createState(
+        courseName: 'new course name',
+      ),
     ],
   );
 
   blocTest(
-    'save changes, course name is already taken',
-    build: () => courseCreatorBloc,
+    'save changes, should emit appropriate status if course name is already taken',
+    build: () => createBloc(courseName: 'courseName'),
     setUp: () {
       when(
-        () => courseCreatorDialogs.displayInfoAboutAlreadyTakenCourseName(),
+        () => checkCourseNameUsageUseCase.execute(courseName: 'courseName'),
+      ).thenAnswer((_) async => true);
+    },
+    act: (CourseCreatorBloc bloc) {
+      bloc.add(CourseCreatorEventSaveChanges());
+    },
+    expect: () => [
+      createState(
+        status: const BlocStatusLoading(),
+        courseName: 'courseName',
+      ),
+      createState(
+        status: const BlocStatusComplete(
+          info: CourseCreatorInfoType.courseNameIsAlreadyTaken,
+        ),
+        courseName: 'courseName',
+      ),
+    ],
+    verify: (_) {
+      verify(
+        () => checkCourseNameUsageUseCase.execute(courseName: 'courseName'),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'save changes, create mode, should call use case responsible for adding new course',
+    build: () => createBloc(courseName: 'courseName'),
+    setUp: () {
+      when(
+        () => checkCourseNameUsageUseCase.execute(courseName: 'courseName'),
+      ).thenAnswer((_) async => false);
+      when(
+        () => addNewCourseUseCase.execute(courseName: 'courseName'),
       ).thenAnswer((_) async => '');
     },
-    act: (_) {
-      courseCreatorBloc.add(
-        CourseCreatorEventCourseNameChanged(courseName: 'course 1'),
-      );
-      courseCreatorBloc.add(CourseCreatorEventSaveChanges());
+    act: (CourseCreatorBloc bloc) {
+      bloc.add(CourseCreatorEventSaveChanges());
     },
     expect: () => [
-      const CourseCreatorState(courseName: 'course 1'),
+      createState(
+        status: const BlocStatusLoading(),
+        courseName: 'courseName',
+      ),
+      createState(
+        status: const BlocStatusComplete(
+          info: CourseCreatorInfoType.courseHasBeenAdded,
+        ),
+        courseName: 'courseName',
+      ),
     ],
     verify: (_) {
       verify(
-        () => courseCreatorDialogs.displayInfoAboutAlreadyTakenCourseName(),
+        () => checkCourseNameUsageUseCase.execute(courseName: 'courseName'),
       ).called(1);
-      verifyNever(
-        () => coursesBloc.add(CoursesEventAddNewCourse(name: 'course 1')),
-      );
-    },
-  );
-
-  blocTest(
-    'save changes, create mode',
-    build: () => courseCreatorBloc,
-    act: (_) {
-      courseCreatorBloc.add(CourseCreatorEventCourseNameChanged(
-        courseName: 'course name',
-      ));
-      courseCreatorBloc.add(CourseCreatorEventSaveChanges());
-    },
-    expect: () => [
-      const CourseCreatorState(courseName: 'course name'),
-    ],
-    verify: (_) {
       verify(
-        () => coursesBloc.add(CoursesEventAddNewCourse(name: 'course name')),
+        () => addNewCourseUseCase.execute(courseName: 'courseName'),
       ).called(1);
     },
   );
 
-  blocTest(
+  group(
     'save changes, edit mode',
-    build: () => courseCreatorBloc,
-    setUp: () {
-      when(() => coursesBloc.stream).thenAnswer(
-        (_) => Stream.value(CoursesState()),
+    () {
+      final Course course = createCourse(id: 'c1', name: 'courseName');
+      const String newCourseName = 'new course name';
+      final CourseCreatorMode mode = CourseCreatorEditMode(course: course);
+
+      blocTest(
+        'should call use case responsible for updating course',
+        build: () => createBloc(
+          mode: mode,
+          courseName: newCourseName,
+        ),
+        setUp: () {
+          when(
+            () => checkCourseNameUsageUseCase.execute(
+              courseName: newCourseName,
+            ),
+          ).thenAnswer((_) async => false);
+          when(
+            () => updateCourseNameUseCase.execute(
+              courseId: course.id,
+              newCourseName: newCourseName,
+            ),
+          ).thenAnswer((_) async => '');
+        },
+        act: (CourseCreatorBloc bloc) {
+          bloc.add(CourseCreatorEventSaveChanges());
+        },
+        expect: () => [
+          createState(
+            status: const BlocStatusLoading(),
+            mode: mode,
+            courseName: newCourseName,
+          ),
+          createState(
+            status: const BlocStatusComplete(
+              info: CourseCreatorInfoType.courseHasBeenUpdated,
+            ),
+            mode: mode,
+            courseName: newCourseName,
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => checkCourseNameUsageUseCase.execute(
+              courseName: newCourseName,
+            ),
+          ).called(1);
+          verify(
+            () => updateCourseNameUseCase.execute(
+              courseId: course.id,
+              newCourseName: newCourseName,
+            ),
+          ).called(1);
+        },
       );
-    },
-    act: (_) {
-      courseCreatorBloc.add(CourseCreatorEventInitialize(
-        mode: CourseCreatorEditMode(
-          course: createCourse(id: 'c1', name: 'c123'),
-        ),
-      ));
-      courseCreatorBloc.add(CourseCreatorEventCourseNameChanged(
-        courseName: 'course name',
-      ));
-      courseCreatorBloc.add(CourseCreatorEventSaveChanges());
-    },
-    expect: () => [
-      CourseCreatorState(
-        mode: CourseCreatorEditMode(
-          course: createCourse(id: 'c1', name: 'c123'),
-        ),
-        courseName: 'c123',
-      ),
-      CourseCreatorState(
-        mode: CourseCreatorEditMode(
-          course: createCourse(id: 'c1', name: 'c123'),
-        ),
-        courseName: 'course name',
-      ),
-    ],
-    verify: (_) {
-      verify(
-        () => coursesBloc.add(CoursesEventUpdateCourseName(
-          courseId: 'c1',
-          newCourseName: 'course name',
-        )),
-      ).called(1);
     },
   );
 }

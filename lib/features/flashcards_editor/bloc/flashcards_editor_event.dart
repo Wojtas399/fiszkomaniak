@@ -1,26 +1,24 @@
-import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
-
 abstract class FlashcardsEditorEvent {}
 
 class FlashcardsEditorEventInitialize extends FlashcardsEditorEvent {
-  final FlashcardsEditorMode mode;
+  final String groupId;
 
-  FlashcardsEditorEventInitialize({required this.mode});
+  FlashcardsEditorEventInitialize({required this.groupId});
 }
 
 class FlashcardsEditorEventRemoveFlashcard extends FlashcardsEditorEvent {
-  final int indexOfFlashcard;
+  final int flashcardIndex;
 
-  FlashcardsEditorEventRemoveFlashcard({required this.indexOfFlashcard});
+  FlashcardsEditorEventRemoveFlashcard({required this.flashcardIndex});
 }
 
 class FlashcardsEditorEventValueChanged extends FlashcardsEditorEvent {
-  final int indexOfFlashcard;
+  final int flashcardIndex;
   final String? question;
   final String? answer;
 
   FlashcardsEditorEventValueChanged({
-    required this.indexOfFlashcard,
+    required this.flashcardIndex,
     this.question,
     this.answer,
   });

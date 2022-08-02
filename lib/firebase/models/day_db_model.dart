@@ -1,44 +1,53 @@
 import 'package:equatable/equatable.dart';
-import 'day_flashcard_db_model.dart';
 
 class DayDbModel extends Equatable {
   final String date;
-  final List<DayFlashcardDbModel> rememberedFlashcards;
+  final List<String> rememberedFlashcardsIds;
 
   const DayDbModel({
     required this.date,
-    required this.rememberedFlashcards,
+    required this.rememberedFlashcardsIds,
   });
 
   DayDbModel.fromJson(Map<String, Object?> json)
       : this(
           date: json['date']! as String,
-          rememberedFlashcards: (json['rememberedFlashcards']! as List)
-              .map((flashcard) => DayFlashcardDbModel.fromJson(flashcard))
+          rememberedFlashcardsIds: (json['rememberedFlashcardsIds']! as List)
+              .map((flashcardId) => flashcardId.toString())
               .toList(),
         );
 
   Map<String, Object> toJson() {
     return {
       'date': date,
-      'rememberedFlashcards':
-          rememberedFlashcards.map((flashcard) => flashcard.toJson()).toList(),
+      'rememberedFlashcardsIds': rememberedFlashcardsIds,
     };
   }
 
   DayDbModel copyWith({
     String? date,
-    List<DayFlashcardDbModel>? rememberedFlashcards,
+    List<String>? rememberedFlashcardsIds,
   }) {
     return DayDbModel(
       date: date ?? this.date,
-      rememberedFlashcards: rememberedFlashcards ?? this.rememberedFlashcards,
+      rememberedFlashcardsIds:
+          rememberedFlashcardsIds ?? this.rememberedFlashcardsIds,
     );
   }
 
   @override
   List<Object> get props => [
         date,
-        rememberedFlashcards,
+        rememberedFlashcardsIds,
       ];
+}
+
+DayDbModel createDayDbModel({
+  String date = '',
+  List<String> rememberedFlashcardsIds = const [],
+}) {
+  return DayDbModel(
+    date: date,
+    rememberedFlashcardsIds: rememberedFlashcardsIds,
+  );
 }

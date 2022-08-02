@@ -1,19 +1,35 @@
-abstract class GroupPreviewEvent {}
+part of 'group_preview_bloc.dart';
+
+abstract class GroupPreviewEvent extends Equatable {
+  @override
+  List<Object> get props => [];
+}
 
 class GroupPreviewEventInitialize extends GroupPreviewEvent {
   final String groupId;
 
   GroupPreviewEventInitialize({required this.groupId});
+
+  @override
+  List<Object> get props => [groupId];
 }
 
-class GroupPreviewEventEdit extends GroupPreviewEvent {}
+class GroupPreviewEventGroupUpdated extends GroupPreviewEvent {
+  final Group group;
 
-class GroupPreviewEventRemove extends GroupPreviewEvent {}
+  GroupPreviewEventGroupUpdated({required this.group});
 
-class GroupPreviewEventEditFlashcards extends GroupPreviewEvent {}
+  @override
+  List<Object> get props => [group];
+}
 
-class GroupPreviewEventReviewFlashcards extends GroupPreviewEvent {}
+class GroupPreviewEventCourseChanged extends GroupPreviewEvent {
+  final String courseId;
 
-class GroupPreviewEventCreateQuickSession extends GroupPreviewEvent {}
+  GroupPreviewEventCourseChanged({required this.courseId});
 
-class GroupPreviewEventGroupsStateUpdated extends GroupPreviewEvent {}
+  @override
+  List<Object> get props => [courseId];
+}
+
+class GroupPreviewEventRemoveGroup extends GroupPreviewEvent {}

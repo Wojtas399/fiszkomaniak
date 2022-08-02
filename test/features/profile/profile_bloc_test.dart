@@ -1,440 +1,568 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/auth/auth_bloc.dart';
-import 'package:fiszkomaniak/core/user/user_bloc.dart';
-import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
-import 'package:fiszkomaniak/features/profile/components/password_editor/bloc/password_editor_bloc.dart';
-import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
-import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:fiszkomaniak/models/day_model.dart';
-import 'package:fiszkomaniak/models/user_model.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:fiszkomaniak/domain/use_cases/achievements/get_all_flashcards_amount_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/achievements/load_all_flashcards_amount_use_case.dart';
+import 'package:fiszkomaniak/domain/entities/user.dart';
+import 'package:fiszkomaniak/domain/use_cases/auth/delete_logged_user_account_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/auth/sign_out_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/auth/update_password_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/user/get_user_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/user/get_days_streak_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/user/delete_avatar_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/user/update_avatar_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/user/update_user_username_use_case.dart';
+import 'package:fiszkomaniak/exceptions/auth_exceptions.dart';
+import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
+import 'package:fiszkomaniak/features/profile/profile_dialogs.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 
-class MockUserBloc extends Mock implements UserBloc {}
+class MockLoadAllFlashcardsAmountUseCase extends Mock
+    implements LoadAllFlashcardsAmountUseCase {}
 
-class MockUserEvent extends Mock implements UserEvent {}
+class MockGetUserUseCase extends Mock implements GetUserUseCase {}
 
-class MockAuthBloc extends Mock implements AuthBloc {}
+class MockGetAllFlashcardsAmountUseCase extends Mock
+    implements GetAllFlashcardsAmountUseCase {}
 
-class MockAuthEvent extends Mock implements AuthEvent {}
+class MockGetDaysStreakUseCase extends Mock implements GetDaysStreakUseCase {}
 
-class MockAchievementsBloc extends Mock implements AchievementsBloc {}
+class MockUpdateUserUsernameUseCase extends Mock
+    implements UpdateUserUsernameUseCase {}
+
+class MockUpdatePasswordUseCase extends Mock implements UpdatePasswordUseCase {}
+
+class MockUpdateAvatarUseCase extends Mock implements UpdateAvatarUseCase {}
+
+class MockSignOutUseCase extends Mock implements SignOutUseCase {}
+
+class MockDeleteLoggedUserAccountUseCase extends Mock
+    implements DeleteLoggedUserAccountUseCase {}
+
+class MockDeleteAvatarUseCase extends Mock implements DeleteAvatarUseCase {}
 
 class MockProfileDialogs extends Mock implements ProfileDialogs {}
 
-class MockImagePicker extends Mock implements ImagePicker {}
-
 void main() {
-  final UserBloc userBloc = MockUserBloc();
-  final AuthBloc authBloc = MockAuthBloc();
-  final AchievementsBloc achievementsBloc = MockAchievementsBloc();
-  final ProfileDialogs profileDialogs = MockProfileDialogs();
-  final ImagePicker imagePicker = MockImagePicker();
-  late ProfileBloc bloc;
-  final Date now = Date.now();
-  final User loggedUser = createUser(
-    username: 'username',
-    avatarUrl: 'avatar/url',
-    days: [
-      createDay(date: now),
-      createDay(date: now.subtractDays(1)),
-      createDay(date: now.subtractDays(2)),
-      createDay(date: now.subtractDays(3)),
-    ],
-  );
-  const AchievementsState achievementsState = AchievementsState(
-    daysStreak: 5,
-    allFlashcardsAmount: 200,
-  );
+  final loadAllFlashcardsAmountUseCase = MockLoadAllFlashcardsAmountUseCase();
+  final getUserUseCase = MockGetUserUseCase();
+  final getAllFlashcardsAmountUseCase = MockGetAllFlashcardsAmountUseCase();
+  final getDaysStreakUseCase = MockGetDaysStreakUseCase();
+  final updateUserUsernameUseCase = MockUpdateUserUsernameUseCase();
+  final updatePasswordUseCase = MockUpdatePasswordUseCase();
+  final updateAvatarUseCase = MockUpdateAvatarUseCase();
+  final signOutUseCase = MockSignOutUseCase();
+  final deleteLoggedUserAccountUseCase = MockDeleteLoggedUserAccountUseCase();
+  final deleteAvatarUseCase = MockDeleteAvatarUseCase();
+  final profileDialogs = MockProfileDialogs();
 
-  setUp(() {
-    bloc = ProfileBloc(
-      userBloc: userBloc,
-      authBloc: authBloc,
-      achievementsBloc: achievementsBloc,
+  ProfileBloc createBloc({
+    BlocStatus status = const BlocStatusInitial(),
+    User? user,
+    int daysStreak = 0,
+    int amountOfAllFlashcards = 0,
+  }) {
+    return ProfileBloc(
+      loadAllFlashcardsAmountUseCase: loadAllFlashcardsAmountUseCase,
+      getUserUseCase: getUserUseCase,
+      getAllFlashcardsAmountUseCase: getAllFlashcardsAmountUseCase,
+      getDaysStreakUseCase: getDaysStreakUseCase,
+      updateUserUsernameUseCase: updateUserUsernameUseCase,
+      updatePasswordUseCase: updatePasswordUseCase,
+      updateAvatarUseCase: updateAvatarUseCase,
+      signOutUseCase: signOutUseCase,
+      deleteLoggedUserAccountUseCase: deleteLoggedUserAccountUseCase,
+      deleteAvatarUseCase: deleteAvatarUseCase,
       profileDialogs: profileDialogs,
-      imagePicker: imagePicker,
+      status: status,
+      user: user,
+      daysStreak: daysStreak,
+      amountOfAllFlashcards: amountOfAllFlashcards,
     );
-    when(() => userBloc.state).thenReturn(UserState(
-      loggedUser: loggedUser,
-    ));
-    when(() => achievementsBloc.state).thenReturn(achievementsState);
-    when(() => userBloc.stream).thenAnswer((_) => const Stream.empty());
-    when(() => achievementsBloc.stream).thenAnswer((_) => const Stream.empty());
-    registerFallbackValue(MockUserEvent());
-    registerFallbackValue(MockAuthEvent());
-  });
+  }
+
+  ProfileState createState({
+    BlocStatus status = const BlocStatusComplete(),
+    User? user,
+    int daysStreak = 0,
+    int amountOfAllFlashcards = 0,
+  }) {
+    return ProfileState(
+      status: status,
+      user: user,
+      daysStreak: daysStreak,
+      amountOfAllFlashcards: amountOfAllFlashcards,
+    );
+  }
 
   tearDown(() {
-    reset(userBloc);
-    reset(authBloc);
-    reset(achievementsBloc);
+    reset(loadAllFlashcardsAmountUseCase);
+    reset(getUserUseCase);
+    reset(getAllFlashcardsAmountUseCase);
+    reset(getDaysStreakUseCase);
+    reset(updateUserUsernameUseCase);
+    reset(updatePasswordUseCase);
+    reset(updateAvatarUseCase);
+    reset(signOutUseCase);
+    reset(deleteLoggedUserAccountUseCase);
+    reset(deleteAvatarUseCase);
     reset(profileDialogs);
-    reset(imagePicker);
   });
 
-  blocTest(
+  group(
     'initialize',
-    build: () => bloc,
-    act: (_) => bloc.add(ProfileEventInitialize()),
+    () {
+      final User user = createUser(username: 'username');
+      const int flashcardsAmount = 200;
+      const int daysStreak = 6;
+
+      blocTest(
+        'should set user, all flashcards amount and days streak listener',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => loadAllFlashcardsAmountUseCase.execute(),
+          ).thenAnswer((_) async => '');
+          when(
+            () => getUserUseCase.execute(),
+          ).thenAnswer((_) => Stream.value(user));
+          when(
+            () => getAllFlashcardsAmountUseCase.execute(),
+          ).thenAnswer((_) => Stream.value(flashcardsAmount));
+          when(
+            () => getDaysStreakUseCase.execute(),
+          ).thenAnswer((_) => Stream.value(daysStreak));
+        },
+        act: (ProfileBloc bloc) {
+          bloc.add(ProfileEventInitialize());
+        },
+        expect: () => [
+          createState(
+            user: user,
+            amountOfAllFlashcards: flashcardsAmount,
+            daysStreak: daysStreak,
+          ),
+        ],
+        verify: (_) {
+          verify(() => loadAllFlashcardsAmountUseCase.execute()).called(1);
+          verify(() => getUserUseCase.execute()).called(1);
+          verify(() => getAllFlashcardsAmountUseCase.execute()).called(1);
+          verify(() => getDaysStreakUseCase.execute()).called(1);
+        },
+      );
+    },
+  );
+
+  group(
+    'listened params updated',
+    () {
+      final User user = createUser(username: 'username');
+      const int allFlashcardsAmount = 200;
+      const int daysStreak = 6;
+
+      blocTest(
+        'should update user, all flashcards amount and days streak in state',
+        build: () => createBloc(),
+        act: (ProfileBloc bloc) {
+          bloc.add(
+            ProfileEventListenedParamsUpdated(
+              params: ProfileStateListenedParams(
+                user: user,
+                allFlashcardsAmount: allFlashcardsAmount,
+                daysStreak: daysStreak,
+              ),
+            ),
+          );
+        },
+        expect: () => [
+          createState(
+            user: user,
+            amountOfAllFlashcards: allFlashcardsAmount,
+            daysStreak: daysStreak,
+          ),
+        ],
+      );
+    },
+  );
+
+  group(
+    'change avatar',
+    () {
+      const String imagePath = 'image/path';
+
+      setUp(() {
+        when(
+          () => updateAvatarUseCase.execute(imagePath: imagePath),
+        ).thenAnswer((_) async => '');
+      });
+
+      blocTest(
+        'confirmed, should call use case responsible for updating avatar',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => profileDialogs.askForNewAvatarConfirmation(imagePath),
+          ).thenAnswer((_) async => true);
+        },
+        act: (ProfileBloc bloc) {
+          bloc.add(ProfileEventChangeAvatar(imagePath: imagePath));
+        },
+        expect: () => [
+          createState(status: const BlocStatusLoading()),
+          createState(
+            status: const BlocStatusComplete<ProfileInfoType>(
+              info: ProfileInfoType.avatarHasBeenUpdated,
+            ),
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => profileDialogs.askForNewAvatarConfirmation(imagePath),
+          ).called(1);
+          verify(
+            () => updateAvatarUseCase.execute(imagePath: imagePath),
+          ).called(1);
+        },
+      );
+
+      blocTest(
+        'cancelled, should not call use case responsible for updating avatar',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => profileDialogs.askForNewAvatarConfirmation(imagePath),
+          ).thenAnswer((_) async => false);
+        },
+        act: (ProfileBloc bloc) {
+          bloc.add(ProfileEventChangeAvatar(imagePath: imagePath));
+        },
+        expect: () => [],
+        verify: (_) {
+          verify(
+            () => profileDialogs.askForNewAvatarConfirmation(imagePath),
+          ).called(1);
+          verifyNever(
+            () => updateAvatarUseCase.execute(imagePath: imagePath),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'delete avatar',
+    () {
+      setUp(() {
+        when(() => deleteAvatarUseCase.execute()).thenAnswer((_) async => '');
+      });
+
+      blocTest(
+        'confirmed, should call use case responsible for deleting avatar',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => profileDialogs.askForAvatarDeletionConfirmation(),
+          ).thenAnswer((_) async => true);
+        },
+        act: (ProfileBloc bloc) {
+          bloc.add(ProfileEventDeleteAvatar());
+        },
+        expect: () => [
+          createState(status: const BlocStatusLoading()),
+          createState(
+            status: const BlocStatusComplete<ProfileInfoType>(
+              info: ProfileInfoType.avatarHasBeenDeleted,
+            ),
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => profileDialogs.askForAvatarDeletionConfirmation(),
+          ).called(1);
+          verify(() => deleteAvatarUseCase.execute()).called(1);
+        },
+      );
+
+      blocTest(
+        'cancelled, should not call use case responsible for deleting avatar',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => profileDialogs.askForAvatarDeletionConfirmation(),
+          ).thenAnswer((_) async => false);
+        },
+        act: (ProfileBloc bloc) {
+          bloc.add(ProfileEventDeleteAvatar());
+        },
+        expect: () => [],
+        verify: (_) {
+          verify(
+            () => profileDialogs.askForAvatarDeletionConfirmation(),
+          ).called(1);
+          verifyNever(() => deleteAvatarUseCase.execute());
+        },
+      );
+    },
+  );
+
+  blocTest(
+    'change username, should call use case responsible for updating username',
+    build: () => createBloc(),
+    setUp: () {
+      when(
+        () => updateUserUsernameUseCase.execute(username: 'username'),
+      ).thenAnswer((_) async => '');
+    },
+    act: (ProfileBloc bloc) {
+      bloc.add(
+        ProfileEventChangeUsername(newUsername: 'username'),
+      );
+    },
     expect: () => [
-      ProfileState(
-        loggedUserData: loggedUser,
-        amountOfDaysInARow: 5,
-        amountOfAllFlashcards: 200,
+      createState(status: const BlocStatusLoading()),
+      createState(
+        status: const BlocStatusComplete<ProfileInfoType>(
+          info: ProfileInfoType.usernameHasBeenUpdated,
+        ),
       ),
     ],
-  );
-
-  blocTest(
-    'user state updated',
-    build: () => bloc,
-    act: (_) => bloc.add(ProfileEventUserStateUpdated(newUserData: loggedUser)),
-    expect: () => [ProfileState(loggedUserData: loggedUser)],
-  );
-
-  blocTest(
-    'achievements state updated',
-    build: () => bloc,
-    act: (_) => bloc.add(ProfileEventAchievementsStateUpdated(
-      daysStreak: 6,
-      allFlashcardsAmount: 250,
-    )),
-    expect: () => [
-      const ProfileState(amountOfDaysInARow: 6, amountOfAllFlashcards: 250),
-    ],
-  );
-
-  blocTest(
-    'modify avatar, no avatar set',
-    build: () => ProfileBloc(
-      userBloc: userBloc,
-      authBloc: authBloc,
-      achievementsBloc: achievementsBloc,
-      profileDialogs: profileDialogs,
-      imagePicker: imagePicker,
-    ),
-    setUp: () {
-      when(() => profileDialogs.askForImageSource())
-          .thenAnswer((_) async => ImageSource.gallery);
-      when(() => imagePicker.pickImage(source: ImageSource.gallery))
-          .thenAnswer((_) async => XFile('path/to/file'));
-      when(() => profileDialogs.askForImageConfirmation('path/to/file'))
-          .thenAnswer((_) async => true);
-    },
-    act: (ProfileBloc profileBloc) => profileBloc.add(
-      ProfileEventModifyAvatar(),
-    ),
     verify: (_) {
-      verify(() => profileDialogs.askForImageSource()).called(1);
-      verify(() => imagePicker.pickImage(source: ImageSource.gallery))
-          .called(1);
-      verify(() => profileDialogs.askForImageConfirmation('path/to/file'))
-          .called(1);
       verify(
-        () => userBloc.add(
-          UserEventSaveNewAvatar(imageFullPath: 'path/to/file'),
-        ),
+        () => updateUserUsernameUseCase.execute(username: 'username'),
       ).called(1);
     },
   );
 
-  blocTest(
-    'modify avatar, edit, image source not selected',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForAvatarAction())
-          .thenAnswer((_) async => AvatarActions.edit);
-      when(() => profileDialogs.askForImageSource())
-          .thenAnswer((_) async => null);
-      when(() => imagePicker.pickImage(source: ImageSource.gallery))
-          .thenAnswer((_) async => XFile('path/to/file'));
-      when(() => profileDialogs.askForImageConfirmation('path/to/file'))
-          .thenAnswer((_) async => true);
-    },
-    act: (_) {
-      bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventModifyAvatar());
-    },
-    verify: (_) {
-      verify(() => profileDialogs.askForAvatarAction()).called(1);
-      verify(() => profileDialogs.askForImageSource()).called(1);
-      verifyNever(() => imagePicker.pickImage(source: ImageSource.gallery));
-      verifyNever(() => profileDialogs.askForImageConfirmation('path/to/file'));
-      verifyNever(
-        () => userBloc.add(
-          UserEventSaveNewAvatar(imageFullPath: 'path/to/file'),
-        ),
-      );
-    },
-  );
+  group(
+    'change password',
+    () {
+      const String currentPassword = 'current';
+      const String newPassword = 'new';
 
-  blocTest(
-    'modify avatar, edit, image not selected',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForAvatarAction())
-          .thenAnswer((_) async => AvatarActions.edit);
-      when(() => profileDialogs.askForImageSource())
-          .thenAnswer((_) async => ImageSource.gallery);
-      when(() => imagePicker.pickImage(source: ImageSource.gallery))
-          .thenAnswer((_) async => null);
-      when(() => profileDialogs.askForImageConfirmation('path/to/file'))
-          .thenAnswer((_) async => true);
-    },
-    act: (_) {
-      bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventModifyAvatar());
-    },
-    verify: (_) {
-      verify(() => profileDialogs.askForAvatarAction()).called(1);
-      verify(() => profileDialogs.askForImageSource()).called(1);
-      verify(() => imagePicker.pickImage(source: ImageSource.gallery))
-          .called(1);
-      verifyNever(() => profileDialogs.askForImageConfirmation('path/to/file'));
-      verifyNever(
-        () => userBloc.add(
-          UserEventSaveNewAvatar(imageFullPath: 'path/to/file'),
-        ),
-      );
-    },
-  );
-
-  blocTest(
-    'modify avatar, edit, confirmed',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForAvatarAction())
-          .thenAnswer((_) async => AvatarActions.edit);
-      when(() => profileDialogs.askForImageSource())
-          .thenAnswer((_) async => ImageSource.gallery);
-      when(() => imagePicker.pickImage(source: ImageSource.gallery))
-          .thenAnswer((_) async => XFile('path/to/file'));
-      when(() => profileDialogs.askForImageConfirmation('path/to/file'))
-          .thenAnswer((_) async => true);
-    },
-    act: (_) {
-      bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventModifyAvatar());
-    },
-    verify: (_) {
-      verify(() => profileDialogs.askForAvatarAction()).called(1);
-      verify(() => profileDialogs.askForImageSource()).called(1);
-      verify(() => imagePicker.pickImage(source: ImageSource.gallery))
-          .called(1);
-      verify(() => profileDialogs.askForImageConfirmation('path/to/file'))
-          .called(1);
-      verify(
-        () => userBloc.add(
-          UserEventSaveNewAvatar(imageFullPath: 'path/to/file'),
-        ),
-      ).called(1);
-    },
-  );
-
-  blocTest(
-    'modify avatar, edit, cancelled',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForAvatarAction())
-          .thenAnswer((_) async => AvatarActions.edit);
-      when(() => profileDialogs.askForImageSource())
-          .thenAnswer((_) async => ImageSource.gallery);
-      when(() => imagePicker.pickImage(source: ImageSource.gallery))
-          .thenAnswer((_) async => XFile('path/to/file'));
-      when(() => profileDialogs.askForImageConfirmation('path/to/file'))
-          .thenAnswer((_) async => false);
-    },
-    act: (_) {
-      bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventModifyAvatar());
-    },
-    verify: (_) {
-      verify(() => profileDialogs.askForAvatarAction()).called(1);
-      verify(() => profileDialogs.askForImageSource()).called(1);
-      verify(() => imagePicker.pickImage(source: ImageSource.gallery))
-          .called(1);
-      verify(() => profileDialogs.askForImageConfirmation('path/to/file'))
-          .called(1);
-      verifyNever(
-        () => userBloc.add(
-          UserEventSaveNewAvatar(imageFullPath: 'path/to/file'),
-        ),
-      );
-    },
-  );
-
-  blocTest(
-    'modify avatar, delete, confirmed',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForAvatarAction())
-          .thenAnswer((_) async => AvatarActions.delete);
-      when(() => profileDialogs.askForDeleteAvatarConfirmation())
-          .thenAnswer((_) async => true);
-    },
-    act: (_) {
-      bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventModifyAvatar());
-    },
-    verify: (_) {
-      verify(() => profileDialogs.askForAvatarAction()).called(1);
-      verify(() => profileDialogs.askForDeleteAvatarConfirmation()).called(1);
-      verify(() => userBloc.add(UserEventRemoveAvatar())).called(1);
-    },
-  );
-
-  blocTest(
-    'modify avatar, delete, cancelled',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForAvatarAction())
-          .thenAnswer((_) async => AvatarActions.delete);
-      when(() => profileDialogs.askForDeleteAvatarConfirmation())
-          .thenAnswer((_) async => false);
-    },
-    act: (_) {
-      bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventModifyAvatar());
-    },
-    verify: (_) {
-      verify(() => profileDialogs.askForAvatarAction()).called(1);
-      verify(() => profileDialogs.askForDeleteAvatarConfirmation()).called(1);
-      verifyNever(() => userBloc.add(UserEventRemoveAvatar()));
-    },
-  );
-
-  blocTest(
-    'change username, new username as String',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForNewUsername(loggedUser.username))
-          .thenAnswer((_) async => 'new username');
-    },
-    act: (_) {
-      bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventChangeUsername());
-    },
-    verify: (_) {
-      verify(() => profileDialogs.askForNewUsername(loggedUser.username))
-          .called(1);
-      verify(
-        () => userBloc.add(
-          UserEventChangeUsername(newUsername: 'new username'),
-        ),
-      ).called(1);
-    },
-  );
-
-  blocTest(
-    'change username, new username as null',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForNewUsername(loggedUser.username))
-          .thenAnswer((_) async => null);
-    },
-    act: (_) {
-      bloc.add(ProfileEventInitialize());
-      bloc.add(ProfileEventChangeUsername());
-    },
-    verify: (_) {
-      verify(() => profileDialogs.askForNewUsername(loggedUser.username))
-          .called(1);
-      verifyNever(() => userBloc.add(any()));
-    },
-  );
-
-  blocTest(
-    'change password, password editor returned correct values',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForNewPassword()).thenAnswer(
-        (_) async => const PasswordEditorReturns(
-          currentPassword: 'current password',
-          newPassword: 'new password',
-        ),
-      );
-    },
-    act: (_) => bloc.add(ProfileEventChangePassword()),
-    verify: (_) {
-      verify(
-        () => authBloc.add(
-          AuthEventChangePassword(
-            currentPassword: 'current password',
-            newPassword: 'new password',
+      blocTest(
+        'should call use case responsible for updating password',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => updatePasswordUseCase.execute(
+              currentPassword: currentPassword,
+              newPassword: newPassword,
+            ),
+          ).thenAnswer((_) async => '');
+        },
+        act: (ProfileBloc bloc) {
+          bloc.add(
+            ProfileEventChangePassword(
+              currentPassword: currentPassword,
+              newPassword: newPassword,
+            ),
+          );
+        },
+        expect: () => [
+          createState(status: const BlocStatusLoading()),
+          createState(
+            status: const BlocStatusComplete<ProfileInfoType>(
+              info: ProfileInfoType.passwordHasBeenUpdated,
+            ),
           ),
-        ),
-      ).called(1);
-    },
-  );
+        ],
+        verify: (_) {
+          verify(
+            () => updatePasswordUseCase.execute(
+              currentPassword: currentPassword,
+              newPassword: newPassword,
+            ),
+          ).called(1);
+        },
+      );
 
-  blocTest(
-    'change password, password editor returned null',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForNewPassword()).thenAnswer(
-        (_) async => null,
+      blocTest(
+        'should emit appropriate info type if use case throws wrong password exception',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => updatePasswordUseCase.execute(
+              currentPassword: currentPassword,
+              newPassword: newPassword,
+            ),
+          ).thenThrow(AuthException.wrongPassword);
+        },
+        act: (ProfileBloc bloc) {
+          bloc.add(
+            ProfileEventChangePassword(
+              currentPassword: currentPassword,
+              newPassword: newPassword,
+            ),
+          );
+        },
+        expect: () => [
+          createState(status: const BlocStatusLoading()),
+          createState(
+            status: const BlocStatusError<ProfileErrorType>(
+              errorType: ProfileErrorType.wrongPassword,
+            ),
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => updatePasswordUseCase.execute(
+              currentPassword: currentPassword,
+              newPassword: newPassword,
+            ),
+          ).called(1);
+        },
       );
     },
-    act: (_) => bloc.add(ProfileEventChangePassword()),
-    verify: (_) {
-      verifyNever(() => authBloc.add(any()));
+  );
+
+  group(
+    'sign out',
+    () {
+      setUp(
+        () {
+          when(() => signOutUseCase.execute()).thenAnswer((_) async => '');
+        },
+      );
+
+      blocTest(
+        'confirmed, should call use case responsible for signing out',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => profileDialogs.askForSignOutConfirmation(),
+          ).thenAnswer((_) async => true);
+        },
+        act: (ProfileBloc bloc) {
+          bloc.add(ProfileEventSignOut());
+        },
+        expect: () => [
+          createState(status: const BlocStatusLoading()),
+          createState(
+            status: const BlocStatusComplete<ProfileInfoType>(
+              info: ProfileInfoType.userHasBeenSignedOut,
+            ),
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => profileDialogs.askForSignOutConfirmation(),
+          ).called(1);
+          verify(() => signOutUseCase.execute()).called(1);
+        },
+      );
+
+      blocTest(
+        'cancelled, should not call use case responsible for signing out',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => profileDialogs.askForSignOutConfirmation(),
+          ).thenAnswer((_) async => false);
+        },
+        act: (ProfileBloc bloc) {
+          bloc.add(ProfileEventSignOut());
+        },
+        expect: () => [],
+        verify: (_) {
+          verify(
+            () => profileDialogs.askForSignOutConfirmation(),
+          ).called(1);
+          verifyNever(() => signOutUseCase.execute());
+        },
+      );
     },
   );
 
   blocTest(
-    'sign out, confirmed',
-    build: () => bloc,
+    'delete account, should call use case responsible for deleting logged user account',
+    build: () => createBloc(),
     setUp: () {
-      when(() => profileDialogs.askForSignOutConfirmation())
-          .thenAnswer((_) async => true);
+      when(
+        () => profileDialogs.askForAccountDeletionConfirmationPassword(),
+      ).thenAnswer((_) async => 'password');
+      when(
+        () => deleteLoggedUserAccountUseCase.execute(password: 'password'),
+      ).thenAnswer((_) async => '');
     },
-    act: (_) => bloc.add(ProfileEventSignOut()),
-    verify: (_) {
-      verify(() => authBloc.add(AuthEventSignOut())).called(1);
+    act: (ProfileBloc bloc) {
+      bloc.add(ProfileEventDeleteAccount());
     },
-  );
-
-  blocTest(
-    'sign out, cancelled',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForSignOutConfirmation())
-          .thenAnswer((_) async => false);
-    },
-    act: (_) => bloc.add(ProfileEventSignOut()),
-    verify: (_) {
-      verifyNever(() => authBloc.add(any()));
-    },
-  );
-
-  blocTest(
-    'remove account, password as string',
-    build: () => bloc,
-    setUp: () {
-      when(() => profileDialogs.askForRemoveAccountConfirmationPassword())
-          .thenAnswer((_) async => 'password');
-    },
-    act: (_) => bloc.add(ProfileEventRemoveAccount()),
+    expect: () => [
+      createState(status: const BlocStatusLoading()),
+      createState(
+        status: const BlocStatusComplete<ProfileInfoType>(
+          info: ProfileInfoType.userAccountHasBeenDeleted,
+        ),
+      ),
+    ],
     verify: (_) {
       verify(
-        () => authBloc.add(AuthEventRemoveLoggedUser(password: 'password')),
+        () => profileDialogs.askForAccountDeletionConfirmationPassword(),
+      ).called(1);
+      verify(
+        () => deleteLoggedUserAccountUseCase.execute(password: 'password'),
       ).called(1);
     },
   );
 
   blocTest(
-    'remove account, password as null',
-    build: () => bloc,
+    'delete account, should emit appropriate info if use case throws wrong password exception',
+    build: () => createBloc(),
     setUp: () {
-      when(() => profileDialogs.askForRemoveAccountConfirmationPassword())
-          .thenAnswer((_) async => null);
+      when(
+        () => profileDialogs.askForAccountDeletionConfirmationPassword(),
+      ).thenAnswer((_) async => 'password');
+      when(
+        () => deleteLoggedUserAccountUseCase.execute(password: 'password'),
+      ).thenThrow(AuthException.wrongPassword);
     },
-    act: (_) => bloc.add(ProfileEventRemoveAccount()),
+    act: (ProfileBloc bloc) {
+      bloc.add(ProfileEventDeleteAccount());
+    },
+    expect: () => [
+      createState(status: const BlocStatusLoading()),
+      createState(
+        status: const BlocStatusError<ProfileErrorType>(
+          errorType: ProfileErrorType.wrongPassword,
+        ),
+      ),
+    ],
     verify: (_) {
-      verifyNever(() => authBloc.add(any()));
+      verify(
+        () => profileDialogs.askForAccountDeletionConfirmationPassword(),
+      ).called(1);
+      verify(
+        () => deleteLoggedUserAccountUseCase.execute(password: 'password'),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'delete account, should not call use case responsible for deleting logged user account if user does not give password',
+    build: () => createBloc(),
+    setUp: () {
+      when(
+        () => profileDialogs.askForAccountDeletionConfirmationPassword(),
+      ).thenAnswer((_) async => null);
+      when(
+        () => deleteLoggedUserAccountUseCase.execute(
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => '');
+    },
+    act: (ProfileBloc bloc) {
+      bloc.add(ProfileEventDeleteAccount());
+    },
+    expect: () => [],
+    verify: (_) {
+      verify(
+        () => profileDialogs.askForAccountDeletionConfirmationPassword(),
+      ).called(1);
+      verifyNever(
+        () => deleteLoggedUserAccountUseCase.execute(
+          password: any(named: 'password'),
+        ),
+      );
     },
   );
 }

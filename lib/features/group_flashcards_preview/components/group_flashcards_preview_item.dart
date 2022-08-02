@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:flutter/material.dart';
 
 class GroupFlashcardsPreviewItem extends StatelessWidget {
@@ -6,10 +6,10 @@ class GroupFlashcardsPreviewItem extends StatelessWidget {
   final VoidCallback? onTap;
 
   const GroupFlashcardsPreviewItem({
-    Key? key,
+    super.key,
     required this.flashcard,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class GroupFlashcardsPreviewItem extends StatelessWidget {
 class _StatusColor extends StatelessWidget {
   final FlashcardStatus status;
 
-  const _StatusColor({Key? key, required this.status}) : super(key: key);
+  const _StatusColor({required this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +61,9 @@ class _QuestionAndAnswer extends StatelessWidget {
   final String answer;
 
   const _QuestionAndAnswer({
-    Key? key,
     required this.question,
     required this.answer,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +86,7 @@ class _QuestionAndAnswer extends StatelessWidget {
 class _Text extends StatelessWidget {
   final String text;
 
-  const _Text({Key? key, required this.text}) : super(key: key);
+  const _Text({required this.text});
 
   @override
   Widget build(BuildContext context) {

@@ -2,113 +2,187 @@ import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:fiszkomaniak/components/item_with_icon.dart';
 import 'package:fiszkomaniak/components/section.dart';
 import 'package:fiszkomaniak/components/select_item/select_item.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_event.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/flashcards_type_picker.dart';
-import '../../../models/session_model.dart';
-import '../bloc/session_creator_state.dart';
+import '../../../domain/entities/session.dart';
 
 class SessionCreatorFlashcards extends StatelessWidget {
-  const SessionCreatorFlashcards({Key? key}) : super(key: key);
+  const SessionCreatorFlashcards({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SessionCreatorBloc, SessionCreatorState>(
-      builder: (BuildContext context, SessionCreatorState state) {
-        return Section(
-          title: 'Fiszki',
-          displayDividerAtTheBottom: true,
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  SelectItem(
-                    icon: MdiIcons.archiveOutline,
-                    value: state.selectedCourse?.name ?? '--',
-                    label: 'Kurs',
-                    optionsListTitle: 'Wybierz kurs',
-                    options: _createCoursesOptions(state),
-                    onOptionSelected: (String key, String value) {
-                      context
-                          .read<SessionCreatorBloc>()
-                          .add(SessionCreatorEventCourseSelected(
-                            courseId: key,
-                          ));
-                    },
-                  ),
-                  SelectItem(
-                    icon: MdiIcons.folderOutline,
-                    value: state.selectedGroup?.name ?? '--',
-                    label: 'Grupa',
-                    optionsListTitle: 'Wybierz grupę',
-                    options: _createGroupsOptions(state),
-                    onOptionSelected: (String key, String value) {
-                      context
-                          .read<SessionCreatorBloc>()
-                          .add(SessionCreatorEventGroupSelected(
-                            groupId: key,
-                          ));
-                    },
-                  ),
-                  FlashcardsTypePicker(
-                    selectedType: state.flashcardsType,
-                    availableTypes: state.availableFlashcardsTypes,
-                    onTypeChanged: (FlashcardsType type) {
-                      context
-                          .read<SessionCreatorBloc>()
-                          .add(SessionCreatorEventFlashcardsTypeSelected(
-                            type: type,
-                          ));
-                    },
-                  ),
-                  ItemWithIcon(
-                    icon: MdiIcons.fileOutline,
-                    label: 'Nazwa dla pytań',
-                    text: state.nameForQuestions ?? '--',
-                    paddingLeft: 8.0,
-                    paddingRight: 8.0,
-                  ),
-                  ItemWithIcon(
-                    icon: MdiIcons.fileReplaceOutline,
-                    label: 'Nazwa dla odpowiedzi',
-                    text: state.nameForAnswers ?? '--',
-                    paddingLeft: 8.0,
-                    paddingRight: 8.0,
-                  ),
-                ],
-              ),
-              Positioned(
-                right: 0.0,
-                bottom: 48.0,
-                child: CustomIconButton(
-                  icon: MdiIcons.swapVertical,
-                  onPressed: () {
-                    context
-                        .read<SessionCreatorBloc>()
-                        .add(SessionCreatorEventSwapQuestionsWithAnswers());
-                  },
-                ),
-              ),
+    return Section(
+      title: 'Fiszki',
+      displayDividerAtTheBottom: true,
+      child: Stack(
+        children: [
+          Column(
+            children: const [
+              _CourseSelector(),
+              _GroupSelector(),
+              _FlashcardsTypeSelector(),
+              _NameForQuestions(),
+              _NameForAnswers(),
             ],
           ),
-        );
-      },
+          const _QuestionsAndAnswersSwapButton(),
+        ],
+      ),
+    );
+  }
+}
+
+class _CourseSelector extends StatelessWidget {
+  const _CourseSelector();
+
+  @override
+  Widget build(BuildContext context) {
+    final Course? selectedCourse = context.select(
+      (SessionCreatorBloc bloc) => bloc.state.selectedCourse,
+    );
+    final List<Course> coursesToSelect = context.select(
+      (SessionCreatorBloc bloc) => bloc.state.courses,
+    );
+    return SelectItem(
+      icon: MdiIcons.archiveOutline,
+      value: selectedCourse?.name ?? '--',
+      label: 'Kurs',
+      optionsListTitle: 'Wybierz kurs',
+      options: _createCoursesOptions(coursesToSelect),
+      onOptionSelected: (String key, String value) => _onSelected(key, context),
     );
   }
 
-  Map<String, String> _createCoursesOptions(SessionCreatorState state) {
-    return {for (final course in state.courses) course.id: course.name};
+  Map<String, String> _createCoursesOptions(List<Course> courses) {
+    return {for (final course in courses) course.id: course.name};
   }
 
-  Map<String, String> _createGroupsOptions(SessionCreatorState state) {
-    final List<Group>? groups = state.groups;
+  void _onSelected(String courseId, BuildContext context) {
+    context
+        .read<SessionCreatorBloc>()
+        .add(SessionCreatorEventCourseSelected(courseId: courseId));
+  }
+}
+
+class _GroupSelector extends StatelessWidget {
+  const _GroupSelector();
+
+  @override
+  Widget build(BuildContext context) {
+    final Group? selectedGroup = context.select(
+      (SessionCreatorBloc bloc) => bloc.state.selectedGroup,
+    );
+    final List<Group>? groupsToSelect = context.select(
+      (SessionCreatorBloc bloc) => bloc.state.groups,
+    );
+    return SelectItem(
+      icon: MdiIcons.folderOutline,
+      value: selectedGroup?.name ?? '--',
+      label: 'Grupa',
+      optionsListTitle: 'Wybierz grupę',
+      options: _createGroupsOptions(groupsToSelect),
+      onOptionSelected: (String key, String value) => _onSelected(key, context),
+    );
+  }
+
+  Map<String, String> _createGroupsOptions(List<Group>? groups) {
     if (groups != null) {
       return {for (final group in groups) group.id: group.name};
     }
     return {};
+  }
+
+  void _onSelected(String groupId, BuildContext context) {
+    context
+        .read<SessionCreatorBloc>()
+        .add(SessionCreatorEventGroupSelected(groupId: groupId));
+  }
+}
+
+class _FlashcardsTypeSelector extends StatelessWidget {
+  const _FlashcardsTypeSelector();
+
+  @override
+  Widget build(BuildContext context) {
+    final FlashcardsType selectedFlashcardsType = context.select(
+      (SessionCreatorBloc bloc) => bloc.state.flashcardsType,
+    );
+    final List<FlashcardsType> availableFlashcardsTypes = context.select(
+      (SessionCreatorBloc bloc) => bloc.state.availableFlashcardsTypes,
+    );
+    return FlashcardsTypePicker(
+      selectedType: selectedFlashcardsType,
+      availableTypes: availableFlashcardsTypes,
+      onTypeChanged: (FlashcardsType type) => _onTypeChanged(type, context),
+    );
+  }
+
+  void _onTypeChanged(FlashcardsType type, BuildContext context) {
+    context
+        .read<SessionCreatorBloc>()
+        .add(SessionCreatorEventFlashcardsTypeSelected(type: type));
+  }
+}
+
+class _NameForQuestions extends StatelessWidget {
+  const _NameForQuestions();
+
+  @override
+  Widget build(BuildContext context) {
+    final String? nameForQuestions = context.select(
+      (SessionCreatorBloc bloc) => bloc.state.nameForQuestions,
+    );
+    return ItemWithIcon(
+      icon: MdiIcons.fileOutline,
+      label: 'Nazwa dla pytań',
+      text: nameForQuestions ?? '--',
+      paddingLeft: 8.0,
+      paddingRight: 8.0,
+    );
+  }
+}
+
+class _NameForAnswers extends StatelessWidget {
+  const _NameForAnswers();
+
+  @override
+  Widget build(BuildContext context) {
+    final String? nameForAnswers = context.select(
+      (SessionCreatorBloc bloc) => bloc.state.nameForAnswers,
+    );
+    return ItemWithIcon(
+      icon: MdiIcons.fileReplaceOutline,
+      label: 'Nazwa dla odpowiedzi',
+      text: nameForAnswers ?? '--',
+      paddingLeft: 8.0,
+      paddingRight: 8.0,
+    );
+  }
+}
+
+class _QuestionsAndAnswersSwapButton extends StatelessWidget {
+  const _QuestionsAndAnswersSwapButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      right: 0.0,
+      bottom: 48.0,
+      child: CustomIconButton(
+        icon: MdiIcons.swapVertical,
+        onPressed: () => _onPressed(context),
+      ),
+    );
+  }
+
+  void _onPressed(BuildContext context) {
+    context
+        .read<SessionCreatorBloc>()
+        .add(SessionCreatorEventSwapQuestionsWithAnswers());
   }
 }

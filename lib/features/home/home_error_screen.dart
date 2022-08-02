@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import '../../components/buttons/button.dart';
 import '../../config/slide_right_route_animation.dart';
-import '../../core/auth/auth_bloc.dart';
+import '../../domain/use_cases/auth/sign_out_use_case.dart';
+import '../../interfaces/achievements_interface.dart';
+import '../../interfaces/auth_interface.dart';
+import '../../interfaces/user_interface.dart';
 import '../initial_home/initial_home.dart';
 
 class HomeErrorScreen extends StatelessWidget {
@@ -64,10 +67,15 @@ class _Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final signOutUseCase = SignOutUseCase(
+      authInterface: context.read<AuthInterface>(),
+      userInterface: context.read<UserInterface>(),
+      achievementsInterface: context.read<AchievementsInterface>(),
+    );
     return Button(
       label: 'Wróć do ekranu początkowego',
       onPressed: () {
-        context.read<AuthBloc>().add(AuthEventSignOut());
+        signOutUseCase.execute();
         Navigator.of(context).pushReplacement(
           SlideRightRouteAnimation(page: const InitialHome()),
         );

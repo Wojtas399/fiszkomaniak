@@ -1,16 +1,8 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_status.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
-import 'package:fiszkomaniak/models/time_model.dart';
-import 'package:fiszkomaniak/utils/group_utils.dart';
-import '../../../models/date_model.dart';
-import '../../../models/session_model.dart';
+part of 'session_creator_bloc.dart';
 
 class SessionCreatorState extends Equatable {
+  final BlocStatus status;
   final SessionCreatorMode mode;
-  final SessionCreatorStatus status;
   final List<Course> courses;
   final List<Group>? groups;
   final Course? selectedCourse;
@@ -18,29 +10,29 @@ class SessionCreatorState extends Equatable {
   final FlashcardsType flashcardsType;
   final bool areQuestionsAndAnswersSwapped;
   final Date? date;
-  final Time? time;
+  final Time? startTime;
   final Duration? duration;
   final Time? notificationTime;
 
   const SessionCreatorState({
-    this.mode = const SessionCreatorCreateMode(),
-    this.status = const SessionCreatorStatusInitial(),
-    this.courses = const [],
-    this.groups,
-    this.selectedCourse,
-    this.selectedGroup,
-    this.flashcardsType = FlashcardsType.all,
-    this.areQuestionsAndAnswersSwapped = false,
-    this.date,
-    this.time,
-    this.duration,
-    this.notificationTime,
+    required this.status,
+    required this.mode,
+    required this.courses,
+    required this.groups,
+    required this.selectedCourse,
+    required this.selectedGroup,
+    required this.flashcardsType,
+    required this.areQuestionsAndAnswersSwapped,
+    required this.date,
+    required this.startTime,
+    required this.duration,
+    required this.notificationTime,
   });
 
   @override
   List<Object> get props => [
-        mode,
         status,
+        mode,
         courses,
         groups ?? [],
         selectedCourse ?? createCourse(),
@@ -48,7 +40,7 @@ class SessionCreatorState extends Equatable {
         flashcardsType,
         areQuestionsAndAnswersSwapped,
         date ?? '',
-        time ?? '',
+        startTime ?? '',
         duration ?? '',
         notificationTime ?? '',
       ];
@@ -73,8 +65,8 @@ class SessionCreatorState extends Equatable {
   }
 
   SessionCreatorState copyWith({
+    BlocStatus? status,
     SessionCreatorMode? mode,
-    SessionCreatorStatus? status,
     List<Course>? courses,
     List<Group>? groups,
     Course? selectedCourse,
@@ -82,13 +74,13 @@ class SessionCreatorState extends Equatable {
     FlashcardsType? flashcardsType,
     bool? areQuestionsAndAnswersSwapped,
     Date? date,
-    Time? time,
+    Time? startTime,
     Duration? duration,
     Time? notificationTime,
   }) {
     return SessionCreatorState(
+      status: status ?? const BlocStatusComplete<SessionCreatorInfoType>(),
       mode: mode ?? this.mode,
-      status: status ?? SessionCreatorStatusLoaded(),
       courses: courses ?? this.courses,
       groups: groups ?? this.groups,
       selectedCourse: selectedCourse ?? this.selectedCourse,
@@ -97,7 +89,7 @@ class SessionCreatorState extends Equatable {
       areQuestionsAndAnswersSwapped:
           areQuestionsAndAnswersSwapped ?? this.areQuestionsAndAnswersSwapped,
       date: date ?? this.date,
-      time: time ?? this.time,
+      startTime: startTime ?? this.startTime,
       duration: duration ?? this.duration,
       notificationTime: notificationTime ?? this.notificationTime,
     );
@@ -109,8 +101,8 @@ class SessionCreatorState extends Equatable {
     bool notificationTime = false,
   }) {
     return SessionCreatorState(
+      status: const BlocStatusComplete<SessionCreatorInfoType>(),
       mode: mode,
-      status: status,
       courses: courses,
       groups: groups,
       selectedCourse: selectedCourse,
@@ -118,9 +110,15 @@ class SessionCreatorState extends Equatable {
       flashcardsType: flashcardsType,
       areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
       date: date,
-      time: time,
+      startTime: startTime,
       duration: duration ? null : this.duration,
       notificationTime: notificationTime ? null : this.notificationTime,
+    );
+  }
+
+  SessionCreatorState copyWithInfo(SessionCreatorInfoType infoType) {
+    return copyWith(
+      status: BlocStatusComplete<SessionCreatorInfoType>(info: infoType),
     );
   }
 
@@ -128,7 +126,7 @@ class SessionCreatorState extends Equatable {
     return selectedCourse == null ||
         selectedGroup == null ||
         date == null ||
-        time == null;
+        startTime == null;
   }
 
   bool _areParamsSameAsOriginal() {
@@ -140,11 +138,19 @@ class SessionCreatorState extends Equatable {
           areQuestionsAndAnswersSwapped ==
               session.areQuestionsAndAnswersSwapped &&
           date == session.date &&
-          time == session.time &&
+          startTime == session.startTime &&
           duration == session.duration &&
           notificationTime == session.notificationTime;
     } else {
       return false;
     }
   }
+}
+
+enum SessionCreatorInfoType {
+  timeFromThePast,
+  chosenStartTimeIsEarlierThanNotificationTime,
+  chosenNotificationTimeIsLaterThanStartTime,
+  sessionHasBeenAdded,
+  sessionHasBeenUpdated,
 }

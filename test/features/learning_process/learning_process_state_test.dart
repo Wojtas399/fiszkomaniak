@@ -1,303 +1,420 @@
-import 'package:fiszkomaniak/features/flashcards_stack/bloc/flashcards_stack_models.dart';
-import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
-import 'package:fiszkomaniak/models/session_model.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/domain/entities/session.dart';
+import 'package:fiszkomaniak/components/flashcards_stack/flashcards_stack_model.dart';
+import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 
 void main() {
   late LearningProcessState state;
 
-  setUp(() {
-    state = const LearningProcessState();
-  });
+  setUp(
+    () => state = const LearningProcessState(
+      status: BlocStatusInitial(),
+      sessionId: null,
+      courseName: '',
+      group: null,
+      duration: null,
+      areQuestionsAndAnswersSwapped: false,
+      rememberedFlashcards: [],
+      notRememberedFlashcards: [],
+      indexOfDisplayedFlashcard: 0,
+      flashcardsType: null,
+      amountOfFlashcardsInStack: 0,
+    ),
+  );
 
-  test('initial state', () {
-    expect(state.status, const LearningProcessStatusInitial());
-    expect(state.sessionId, null);
-    expect(state.courseName, '');
-    expect(state.group, null);
-    expect(state.duration, null);
-    expect(state.areQuestionsAndAnswersSwapped, false);
-    expect(state.indexesOfRememberedFlashcards, []);
-    expect(state.indexesOfNotRememberedFlashcards, []);
-    expect(state.indexOfDisplayedFlashcard, 0);
-    expect(state.flashcardsType, null);
-    expect(state.amountOfFlashcardsInStack, 0);
-  });
+  test(
+    'stack flashcards, should return empty array if flashcards type has not been set',
+    () {
+      expect(state.stackFlashcards, []);
+    },
+  );
 
-  test('copy with status', () {
-    final LearningProcessStatus expectedStatus =
-        LearningProcessStatusInProgress();
+  test(
+    'stack flashcards, should return empty array if group does not have any flashcards',
+    () {
+      state = state.copyWith(
+        group: createGroup(id: 'g1', flashcards: []),
+        flashcardsType: FlashcardsType.all,
+      );
 
-    final LearningProcessState state2 = state.copyWith(status: expectedStatus);
-    final LearningProcessState state3 = state2.copyWith();
+      expect(state.stackFlashcards, []);
+    },
+  );
 
-    expect(state2.status, expectedStatus);
-    expect(state3.status, expectedStatus);
-  });
+  test(
+    'stack flashcards, should return flashcards for stack which match to flashcards type',
+    () {
+      final Group group = createGroup(
+        id: 'g1',
+        flashcards: [
+          createFlashcard(
+            index: 0,
+            question: 'q0',
+            answer: 'a0',
+            status: FlashcardStatus.remembered,
+          ),
+          createFlashcard(
+            index: 1,
+            question: 'q1',
+            answer: 'a1',
+            status: FlashcardStatus.notRemembered,
+          ),
+          createFlashcard(
+            index: 2,
+            question: 'q2',
+            answer: 'a2',
+            status: FlashcardStatus.remembered,
+          ),
+        ],
+      );
+      final List<StackFlashcard> expectedStackFlashcards = [
+        createStackFlashcard(
+          index: 0,
+          question: 'q0',
+          answer: 'a0',
+        ),
+        createStackFlashcard(
+          index: 2,
+          question: 'q2',
+          answer: 'a2',
+        ),
+      ];
 
-  test('copy with session id', () {
-    const String sessionId = 'session id 1';
-
-    final LearningProcessState state2 = state.copyWith(sessionId: sessionId);
-    final LearningProcessState state3 = state2.copyWith();
-
-    expect(state2.sessionId, sessionId);
-    expect(state3.sessionId, sessionId);
-  });
-
-  test('copy with courseName', () {
-    const String expectedCourseName = 'course name';
-
-    final LearningProcessState state2 = state.copyWith(
-      courseName: expectedCourseName,
-    );
-    final LearningProcessState state3 = state2.copyWith();
-
-    expect(state2.courseName, expectedCourseName);
-    expect(state3.courseName, expectedCourseName);
-  });
-
-  test('copy with group', () {
-    final Group expectedGroup = createGroup(id: 'g1', name: 'group 1');
-
-    final LearningProcessState state2 = state.copyWith(group: expectedGroup);
-    final LearningProcessState state3 = state2.copyWith();
-
-    expect(state2.group, expectedGroup);
-    expect(state3.group, expectedGroup);
-  });
-
-  test('copy with duration', () {
-    const Duration expectedDuration = Duration(minutes: 10);
-
-    final LearningProcessState state2 = state.copyWith(
-      duration: expectedDuration,
-    );
-    final LearningProcessState state3 = state2.copyWith();
-
-    expect(state2.duration, expectedDuration);
-    expect(state3.duration, expectedDuration);
-  });
-
-  test('copy with are questions and answers swapped', () {
-    const bool expectedValue = true;
-
-    final LearningProcessState state2 = state.copyWith(
-      areQuestionsAndAnswersSwapped: expectedValue,
-    );
-    final LearningProcessState state3 = state2.copyWith();
-
-    expect(state2.areQuestionsAndAnswersSwapped, expectedValue);
-    expect(state3.areQuestionsAndAnswersSwapped, expectedValue);
-  });
-
-  test('copy with indexes of remembered flashcards', () {
-    final List<int> expectedIndexes = [1, 5];
-
-    final LearningProcessState state2 = state.copyWith(
-      indexesOfRememberedFlashcards: expectedIndexes,
-    );
-    final LearningProcessState state3 = state2.copyWith();
-
-    expect(state2.indexesOfRememberedFlashcards, expectedIndexes);
-    expect(state3.indexesOfRememberedFlashcards, expectedIndexes);
-  });
-
-  test('copy with indexes of not remembered flashcards', () {
-    final List<int> expectedIndex = [1, 5];
-
-    final LearningProcessState state2 = state.copyWith(
-      indexesOfNotRememberedFlashcards: expectedIndex,
-    );
-    final LearningProcessState state3 = state2.copyWith();
-
-    expect(state2.indexesOfNotRememberedFlashcards, expectedIndex);
-    expect(state3.indexesOfNotRememberedFlashcards, expectedIndex);
-  });
-
-  test('copy with index of displayed flashcards', () {
-    const int expectedIndexOfDisplayedFlashcard = 2;
-
-    final LearningProcessState state2 = state.copyWith(
-      indexOfDisplayedFlashcard: expectedIndexOfDisplayedFlashcard,
-    );
-    final LearningProcessState state3 = state2.copyWith();
-
-    expect(state2.indexOfDisplayedFlashcard, expectedIndexOfDisplayedFlashcard);
-    expect(state3.indexOfDisplayedFlashcard, expectedIndexOfDisplayedFlashcard);
-  });
-
-  test('copy with flashcards type', () {
-    const FlashcardsType expectedFlashcardsType = FlashcardsType.remembered;
-
-    final LearningProcessState state2 = state.copyWith(
-      flashcardsType: expectedFlashcardsType,
-    );
-    final LearningProcessState state3 = state2.copyWith();
-
-    expect(state2.flashcardsType, expectedFlashcardsType);
-    expect(state3.flashcardsType, expectedFlashcardsType);
-  });
-
-  test('copy with amount of flashcards in stack', () {
-    const int expectedAmountOfFlashcardsInStack = 4;
-
-    final LearningProcessState state2 = state.copyWith(
-      amountOfFlashcardsInStack: expectedAmountOfFlashcardsInStack,
-    );
-    final LearningProcessState state3 = state2.copyWith();
-
-    expect(state2.amountOfFlashcardsInStack, expectedAmountOfFlashcardsInStack);
-    expect(state3.amountOfFlashcardsInStack, expectedAmountOfFlashcardsInStack);
-  });
-
-  test('copy with removed duration', () {
-    const Duration duration = Duration(minutes: 10);
-
-    final LearningProcessState state2 = state.copyWith(duration: duration);
-    final LearningProcessState state3 = state.copyWith(removedDuration: true);
-
-    expect(state2.duration, duration);
-    expect(state3.duration, null);
-  });
-
-  test('amount of remembered flashcards', () {
-    state = state.copyWith(indexesOfRememberedFlashcards: [1, 4, 7]);
-
-    expect(state.amountOfRememberedFlashcards, 3);
-  });
-
-  test('flashcards', () {
-    final List<Flashcard> flashcards = [
-      createFlashcard(index: 0),
-      createFlashcard(index: 1),
-    ];
-
-    state = state.copyWith(group: createGroup(flashcards: flashcards));
-
-    expect(state.flashcards, flashcards);
-  });
-
-  test('flashcards to learn, comparing by array with indexes', () {
-    final List<Flashcard> flashcards = [
-      createFlashcard(
-        index: 0,
-        question: 'q0',
-        answer: 'a0',
-      ),
-      createFlashcard(
-        index: 1,
-        question: 'q1',
-        answer: 'a1',
-      ),
-      createFlashcard(index: 2),
-    ];
-
-    state = state.copyWith(
-      group: createGroup(flashcards: flashcards),
-      indexesOfRememberedFlashcards: [0, 1],
-      flashcardsType: FlashcardsType.remembered,
-      status: LearningProcessStatusInProgress(),
-    );
-
-    expect(
-      state.flashcardsToLearn,
-      [
-        const FlashcardInfo(index: 0, question: 'q0', answer: 'a0'),
-        const FlashcardInfo(index: 1, question: 'q1', answer: 'a1'),
-      ],
-    );
-  });
-
-  test('amount of all flashcards', () {
-    final List<Flashcard> flashcards = [
-      createFlashcard(index: 0),
-      createFlashcard(index: 1),
-      createFlashcard(index: 2),
-    ];
-
-    state = state.copyWith(group: createGroup(flashcards: flashcards));
-
-    expect(state.amountOfAllFlashcards, flashcards.length);
-  });
-
-  test('amount of remembered flashcards', () {
-    state = state.copyWith(indexesOfRememberedFlashcards: [0, 1, 4]);
-
-    expect(state.amountOfRememberedFlashcards, 3);
-  });
-
-  group('name for answers and questions', () {
-    final Group group = createGroup(
-      nameForQuestions: 'questions',
-      nameForAnswers: 'answers',
-    );
-
-    test('normal order', () {
       state = state.copyWith(
         group: group,
-        areQuestionsAndAnswersSwapped: false,
+        flashcardsType: FlashcardsType.remembered,
+        rememberedFlashcards: [group.flashcards[0], group.flashcards[2]],
       );
 
-      expect(state.nameForQuestions, group.nameForQuestions);
-      expect(state.nameForAnswers, group.nameForAnswers);
-    });
+      expect(state.stackFlashcards, expectedStackFlashcards);
+    },
+  );
 
-    test('reversed order', () {
+  test(
+    'amount of all flashcards, should return 0 if group has not been set',
+    () {
+      expect(state.amountOfAllFlashcards, 0);
+    },
+  );
+
+  test(
+    'amount of all flashcards, should return amount of all flashcards from group',
+    () {
+      final Group group = createGroup(
+        flashcards: [
+          createFlashcard(index: 0),
+          createFlashcard(index: 1),
+          createFlashcard(index: 2),
+        ],
+      );
+
+      state = state.copyWith(group: group);
+
+      expect(state.amountOfAllFlashcards, group.flashcards.length);
+    },
+  );
+
+  test(
+    'amount of remembered flashcards',
+    () {
       state = state.copyWith(
-        group: group,
-        areQuestionsAndAnswersSwapped: true,
+        rememberedFlashcards: [
+          createFlashcard(index: 0),
+          createFlashcard(index: 1),
+        ],
       );
 
-      expect(state.nameForQuestions, group.nameForAnswers);
-      expect(state.nameForAnswers, group.nameForQuestions);
-    });
-  });
+      expect(state.amountOfRememberedFlashcards, 2);
+    },
+  );
 
-  group('are all flashcards remembered or not remembered', () {
-    test('all flashcards remembered', () {
-      final List<Flashcard> flashcards = [
+  group(
+    'name for questions and name for answers',
+    () {
+      final Group group = createGroup(
+        nameForQuestions: 'questions',
+        nameForAnswers: 'answers',
+      );
+
+      test(
+        'name for questions should be empty string if group has not been set',
+        () {
+          expect(state.nameForQuestions, '');
+        },
+      );
+
+      test(
+        'name for answers should be empty string if group has not been set',
+        () {
+          expect(state.nameForAnswers, '');
+        },
+      );
+
+      test(
+        'name for questions should represent name for questions from group if questions name and answers name are not swapped',
+        () {
+          state = state.copyWith(
+            group: group,
+            areQuestionsAndAnswersSwapped: false,
+          );
+
+          expect(state.nameForQuestions, group.nameForQuestions);
+        },
+      );
+
+      test(
+        'name for questions should represent name for answers from group if questions name and answers name are swapped',
+        () {
+          state = state.copyWith(
+            group: group,
+            areQuestionsAndAnswersSwapped: true,
+          );
+
+          expect(state.nameForQuestions, group.nameForAnswers);
+        },
+      );
+
+      test(
+        'name for answers should represent name for answers from group if questions name and answers name are not swapped',
+        () {
+          state = state.copyWith(
+            group: group,
+            areQuestionsAndAnswersSwapped: false,
+          );
+
+          expect(state.nameForAnswers, group.nameForAnswers);
+        },
+      );
+
+      test(
+        'name for answers should represent name for questions if questions name and answers name are swapped',
+        () {
+          state = state.copyWith(
+            group: group,
+            areQuestionsAndAnswersSwapped: true,
+          );
+
+          expect(state.nameForAnswers, group.nameForQuestions);
+        },
+      );
+    },
+  );
+
+  group(
+    'are all flashcards remembered or not remembered',
+    () {
+      final Group group = createGroup(
+        flashcards: [
+          createFlashcard(index: 0),
+          createFlashcard(index: 1),
+          createFlashcard(index: 2),
+        ],
+      );
+
+      test(
+        'should be true if all flashcards are in array of remembered flashcards',
+        () {
+          state = state.copyWith(
+            group: group,
+            rememberedFlashcards: group.flashcards,
+          );
+
+          expect(state.areAllFlashcardsRememberedOrNotRemembered, true);
+        },
+      );
+
+      test(
+        'should be true if all flashcards are in array of not remembered flashcards',
+        () {
+          state = state.copyWith(
+            group: group,
+            notRememberedFlashcards: group.flashcards,
+          );
+
+          expect(state.areAllFlashcardsRememberedOrNotRemembered, true);
+        },
+      );
+
+      test(
+        'should be false if all flashcards are not in array of remembered flashcards or in array of not remembered flashcards',
+        () {
+          state = state.copyWith(
+            group: group,
+            rememberedFlashcards: [group.flashcards[1], group.flashcards[0]],
+            notRememberedFlashcards: [group.flashcards[2]],
+          );
+
+          expect(state.areAllFlashcardsRememberedOrNotRemembered, false);
+        },
+      );
+    },
+  );
+
+  test(
+    'copy with status',
+    () {
+      const BlocStatus expectedStatus = BlocStatusLoading();
+
+      state = state.copyWith(status: expectedStatus);
+      final state2 = state.copyWith();
+
+      expect(state.status, expectedStatus);
+      expect(
+        state2.status,
+        const BlocStatusComplete<LearningProcessInfoType>(),
+      );
+    },
+  );
+
+  test(
+    'copy with session id',
+    () {
+      const String expectedSessionId = 's1';
+
+      state = state.copyWith(sessionId: expectedSessionId);
+      final state2 = state.copyWith();
+
+      expect(state.sessionId, expectedSessionId);
+      expect(state2.sessionId, expectedSessionId);
+    },
+  );
+
+  test(
+    'copy with course name',
+    () {
+      const String expectedCourseName = 'c1';
+
+      state = state.copyWith(courseName: expectedCourseName);
+      final state2 = state.copyWith();
+
+      expect(state.courseName, expectedCourseName);
+      expect(state2.courseName, expectedCourseName);
+    },
+  );
+
+  test(
+    'copy with group',
+    () {
+      final Group expectedGroup = createGroup(id: 'g1', name: 'group name');
+
+      state = state.copyWith(group: expectedGroup);
+      final state2 = state.copyWith();
+
+      expect(state.group, expectedGroup);
+      expect(state2.group, expectedGroup);
+    },
+  );
+
+  test(
+    'copy with duration',
+    () {
+      const Duration expectedDuration = Duration(minutes: 30);
+
+      state = state.copyWith(duration: expectedDuration);
+      final state2 = state.copyWith();
+
+      expect(state.duration, expectedDuration);
+      expect(state2.duration, expectedDuration);
+    },
+  );
+
+  test(
+    'copy with are questions and answers swapped',
+    () {
+      const bool expectedValue = true;
+
+      state = state.copyWith(areQuestionsAndAnswersSwapped: expectedValue);
+      final state2 = state.copyWith();
+
+      expect(state.areQuestionsAndAnswersSwapped, expectedValue);
+      expect(state2.areQuestionsAndAnswersSwapped, expectedValue);
+    },
+  );
+
+  test(
+    'copy with remembered flashcards',
+    () {
+      final List<Flashcard> expectedFlashcards = [
         createFlashcard(index: 0),
         createFlashcard(index: 1),
       ];
 
-      state = state.copyWith(
-        group: createGroup(flashcards: flashcards),
-        indexesOfRememberedFlashcards: [0, 1],
-      );
+      state = state.copyWith(rememberedFlashcards: expectedFlashcards);
+      final state2 = state.copyWith();
 
-      expect(state.areAllFlashcardsRememberedOrNotRemembered, true);
-    });
+      expect(state.rememberedFlashcards, expectedFlashcards);
+      expect(state2.rememberedFlashcards, expectedFlashcards);
+    },
+  );
 
-    test('all flashcards not remembered', () {
-      final List<Flashcard> flashcards = [
+  test(
+    'copy with not remembered flashcards',
+    () {
+      final List<Flashcard> expectedFlashcards = [
         createFlashcard(index: 0),
         createFlashcard(index: 1),
       ];
 
-      state = state.copyWith(
-        group: createGroup(flashcards: flashcards),
-        indexesOfNotRememberedFlashcards: [0, 1],
-      );
+      state = state.copyWith(notRememberedFlashcards: expectedFlashcards);
+      final state2 = state.copyWith();
 
-      expect(state.areAllFlashcardsRememberedOrNotRemembered, true);
-    });
+      expect(state.notRememberedFlashcards, expectedFlashcards);
+      expect(state2.notRememberedFlashcards, expectedFlashcards);
+    },
+  );
 
-    test('not all flashcards are remembered or not remembered', () {
-      final List<Flashcard> flashcards = [
-        createFlashcard(index: 0),
-        createFlashcard(index: 1),
-      ];
+  test(
+    'copy with index of displayed flashcard',
+    () {
+      const int expectedIndex = 2;
 
-      state = state.copyWith(
-        group: createGroup(flashcards: flashcards),
-        indexesOfRememberedFlashcards: [1],
-        indexesOfNotRememberedFlashcards: [0],
-      );
+      state = state.copyWith(indexOfDisplayedFlashcard: expectedIndex);
+      final state2 = state.copyWith();
 
-      expect(state.areAllFlashcardsRememberedOrNotRemembered, false);
-    });
-  });
+      expect(state.indexOfDisplayedFlashcard, expectedIndex);
+      expect(state2.indexOfDisplayedFlashcard, expectedIndex);
+    },
+  );
+
+  test(
+    'copy with flashcards type',
+    () {
+      const FlashcardsType expectedType = FlashcardsType.remembered;
+
+      state = state.copyWith(flashcardsType: expectedType);
+      final state2 = state.copyWith();
+
+      expect(state.flashcardsType, expectedType);
+      expect(state2.flashcardsType, expectedType);
+    },
+  );
+
+  test(
+    'copy with amount of flashcards in stack',
+    () {
+      const int expectedValue = 5;
+
+      state = state.copyWith(amountOfFlashcardsInStack: expectedValue);
+      final state2 = state.copyWith();
+
+      expect(state.amountOfFlashcardsInStack, expectedValue);
+      expect(state2.amountOfFlashcardsInStack, expectedValue);
+    },
+  );
+
+  test(
+    'copy with removed duration',
+    () {
+      const Duration duration = Duration(minutes: 30);
+
+      state = state.copyWith(duration: duration);
+      final state2 = state.copyWith(removedDuration: true);
+
+      expect(state.duration, duration);
+      expect(state2.duration, null);
+    },
+  );
 }

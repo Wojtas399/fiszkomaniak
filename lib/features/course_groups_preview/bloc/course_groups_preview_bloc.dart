@@ -1,54 +1,67 @@
 import 'dart:async';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_event.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_state.dart';
+import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../models/course_model.dart';
+import 'package:rxdart/rxdart.dart';
+import '../../../components/group_item/group_item.dart';
+
+part 'course_groups_preview_event.dart';
+
+part 'course_groups_preview_state.dart';
 
 class CourseGroupsPreviewBloc
     extends Bloc<CourseGroupsPreviewEvent, CourseGroupsPreviewState> {
-  late final CoursesBloc _coursesBloc;
-  late final GroupsBloc _groupsBloc;
-  StreamSubscription? _groupsStateSubscription;
+  late final GetCourseUseCase _getCourseUseCase;
+  late final GetGroupsByCourseIdUseCase _getGroupsByCourseIdUseCase;
+  StreamSubscription<String>? _courseNameListener;
+  StreamSubscription<List<GroupItemParams>>? _groupsListener;
 
   CourseGroupsPreviewBloc({
-    required CoursesBloc coursesBloc,
-    required GroupsBloc groupsBloc,
-  }) : super(const CourseGroupsPreviewState()) {
-    _coursesBloc = coursesBloc;
-    _groupsBloc = groupsBloc;
+    required GetCourseUseCase getCourseUseCase,
+    required GetGroupsByCourseIdUseCase getGroupsByCourseIdUseCase,
+  }) : super(CourseGroupsPreviewState()) {
+    _getCourseUseCase = getCourseUseCase;
+    _getGroupsByCourseIdUseCase = getGroupsByCourseIdUseCase;
     on<CourseGroupsPreviewEventInitialize>(_initialize);
-    on<CourseGroupsPreviewEventGroupsStateChanged>(_groupsStateChanged);
+    on<CourseGroupsPreviewEventCourseNameUpdated>(_courseNameUpdated);
+    on<CourseGroupsPreviewEventGroupsUpdated>(_groupsUpdated);
     on<CourseGroupsPreviewEventSearchValueChanged>(_searchValueChanged);
   }
 
-  void _initialize(
-    CourseGroupsPreviewEventInitialize event,
-    Emitter<CourseGroupsPreviewState> emit,
-  ) {
-    final Course? course = _coursesBloc.state.getCourseById(event.courseId);
-    if (course != null) {
-      emit(state.copyWith(course: course));
-      add(CourseGroupsPreviewEventGroupsStateChanged());
-      _groupsStateSubscription = _groupsBloc.stream.listen((_) {
-        add(CourseGroupsPreviewEventGroupsStateChanged());
-      });
-    }
+  @override
+  Future<void> close() {
+    _courseNameListener?.cancel();
+    _groupsListener?.cancel();
+    return super.close();
   }
 
-  void _groupsStateChanged(
-    CourseGroupsPreviewEventGroupsStateChanged event,
+  Future<void> _initialize(
+    CourseGroupsPreviewEventInitialize event,
+    Emitter<CourseGroupsPreviewState> emit,
+  ) async {
+    _setCourseNameListener(event.courseId);
+    _setGroupsListener(event.courseId);
+  }
+
+  void _courseNameUpdated(
+    CourseGroupsPreviewEventCourseNameUpdated event,
     Emitter<CourseGroupsPreviewState> emit,
   ) {
-    final String? courseId = state.course?.id;
-    if (courseId != null) {
-      emit(
-        state.copyWith(
-          groupsFromCourse: _groupsBloc.state.getGroupsByCourseId(courseId),
-        ),
-      );
-    }
+    emit(state.copyWith(
+      courseName: event.updatedCourseName,
+    ));
+  }
+
+  void _groupsUpdated(
+    CourseGroupsPreviewEventGroupsUpdated event,
+    Emitter<CourseGroupsPreviewState> emit,
+  ) {
+    emit(state.copyWith(
+      groupsFromCourse: event.updatedGroups,
+    ));
   }
 
   void _searchValueChanged(
@@ -58,9 +71,48 @@ class CourseGroupsPreviewBloc
     emit(state.copyWith(searchValue: event.searchValue));
   }
 
-  @override
-  Future<void> close() {
-    _groupsStateSubscription?.cancel();
-    return super.close();
+  void _setCourseNameListener(final String courseId) {
+    _courseNameListener = _getCourseUseCase
+        .execute(courseId: courseId)
+        .map((course) => course.name)
+        .listen(
+          (courseName) => add(CourseGroupsPreviewEventCourseNameUpdated(
+            updatedCourseName: courseName,
+          )),
+        );
+  }
+
+  void _setGroupsListener(final String courseId) {
+    _groupsListener = _getGroupsByCourseIdUseCase
+        .execute(courseId: courseId)
+        .switchMap(
+          (groups) => Rx.combineLatest(
+            groups.map(_getGroupItemParams),
+            (List<GroupItemParams> groupsParams) => groupsParams,
+          ),
+        )
+        .listen(
+          (groupsParams) => add(
+            CourseGroupsPreviewEventGroupsUpdated(
+              updatedGroups: groupsParams,
+            ),
+          ),
+        );
+  }
+
+  Stream<GroupItemParams> _getGroupItemParams(Group group) {
+    return _getCourseUseCase.execute(courseId: group.courseId).map(
+          (course) => GroupItemParams(
+            id: group.id,
+            name: group.name,
+            courseName: course.name,
+            amountOfRememberedFlashcards: group.flashcards
+                .where(
+                  (flashcard) => flashcard.status == FlashcardStatus.remembered,
+                )
+                .length,
+            amountOfAllFlashcards: group.flashcards.length,
+          ),
+        );
   }
 }

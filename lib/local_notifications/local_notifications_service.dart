@@ -1,19 +1,28 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'local_notification_model.dart';
 
 class LocalNotificationsService {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  final _selectedNotification$ =
+      BehaviorSubject<LocalNotification?>.seeded(null);
 
-  Future<NotificationAppLaunchDetails?> getLaunchDetails() async {
-    return await _flutterLocalNotificationsPlugin
+  Stream<LocalNotification?> get selectedNotification$ =>
+      _selectedNotification$.stream;
+
+  Future<LocalNotification?> getLaunchDetails() async {
+    final details = await _flutterLocalNotificationsPlugin
         .getNotificationAppLaunchDetails();
+    if (details != null && details.didNotificationLaunchApp) {
+      return _convertPayloadToLocalNotification(details.payload);
+    }
+    return null;
   }
 
-  Future<void> initializeSettings({
-    required Function(String? payload) onNotificationSelected,
-  }) async {
+  Future<void> initializeSettings() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('logo_short');
     const IOSInitializationSettings initializationSettingsIOS =
@@ -29,11 +38,76 @@ class LocalNotificationsService {
     );
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onSelectNotification: onNotificationSelected,
+      onSelectNotification: _onSelectNotification,
     );
   }
 
-  Future<void> addNotification({
+  Future<void> addScheduledNotificationForSession({
+    required String sessionId,
+    required String groupName,
+    required String startHour,
+    required String startMinute,
+    required DateTime dateTime,
+  }) async {
+    await _addNotification(
+      id: sessionId.hashCode,
+      body:
+          'Masz zaplanowaną na dzisiaj sesję z grupy $groupName na godzinę $startHour:$startMinute',
+      dateTime: dateTime,
+      payload: 'session $sessionId',
+    );
+  }
+
+  Future<void> addDefaultNotificationForSession({
+    required String sessionId,
+    required String groupName,
+    required DateTime dateTime,
+  }) async {
+    await _addNotification(
+      id: '${sessionId}15MIN'.hashCode,
+      body: 'Za 15 min wybije godzina rozpoczęcia sesji z grupy $groupName!',
+      dateTime: dateTime,
+      payload: 'session $sessionId',
+    );
+  }
+
+  Future<void> addLossOfDaysStreakNotification({
+    required int year,
+    required int month,
+    required int day,
+  }) async {
+    await _addNotification(
+      id: 'lossOfDaysStreak'.hashCode,
+      body:
+          'Masz jeszcze 5h na naukę, aby nie utracić liczby dni nauki z rzędu!',
+      dateTime: DateTime(year, month, day, 19, 00),
+      payload: 'lossOfDaysStreak',
+    );
+  }
+
+  Future<void> cancelScheduledNotificationForSession({
+    required String sessionId,
+  }) async {
+    await _cancelNotification(id: sessionId.hashCode);
+  }
+
+  Future<void> cancelDefaultNotificationForSession({
+    required String sessionId,
+  }) async {
+    await _cancelNotification(id: '${sessionId}15MIN'.hashCode);
+  }
+
+  Future<void> cancelLossOfDaysStreakNotification() async {
+    await _cancelNotification(id: 'lossOfDaysStreak'.hashCode);
+  }
+
+  void _onSelectNotification(String? payload) {
+    _selectedNotification$.add(
+      _convertPayloadToLocalNotification(payload),
+    );
+  }
+
+  Future<void> _addNotification({
     required int id,
     required String body,
     required DateTime dateTime,
@@ -61,7 +135,20 @@ class LocalNotificationsService {
     );
   }
 
-  Future<void> cancelNotification({required int id}) async {
+  Future<void> _cancelNotification({required int id}) async {
     await _flutterLocalNotificationsPlugin.cancel(id);
+  }
+
+  LocalNotification? _convertPayloadToLocalNotification(String? payload) {
+    if (payload != null) {
+      if (payload.contains('session')) {
+        return LocalSessionNotification(
+          sessionId: payload.split(' ')[1],
+        );
+      } else if (payload == 'lossOfDaysStreak') {
+        return LocalLossOfDaysStreakNotification();
+      }
+    }
+    return null;
   }
 }

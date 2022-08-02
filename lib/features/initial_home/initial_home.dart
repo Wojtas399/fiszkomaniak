@@ -1,91 +1,56 @@
-import 'package:fiszkomaniak/features/initial_home/initial_home_auth_bloc_listener.dart';
-import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
-import 'package:fiszkomaniak/features/initial_home/components/animated_form_card.dart';
-import 'package:fiszkomaniak/features/initial_home/components/animated_forms.dart';
-import 'package:fiszkomaniak/features/initial_home/initial_home_mode_provider.dart';
-import 'package:fiszkomaniak/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-import 'components/color_mode_icon.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../config/navigation.dart';
+import '../../domain/use_cases/auth/is_user_logged_use_case.dart';
+import '../../interfaces/auth_interface.dart';
+import 'bloc/initial_home_bloc.dart';
+import 'components/initial_home_content.dart';
 
 class InitialHome extends StatelessWidget {
-  const InitialHome({Key? key}) : super(key: key);
+  const InitialHome({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return InitialHomeAuthBlocListener(
-      child: OnTapFocusLoseArea(
-        child: Scaffold(
-          extendBodyBehindAppBar: true,
-          resizeToAvoidBottomInset: false,
-          appBar: const _AppBar(),
-          body: ChangeNotifierProvider(
-            create: (_) => InitialHomeModeProvider(),
-            builder: (context, _) {
-              return const _Body();
-            },
-          ),
-        ),
+    return const _InitialHomeBlocProvider(
+      child: _InitialHomeBlocListener(
+        child: InitialHomeContent(),
       ),
     );
   }
 }
 
-class _AppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _AppBar({Key? key}) : super(key: key);
+class _InitialHomeBlocProvider extends StatelessWidget {
+  final Widget child;
 
-  @override
-  Size get preferredSize => const Size.fromHeight(0);
+  const _InitialHomeBlocProvider({required this.child});
 
   @override
   Widget build(BuildContext context) {
-    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      systemOverlayStyle: themeProvider.isDarkMode
-          ? SystemUiOverlayStyle.light
-          : SystemUiOverlayStyle.dark,
-      elevation: 0,
+    return BlocProvider(
+      create: (BuildContext context) => InitialHomeBloc(
+        isUserLoggedUseCase: IsUserLoggedUseCase(
+          authInterface: context.read<AuthInterface>(),
+        ),
+      )..add(InitialHomeEventInitialize()),
+      child: child,
     );
   }
 }
 
-class _Body extends StatelessWidget {
-  const _Body({Key? key}) : super(key: key);
+class _InitialHomeBlocListener extends StatelessWidget {
+  final Widget child;
+
+  const _InitialHomeBlocListener({required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: const [
-            _Logo(),
-            AnimatedFormCard(
-              child: AnimatedForms(),
-            ),
-          ],
-        ),
-        const ColorModeIcon(),
-      ],
-    );
-  }
-}
-
-class _Logo extends StatelessWidget {
-  const _Logo({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: Container(
-          width: 325,
-          padding: const EdgeInsets.only(top: 40),
-          child: Image.asset('assets/logo.png'),
-        ),
-      ),
+    return BlocListener<InitialHomeBloc, InitialHomeState>(
+      listener: (BuildContext context, InitialHomeState state) {
+        if (state.isUserLogged) {
+          context.read<Navigation>().pushReplacementToHome(context);
+        }
+      },
+      child: child,
     );
   }
 }

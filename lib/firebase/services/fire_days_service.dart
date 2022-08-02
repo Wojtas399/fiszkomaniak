@@ -1,62 +1,64 @@
-import 'package:fiszkomaniak/firebase/fire_references.dart';
-import 'package:fiszkomaniak/firebase/models/day_db_model.dart';
-import 'package:fiszkomaniak/firebase/models/user_db_model.dart';
-import 'package:fiszkomaniak/firebase/fire_extensions.dart';
-import 'package:fiszkomaniak/models/date_model.dart';
-import '../models/day_flashcard_db_model.dart';
+import '../../models/date_model.dart';
+import '../models/day_db_model.dart';
+import '../fire_references.dart';
+import '../fire_extensions.dart';
 
 class FireDaysService {
-  Future<Map<String, Object?>?> getUpdatedDays(
-    List<DayFlashcardDbModel> flashcards,
-  ) async {
-    try {
-      final userDoc = await FireReferences.loggedUserRefWithConverter.get();
-      final UserDbModel? userData = userDoc.data();
-      if (userData != null) {
-        final List<DayDbModel>? days = userData.days;
-        if (days != null) {
-          final List<DayDbModel> updatedDays = _updateDays(days, flashcards);
-          return userData.copyWith(days: updatedDays).toJson();
-        } else {
-          return userData.copyWith(
-            days: [
-              DayDbModel(
-                date: Date.now().toDbString(),
-                rememberedFlashcards: flashcards,
-              )
-            ],
-          ).toJson();
-        }
-      }
-      return null;
-    } catch (error) {
-      rethrow;
+  Future<List<DayDbModel>?> saveRememberedFlashcardsToCurrentDay({
+    required List<String> flashcardsIds,
+  }) async {
+    final loggedUserRef = FireReferences.loggedUserRefWithConverter;
+    final userDoc = await loggedUserRef.get();
+    final userData = userDoc.data();
+    if (userData != null) {
+      final updatedDays = _getUpdatedDaysWithNewFlashcards(
+        userData.days,
+        flashcardsIds,
+      );
+      await loggedUserRef.update(
+        userData.copyWith(days: updatedDays).toJson(),
+      );
+      return updatedDays;
+    }
+    return null;
+  }
+
+  List<DayDbModel>? _getUpdatedDaysWithNewFlashcards(
+    List<DayDbModel>? existingDays,
+    List<String> flashcardsIds,
+  ) {
+    if (existingDays != null) {
+      return _addFlashcardsToCurrentDay(existingDays, flashcardsIds);
+    } else {
+      return [
+        DayDbModel(
+          date: Date.now().toDbString(),
+          rememberedFlashcardsIds: flashcardsIds,
+        ),
+      ];
     }
   }
 
-  List<DayDbModel> _updateDays(
+  List<DayDbModel> _addFlashcardsToCurrentDay(
     List<DayDbModel> existingDays,
-    List<DayFlashcardDbModel> flashcardsToSave,
+    List<String> flashcardsToSaveIds,
   ) {
     final List<DayDbModel> updatedDays = [...existingDays];
     final String currentDate = Date.now().toDbString();
     final DayDbModel latestDay = updatedDays.last;
     if (latestDay.date == currentDate) {
-      final List<DayFlashcardDbModel> rememberedFlashcards = [
-        ...latestDay.rememberedFlashcards,
+      List<String> rememberedFlashcardsIds = [
+        ...latestDay.rememberedFlashcardsIds,
       ];
-      for (final flashcard in flashcardsToSave) {
-        if (!rememberedFlashcards.contains(flashcard)) {
-          rememberedFlashcards.add(flashcard);
-        }
-      }
+      rememberedFlashcardsIds.addAll(flashcardsToSaveIds);
+      rememberedFlashcardsIds = rememberedFlashcardsIds.toSet().toList();
       updatedDays[updatedDays.length - 1] = latestDay.copyWith(
-        rememberedFlashcards: rememberedFlashcards,
+        rememberedFlashcardsIds: rememberedFlashcardsIds,
       );
     } else {
       updatedDays.add(DayDbModel(
         date: currentDate,
-        rememberedFlashcards: flashcardsToSave,
+        rememberedFlashcardsIds: flashcardsToSaveIds,
       ));
     }
     return updatedDays;

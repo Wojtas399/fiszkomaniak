@@ -1,183 +1,256 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/core/appearance_settings/appearance_settings_bloc.dart';
-import 'package:fiszkomaniak/core/notifications_settings/notifications_settings_bloc.dart';
+import 'package:fiszkomaniak/domain/entities/appearance_settings.dart';
+import 'package:fiszkomaniak/domain/entities/notifications_settings.dart';
+import 'package:fiszkomaniak/domain/use_cases/appearance_settings/get_appearance_settings_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/appearance_settings/update_appearance_settings_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/notifications_settings/get_notifications_settings_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/notifications_settings/update_notifications_settings_use_case.dart';
 import 'package:fiszkomaniak/features/settings/bloc/settings_bloc.dart';
-import 'package:fiszkomaniak/features/settings/bloc/settings_event.dart';
-import 'package:fiszkomaniak/features/settings/bloc/settings_state.dart';
-import 'package:fiszkomaniak/models/settings/appearance_settings_model.dart';
-import 'package:fiszkomaniak/models/settings/notifications_settings_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockAppearanceSettingsBloc extends Mock
-    implements AppearanceSettingsBloc {}
+class MockGetAppearanceSettingsUseCase extends Mock
+    implements GetAppearanceSettingsUseCase {}
 
-class MockNotificationsSettingsBloc extends Mock
-    implements NotificationsSettingsBloc {}
+class MockGetNotificationsSettingsUseCase extends Mock
+    implements GetNotificationsSettingsUseCase {}
+
+class MockUpdateAppearanceSettingsUseCase extends Mock
+    implements UpdateAppearanceSettingsUseCase {}
+
+class MockUpdateNotificationsSettingsUseCase extends Mock
+    implements UpdateNotificationsSettingsUseCase {}
 
 void main() {
-  final AppearanceSettingsBloc appearanceSettingsBloc =
-      MockAppearanceSettingsBloc();
-  final NotificationsSettingsBloc notificationsSettingsBloc =
-      MockNotificationsSettingsBloc();
-  late SettingsBloc settingsBloc;
-  const AppearanceSettings appearanceSettings = AppearanceSettings(
-    isDarkModeOn: true,
-    isDarkModeCompatibilityWithSystemOn: false,
-    isSessionTimerInvisibilityOn: false,
-  );
-  const NotificationsSettings notificationsSettings = NotificationsSettings(
-    areSessionsPlannedNotificationsOn: true,
-    areSessionsDefaultNotificationsOn: true,
-    areAchievementsNotificationsOn: true,
-    areDaysStreakLoseNotificationsOn: false,
+  final getAppearanceSettingsUseCase = MockGetAppearanceSettingsUseCase();
+  final getNotificationsSettingsUseCase = MockGetNotificationsSettingsUseCase();
+  final updateAppearanceSettingsUseCase = MockUpdateAppearanceSettingsUseCase();
+  final updateNotificationsSettingsUseCase =
+      MockUpdateNotificationsSettingsUseCase();
+
+  SettingsBloc createBloc({
+    AppearanceSettings appearanceSettings = const AppearanceSettings(
+      isDarkModeOn: false,
+      isDarkModeCompatibilityWithSystemOn: false,
+      isSessionTimerInvisibilityOn: false,
+    ),
+    NotificationsSettings notificationsSettings = const NotificationsSettings(
+      areSessionsPlannedNotificationsOn: false,
+      areSessionsDefaultNotificationsOn: false,
+      areAchievementsNotificationsOn: false,
+      areLossOfDaysStreakNotificationsOn: false,
+    ),
+    bool areAllNotificationsOn = false,
+  }) {
+    return SettingsBloc(
+      getAppearanceSettingsUseCase: getAppearanceSettingsUseCase,
+      getNotificationsSettingsUseCase: getNotificationsSettingsUseCase,
+      updateAppearanceSettingsUseCase: updateAppearanceSettingsUseCase,
+      updateNotificationsSettingsUseCase: updateNotificationsSettingsUseCase,
+      appearanceSettings: appearanceSettings,
+      notificationsSettings: notificationsSettings,
+      areAllNotificationsOn: areAllNotificationsOn,
+    );
+  }
+
+  SettingsState createState({
+    AppearanceSettings appearanceSettings = const AppearanceSettings(
+      isDarkModeOn: false,
+      isDarkModeCompatibilityWithSystemOn: false,
+      isSessionTimerInvisibilityOn: false,
+    ),
+    NotificationsSettings notificationsSettings = const NotificationsSettings(
+      areSessionsPlannedNotificationsOn: false,
+      areSessionsDefaultNotificationsOn: false,
+      areAchievementsNotificationsOn: false,
+      areLossOfDaysStreakNotificationsOn: false,
+    ),
+    bool areAllNotificationsOn = false,
+  }) {
+    return SettingsState(
+      appearanceSettings: appearanceSettings,
+      notificationsSettings: notificationsSettings,
+      areAllNotificationsOn: areAllNotificationsOn,
+    );
+  }
+
+  tearDown(
+    () {
+      reset(getAppearanceSettingsUseCase);
+      reset(getNotificationsSettingsUseCase);
+      reset(updateAppearanceSettingsUseCase);
+      reset(updateNotificationsSettingsUseCase);
+    },
   );
 
-  setUp(() {
-    when(() => appearanceSettingsBloc.state).thenReturn(
-      const AppearanceSettingsState(
+  group(
+    'appearance settings updated',
+    () {
+      const AppearanceSettings appearanceSettings = AppearanceSettings(
         isDarkModeOn: true,
         isDarkModeCompatibilityWithSystemOn: false,
-        isSessionTimerInvisibilityOn: false,
-      ),
-    );
-    when(() => notificationsSettingsBloc.state).thenReturn(
-      const NotificationsSettingsState(
+        isSessionTimerInvisibilityOn: true,
+      );
+
+      blocTest(
+        'should update appearance settings in state',
+        build: () => createBloc(),
+        act: (SettingsBloc bloc) {
+          bloc.add(
+            SettingsEventAppearanceSettingsUpdated(
+              appearanceSettings: appearanceSettings,
+            ),
+          );
+        },
+        expect: () => [
+          createState(
+            appearanceSettings: appearanceSettings,
+          ),
+        ],
+      );
+    },
+  );
+
+  group(
+    'notifications settings updated',
+    () {
+      const NotificationsSettings notificationsSettings = NotificationsSettings(
+        areSessionsPlannedNotificationsOn: true,
+        areSessionsDefaultNotificationsOn: false,
+        areAchievementsNotificationsOn: true,
+        areLossOfDaysStreakNotificationsOn: false,
+      );
+
+      blocTest(
+        'should update notifications settings in state',
+        build: () => createBloc(),
+        act: (SettingsBloc bloc) {
+          bloc.add(
+            SettingsEventNotificationsSettingsUpdated(
+              notificationsSettings: notificationsSettings,
+            ),
+          );
+        },
+        expect: () => [
+          createState(
+            notificationsSettings: notificationsSettings,
+          ),
+        ],
+      );
+    },
+  );
+
+  group(
+    'initialize',
+    () {
+      const AppearanceSettings appearanceSettings = AppearanceSettings(
+        isDarkModeOn: true,
+        isDarkModeCompatibilityWithSystemOn: false,
+        isSessionTimerInvisibilityOn: true,
+      );
+      const NotificationsSettings notificationsSettings = NotificationsSettings(
         areSessionsPlannedNotificationsOn: true,
         areSessionsDefaultNotificationsOn: true,
         areAchievementsNotificationsOn: true,
-        areDaysStreakLoseNotificationsOn: false,
-      ),
-    );
-    when(() => appearanceSettingsBloc.stream)
-        .thenAnswer((_) => const Stream.empty());
-    when(() => notificationsSettingsBloc.stream)
-        .thenAnswer((_) => const Stream.empty());
-    settingsBloc = SettingsBloc(
-      appearanceSettingsBloc: appearanceSettingsBloc,
-      notificationsSettingsBloc: notificationsSettingsBloc,
-    );
-  });
+        areLossOfDaysStreakNotificationsOn: true,
+      );
 
-  tearDown(() {
-    reset(appearanceSettingsBloc);
-    reset(notificationsSettingsBloc);
-  });
-
-  test('initial state', () {
-    final SettingsState state = settingsBloc.state;
-    expect(state.appearanceSettings.isDarkModeOn, true);
-    expect(state.appearanceSettings.isDarkModeCompatibilityWithSystemOn, false);
-    expect(state.appearanceSettings.isSessionTimerInvisibilityOn, false);
-    expect(state.notificationsSettings.areSessionsPlannedNotificationsOn, true);
-    expect(state.notificationsSettings.areSessionsDefaultNotificationsOn, true);
-    expect(state.notificationsSettings.areAchievementsNotificationsOn, true);
-    expect(state.notificationsSettings.areDaysStreakLoseNotificationsOn, false);
-  });
+      blocTest(
+        'should update all settings in state and should set appearance and notifications settings listeners',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => getAppearanceSettingsUseCase.execute(),
+          ).thenAnswer((_) => Stream.value(appearanceSettings));
+          when(
+            () => getNotificationsSettingsUseCase.execute(),
+          ).thenAnswer((_) => Stream.value(notificationsSettings));
+        },
+        act: (SettingsBloc bloc) {
+          bloc.add(SettingsEventInitialize());
+        },
+        expect: () => [
+          createState(
+            appearanceSettings: appearanceSettings,
+          ),
+          createState(
+            appearanceSettings: appearanceSettings,
+            notificationsSettings: notificationsSettings,
+            areAllNotificationsOn: true,
+          ),
+        ],
+        verify: (_) {
+          verify(() => getAppearanceSettingsUseCase.execute()).called(1);
+          verify(() => getNotificationsSettingsUseCase.execute()).called(1);
+        },
+      );
+    },
+  );
 
   blocTest(
-    'appearance settings changed',
-    build: () => settingsBloc,
-    act: (SettingsBloc bloc) => bloc.add(SettingsEventAppearanceSettingsChanged(
-      isDarkModeOn: false,
-      isDarkModeCompatibilityWithSystemOn: true,
-    )),
-    expect: () => [
-      const SettingsState(
-        appearanceSettings: AppearanceSettings(
+    'appearance settings changed,should call method responsible for updating appearance settings',
+    build: () => createBloc(),
+    setUp: () {
+      when(
+        () => updateAppearanceSettingsUseCase.execute(
           isDarkModeOn: false,
           isDarkModeCompatibilityWithSystemOn: true,
           isSessionTimerInvisibilityOn: false,
         ),
-        notificationsSettings: notificationsSettings,
-      ),
-    ],
-    verify: (_) {
-      verify(
-        () => appearanceSettingsBloc.add(AppearanceSettingsEventUpdate(
+      ).thenAnswer((_) async => '');
+    },
+    act: (SettingsBloc bloc) {
+      bloc.add(
+        SettingsEventAppearanceSettingsChanged(
           isDarkModeOn: false,
           isDarkModeCompatibilityWithSystemOn: true,
-        )),
-      ).called(1);
-    },
-  );
-
-  blocTest(
-    'notifications settings changed',
-    build: () => settingsBloc,
-    act: (SettingsBloc bloc) => bloc.add(
-      SettingsEventNotificationsSettingsChanged(
-        areSessionsPlannedNotificationsOn: false,
-      ),
-    ),
-    expect: () => [
-      const SettingsState(
-        appearanceSettings: appearanceSettings,
-        notificationsSettings: NotificationsSettings(
-          areSessionsPlannedNotificationsOn: false,
-          areSessionsDefaultNotificationsOn: true,
-          areAchievementsNotificationsOn: true,
-          areDaysStreakLoseNotificationsOn: false,
+          isSessionTimerInvisibilityOn: false,
         ),
-      ),
-    ],
+      );
+    },
     verify: (_) {
       verify(
-        () => notificationsSettingsBloc.add(NotificationsSettingsEventUpdate(
-          areSessionsPlannedNotificationsOn: false,
-        )),
+        () => updateAppearanceSettingsUseCase.execute(
+          isDarkModeOn: false,
+          isDarkModeCompatibilityWithSystemOn: true,
+          isSessionTimerInvisibilityOn: false,
+        ),
       ).called(1);
     },
   );
 
   blocTest(
-    'emit new appearance settings',
-    build: () => settingsBloc,
-    act: (SettingsBloc bloc) => bloc.add(
-      SettingsEventEmitNewAppearanceSettings(
-        appearanceSettings: const AppearanceSettings(
-          isDarkModeOn: true,
-          isDarkModeCompatibilityWithSystemOn: true,
-          isSessionTimerInvisibilityOn: true,
-        ),
-      ),
-    ),
-    expect: () => [
-      const SettingsState(
-        appearanceSettings: AppearanceSettings(
-          isDarkModeOn: true,
-          isDarkModeCompatibilityWithSystemOn: true,
-          isSessionTimerInvisibilityOn: true,
-        ),
-        notificationsSettings: notificationsSettings,
-      ),
-    ],
-  );
-
-  blocTest(
-    'emit new notifications settings',
-    build: () => settingsBloc,
-    act: (SettingsBloc bloc) => bloc.add(
-      SettingsEventEmitNewNotificationsSettings(
-        notificationsSettings: const NotificationsSettings(
-          areSessionsPlannedNotificationsOn: true,
-          areSessionsDefaultNotificationsOn: true,
+    'notifications settings changed, should call method responsible for updating notifications settings',
+    build: () => createBloc(),
+    setUp: () {
+      when(
+        () => updateNotificationsSettingsUseCase.execute(
+          areSessionsPlannedNotificationsOn: false,
+          areSessionsDefaultNotificationsOn: false,
           areAchievementsNotificationsOn: true,
-          areDaysStreakLoseNotificationsOn: true,
+          areLossOfDaysStreakNotificationsOn: true,
         ),
-      ),
-    ),
-    expect: () => [
-      const SettingsState(
-        appearanceSettings: appearanceSettings,
-        notificationsSettings: NotificationsSettings(
-          areSessionsPlannedNotificationsOn: true,
-          areSessionsDefaultNotificationsOn: true,
+      ).thenAnswer((_) async => '');
+    },
+    act: (SettingsBloc bloc) {
+      bloc.add(
+        SettingsEventNotificationsSettingsChanged(
+          areSessionsPlannedNotificationsOn: false,
+          areSessionsDefaultNotificationsOn: false,
           areAchievementsNotificationsOn: true,
-          areDaysStreakLoseNotificationsOn: true,
+          areLossOfDaysStreakNotificationsOn: true,
         ),
-        areAllNotificationsOn: true,
-      ),
-    ],
+      );
+    },
+    verify: (_) {
+      verify(
+        () => updateNotificationsSettingsUseCase.execute(
+          areSessionsPlannedNotificationsOn: false,
+          areSessionsDefaultNotificationsOn: false,
+          areAchievementsNotificationsOn: true,
+          areLossOfDaysStreakNotificationsOn: true,
+        ),
+      ).called(1);
+    },
   );
 }

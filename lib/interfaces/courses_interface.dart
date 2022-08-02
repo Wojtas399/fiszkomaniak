@@ -1,15 +1,22 @@
-import 'package:fiszkomaniak/models/course_model.dart';
-import '../models/changed_document.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
 
 abstract class CoursesInterface {
-  Stream<List<ChangedDocument<Course>>> getCoursesSnapshots();
+  Stream<List<Course>> get allCourses$;
 
-  Future<void> addNewCourse(String name);
+  Future<void> loadAllCourses();
+
+  Future<void> addNewCourse({required String name});
 
   Future<void> updateCourseName({
     required String courseId,
     required String newCourseName,
   });
 
-  Future<void> removeCourse(String courseId);
+  Future<void> removeCourse({required String courseId});
+
+  Stream<Course> getCourseById(String courseId);
+
+  Stream<String> getCourseNameById(String courseId);
+
+  Future<bool> isCourseNameAlreadyTaken(String courseName);
 }

@@ -1,102 +1,114 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 
 class FlashcardsEditorState extends Equatable {
-  final FlashcardsEditorMode? mode;
+  final BlocStatus status;
   final Group? group;
-  final List<EditorFlashcard> flashcards;
+  final List<EditorFlashcard> editorFlashcards;
   final int keyCounter;
 
   const FlashcardsEditorState({
-    this.mode,
-    this.group,
-    this.flashcards = const [],
-    this.keyCounter = 0,
+    required this.status,
+    required this.group,
+    required this.editorFlashcards,
+    required this.keyCounter,
   });
-
-  List<Flashcard> get flashcardsWithoutLastOne => flashcards
-      .getRange(0, flashcards.length - 1)
-      .map((flashcard) => flashcard.doc)
-      .toList();
-
-  bool get areIncorrectFlashcards {
-    for (final flashcard in flashcards) {
-      if (!flashcard.isCorrect) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  FlashcardsEditorState copyWith({
-    FlashcardsEditorMode? mode,
-    Group? group,
-    List<EditorFlashcard>? flashcards,
-    int? keyCounter,
-  }) {
-    return FlashcardsEditorState(
-      mode: mode ?? this.mode,
-      group: group ?? this.group,
-      flashcards: flashcards ?? this.flashcards,
-      keyCounter: keyCounter ?? this.keyCounter,
-    );
-  }
 
   @override
   List<Object> get props => [
-        mode ?? '',
+        status,
         group ?? '',
-        flashcards,
+        editorFlashcards,
         keyCounter,
       ];
+
+  bool isEditorFlashcardMarkedAsIncomplete(EditorFlashcard editorFlashcard) {
+    return editorFlashcard.completionStatus ==
+        EditorFlashcardCompletionStatus.incomplete;
+  }
+
+  FlashcardsEditorState copyWith({
+    BlocStatus? status,
+    Group? group,
+    List<EditorFlashcard>? editorFlashcards,
+    int? keyCounter,
+  }) {
+    return FlashcardsEditorState(
+      status: status ?? const BlocStatusComplete<FlashcardsEditorInfoType>(),
+      group: group ?? this.group,
+      editorFlashcards: editorFlashcards ?? this.editorFlashcards,
+      keyCounter: keyCounter ?? this.keyCounter,
+    );
+  }
 }
 
 class EditorFlashcard extends Equatable {
   final String key;
-  final bool isCorrect;
-  final Flashcard doc;
+  final String question;
+  final String answer;
+  final FlashcardStatus flashcardStatus;
+  final EditorFlashcardCompletionStatus completionStatus;
 
   const EditorFlashcard({
     required this.key,
-    required this.isCorrect,
-    required this.doc,
+    required this.question,
+    required this.answer,
+    required this.flashcardStatus,
+    required this.completionStatus,
   });
 
   EditorFlashcard copyWith({
     String? key,
-    bool? isCorrect,
-    Flashcard? doc,
+    String? question,
+    String? answer,
+    EditorFlashcardCompletionStatus? completionStatus,
   }) {
     return EditorFlashcard(
       key: key ?? this.key,
-      isCorrect: isCorrect ?? this.isCorrect,
-      doc: doc ?? this.doc,
+      question: question ?? this.question,
+      answer: answer ?? this.answer,
+      flashcardStatus: flashcardStatus,
+      completionStatus: completionStatus ?? this.completionStatus,
     );
   }
 
   @override
   List<Object> get props => [
         key,
-        isCorrect,
-        doc,
+        question,
+        answer,
+        flashcardStatus,
+        completionStatus,
       ];
 }
 
+enum EditorFlashcardCompletionStatus {
+  unknown,
+  complete,
+  incomplete,
+}
+
 EditorFlashcard createEditorFlashcard({
-  String key = '',
-  bool isCorrect = true,
-  Flashcard doc = const Flashcard(
-    index: 0,
-    question: '',
-    answer: '',
-    status: FlashcardStatus.notRemembered,
-  ),
+  String? key,
+  String? question,
+  String? answer,
+  FlashcardStatus? flashcardStatus,
+  EditorFlashcardCompletionStatus? completionStatus,
 }) {
   return EditorFlashcard(
-    key: key,
-    isCorrect: isCorrect,
-    doc: doc,
+    key: key ?? '',
+    question: question ?? '',
+    answer: answer ?? '',
+    flashcardStatus: flashcardStatus ?? FlashcardStatus.notRemembered,
+    completionStatus:
+        completionStatus ?? EditorFlashcardCompletionStatus.unknown,
   );
+}
+
+enum FlashcardsEditorInfoType {
+  noChangesHaveBeenMade,
+  incompleteFlashcardsExist,
+  editedFlashcardsHaveBeenSaved,
 }

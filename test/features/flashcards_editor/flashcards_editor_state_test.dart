@@ -1,92 +1,103 @@
+import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late FlashcardsEditorState state;
-  final List<EditorFlashcard> flashcards = [
-    createEditorFlashcard(
-      key: 'f1',
-      doc: createFlashcard(index: 0, question: 'question', answer: 'answer'),
+
+  setUp(
+    () => state = const FlashcardsEditorState(
+      status: BlocStatusComplete(),
+      group: null,
+      editorFlashcards: [],
+      keyCounter: 0,
     ),
-    createEditorFlashcard(
-      key: 'f2',
-      doc: createFlashcard(index: 1),
-    ),
-    createEditorFlashcard(
-      key: 'f3',
-      doc: createFlashcard(index: 2),
-    ),
-  ];
+  );
 
-  setUp(() {
-    state = const FlashcardsEditorState();
-  });
+  test(
+    'is editor flashcard marked as incomplete, should return true if editor flashcard is marked as incomplete',
+    () {
+      final EditorFlashcard editorFlashcard = createEditorFlashcard(
+        key: 'flashcard0',
+        completionStatus: EditorFlashcardCompletionStatus.incomplete,
+      );
 
-  test('initial state', () {
-    expect(state.mode, null);
-    expect(state.group, null);
-    expect(state.flashcards, const []);
-    expect(state.keyCounter, 0);
-  });
+      final result = state.isEditorFlashcardMarkedAsIncomplete(editorFlashcard);
 
-  test('copy with mode', () {
-    const FlashcardsEditorMode mode = FlashcardsEditorAddMode(groupId: 'g1');
+      expect(result, true);
+    },
+  );
 
-    final FlashcardsEditorState state2 = state.copyWith(mode: mode);
-    final FlashcardsEditorState state3 = state2.copyWith();
+  test(
+    'is editor flashcard marked as incomplete, should return false if editor flashcard is not marked as incomplete',
+    () {
+      final EditorFlashcard editorFlashcard = createEditorFlashcard(
+        key: 'flashcard0',
+        completionStatus: EditorFlashcardCompletionStatus.unknown,
+      );
 
-    expect(state2.mode, mode);
-    expect(state3.mode, mode);
-  });
+      final result = state.isEditorFlashcardMarkedAsIncomplete(editorFlashcard);
 
-  test('copy with group', () {
-    final Group group = createGroup(id: 'g1');
+      expect(result, false);
+    },
+  );
 
-    final FlashcardsEditorState state2 = state.copyWith(group: group);
-    final FlashcardsEditorState state3 = state2.copyWith();
+  test(
+    'copy with status',
+    () {
+      const BlocStatus expectedBlocStatus = BlocStatusLoading();
 
-    expect(state2.group, group);
-    expect(state3.group, group);
-  });
+      final state2 = state.copyWith(status: expectedBlocStatus);
+      final state3 = state2.copyWith();
 
-  test('copy with flashcards', () {
-    final FlashcardsEditorState state2 = state.copyWith(flashcards: flashcards);
-    final FlashcardsEditorState state3 = state2.copyWith();
+      expect(state2.status, expectedBlocStatus);
+      expect(
+        state3.status,
+        const BlocStatusComplete<FlashcardsEditorInfoType>(),
+      );
+    },
+  );
 
-    expect(state2.flashcards, flashcards);
-    expect(state3.flashcards, flashcards);
-  });
+  test(
+    'copy with group',
+    () {
+      final Group expectedGroup = createGroup(id: 'g1', name: 'group 1');
 
-  test('copy with key counter', () {
-    final FlashcardsEditorState state2 = state.copyWith(keyCounter: 2);
-    final FlashcardsEditorState state3 = state2.copyWith();
+      final state2 = state.copyWith(group: expectedGroup);
+      final state3 = state2.copyWith();
 
-    expect(state2.keyCounter, 2);
-    expect(state3.keyCounter, 2);
-  });
+      expect(state2.group, expectedGroup);
+      expect(state3.group, expectedGroup);
+    },
+  );
 
-  test('get flashcards without last one', () {
-    final List<Flashcard> expectedFlashcards = flashcards
-        .getRange(0, flashcards.length - 1)
-        .map((flashcard) => flashcard.doc)
-        .toList();
+  test(
+    'copy with editor flashcards',
+    () {
+      final List<EditorFlashcard> expectedEditorFlashcards = [
+        createEditorFlashcard(key: 'f1', question: 'q1', answer: 'a1'),
+        createEditorFlashcard(key: 'f2', question: 'q2', answer: 'a2'),
+      ];
 
-    state = state.copyWith(flashcards: flashcards);
+      final state2 = state.copyWith(editorFlashcards: expectedEditorFlashcards);
+      final state3 = state2.copyWith();
 
-    expect(state.flashcardsWithoutLastOne, expectedFlashcards);
-  });
+      expect(state2.editorFlashcards, expectedEditorFlashcards);
+      expect(state3.editorFlashcards, expectedEditorFlashcards);
+    },
+  );
 
-  test('are incorrect flashcards', () {
-    final List<EditorFlashcard> editedFlashcards = [
-      ...flashcards,
-      createEditorFlashcard(isCorrect: false),
-    ];
+  test(
+    'copy with key counter',
+    () {
+      const int expectedKeyCounter = 2;
 
-    state = state.copyWith(flashcards: editedFlashcards);
+      final state2 = state.copyWith(keyCounter: expectedKeyCounter);
+      final state3 = state2.copyWith();
 
-    expect(state.areIncorrectFlashcards, true);
-  });
+      expect(state2.keyCounter, expectedKeyCounter);
+      expect(state3.keyCounter, expectedKeyCounter);
+    },
+  );
 }

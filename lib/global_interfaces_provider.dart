@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'injections/firebase_provider.dart';
+import 'providers/firebase_provider.dart';
 
 class GlobalInterfacesProvider extends StatelessWidget {
   final Widget child;
 
-  const GlobalInterfacesProvider({Key? key, required this.child})
-      : super(key: key);
+  const GlobalInterfacesProvider({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,17 @@ class GlobalInterfacesProvider extends StatelessWidget {
           create: (_) => FirebaseProvider.provideAuthInterface(),
         ),
         RepositoryProvider(
-          create: (_) => FirebaseProvider.provideSettingsInterface(),
+          create: (_) => FirebaseProvider.provideUserInterface(),
+        ),
+        RepositoryProvider(
+          create: (_) => FirebaseProvider.provideAchievementsInterface(),
+        ),
+        RepositoryProvider(
+          create: (_) => FirebaseProvider.provideAppearanceSettingsInterface(),
+        ),
+        RepositoryProvider(
+          create: (_) =>
+              FirebaseProvider.provideNotificationsSettingsInterface(),
         ),
       ],
       child: child,

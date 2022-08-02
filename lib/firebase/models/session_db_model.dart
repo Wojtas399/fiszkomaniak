@@ -54,3 +54,23 @@ class SessionDbModel extends Equatable {
         notificationTime ?? '',
       ];
 }
+
+SessionDbModel createSessionDbModel({
+  String groupId = '',
+  String flashcardsType = '',
+  bool areQuestionsAndAnswersSwapped = false,
+  String date = '',
+  String time = '',
+  String? duration,
+  String? notificationTime,
+}) {
+  return SessionDbModel(
+    groupId: groupId,
+    flashcardsType: flashcardsType,
+    areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
+    date: date,
+    time: time,
+    duration: duration,
+    notificationTime: notificationTime,
+  );
+}

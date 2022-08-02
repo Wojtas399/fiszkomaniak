@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:provider/provider.dart';
+import '../home.dart';
 
 class HomeBottomNavigationBar extends StatelessWidget {
-  final PageController pageController;
-  final int displayingPageNumber;
-
-  const HomeBottomNavigationBar({
-    Key? key,
-    required this.pageController,
-    required this.displayingPageNumber,
-  }) : super(key: key);
+  const HomeBottomNavigationBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,57 +15,37 @@ class HomeBottomNavigationBar extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _LeftPart(
-              displayingPageNumber: displayingPageNumber,
-              onSelectPage: (int pageNumber) => _moveToPage(pageNumber),
-            ),
-            const SizedBox(width: 90),
-            _RightPart(
-              displayingPageNumber: displayingPageNumber,
-              onSelectPage: (int pageNumber) => _moveToPage(pageNumber),
-            ),
+          children: const [
+            _LeftPart(),
+            SizedBox(width: 90),
+            _RightPart(),
           ],
         ),
       ),
     );
   }
-
-  void _moveToPage(int pageNumber) {
-    pageController.animateToPage(
-      pageNumber,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeInOut,
-    );
-  }
 }
 
 class _LeftPart extends StatelessWidget {
-  final int displayingPageNumber;
-  final Function(int pageNumber) onSelectPage;
-
-  const _LeftPart({
-    Key? key,
-    required this.displayingPageNumber,
-    required this.onSelectPage,
-  }) : super(key: key);
+  const _LeftPart();
 
   @override
   Widget build(BuildContext context) {
+    final homePageController = context.watch<HomePageController>();
     return Expanded(
       child: Row(
         children: [
           _BottomBarItem(
             icon: MdiIcons.school,
             label: 'Nauka',
-            selected: displayingPageNumber == 0,
-            onPressed: () => onSelectPage(0),
+            selected: homePageController.pageNumber == 0,
+            onPressed: () => homePageController.moveToPage(0),
           ),
           _BottomBarItem(
             icon: MdiIcons.calendarCheck,
             label: 'Sesje',
-            selected: displayingPageNumber == 1,
-            onPressed: () => onSelectPage(1),
+            selected: homePageController.pageNumber == 1,
+            onPressed: () => homePageController.moveToPage(1),
           ),
         ],
       ),
@@ -79,31 +54,25 @@ class _LeftPart extends StatelessWidget {
 }
 
 class _RightPart extends StatelessWidget {
-  final int displayingPageNumber;
-  final Function(int pageNumber) onSelectPage;
-
-  const _RightPart({
-    Key? key,
-    required this.displayingPageNumber,
-    required this.onSelectPage,
-  }) : super(key: key);
+  const _RightPart();
 
   @override
   Widget build(BuildContext context) {
+    final homePageController = context.watch<HomePageController>();
     return Expanded(
       child: Row(
         children: [
           _BottomBarItem(
             icon: MdiIcons.library,
             label: 'Kursy',
-            selected: displayingPageNumber == 2,
-            onPressed: () => onSelectPage(2),
+            selected: homePageController.pageNumber == 2,
+            onPressed: () => homePageController.moveToPage(2),
           ),
           _BottomBarItem(
             icon: MdiIcons.account,
             label: 'Profil',
-            selected: displayingPageNumber == 3,
-            onPressed: () => onSelectPage(3),
+            selected: homePageController.pageNumber == 3,
+            onPressed: () => homePageController.moveToPage(3),
           ),
         ],
       ),
@@ -118,12 +87,11 @@ class _BottomBarItem extends StatelessWidget {
   final VoidCallback onPressed;
 
   const _BottomBarItem({
-    Key? key,
     required this.icon,
     required this.label,
     required this.selected,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

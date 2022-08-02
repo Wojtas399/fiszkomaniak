@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:fiszkomaniak/components/learning_progress_chart/learning_progress_cubit.dart';
 import 'package:fiszkomaniak/ui_extensions/ui_date_extensions.dart';
-import 'package:fiszkomaniak/models/day_model.dart';
+import 'package:fiszkomaniak/domain/entities/day.dart';
 import 'package:fiszkomaniak/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

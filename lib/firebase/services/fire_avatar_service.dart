@@ -1,48 +1,28 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:fiszkomaniak/firebase/fire_references.dart';
+import '../fire_references.dart';
 
 class FireAvatarService {
-  final StreamController<String?> _loggedUserAvatarUrl = StreamController();
-
-  Stream<String?> getLoggedUserAvatarSnapshots() {
-    _loadLoggedUserAvatarUrl();
-    return _loggedUserAvatarUrl.stream;
+  Future<String?> loadLoggedUserAvatarUrl() async {
+    if (await _doesLoggedUserAvatarExist()) {
+      return await FireReferences.avatarRef.getDownloadURL();
+    }
+    return null;
   }
 
   Future<void> saveNewLoggedUserAvatar(String fullPath) async {
-    try {
-      await removeLoggedUserAvatar();
-      final File imageFile = File(fullPath);
-      await FireReferences.avatarRef.putFile(imageFile);
-      final String url = await FireReferences.avatarRef.getDownloadURL();
-      _loggedUserAvatarUrl.add(url);
-    } catch (error) {
-      rethrow;
-    }
+    await removeLoggedUserAvatar();
+    final File imageFile = File(fullPath);
+    await FireReferences.avatarRef.putFile(imageFile);
   }
 
   Future<void> removeLoggedUserAvatar() async {
-    try {
-      if (await doesLoggedUserAvatarExist()) {
-        await FireReferences.avatarRef.delete();
-      }
-      _loggedUserAvatarUrl.add(null);
-    } catch (error) {
-      rethrow;
+    if (await _doesLoggedUserAvatarExist()) {
+      await FireReferences.avatarRef.delete();
     }
   }
 
-  Future<void> _loadLoggedUserAvatarUrl() async {
-    try {
-      final String url = await FireReferences.avatarRef.getDownloadURL();
-      _loggedUserAvatarUrl.add(url);
-    } catch (error) {
-      _loggedUserAvatarUrl.add(null);
-    }
-  }
-
-  Future<bool> doesLoggedUserAvatarExist() async {
+  Future<bool> _doesLoggedUserAvatarExist() async {
     try {
       await FireReferences.avatarRef.getDownloadURL();
       return true;

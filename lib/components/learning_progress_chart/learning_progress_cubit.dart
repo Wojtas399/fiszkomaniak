@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:fiszkomaniak/models/day_model.dart';
+import 'package:fiszkomaniak/domain/entities/day.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../utils/date_utils.dart';
 
@@ -50,7 +50,7 @@ class LearningProgressCubit extends Cubit<List<ChartDay>> {
         final Day day = daysFromUser.firstWhere((day) => day.date == date);
         chartDaysFromWeek[i] =
             chartDaysFromWeek[i].copyWithAmountOfRememberedFlashcards(
-          day.rememberedFlashcards.length,
+          day.amountOfRememberedFlashcards,
         );
       }
     }

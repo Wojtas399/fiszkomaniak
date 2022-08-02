@@ -1,108 +1,118 @@
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_state.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
+import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
+import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 
 void main() {
   late CourseCreatorState state;
 
   setUp(() {
-    state = const CourseCreatorState();
-  });
-
-  test('initial state', () {
-    expect(state.mode, const CourseCreatorCreateMode());
-    expect(state.courseName, '');
-    expect(state.isButtonDisabled, true);
-  });
-
-  test('copy with mode', () {
-    final Course course = createCourse(id: 'c1', name: 'name');
-    final CourseCreatorState state1 = state.copyWith(
-      mode: CourseCreatorEditMode(course: course),
-    );
-    final CourseCreatorState state2 = state1.copyWith();
-
-    expect(state1.mode, CourseCreatorEditMode(course: course));
-    expect(state2.mode, CourseCreatorEditMode(course: course));
-  });
-
-  test('copy with course name', () {
-    final CourseCreatorState state1 = state.copyWith(courseName: 'cName');
-    final CourseCreatorState state2 = state1.copyWith();
-
-    expect(state1.courseName, 'cName');
-    expect(state2.courseName, 'cName');
-  });
-
-  test('is button disabled, create mode, not empty string', () {
-    final CourseCreatorState updatedState = state.copyWith(
-      courseName: 'course name',
-    );
-
-    expect(updatedState.isButtonDisabled, false);
-  });
-
-  test('is button disabled, edit mode, data not edited', () {
-    final CourseCreatorState updatedState = state.copyWith(
-      mode: CourseCreatorEditMode(
-        course: createCourse(id: 'c1', name: 'courseName'),
-      ),
-      courseName: 'courseName',
-    );
-
-    expect(updatedState.isButtonDisabled, true);
-  });
-
-  test('is button disabled, edit mode, data edited', () {
-    final CourseCreatorState state1 = state.copyWith(
-      mode: CourseCreatorEditMode(
-        course: createCourse(id: 'c1', name: 'courseName'),
-      ),
-      courseName: 'courseName',
-    );
-    final CourseCreatorState state2 = state1.copyWith(
-      courseName: 'course name',
-    );
-
-    expect(state2.isButtonDisabled, false);
-  });
-
-  test('is button disabled, edit mode, empty string', () {
-    final CourseCreatorState state1 = state.copyWith(
-      mode: CourseCreatorEditMode(
-        course: createCourse(id: 'c1', name: 'courseName'),
-      ),
-      courseName: 'courseName',
-    );
-    final CourseCreatorState state2 = state1.copyWith(
+    state = const CourseCreatorState(
+      status: BlocStatusInitial(),
+      mode: CourseCreatorCreateMode(),
       courseName: '',
     );
-
-    expect(state2.isButtonDisabled, true);
   });
 
-  test('title, create mode', () {
-    expect(state.title, 'Nowy kurs');
-  });
+  test(
+    'is button disabled, create mode, should be true if course name is empty string',
+    () {
+      expect(state.isButtonDisabled, true);
+    },
+  );
 
-  test('title, edit mode', () {
-    final CourseCreatorState updatedState = state.copyWith(
-      mode: CourseCreatorEditMode(course: createCourse()),
-    );
+  test(
+    'is button disabled, edit mode, should be true if course name has not been edited',
+    () {
+      state = state.copyWith(
+        mode: CourseCreatorEditMode(course: createCourse(name: 'course name')),
+        courseName: 'course name',
+      );
 
-    expect(updatedState.title, 'Edycja kursu');
-  });
+      expect(state.isButtonDisabled, true);
+    },
+  );
 
-  test('button text, create mode', () {
-    expect(state.buttonText, 'utwórz');
-  });
+  test(
+    'is button disabled, edit mode, should be false if course name has been edited',
+    () {
+      state = state.copyWith(
+        mode: CourseCreatorEditMode(course: createCourse(name: 'course name')),
+        courseName: 'course name 123',
+      );
 
-  test('button text, edit mode', () {
-    final CourseCreatorState updatedState = state.copyWith(
-      mode: CourseCreatorEditMode(course: createCourse()),
-    );
+      expect(state.isButtonDisabled, false);
+    },
+  );
 
-    expect(updatedState.buttonText, 'zapisz');
-  });
+  test(
+    'is button disabled, edit mode, should be true if course name is empty string',
+    () {
+      state = state.copyWith(
+        mode: CourseCreatorEditMode(course: createCourse(name: 'course name')),
+        courseName: '',
+      );
+
+      expect(state.isButtonDisabled, true);
+    },
+  );
+
+  test(
+    'copy with status',
+    () {
+      const BlocStatus expectedStatus = BlocStatusLoading();
+
+      state = state.copyWith(status: expectedStatus);
+      final state2 = state.copyWith();
+
+      expect(state.status, expectedStatus);
+      expect(state2.status, const BlocStatusInProgress());
+    },
+  );
+
+  test(
+    'copy with mode',
+    () {
+      final CourseCreatorMode expectedMode = CourseCreatorEditMode(
+        course: createCourse(id: 'c1'),
+      );
+
+      state = state.copyWith(mode: expectedMode);
+      final state2 = state.copyWith();
+
+      expect(state.mode, expectedMode);
+      expect(state2.mode, expectedMode);
+    },
+  );
+
+  test(
+    'copy with course name',
+    () {
+      const String expectedCourseName = 'course name';
+
+      state = state.copyWith(courseName: expectedCourseName);
+      final state2 = state.copyWith();
+
+      expect(state.courseName, expectedCourseName);
+      expect(state2.courseName, expectedCourseName);
+    },
+  );
+
+  test(
+    'copy with info type',
+    () {
+      const CourseCreatorInfoType expectedInfoType =
+          CourseCreatorInfoType.courseHasBeenAdded;
+
+      state = state.copyWithInfoType(expectedInfoType);
+
+      expect(
+        state.status,
+        const BlocStatusComplete<CourseCreatorInfoType>(
+          info: expectedInfoType,
+        ),
+      );
+    },
+  );
 }

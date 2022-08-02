@@ -1,33 +1,41 @@
-import 'package:fiszkomaniak/core/achievements/achievements_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_dialogs.dart';
+import 'package:fiszkomaniak/domain/use_cases/flashcards/save_edited_flashcards_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_dialogs.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
+import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FlashcardsEditorBloc
     extends Bloc<FlashcardsEditorEvent, FlashcardsEditorState> {
-  late final GroupsBloc _groupsBloc;
-  late final FlashcardsBloc _flashcardsBloc;
-  late final AchievementsBloc _achievementsBloc;
+  late final GetGroupUseCase _getGroupUseCase;
+  late final SaveEditedFlashcardsUseCase _saveEditedFlashcardsUseCase;
   late final FlashcardsEditorDialogs _flashcardsEditorDialogs;
   late final FlashcardsEditorUtils _flashcardsEditorUtils;
 
   FlashcardsEditorBloc({
-    required GroupsBloc groupsBloc,
-    required FlashcardsBloc flashcardsBloc,
-    required AchievementsBloc achievementsBloc,
+    required GetGroupUseCase getGroupUseCase,
+    required SaveEditedFlashcardsUseCase saveEditedFlashcardsUseCase,
     required FlashcardsEditorDialogs flashcardsEditorDialogs,
     required FlashcardsEditorUtils flashcardsEditorUtils,
-  }) : super(const FlashcardsEditorState()) {
-    _groupsBloc = groupsBloc;
-    _flashcardsBloc = flashcardsBloc;
-    _achievementsBloc = achievementsBloc;
+    BlocStatus status = const BlocStatusInitial(),
+    Group? group,
+    List<EditorFlashcard> editorFlashcards = const [],
+    int keyCounter = 0,
+  }) : super(
+          FlashcardsEditorState(
+            status: status,
+            group: group,
+            editorFlashcards: editorFlashcards,
+            keyCounter: keyCounter,
+          ),
+        ) {
+    _getGroupUseCase = getGroupUseCase;
+    _saveEditedFlashcardsUseCase = saveEditedFlashcardsUseCase;
     _flashcardsEditorDialogs = flashcardsEditorDialogs;
     _flashcardsEditorUtils = flashcardsEditorUtils;
     on<FlashcardsEditorEventInitialize>(_initialize);
@@ -36,58 +44,42 @@ class FlashcardsEditorBloc
     on<FlashcardsEditorEventSave>(_save);
   }
 
-  void _initialize(
+  Future<void> _initialize(
     FlashcardsEditorEventInitialize event,
     Emitter<FlashcardsEditorState> emit,
-  ) {
-    final Group? group = _groupsBloc.state.getGroupById(event.mode.groupId);
-    if (group != null) {
-      final List<Flashcard> initialFlashcards = group.flashcards;
-      final List<EditorFlashcard> convertedInitialFlashcards =
-          _convertFlashcardsFromCore(initialFlashcards);
-      final List<EditorFlashcard> flashcards = [
-        ...(event.mode is FlashcardsEditorEditMode
-            ? convertedInitialFlashcards
-            : []),
-        EditorFlashcard(
-          key: 'flashcard${convertedInitialFlashcards.length}',
-          isCorrect: true,
-          doc: createFlashcard(index: convertedInitialFlashcards.length),
-        ),
-      ];
-      emit(state.copyWith(
-        mode: event.mode,
-        group: group,
-        flashcards: flashcards,
-        keyCounter: convertedInitialFlashcards.length,
-      ));
-    }
+  ) async {
+    final Group group =
+        await _getGroupUseCase.execute(groupId: event.groupId).first;
+    final List<EditorFlashcard> editorFlashcards =
+        _flashcardsEditorUtils.createInitialEditorFlashcards(group.flashcards);
+    emit(state.copyWith(
+      group: group,
+      editorFlashcards: editorFlashcards,
+      keyCounter: editorFlashcards.length - 1,
+    ));
   }
 
   Future<void> _removeFlashcard(
     FlashcardsEditorEventRemoveFlashcard event,
     Emitter<FlashcardsEditorState> emit,
   ) async {
-    final bool? confirmation =
-        await _flashcardsEditorDialogs.askForDeleteConfirmation();
-    if (confirmation == true) {
-      final List<EditorFlashcard> flashcards = [...state.flashcards];
-      flashcards.removeAt(event.indexOfFlashcard);
-      final Group? group = state.group;
-      if (flashcards.isEmpty && group != null) {
-        int amountOfFlashcardsInGroup = 0;
-        if (state.mode is FlashcardsEditorAddMode) {
-          amountOfFlashcardsInGroup = group.flashcards.length;
-        }
-        flashcards.add(
-          EditorFlashcard(
-            key: 'flashcard$amountOfFlashcardsInGroup',
-            isCorrect: true,
-            doc: createFlashcard(index: amountOfFlashcardsInGroup),
-          ),
+    if (await _hasFlashcardRemovalBeenConfirmed()) {
+      List<EditorFlashcard> updatedEditorFlashcards = [
+        ...state.editorFlashcards,
+      ];
+      updatedEditorFlashcards.removeAt(event.flashcardIndex);
+      int keyCounter = state.keyCounter;
+      if (updatedEditorFlashcards.isEmpty) {
+        updatedEditorFlashcards = _flashcardsEditorUtils.addNewEditorFlashcard(
+          updatedEditorFlashcards,
+          0,
         );
+        keyCounter = 0;
       }
-      emit(state.copyWith(flashcards: flashcards));
+      emit(state.copyWith(
+        editorFlashcards: updatedEditorFlashcards,
+        keyCounter: keyCounter,
+      ));
     }
   }
 
@@ -95,29 +87,34 @@ class FlashcardsEditorBloc
     FlashcardsEditorEventValueChanged event,
     Emitter<FlashcardsEditorState> emit,
   ) {
-    List<EditorFlashcard> flashcards = [...state.flashcards];
-    EditorFlashcard editedFlashcard = flashcards[event.indexOfFlashcard];
-    flashcards[event.indexOfFlashcard] = editedFlashcard.copyWith(
-      doc: editedFlashcard.doc.copyWith(
-        question: event.question,
-        answer: event.answer,
-      ),
+    List<EditorFlashcard> updatedEditorFlashcards = _updateEditedFlashcard(
+      event.flashcardIndex,
+      event.question,
+      event.answer,
     );
-    flashcards = _flashcardsEditorUtils
-        .removeEmptyFlashcardsWithoutLastOneAndChangedFlashcard(
-      flashcards,
-      event.indexOfFlashcard,
+    updatedEditorFlashcards = _flashcardsEditorUtils
+        .removeEmptyEditorFlashcardsApartFromLastAndEditedOne(
+      updatedEditorFlashcards,
+      event.flashcardIndex,
     );
-    if (event.indexOfFlashcard == flashcards.length - 1) {
-      flashcards = _addNewFlashcard(flashcards);
-      emit(state.copyWith(keyCounter: state.keyCounter + 1));
-    }
-    if (state.areIncorrectFlashcards) {
-      flashcards = _flashcardsEditorUtils.setFlashcardsAsCorrectIfItIsPossible(
-        flashcards,
+    int keyCounter = state.keyCounter;
+    if (event.flashcardIndex == updatedEditorFlashcards.length - 1) {
+      keyCounter++;
+      updatedEditorFlashcards = _flashcardsEditorUtils.addNewEditorFlashcard(
+        updatedEditorFlashcards,
+        keyCounter,
       );
     }
-    emit(state.copyWith(flashcards: flashcards));
+    if (_isThereAtLeastOneFlashcardMarkedAsIncomplete()) {
+      updatedEditorFlashcards = _flashcardsEditorUtils
+          .updateCompletionStatusInEditorFlashcardsMarkedAsIncomplete(
+        updatedEditorFlashcards,
+      );
+    }
+    emit(state.copyWith(
+      editorFlashcards: updatedEditorFlashcards,
+      keyCounter: keyCounter,
+    ));
   }
 
   Future<void> _save(
@@ -125,116 +122,100 @@ class FlashcardsEditorBloc
     Emitter<FlashcardsEditorState> emit,
   ) async {
     final Group? group = state.group;
-    final FlashcardsEditorMode? mode = state.mode;
-    if (group != null && mode != null && await _canSave(emit)) {
-      final List<Flashcard> flashcardsToSave = mode is FlashcardsEditorEditMode
-          ? state.flashcardsWithoutLastOne
-          : [...group.flashcards, ...state.flashcardsWithoutLastOne];
-      _flashcardsBloc.add(FlashcardsEventSaveFlashcards(
+    if (group != null && await _canSave(emit)) {
+      emit(state.copyWith(
+        status: const BlocStatusLoading(),
+      ));
+      final List<Flashcard> flashcardsToSave =
+          _flashcardsEditorUtils.convertEditorFlashcardsToFlashcards(
+        _getEditorFlashcardsWithoutLastOne(),
+      );
+      await _saveEditedFlashcardsUseCase.execute(
         groupId: group.id,
         flashcards: flashcardsToSave,
-        justAddedFlashcards: mode is FlashcardsEditorAddMode,
-      ));
-      _achievementsBloc.add(AchievementsEventAddNewFlashcards(
-        groupId: group.id,
-        flashcardsIndexes:
-            flashcardsToSave.map((flashcard) => flashcard.index).toList(),
+      );
+      emit(state.copyWith(
+        status: const BlocStatusComplete<FlashcardsEditorInfoType>(
+          info: FlashcardsEditorInfoType.editedFlashcardsHaveBeenSaved,
+        ),
       ));
     }
   }
 
-  List<EditorFlashcard> _convertFlashcardsFromCore(
-    List<Flashcard> flashcards,
-  ) {
-    return flashcards.asMap().entries.map((entry) {
-      return EditorFlashcard(
-        key: 'flashcard${entry.key}',
-        isCorrect: true,
-        doc: entry.value,
-      );
-    }).toList();
+  Future<bool> _hasFlashcardRemovalBeenConfirmed() async {
+    return await _flashcardsEditorDialogs.askForDeleteConfirmation();
   }
 
-  List<EditorFlashcard> _addNewFlashcard(
-    List<EditorFlashcard> flashcards,
+  List<EditorFlashcard> _updateEditedFlashcard(
+    int editedFlashcardIndex,
+    String? question,
+    String? answer,
   ) {
-    final List<EditorFlashcard> updatedFlashcards = [...flashcards];
-    updatedFlashcards.add(EditorFlashcard(
-      key: 'flashcard${state.keyCounter + 1}',
-      isCorrect: true,
-      doc: createFlashcard(index: state.keyCounter + 1),
-    ));
-    return updatedFlashcards;
+    List<EditorFlashcard> flashcards = [...state.editorFlashcards];
+    EditorFlashcard editedFlashcard = flashcards[editedFlashcardIndex];
+    flashcards[editedFlashcardIndex] = editedFlashcard.copyWith(
+      question: question,
+      answer: answer,
+    );
+    return flashcards;
+  }
+
+  bool _isThereAtLeastOneFlashcardMarkedAsIncomplete() {
+    for (final editorFlashcard
+        in Utils.removeLastElement(state.editorFlashcards)) {
+      if (editorFlashcard.completionStatus ==
+          EditorFlashcardCompletionStatus.incomplete) {
+        return true;
+      }
+    }
+    return false;
   }
 
   Future<bool> _canSave(Emitter<FlashcardsEditorState> emit) async {
-    if (await _areEditedFlashcardsSameAsOriginal()) {
+    if (_areEditorFlashcardsSameAsGroupFlashcards()) {
+      emit(state.copyWith(
+        status: const BlocStatusComplete<FlashcardsEditorInfoType>(
+          info: FlashcardsEditorInfoType.noChangesHaveBeenMade,
+        ),
+      ));
       return false;
     }
-    if (await _areThereIncorrectFlashcards(emit)) {
-      return false;
-    }
-    if (await _areThereDuplicates(emit)) {
+    if (_areThereIncompleteFlashcards()) {
+      final List<EditorFlashcard> updatedEditorFlashcards =
+          _flashcardsEditorUtils.updateEditorFlashcardsCompletionStatuses(
+        state.editorFlashcards,
+      );
+      emit(state.copyWith(
+        status: const BlocStatusComplete<FlashcardsEditorInfoType>(
+          info: FlashcardsEditorInfoType.incompleteFlashcardsExist,
+        ),
+        editorFlashcards: updatedEditorFlashcards,
+      ));
       return false;
     }
     return await _flashcardsEditorDialogs.askForSaveConfirmation() == true;
   }
 
-  Future<bool> _areEditedFlashcardsSameAsOriginal() async {
-    final List<Flashcard>? originalFlashcards = state.group?.flashcards;
-    if (originalFlashcards != null &&
-        _flashcardsEditorUtils.haveChangesBeenMade(
-              originalFlashcards,
-              state.flashcardsWithoutLastOne,
-            ) ==
-            false) {
-      await _flashcardsEditorDialogs.displayInfoAboutNoChanges();
-      return true;
-    }
-    return false;
+  List<EditorFlashcard> _getEditorFlashcardsWithoutLastOne() {
+    return Utils.removeLastElement(state.editorFlashcards);
   }
 
-  Future<bool> _areThereIncorrectFlashcards(
-    Emitter<FlashcardsEditorState> emit,
-  ) async {
-    final List<Flashcard> incorrectFlashcards = _flashcardsEditorUtils
-        .lookForIncorrectlyCompletedFlashcards(state.flashcardsWithoutLastOne);
-    if (incorrectFlashcards.isNotEmpty) {
-      _updateIncorrectFlashcards(incorrectFlashcards, emit);
-      await _flashcardsEditorDialogs.displayInfoAboutIncorrectFlashcards();
-      return true;
+  bool _areEditorFlashcardsSameAsGroupFlashcards() {
+    final List<Flashcard> groupFlashcards = state.group?.flashcards ?? [];
+    final List<EditorFlashcard> editorFlashcards =
+        _getEditorFlashcardsWithoutLastOne();
+    if (editorFlashcards.isEmpty && groupFlashcards.isNotEmpty) {
+      return false;
     }
-    return false;
+    return _flashcardsEditorUtils.areEditorFlashcardsSameAsGroupFlashcards(
+      groupFlashcards,
+      editorFlashcards,
+    );
   }
 
-  Future<bool> _areThereDuplicates(Emitter<FlashcardsEditorState> emit) async {
-    final List<Flashcard> flashcardsToCheck =
-        state.mode is FlashcardsEditorAddMode
-            ? [
-                ...(state.group?.flashcards ?? []),
-                ...state.flashcardsWithoutLastOne,
-              ]
-            : state.flashcardsWithoutLastOne;
-    final List<Flashcard> duplications =
-        _flashcardsEditorUtils.lookForDuplicates(flashcardsToCheck);
-    if (duplications.isNotEmpty) {
-      _updateIncorrectFlashcards(duplications, emit);
-      await _flashcardsEditorDialogs.displayInfoAboutDuplicates();
-      return true;
-    }
-    return false;
-  }
-
-  void _updateIncorrectFlashcards(
-    List<Flashcard> incorrectFlashcards,
-    Emitter<FlashcardsEditorState> emit,
-  ) {
-    final List<EditorFlashcard> updatedFlashcards = [...state.flashcards];
-    for (int i = 0; i < updatedFlashcards.length; i++) {
-      if (incorrectFlashcards.contains(updatedFlashcards[i].doc)) {
-        updatedFlashcards[i] = updatedFlashcards[i].copyWith(isCorrect: false);
-      }
-    }
-    emit(state.copyWith(flashcards: updatedFlashcards));
+  bool _areThereIncompleteFlashcards() {
+    return _flashcardsEditorUtils.areThereIncompleteEditorFlashcards(
+      _getEditorFlashcardsWithoutLastOne(),
+    );
   }
 }

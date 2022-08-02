@@ -1,27 +1,11 @@
-import 'package:fiszkomaniak/components/flashcard_multilines_text_field.dart';
+import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'flashcard_preview_flashcard_with_title.dart';
 
 class FlashcardPreviewQuestionAnswer extends StatelessWidget {
-  final String nameForQuestion;
-  final String nameForAnswer;
-  final TextEditingController questionController;
-  final TextEditingController answerController;
-  final Function(String value)? onQuestionChanged;
-  final Function(String value)? onAnswerChanged;
-  final FocusNode? questionFocusNode;
-  final FocusNode? answerFocusNode;
-
-  const FlashcardPreviewQuestionAnswer({
-    Key? key,
-    required this.nameForQuestion,
-    required this.nameForAnswer,
-    required this.questionController,
-    required this.answerController,
-    required this.onQuestionChanged,
-    required this.onAnswerChanged,
-    this.questionFocusNode,
-    this.answerFocusNode,
-  }) : super(key: key);
+  const FlashcardPreviewQuestionAnswer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,129 +14,115 @@ class FlashcardPreviewQuestionAnswer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _FlashcardWithTitle(
-            title: 'Pytanie',
-            subtitle: nameForQuestion,
-            controller: questionController,
-            onChanged: onQuestionChanged,
-            focusNode: questionFocusNode,
-            onTap: () {
-              questionFocusNode?.requestFocus();
-            },
-          ),
+          _Question(),
           const SizedBox(height: 16),
-          _FlashcardWithTitle(
-            title: 'Odpowiedź',
-            subtitle: nameForAnswer,
-            controller: answerController,
-            onChanged: onAnswerChanged,
-            focusNode: answerFocusNode,
-            onTap: () {
-              answerFocusNode?.requestFocus();
-            },
-          ),
+          _Answer(),
         ],
       ),
     );
   }
 }
 
-class _FlashcardWithTitle extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final TextEditingController controller;
-  final Function(String value)? onChanged;
-  final FocusNode? focusNode;
-  final VoidCallback? onTap;
-
-  const _FlashcardWithTitle({
-    Key? key,
-    required this.title,
-    required this.subtitle,
-    required this.controller,
-    this.onChanged,
-    this.focusNode,
-    this.onTap,
-  }) : super(key: key);
+class _Question extends StatelessWidget {
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _FlashcardTitle(title: title, subtitle: subtitle),
-        const SizedBox(height: 8),
-        _Flashcard(
-          controller: controller,
-          onChanged: onChanged,
-          focusNode: focusNode,
-          onTap: onTap,
-        ),
-      ],
+    final String? nameForQuestions = context.select(
+      (FlashcardPreviewBloc bloc) => bloc.state.group?.nameForQuestions,
     );
+    final String question = context.select(
+      (FlashcardPreviewBloc bloc) => bloc.state.question,
+    );
+    final BlocStatus status = context.select(
+      (FlashcardPreviewBloc bloc) => bloc.state.status,
+    );
+    if (_haveQuestionAndAnswerBeenInitialized(status) ||
+        _haveQuestionAndAnswerBeenReset(status)) {
+      _controller.text = question;
+    }
+    return FlashcardWithTitle(
+      title: 'Pytanie',
+      subtitle: nameForQuestions ?? '',
+      controller: _controller,
+      onChanged: (String question) => _onQuestionChanged(question, context),
+      focusNode: _focusNode,
+      onTap: () {
+        _focusNode.requestFocus();
+      },
+    );
+  }
+
+  void _onQuestionChanged(
+    String question,
+    BuildContext context,
+  ) {
+    context
+        .read<FlashcardPreviewBloc>()
+        .add(FlashcardPreviewEventQuestionChanged(question: question));
+  }
+
+  bool _haveQuestionAndAnswerBeenInitialized(BlocStatus status) {
+    return status is BlocStatusComplete &&
+        status.info ==
+            FlashcardPreviewInfoType.questionAndAnswerHaveBeenInitialized;
+  }
+
+  bool _haveQuestionAndAnswerBeenReset(BlocStatus status) {
+    return status is BlocStatusComplete &&
+        status.info == FlashcardPreviewInfoType.questionAndAnswerHaveBeenReset;
   }
 }
 
-class _FlashcardTitle extends StatelessWidget {
-  final String title;
-  final String subtitle;
-
-  const _FlashcardTitle({
-    Key? key,
-    required this.title,
-    required this.subtitle,
-  }) : super(key: key);
+class _Answer extends StatelessWidget {
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(title, style: Theme.of(context).textTheme.subtitle1),
-        const SizedBox(width: 4.0),
-        Text('($subtitle)', style: Theme.of(context).textTheme.caption),
-      ],
+    final String? nameForAnswers = context.select(
+      (FlashcardPreviewBloc bloc) => bloc.state.group?.nameForAnswers,
+    );
+    final String answer = context.select(
+      (FlashcardPreviewBloc bloc) => bloc.state.answer,
+    );
+    final BlocStatus status = context.select(
+      (FlashcardPreviewBloc bloc) => bloc.state.status,
+    );
+    if (_haveQuestionAndAnswerBeenInitialized(status) ||
+        _haveQuestionAndAnswerBeenReset(status)) {
+      _controller.text = answer;
+    }
+    return FlashcardWithTitle(
+      title: 'Odpowiedź',
+      subtitle: nameForAnswers ?? '',
+      controller: _controller,
+      onChanged: (String answer) => _onAnswerChanged(answer, context),
+      focusNode: _focusNode,
+      onTap: () {
+        _focusNode.requestFocus();
+      },
     );
   }
-}
 
-class _Flashcard extends StatelessWidget {
-  final TextEditingController controller;
-  final Function(String value)? onChanged;
-  final VoidCallback? onTap;
-  final FocusNode? focusNode;
+  void _onAnswerChanged(
+    String answer,
+    BuildContext context,
+  ) {
+    context
+        .read<FlashcardPreviewBloc>()
+        .add(FlashcardPreviewEventAnswerChanged(answer: answer));
+  }
 
-  const _Flashcard(
-      {Key? key,
-      required this.controller,
-      required this.onChanged,
-      this.onTap,
-      this.focusNode})
-      : super(key: key);
+  bool _haveQuestionAndAnswerBeenInitialized(BlocStatus status) {
+    return status is BlocStatusComplete &&
+        status.info ==
+            FlashcardPreviewInfoType.questionAndAnswerHaveBeenInitialized;
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: double.infinity,
-        height: 180,
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Center(
-              child: FlashcardMultiLinesTextField(
-                textAlign: TextAlign.center,
-                controller: controller,
-                onChanged: onChanged,
-                focusNode: focusNode,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  bool _haveQuestionAndAnswerBeenReset(BlocStatus status) {
+    return status is BlocStatusComplete &&
+        status.info == FlashcardPreviewInfoType.questionAndAnswerHaveBeenReset;
   }
 }

@@ -1,315 +1,410 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/flashcards/remove_flashcard_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/flashcards/update_flashcard_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_dialogs.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_event.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_state.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_status.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview_dialogs.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockCoursesBloc extends Mock implements CoursesBloc {}
+class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
 
-class MockGroupsBloc extends Mock implements GroupsBloc {}
+class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
 
-class MockFlashcardsBloc extends Mock implements FlashcardsBloc {}
+class MockUpdateFlashcardUseCase extends Mock
+    implements UpdateFlashcardUseCase {}
+
+class MockRemoveFlashcardUseCase extends Mock
+    implements RemoveFlashcardUseCase {}
 
 class MockFlashcardPreviewDialogs extends Mock
     implements FlashcardPreviewDialogs {}
 
 void main() {
-  final CoursesBloc coursesBloc = MockCoursesBloc();
-  final GroupsBloc groupsBloc = MockGroupsBloc();
-  final FlashcardsBloc flashcardsBloc = MockFlashcardsBloc();
-  final FlashcardPreviewDialogs flashcardPreviewDialogs =
-      MockFlashcardPreviewDialogs();
-  late FlashcardPreviewBloc bloc;
-  final CoursesState coursesState = CoursesState(
-    allCourses: [
-      createCourse(id: 'c1', name: 'course 1 name'),
-      createCourse(id: 'c2', name: 'course 2 name'),
-    ],
-  );
-  final GroupsState groupsState = GroupsState(
-    allGroups: [
-      createGroup(
-        id: 'g1',
-        courseId: 'c1',
-        flashcards: [
-          createFlashcard(index: 0, question: 'q1', answer: 'a1'),
-          createFlashcard(index: 1, question: 'q2', answer: 'a2'),
-          createFlashcard(index: 2, question: 'q3', answer: 'a3'),
-        ],
-      ),
-      createGroup(id: 'g2', courseId: 'c1'),
-      createGroup(id: 'g3', courseId: 'c2'),
-    ],
-  );
-  final FlashcardsState flashcardsState = FlashcardsState(
-    groupsState: groupsState,
-  );
+  final getGroupUseCase = MockGetGroupUseCase();
+  final getCourseUseCase = MockGetCourseUseCase();
+  final updateFlashcardUseCase = MockUpdateFlashcardUseCase();
+  final removeFlashcardUseCase = MockRemoveFlashcardUseCase();
+  final flashcardPreviewDialogs = MockFlashcardPreviewDialogs();
 
-  setUp(() {
-    bloc = FlashcardPreviewBloc(
-      flashcardsBloc: flashcardsBloc,
-      coursesBloc: coursesBloc,
-      groupsBloc: groupsBloc,
+  FlashcardPreviewBloc createBloc({
+    Flashcard? flashcard,
+    Group? group,
+    String? courseName,
+    String? question,
+    String? answer,
+  }) {
+    return FlashcardPreviewBloc(
+      getGroupUseCase: getGroupUseCase,
+      getCourseUseCase: getCourseUseCase,
+      updateFlashcardUseCase: updateFlashcardUseCase,
+      removeFlashcardUseCase: removeFlashcardUseCase,
       flashcardPreviewDialogs: flashcardPreviewDialogs,
+      flashcard: flashcard,
+      group: group,
+      courseName: courseName ?? '',
+      question: question ?? '',
+      answer: answer ?? '',
     );
-    when(() => coursesBloc.state).thenReturn(coursesState);
-    when(() => groupsBloc.state).thenReturn(groupsState);
-    when(() => flashcardsBloc.state).thenReturn(flashcardsState);
-    when(() => flashcardsBloc.stream).thenAnswer((_) => const Stream.empty());
-  });
+  }
+
+  FlashcardPreviewState createState({
+    BlocStatus? status,
+    Flashcard? flashcard,
+    Group? group,
+    String? courseName,
+    String? question,
+    String? answer,
+  }) {
+    return FlashcardPreviewState(
+      status: status ?? const BlocStatusComplete<FlashcardPreviewInfoType>(),
+      flashcard: flashcard,
+      group: group,
+      courseName: courseName ?? '',
+      question: question ?? '',
+      answer: answer ?? '',
+    );
+  }
 
   tearDown(() {
-    reset(coursesBloc);
-    reset(groupsBloc);
-    reset(flashcardsBloc);
+    reset(getGroupUseCase);
+    reset(getCourseUseCase);
+    reset(updateFlashcardUseCase);
+    reset(removeFlashcardUseCase);
     reset(flashcardPreviewDialogs);
   });
 
-  blocTest(
+  group(
     'initialize',
-    build: () => bloc,
-    act: (_) => bloc.add(FlashcardPreviewEventInitialize(
-      params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 1),
-    )),
+    () {
+      final List<Flashcard> flashcards = [
+        createFlashcard(index: 0, question: 'q0', answer: 'a0'),
+        createFlashcard(index: 1, question: 'q1', answer: 'a1'),
+      ];
+      final Group group = createGroup(
+        id: 'g1',
+        courseId: 'c1',
+        flashcards: flashcards,
+      );
+      final Course course = createCourse(id: 'c1', name: 'course 1');
+
+      blocTest(
+        'should set group listener, should load group and course and should update the whole status',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => getGroupUseCase.execute(groupId: 'g1'),
+          ).thenAnswer((_) => Stream.value(group));
+          when(
+            () => getCourseUseCase.execute(courseId: 'c1'),
+          ).thenAnswer((_) => Stream.value(course));
+        },
+        act: (FlashcardPreviewBloc bloc) {
+          bloc.add(
+            FlashcardPreviewEventInitialize(groupId: 'g1', flashcardIndex: 1),
+          );
+        },
+        expect: () => [
+          createState(
+            status: const BlocStatusComplete<FlashcardPreviewInfoType>(
+              info:
+                  FlashcardPreviewInfoType.questionAndAnswerHaveBeenInitialized,
+            ),
+            flashcard: flashcards[1],
+            group: group,
+            courseName: course.name,
+            question: flashcards[1].question,
+            answer: flashcards[1].answer,
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => getGroupUseCase.execute(groupId: 'g1'),
+          ).called(2);
+          verify(
+            () => getCourseUseCase.execute(courseId: 'c1'),
+          ).called(1);
+        },
+      );
+    },
+  );
+
+  group(
+    'group updated',
+    () {
+      final Flashcard flashcard = createFlashcard(
+        index: 0,
+        question: 'q0',
+        answer: 'a0',
+      );
+      final List<Flashcard> updatedFlashcards = [
+        createFlashcard(index: 0, question: 'question0', answer: 'answer0'),
+        createFlashcard(index: 1, question: 'q1', answer: 'a1'),
+      ];
+      final Group group = createGroup(
+        id: 'g1',
+        name: 'group 1',
+        flashcards: updatedFlashcards,
+      );
+
+      blocTest(
+        'should update group, flashcard, question and answer in state',
+        build: () => createBloc(flashcard: flashcard),
+        act: (FlashcardPreviewBloc bloc) {
+          bloc.add(FlashcardPreviewEventGroupUpdated(group: group));
+        },
+        expect: () => [
+          createState(
+            group: group,
+            flashcard: updatedFlashcards[0],
+            question: updatedFlashcards[0].question,
+            answer: updatedFlashcards[0].answer,
+          ),
+        ],
+      );
+    },
+  );
+
+  blocTest(
+    'question changed, should update question in state',
+    build: () => createBloc(),
+    act: (FlashcardPreviewBloc bloc) {
+      bloc.add(FlashcardPreviewEventQuestionChanged(question: 'question'));
+    },
     expect: () => [
-      FlashcardPreviewState(
-        flashcard: groupsState.allGroups[0].flashcards[1],
-        group: groupsState.allGroups[0],
-        courseName: coursesState.allCourses[0].name,
-        status: FlashcardPreviewStatusLoaded(),
-      ),
+      createState(question: 'question'),
     ],
   );
 
   blocTest(
-    'question changed',
-    build: () => bloc,
-    act: (_) => bloc.add(
-      FlashcardPreviewEventQuestionChanged(question: 'question'),
-    ),
+    'answer changed, should update answer in state',
+    build: () => createBloc(),
+    act: (FlashcardPreviewBloc bloc) {
+      bloc.add(FlashcardPreviewEventAnswerChanged(answer: 'answer'));
+    },
     expect: () => [
-      FlashcardPreviewState(
-        newQuestion: 'question',
-        status: FlashcardPreviewStatusQuestionChanged(),
-      ),
+      createState(answer: 'answer'),
     ],
   );
 
-  blocTest(
-    'answer changed',
-    build: () => bloc,
-    act: (_) => bloc.add(
-      FlashcardPreviewEventAnswerChanged(answer: 'answer'),
-    ),
-    expect: () => [
-      FlashcardPreviewState(
-        newAnswer: 'answer',
-        status: FlashcardPreviewStatusAnswerChanged(),
-      ),
-    ],
-  );
-
-  blocTest(
+  group(
     'reset changes',
-    build: () => bloc,
-    act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(
-        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
-      ));
-      bloc.add(FlashcardPreviewEventResetChanges());
+    () {
+      final Flashcard flashcard = createFlashcard(question: 'q', answer: 'a');
+
+      blocTest(
+        'should set original question and answer in state',
+        build: () => createBloc(flashcard: flashcard),
+        act: (FlashcardPreviewBloc bloc) {
+          bloc.add(FlashcardPreviewEventResetChanges());
+        },
+        expect: () => [
+          createState(
+            status: const BlocStatusComplete<FlashcardPreviewInfoType>(
+              info: FlashcardPreviewInfoType.questionAndAnswerHaveBeenReset,
+            ),
+            flashcard: flashcard,
+            question: flashcard.question,
+            answer: flashcard.answer,
+          ),
+        ],
+      );
+    },
+  );
+
+  blocTest(
+    'save changes, question or answer is empty, should emit appropriate info',
+    build: () => createBloc(),
+    act: (FlashcardPreviewBloc bloc) {
+      bloc.add(FlashcardPreviewEventSaveChanges());
     },
     expect: () => [
-      FlashcardPreviewState(
-        flashcard: groupsState.allGroups[0].flashcards[0],
-        group: groupsState.allGroups[0],
-        courseName: coursesState.allCourses[0].name,
-        status: FlashcardPreviewStatusLoaded(),
-      ),
-      FlashcardPreviewState(
-        flashcard: groupsState.allGroups[0].flashcards[0],
-        group: groupsState.allGroups[0],
-        courseName: coursesState.allCourses[0].name,
-        status: FlashcardPreviewStatusReset(),
-        newQuestion: groupsState.allGroups[0].flashcards[0].question,
-        newAnswer: groupsState.allGroups[0].flashcards[0].answer,
+      createState(
+        status: const BlocStatusComplete<FlashcardPreviewInfoType>(
+          info: FlashcardPreviewInfoType.flashcardIsIncomplete,
+        ),
       ),
     ],
   );
 
-  blocTest(
-    'save changes, confirmed',
-    build: () => bloc,
-    setUp: () {
-      when(() => flashcardPreviewDialogs.askForSaveConfirmation())
-          .thenAnswer((_) async => true);
-    },
-    act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(
-        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
-      ));
-      bloc.add(FlashcardPreviewEventQuestionChanged(question: 'q1'));
-      bloc.add(FlashcardPreviewEventAnswerChanged(answer: 'a1'));
-      bloc.add(FlashcardPreviewEventSaveChanges());
-    },
-    verify: (_) {
-      verify(() => flashcardPreviewDialogs.askForSaveConfirmation()).called(1);
-      verify(
-        () => flashcardsBloc.add(FlashcardsEventUpdateFlashcard(
-          groupId: 'g1',
-          flashcard: groupsState.allGroups[0].flashcards[0].copyWith(
-            question: 'q1',
-            answer: 'a1',
-          ),
-        )),
-      ).called(1);
-    },
-  );
+  group(
+    'save changes, question and answer are not empty',
+    () {
+      final Flashcard flashcard = createFlashcard(question: 'q', answer: 'a');
+      final Group group = createGroup(id: 'g1');
 
-  blocTest(
-    'save changes, cancelled',
-    build: () => bloc,
-    setUp: () {
-      when(() => flashcardPreviewDialogs.askForSaveConfirmation())
-          .thenAnswer((_) async => false);
-    },
-    act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(
-        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
-      ));
-      bloc.add(FlashcardPreviewEventQuestionChanged(question: 'q1'));
-      bloc.add(FlashcardPreviewEventAnswerChanged(answer: 'a1'));
-      bloc.add(FlashcardPreviewEventSaveChanges());
-    },
-    verify: (_) {
-      verify(() => flashcardPreviewDialogs.askForSaveConfirmation()).called(1);
-      verifyNever(
-        () => flashcardsBloc.add(FlashcardsEventUpdateFlashcard(
-          groupId: 'g1',
-          flashcard: groupsState.allGroups[0].flashcards[0].copyWith(
-            question: 'q1',
-            answer: 'a1',
+      blocTest(
+        'confirmed, should call use case responsible for updating flashcard',
+        build: () => createBloc(
+          group: group,
+          flashcard: flashcard,
+          question: 'question',
+          answer: 'answer',
+        ),
+        setUp: () {
+          when(
+            () => flashcardPreviewDialogs.askForSaveConfirmation(),
+          ).thenAnswer((_) async => true);
+          when(
+            () => updateFlashcardUseCase.execute(
+              groupId: 'g1',
+              flashcard: flashcard.copyWith(
+                question: 'question',
+                answer: 'answer',
+              ),
+            ),
+          ).thenAnswer((_) async => '');
+        },
+        act: (FlashcardPreviewBloc bloc) {
+          bloc.add(FlashcardPreviewEventSaveChanges());
+        },
+        expect: () => [
+          createState(
+            status: const BlocStatusLoading(),
+            group: group,
+            flashcard: flashcard,
+            question: 'question',
+            answer: 'answer',
           ),
-        )),
+          createState(
+            status: const BlocStatusComplete<FlashcardPreviewInfoType>(
+              info: FlashcardPreviewInfoType.flashcardHasBeenUpdated,
+            ),
+            group: group,
+            flashcard: flashcard,
+            question: 'question',
+            answer: 'answer',
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => updateFlashcardUseCase.execute(
+              groupId: 'g1',
+              flashcard: flashcard.copyWith(
+                question: 'question',
+                answer: 'answer',
+              ),
+            ),
+          ).called(1);
+        },
+      );
+
+      blocTest(
+        'cancelled, should not call use case responsible for updating flashcard',
+        build: () => createBloc(
+          group: group,
+          flashcard: flashcard,
+          question: 'question',
+          answer: 'answer',
+        ),
+        setUp: () {
+          when(
+            () => flashcardPreviewDialogs.askForSaveConfirmation(),
+          ).thenAnswer((_) async => false);
+          when(
+            () => updateFlashcardUseCase.execute(
+              groupId: 'g1',
+              flashcard: flashcard.copyWith(
+                question: 'question',
+                answer: 'answer',
+              ),
+            ),
+          ).thenAnswer((_) async => '');
+        },
+        act: (FlashcardPreviewBloc bloc) {
+          bloc.add(FlashcardPreviewEventSaveChanges());
+        },
+        expect: () => [],
+        verify: (_) {
+          verifyNever(
+            () => updateFlashcardUseCase.execute(
+              groupId: 'g1',
+              flashcard: flashcard.copyWith(
+                question: 'question',
+                answer: 'answer',
+              ),
+            ),
+          );
+        },
       );
     },
   );
 
   blocTest(
-    'save changes, new answer is empty',
-    build: () => bloc,
+    'remove flashcard, confirmed, should call use case responsible for removing flashcard',
+    build: () => createBloc(
+      group: createGroup(id: 'g1'),
+      flashcard: createFlashcard(index: 0),
+    ),
     setUp: () {
-      when(() => flashcardPreviewDialogs.showEmptyFlashcardInfo())
-          .thenAnswer((_) async => '');
-    },
-    act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(
-        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
-      ));
-      bloc.add(FlashcardPreviewEventQuestionChanged(question: 'q1'));
-      bloc.add(FlashcardPreviewEventAnswerChanged(answer: ''));
-      bloc.add(FlashcardPreviewEventSaveChanges());
-    },
-    verify: (_) {
-      verify(() => flashcardPreviewDialogs.showEmptyFlashcardInfo()).called(1);
-      verifyNever(
-        () => flashcardsBloc.add(FlashcardsEventUpdateFlashcard(
+      when(
+        () => flashcardPreviewDialogs.askForDeleteConfirmation(),
+      ).thenAnswer((_) async => true);
+      when(
+        () => removeFlashcardUseCase.execute(
           groupId: 'g1',
-          flashcard: groupsState.allGroups[0].flashcards[0].copyWith(
-            question: 'q1',
-            answer: '',
-          ),
-        )),
-      );
+          flashcardIndex: 0,
+        ),
+      ).thenAnswer((_) async => '');
     },
-  );
-
-  blocTest(
-    'save changes, new question is empty',
-    build: () => bloc,
-    setUp: () {
-      when(() => flashcardPreviewDialogs.showEmptyFlashcardInfo())
-          .thenAnswer((_) async => '');
-    },
-    act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(
-        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
-      ));
-      bloc.add(FlashcardPreviewEventQuestionChanged(question: ''));
-      bloc.add(FlashcardPreviewEventAnswerChanged(answer: 'a1'));
-      bloc.add(FlashcardPreviewEventSaveChanges());
-    },
-    verify: (_) {
-      verify(() => flashcardPreviewDialogs.showEmptyFlashcardInfo()).called(1);
-      verifyNever(
-        () => flashcardsBloc.add(FlashcardsEventUpdateFlashcard(
-          groupId: 'g1',
-          flashcard: groupsState.allGroups[0].flashcards[0].copyWith(
-            question: '',
-            answer: 'a1',
-          ),
-        )),
-      );
-    },
-  );
-
-  blocTest(
-    'remove flashcard, confirmed',
-    build: () => bloc,
-    setUp: () {
-      when(() => flashcardPreviewDialogs.askForDeleteConfirmation())
-          .thenAnswer((_) async => true);
-    },
-    act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(
-        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
-      ));
+    act: (FlashcardPreviewBloc bloc) {
       bloc.add(FlashcardPreviewEventRemoveFlashcard());
     },
+    expect: () => [
+      createState(
+        status: const BlocStatusLoading(),
+        group: createGroup(id: 'g1'),
+        flashcard: createFlashcard(index: 0),
+      ),
+      createState(
+        status: const BlocStatusComplete<FlashcardPreviewInfoType>(
+          info: FlashcardPreviewInfoType.flashcardHasBeenRemoved,
+        ),
+        group: createGroup(id: 'g1'),
+        flashcard: createFlashcard(index: 0),
+      ),
+    ],
     verify: (_) {
-      verify(() => flashcardPreviewDialogs.askForDeleteConfirmation())
-          .called(1);
       verify(
-        () => flashcardsBloc.add(
-          FlashcardsEventRemoveFlashcard(
-            groupId: 'g1',
-            flashcard: groupsState.allGroups[0].flashcards[0],
-          ),
+        () => removeFlashcardUseCase.execute(
+          groupId: 'g1',
+          flashcardIndex: 0,
         ),
       ).called(1);
     },
   );
 
   blocTest(
-    'remove flashcard, cancelled',
-    build: () => bloc,
+    'remove flashcard, cancelled, should not call use case responsible for removing flashcard',
+    build: () => createBloc(
+      group: createGroup(id: 'g1'),
+      flashcard: createFlashcard(index: 0),
+    ),
     setUp: () {
-      when(() => flashcardPreviewDialogs.askForDeleteConfirmation())
-          .thenAnswer((_) async => false);
+      when(
+        () => flashcardPreviewDialogs.askForDeleteConfirmation(),
+      ).thenAnswer((_) async => false);
+      when(
+        () => removeFlashcardUseCase.execute(
+          groupId: 'g1',
+          flashcardIndex: 0,
+        ),
+      ).thenAnswer((_) async => '');
     },
-    act: (_) {
-      bloc.add(FlashcardPreviewEventInitialize(
-        params: FlashcardPreviewParams(groupId: 'g1', flashcardIndex: 0),
-      ));
+    act: (FlashcardPreviewBloc bloc) {
       bloc.add(FlashcardPreviewEventRemoveFlashcard());
     },
+    expect: () => [],
     verify: (_) {
-      verify(() => flashcardPreviewDialogs.askForDeleteConfirmation())
-          .called(1);
       verifyNever(
-        () => flashcardsBloc.add(
-          FlashcardsEventRemoveFlashcard(
-            groupId: 'g1',
-            flashcard: groupsState.allGroups[0].flashcards[0],
-          ),
+        () => removeFlashcardUseCase.execute(
+          groupId: 'g1',
+          flashcardIndex: 0,
         ),
       );
     },

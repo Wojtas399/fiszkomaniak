@@ -1,15 +1,15 @@
-import 'package:fiszkomaniak/components/textfields/custom_textfield.dart';
-import 'package:fiszkomaniak/components/textfields/password_textfield.dart';
-import 'package:fiszkomaniak/core/validators/user_validator.dart';
-import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_bloc.dart';
-import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_event.dart';
-import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/textfields/custom_textfield.dart';
+import '../../../components/textfields/password_textfield.dart';
+import '../../../validators/email_validator.dart';
+import '../../../validators/password_validator.dart';
+import '../../../validators/username_validator.dart';
+import '../bloc/sign_up_bloc.dart';
 
 class SignUpInputs extends StatelessWidget {
-  const SignUpInputs({Key? key}) : super(key: key);
+  const SignUpInputs({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,97 +31,101 @@ class SignUpInputs extends StatelessWidget {
 class _UsernameTextField extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
 
-  _UsernameTextField({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SignUpBloc, SignUpState>(
-      builder: (BuildContext context, SignUpState state) {
-        if (state.username == '') {
-          _controller.clear();
-        }
-        return CustomTextField(
-          icon: MdiIcons.account,
-          label: 'Nazwa użytkownika',
-          isRequired: true,
-          placeholder: 'np. Jan Nowak',
-          controller: _controller,
-          onChanged: (String value) => _onChanged(context, value),
-          validator: (String? value) => _validator(state.isCorrectUsername),
-        );
-      },
+    final String username = context.select(
+      (SignUpBloc bloc) => bloc.state.username,
+    );
+    final bool isValid = context.select(
+      (SignUpBloc bloc) => bloc.state.isUsernameValid,
+    );
+    if (username == '') {
+      _controller.clear();
+    }
+    return CustomTextField(
+      icon: MdiIcons.account,
+      label: 'Nazwa użytkownika',
+      isRequired: true,
+      placeholder: 'np. Jan Nowak',
+      controller: _controller,
+      onChanged: (String value) => _onChanged(context, value),
+      validator: (String? value) => _validator(isValid),
     );
   }
 
   void _onChanged(BuildContext context, String value) {
-    context.read<SignUpBloc>().add(SignUpEventUsernameChanged(username: value));
+    context.read<SignUpBloc>().add(
+          SignUpEventUsernameChanged(username: value),
+        );
   }
 
   String? _validator(bool isCorrect) {
     if (isCorrect) {
       return null;
     }
-    return UserValidator.incorrectUsernameMessage;
+    return UsernameValidator.message;
   }
 }
 
 class _EmailTextField extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
 
-  _EmailTextField({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SignUpBloc, SignUpState>(
-      builder: (BuildContext context, SignUpState state) {
-        if (state.email == '') {
-          _controller.clear();
-        }
-        return CustomTextField(
-          icon: MdiIcons.account,
-          label: 'Adres email',
-          isRequired: true,
-          placeholder: 'np. jan.nowak@example.com',
-          controller: _controller,
-          onChanged: (String value) => _onChanged(context, value),
-          validator: (String? value) => _validator(state.isCorrectEmail),
-        );
-      },
+    final String email = context.select(
+      (SignUpBloc bloc) => bloc.state.email,
+    );
+    final bool isValid = context.select(
+      (SignUpBloc bloc) => bloc.state.isEmailValid,
+    );
+    if (email == '') {
+      _controller.clear();
+    }
+    return CustomTextField(
+      icon: MdiIcons.account,
+      label: 'Adres email',
+      isRequired: true,
+      placeholder: 'np. jan.nowak@example.com',
+      controller: _controller,
+      onChanged: (String value) => _onChanged(context, value),
+      validator: (String? value) => _validator(isValid),
     );
   }
 
   void _onChanged(BuildContext context, String value) {
-    context.read<SignUpBloc>().add(SignUpEventEmailChanged(email: value));
+    context.read<SignUpBloc>().add(
+          SignUpEventEmailChanged(email: value),
+        );
   }
 
   String? _validator(bool isCorrect) {
     if (isCorrect) {
       return null;
     }
-    return UserValidator.incorrectEmailMessage;
+    return EmailValidator.message;
   }
 }
 
 class _PasswordTextField extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
 
-  _PasswordTextField({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SignUpBloc, SignUpState>(
-      builder: (BuildContext context, SignUpState state) {
-        if (state.password == '') {
-          _controller.clear();
-        }
-        return PasswordTextField(
-          label: 'Hasło',
-          isRequired: true,
-          controller: _controller,
-          onChanged: (String value) => _onChanged(context, value),
-          validator: (String? value) => _validator(state.isCorrectPassword),
-        );
-      },
+    final String password = context.select(
+      (SignUpBloc bloc) => bloc.state.password,
+    );
+    final bool isValid = context.select(
+      (SignUpBloc bloc) => bloc.state.isPasswordValid,
+    );
+    if (password == '') {
+      _controller.clear();
+    }
+    return PasswordTextField(
+      label: 'Hasło',
+      isRequired: true,
+      controller: _controller,
+      onChanged: (String value) => _onChanged(context, value),
+      validator: (String? value) => _validator(isValid),
     );
   }
 
@@ -135,32 +139,30 @@ class _PasswordTextField extends StatelessWidget {
     if (isCorrect) {
       return null;
     }
-    return UserValidator.incorrectPasswordMessage;
+    return PasswordValidator.message;
   }
 }
 
 class _PasswordConfirmationTextField extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
 
-  _PasswordConfirmationTextField({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SignUpBloc, SignUpState>(
-      builder: (BuildContext context, SignUpState state) {
-        if (state.passwordConfirmation == '') {
-          _controller.clear();
-        }
-        return PasswordTextField(
-          label: 'Powtórz hasło',
-          isRequired: true,
-          controller: _controller,
-          onChanged: (String value) => _onChanged(context, value),
-          validator: (String? value) => _validator(
-            state.isCorrectPasswordConfirmation,
-          ),
-        );
-      },
+    final String passwordConfirmation = context.select(
+      (SignUpBloc bloc) => bloc.state.passwordConfirmation,
+    );
+    final bool isValid = context.select(
+      (SignUpBloc bloc) => bloc.state.isPasswordConfirmationValid,
+    );
+    if (passwordConfirmation == '') {
+      _controller.clear();
+    }
+    return PasswordTextField(
+      label: 'Powtórz hasło',
+      isRequired: true,
+      controller: _controller,
+      onChanged: (String value) => _onChanged(context, value),
+      validator: (String? value) => _validator(isValid),
     );
   }
 
@@ -174,6 +176,6 @@ class _PasswordConfirmationTextField extends StatelessWidget {
     if (isCorrect) {
       return null;
     }
-    return 'Hasła i nie są jednakowe';
+    return 'Hasła nie są jednakowe';
   }
 }

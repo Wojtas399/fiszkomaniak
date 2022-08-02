@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiszkomaniak/firebase/fire_document.dart';
 import 'package:fiszkomaniak/firebase/fire_references.dart';
-import 'package:fiszkomaniak/firebase/models/fire_doc_model.dart';
+import 'package:fiszkomaniak/firebase/fire_utils.dart';
 import 'package:fiszkomaniak/firebase/models/session_db_model.dart';
 
 class FireSessionsService {
@@ -12,26 +13,81 @@ class FireSessionsService {
         .get();
   }
 
-  Stream<QuerySnapshot<SessionDbModel>> getSessionsSnapshots() {
-    return FireReferences.sessionsRefWithConverter.snapshots();
+  Future<List<FireDocument<SessionDbModel>>> loadAllSessions() async {
+    final docs = await FireReferences.sessionsRefWithConverter.get();
+    final sessionsSnapshots =
+        docs.docChanges.map((docChange) => docChange.doc).toList();
+    return sessionsSnapshots
+        .map(_convertDocumentSnapshotToFireDocument)
+        .whereType<FireDocument<SessionDbModel>>()
+        .toList();
   }
 
-  Future<String> addNewSession(SessionDbModel sessionData) async {
-    final doc = await FireReferences.sessionsRefWithConverter.add(sessionData);
-    return doc.id;
+  Future<FireDocument<SessionDbModel>?> loadSessionById({
+    required String sessionId,
+  }) async {
+    final doc =
+        await FireReferences.sessionsRefWithConverter.doc(sessionId).get();
+    return _convertDocumentSnapshotToFireDocument(doc);
   }
 
-  Future<void> updateSession(FireDoc<SessionDbModel> sessionData) async {
-    await FireReferences.sessionsRefWithConverter.doc(sessionData.id).update(
-          sessionData.doc.toJson(),
-        );
+  Future<FireDocument<SessionDbModel>?> addNewSession({
+    required String groupId,
+    required String flashcardsType,
+    required bool areQuestionsAndAnswersSwapped,
+    required String date,
+    required String time,
+    required String? duration,
+    required String? notificationTime,
+  }) async {
+    final docRef = await FireReferences.sessionsRefWithConverter.add(
+      SessionDbModel(
+        groupId: groupId,
+        flashcardsType: flashcardsType,
+        areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
+        date: date,
+        time: time,
+        duration: duration,
+        notificationTime: notificationTime,
+      ),
+    );
+    final doc = await docRef.get();
+    return _convertDocumentSnapshotToFireDocument(doc);
+  }
+
+  Future<FireDocument<SessionDbModel>?> updateSession({
+    required String sessionId,
+    String? groupId,
+    String? flashcardsType,
+    bool? areQuestionsAndAnswersSwapped,
+    String? date,
+    String? time,
+    String? duration,
+    String? notificationTime,
+  }) async {
+    final docRef = FireReferences.sessionsRefWithConverter.doc(sessionId);
+    await docRef.update(
+      SessionDbModel(
+        groupId: groupId,
+        flashcardsType: flashcardsType,
+        areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
+        date: date,
+        time: time,
+        duration: duration,
+        notificationTime: notificationTime,
+      ).toJson(),
+    );
+    final doc = await docRef.get();
+    return _convertDocumentSnapshotToFireDocument(doc);
   }
 
   Future<void> removeSession(String sessionId) async {
-    try {
-      await FireReferences.sessionsRefWithConverter.doc(sessionId).delete();
-    } catch (error) {
-      rethrow;
-    }
+    await FireReferences.sessionsRefWithConverter.doc(sessionId).delete();
+  }
+
+  FireDocument<SessionDbModel>? _convertDocumentSnapshotToFireDocument(
+    DocumentSnapshot<SessionDbModel> doc,
+  ) {
+    return FireUtils.convertDocumentSnapshotToFireDocument<SessionDbModel>(doc);
   }
 }

@@ -1,50 +1,53 @@
 import 'dart:async';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/flashcards/flashcards_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_event.dart';
-import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_state.dart';
-import 'package:fiszkomaniak/models/flashcard_model.dart';
+import 'package:equatable/equatable.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../domain/entities/flashcard.dart';
+import '../../../domain/entities/group.dart';
+
+part 'group_flashcards_preview_event.dart';
+
+part 'group_flashcards_preview_state.dart';
 
 class GroupFlashcardsPreviewBloc
     extends Bloc<GroupFlashcardsPreviewEvent, GroupFlashcardsPreviewState> {
-  late final GroupsBloc _groupsBloc;
-  late final FlashcardsBloc _flashcardsBloc;
-  late final Navigation _navigation;
-  StreamSubscription? _flashcardsStateSubscription;
+  late final GetGroupUseCase _getGroupUseCase;
+  StreamSubscription<Group>? _groupListener;
 
   GroupFlashcardsPreviewBloc({
-    required GroupsBloc groupsBloc,
-    required FlashcardsBloc flashcardsBloc,
-    required Navigation navigation,
-  }) : super(const GroupFlashcardsPreviewState()) {
-    _groupsBloc = groupsBloc;
-    _flashcardsBloc = flashcardsBloc;
-    _navigation = navigation;
+    required GetGroupUseCase getGroupUseCase,
+    String? groupId,
+    String? groupName,
+    List<Flashcard>? flashcards,
+    String? searchValue,
+  }) : super(
+          GroupFlashcardsPreviewState(
+            groupId: groupId ?? '',
+            groupName: groupName ?? '',
+            flashcardsFromGroup: flashcards ?? [],
+            searchValue: searchValue ?? '',
+          ),
+        ) {
+    _getGroupUseCase = getGroupUseCase;
     on<GroupFlashcardsPreviewEventInitialize>(_initialize);
     on<GroupFlashcardsPreviewEventSearchValueChanged>(_searchValueChanged);
-    on<GroupFlashcardsPreviewEventShowFlashcardDetails>(_showFlashcardDetails);
-    on<GroupFlashcardsPreviewEventFlashcardsStateUpdated>(
-      _flashcardsStateUpdated,
-    );
+    on<GroupFlashcardsPreviewEventGroupChanged>(_groupChanged);
   }
 
-  void _initialize(
+  @override
+  Future<void> close() {
+    _groupListener?.cancel();
+    return super.close();
+  }
+
+  Future<void> _initialize(
     GroupFlashcardsPreviewEventInitialize event,
     Emitter<GroupFlashcardsPreviewState> emit,
-  ) {
-    final String? groupName = _groupsBloc.state.getGroupNameById(event.groupId);
-    final List<Flashcard> flashcardsFromGroup =
-        _flashcardsBloc.state.getFlashcardsFromGroup(event.groupId);
-    if (groupName != null) {
-      emit(state.copyWith(
-        groupId: event.groupId,
-        groupName: groupName,
-        flashcardsFromGroup: flashcardsFromGroup,
-      ));
-    }
-    _setFlashcardsStateSubscription();
+  ) async {
+    final Group group =
+        await _getGroupUseCase.execute(groupId: event.groupId).first;
+    add(GroupFlashcardsPreviewEventGroupChanged(group: group));
+    _setGroupListener(event.groupId);
   }
 
   void _searchValueChanged(
@@ -54,34 +57,20 @@ class GroupFlashcardsPreviewBloc
     emit(state.copyWith(searchValue: event.searchValue));
   }
 
-  void _showFlashcardDetails(
-    GroupFlashcardsPreviewEventShowFlashcardDetails event,
+  void _groupChanged(
+    GroupFlashcardsPreviewEventGroupChanged event,
     Emitter<GroupFlashcardsPreviewState> emit,
   ) {
-    final String? groupId = state.groupId;
-    if (groupId != null) {
-      _navigation.navigateToFlashcardPreview(groupId, event.flashcardIndex);
-    }
+    emit(state.copyWith(
+      groupId: event.group.id,
+      groupName: event.group.name,
+      flashcardsFromGroup: event.group.flashcards,
+    ));
   }
 
-  void _flashcardsStateUpdated(
-    GroupFlashcardsPreviewEventFlashcardsStateUpdated event,
-    Emitter<GroupFlashcardsPreviewState> emit,
-  ) {
-    final List<Flashcard> flashcardsFromGroup =
-        _flashcardsBloc.state.getFlashcardsFromGroup(state.groupId);
-    emit(state.copyWith(flashcardsFromGroup: flashcardsFromGroup));
-  }
-
-  void _setFlashcardsStateSubscription() {
-    _flashcardsStateSubscription = _flashcardsBloc.stream.listen((_) {
-      add(GroupFlashcardsPreviewEventFlashcardsStateUpdated());
-    });
-  }
-
-  @override
-  Future<void> close() {
-    _flashcardsStateSubscription?.cancel();
-    return super.close();
+  void _setGroupListener(String groupId) {
+    _groupListener = _getGroupUseCase.execute(groupId: groupId).listen(
+          (group) => add(GroupFlashcardsPreviewEventGroupChanged(group: group)),
+        );
   }
 }

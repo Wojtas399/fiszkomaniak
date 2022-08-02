@@ -1,113 +1,151 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/core/courses/courses_bloc.dart';
-import 'package:fiszkomaniak/core/groups/groups_bloc.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_mode.dart';
+import 'package:fiszkomaniak/domain/entities/course.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/get_all_courses_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/load_all_courses_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_bloc.dart';
-import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_event.dart';
-import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_state.dart';
-import 'package:fiszkomaniak/models/course_model.dart';
-import 'package:fiszkomaniak/models/group_model.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockCoursesBloc extends Mock implements CoursesBloc {}
+class MockLoadAllCoursesUseCase extends Mock implements LoadAllCoursesUseCase {}
 
-class MockGroupsBloc extends Mock implements GroupsBloc {}
+class MockGetAllCoursesUseCase extends Mock implements GetAllCoursesUseCase {}
 
-class MockNavigation extends Mock implements Navigation {}
+class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
+
+class MockGetGroupsByCourseIdUseCase extends Mock
+    implements GetGroupsByCourseIdUseCase {}
+
+class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
 
 void main() {
-  final CoursesBloc coursesBloc = MockCoursesBloc();
-  final GroupsBloc groupsBloc = MockGroupsBloc();
-  final Navigation navigation = MockNavigation();
+  final loadAllCoursesUseCase = MockLoadAllCoursesUseCase();
+  final getAllCoursesUseCase = MockGetAllCoursesUseCase();
+  final getCourseUseCase = MockGetCourseUseCase();
+  final getGroupsByCourseIdUseCase = MockGetGroupsByCourseIdUseCase();
+  final getGroupUseCase = MockGetGroupUseCase();
   late GroupSelectionBloc bloc;
-  final CoursesState coursesState = CoursesState(
-    allCourses: [
-      createCourse(id: 'c1'),
-      createCourse(id: 'c2'),
-      createCourse(id: 'c3'),
-    ],
-  );
-  final GroupsState groupsState = GroupsState(
-    allGroups: [
-      createGroup(id: 'g1', courseId: 'c1'),
-      createGroup(id: 'g2', courseId: 'c2'),
-      createGroup(id: 'g3', courseId: 'c3'),
-      createGroup(id: 'g4', courseId: 'c1'),
-    ],
-  );
 
-  setUp(() {
-    bloc = GroupSelectionBloc(
-      coursesBloc: coursesBloc,
-      groupsBloc: groupsBloc,
-      navigation: navigation,
-    );
-    when(() => coursesBloc.state).thenReturn(coursesState);
-    when(() => groupsBloc.state).thenReturn(groupsState);
-    when(() => groupsBloc.stream).thenAnswer((_) => const Stream.empty());
-  });
+  setUp(
+    () => bloc = GroupSelectionBloc(
+      loadAllCoursesUseCase: loadAllCoursesUseCase,
+      getAllCoursesUseCase: getAllCoursesUseCase,
+      getCourseUseCase: getCourseUseCase,
+      getGroupsByCourseIdUseCase: getGroupsByCourseIdUseCase,
+      getGroupUseCase: getGroupUseCase,
+    ),
+  );
 
   tearDown(() {
-    reset(coursesBloc);
-    reset(groupsBloc);
-    reset(navigation);
+    reset(loadAllCoursesUseCase);
+    reset(getAllCoursesUseCase);
+    reset(getCourseUseCase);
+    reset(getGroupsByCourseIdUseCase);
+    reset(getGroupUseCase);
   });
 
   blocTest(
-    'initialize',
+    'initialize, should load all courses and assign them to state',
     build: () => bloc,
+    setUp: () {
+      when(() => loadAllCoursesUseCase.execute()).thenAnswer((_) async => true);
+      when(
+        () => getAllCoursesUseCase.execute(),
+      ).thenAnswer(
+        (_) => Stream.value(
+          [createCourse(id: 'c1'), createCourse(id: 'c2')],
+        ),
+      );
+    },
     act: (_) => bloc.add(GroupSelectionEventInitialize()),
     expect: () => [
-      GroupSelectionState(allCourses: coursesState.allCourses),
-    ],
-  );
-
-  blocTest(
-    'course selected',
-    build: () => bloc,
-    act: (_) => bloc.add(GroupSelectionEventCourseSelected(courseId: 'c1')),
-    expect: () => [
+      GroupSelectionState(status: const BlocStatusLoading()),
       GroupSelectionState(
-        selectedCourse: coursesState.allCourses[0],
-        groupsFromCourse: [
-          groupsState.allGroups[0],
-          groupsState.allGroups[3],
-        ],
+        status: const BlocStatusComplete(),
+        allCourses: [createCourse(id: 'c1'), createCourse(id: 'c2')],
       ),
     ],
+    verify: (_) {
+      verify(() => loadAllCoursesUseCase.execute()).called(1);
+      verify(() => getAllCoursesUseCase.execute()).called(1);
+    },
   );
 
   blocTest(
-    'group selected',
-    build: () => bloc,
-    act: (_) => bloc.add(GroupSelectionEventGroupSelected(groupId: 'g1')),
-    expect: () => [
-      GroupSelectionState(selectedGroup: groupsState.allGroups[0]),
-    ],
-  );
-
-  blocTest(
-    'button pressed',
+    'course selected, should get from repo course and groups which belong to this course and assign it all to state',
     build: () => bloc,
     setUp: () {
       when(
-        () => navigation.navigateToFlashcardsEditor(
-          const FlashcardsEditorAddMode(groupId: 'g1'),
+        () => getCourseUseCase.execute(courseId: 'c1'),
+      ).thenAnswer(
+        (_) => Stream.value(createCourse(id: 'c1', name: 'course 1')),
+      );
+      when(
+        () => getGroupsByCourseIdUseCase.execute(courseId: 'c1'),
+      ).thenAnswer(
+        (_) => Stream.value(
+          [createGroup(id: 'g1'), createGroup(id: 'g2')],
         ),
-      ).thenReturn(null);
+      );
     },
-    act: (_) {
-      bloc.add(GroupSelectionEventGroupSelected(groupId: 'g1'));
-      bloc.add(GroupSelectionEventButtonPressed());
-    },
+    act: (_) => bloc.add(GroupSelectionEventCourseSelected(courseId: 'c1')),
+    expect: () => [
+      GroupSelectionState(
+        status: const BlocStatusComplete(),
+        selectedCourse: createCourse(id: 'c1', name: 'course 1'),
+        groupsFromCourse: [
+          createGroup(id: 'g1'),
+          createGroup(id: 'g2'),
+        ],
+      ),
+    ],
     verify: (_) {
+      verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
       verify(
-        () => navigation.navigateToFlashcardsEditor(
-          const FlashcardsEditorAddMode(groupId: 'g1'),
-        ),
+        () => getGroupsByCourseIdUseCase.execute(courseId: 'c1'),
       ).called(1);
     },
+  );
+
+  blocTest(
+    'group selected, should set group listener',
+    build: () => bloc,
+    setUp: () {
+      when(
+        () => getGroupUseCase.execute(groupId: 'g1'),
+      ).thenAnswer(
+        (_) => Stream.value(
+          createGroup(id: 'g1', name: 'group 1'),
+        ),
+      );
+    },
+    act: (_) => bloc.add(GroupSelectionEventGroupSelected(groupId: 'g1')),
+    expect: () => [
+      GroupSelectionState(
+        status: const BlocStatusComplete(),
+        selectedGroup: createGroup(id: 'g1', name: 'group 1'),
+      ),
+    ],
+    verify: (_) {
+      verify(() => getGroupUseCase.execute(groupId: 'g1')).called(1);
+    },
+  );
+
+  blocTest(
+    'group updated, should update group in state',
+    build: () => bloc,
+    act: (_) => bloc.add(
+      GroupSelectionEventGroupUpdated(group: createGroup(id: 'g1')),
+    ),
+    expect: () => [
+      GroupSelectionState(
+        status: const BlocStatusComplete(),
+        selectedGroup: createGroup(id: 'g1'),
+      ),
+    ],
   );
 }
