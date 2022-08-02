@@ -26,7 +26,7 @@ class SignInState extends Equatable {
     String? password,
   }) {
     return SignInState(
-      status: status ?? const BlocStatusComplete(),
+      status: status ?? const BlocStatusInProgress(),
       email: email ?? this.email,
       password: password ?? this.password,
     );

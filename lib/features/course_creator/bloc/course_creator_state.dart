@@ -6,9 +6,9 @@ class CourseCreatorState extends Equatable {
   final String courseName;
 
   const CourseCreatorState({
-    this.status = const BlocStatusInitial(),
-    this.mode = const CourseCreatorCreateMode(),
-    this.courseName = '',
+    required this.status,
+    required this.mode,
+    required this.courseName,
   });
 
   @override
@@ -18,24 +18,30 @@ class CourseCreatorState extends Equatable {
         courseName,
       ];
 
-  CourseCreatorState copyWith({
-    BlocStatus? status,
-    CourseCreatorMode? mode,
-    String? courseName,
-  }) {
-    return CourseCreatorState(
-      status: status ?? const BlocStatusComplete(),
-      mode: mode ?? this.mode,
-      courseName: courseName ?? this.courseName,
-    );
-  }
-
   bool get isButtonDisabled {
     final CourseCreatorMode mode = this.mode;
     if (mode is CourseCreatorEditMode) {
       return courseName == mode.course.name || courseName.isEmpty;
     }
     return courseName.isEmpty;
+  }
+
+  CourseCreatorState copyWith({
+    BlocStatus? status,
+    CourseCreatorMode? mode,
+    String? courseName,
+  }) {
+    return CourseCreatorState(
+      status: status ?? const BlocStatusInProgress(),
+      mode: mode ?? this.mode,
+      courseName: courseName ?? this.courseName,
+    );
+  }
+
+  CourseCreatorState copyWithInfoType(CourseCreatorInfoType infoType) {
+    return copyWith(
+      status: BlocStatusComplete<CourseCreatorInfoType>(info: infoType),
+    );
   }
 }
 

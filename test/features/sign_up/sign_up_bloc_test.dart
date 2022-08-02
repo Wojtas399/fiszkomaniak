@@ -1,4 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/use_cases/auth/sign_up_use_case.dart';
 import 'package:fiszkomaniak/exceptions/auth_exceptions.dart';
 import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_bloc.dart';
@@ -6,8 +8,6 @@ import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:fiszkomaniak/validators/email_validator.dart';
 import 'package:fiszkomaniak/validators/password_validator.dart';
 import 'package:fiszkomaniak/validators/username_validator.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockSignUpUseCase extends Mock implements SignUpUseCase {}
 
@@ -42,7 +42,7 @@ void main() {
   }
 
   SignUpState createState({
-    BlocStatus status = const BlocStatusComplete(),
+    BlocStatus status = const BlocStatusInProgress(),
     String username = '',
     String email = '',
     String password = '',

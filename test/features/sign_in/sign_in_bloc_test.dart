@@ -1,10 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/use_cases/auth/sign_in_use_case.dart';
 import 'package:fiszkomaniak/exceptions/auth_exceptions.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockSignInUseCase extends Mock implements SignInUseCase {}
 
@@ -23,7 +23,7 @@ void main() {
   }
 
   SignInState createState({
-    BlocStatus status = const BlocStatusComplete(),
+    BlocStatus status = const BlocStatusInProgress(),
     String email = '',
     String password = '',
   }) {

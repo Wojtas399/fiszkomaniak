@@ -1,64 +1,19 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late CourseCreatorState state;
 
   setUp(() {
-    state = const CourseCreatorState();
+    state = const CourseCreatorState(
+      status: BlocStatusInitial(),
+      mode: CourseCreatorCreateMode(),
+      courseName: '',
+    );
   });
-
-  test(
-    'initial state',
-    () {
-      expect(state.status, const BlocStatusInitial());
-      expect(state.mode, const CourseCreatorCreateMode());
-      expect(state.courseName, '');
-    },
-  );
-
-  test(
-    'copy with status',
-    () {
-      const expectedStatus = BlocStatusLoading();
-
-      final state2 = state.copyWith(status: expectedStatus);
-      final state3 = state2.copyWith();
-
-      expect(state2.status, expectedStatus);
-      expect(state3.status, const BlocStatusComplete());
-    },
-  );
-
-  test(
-    'copy with mode',
-    () {
-      final expectedMode =
-          CourseCreatorEditMode(course: createCourse(id: 'c1'));
-
-      final state2 = state.copyWith(mode: expectedMode);
-      final state3 = state2.copyWith();
-
-      expect(state2.mode, expectedMode);
-      expect(state3.mode, expectedMode);
-    },
-  );
-
-  test(
-    'copy with course name',
-    () {
-      const expectedCourseName = 'course name';
-
-      final state2 = state.copyWith(courseName: expectedCourseName);
-      final state3 = state2.copyWith();
-
-      expect(state2.courseName, expectedCourseName);
-      expect(state3.courseName, expectedCourseName);
-    },
-  );
 
   test(
     'is button disabled, create mode, should be true if course name is empty string',
@@ -100,6 +55,64 @@ void main() {
       );
 
       expect(state.isButtonDisabled, true);
+    },
+  );
+
+  test(
+    'copy with status',
+    () {
+      const BlocStatus expectedStatus = BlocStatusLoading();
+
+      state = state.copyWith(status: expectedStatus);
+      final state2 = state.copyWith();
+
+      expect(state.status, expectedStatus);
+      expect(state2.status, const BlocStatusInProgress());
+    },
+  );
+
+  test(
+    'copy with mode',
+    () {
+      final CourseCreatorMode expectedMode = CourseCreatorEditMode(
+        course: createCourse(id: 'c1'),
+      );
+
+      state = state.copyWith(mode: expectedMode);
+      final state2 = state.copyWith();
+
+      expect(state.mode, expectedMode);
+      expect(state2.mode, expectedMode);
+    },
+  );
+
+  test(
+    'copy with course name',
+    () {
+      const String expectedCourseName = 'course name';
+
+      state = state.copyWith(courseName: expectedCourseName);
+      final state2 = state.copyWith();
+
+      expect(state.courseName, expectedCourseName);
+      expect(state2.courseName, expectedCourseName);
+    },
+  );
+
+  test(
+    'copy with info type',
+    () {
+      const CourseCreatorInfoType expectedInfoType =
+          CourseCreatorInfoType.courseHasBeenAdded;
+
+      state = state.copyWithInfoType(expectedInfoType);
+
+      expect(
+        state.status,
+        const BlocStatusComplete<CourseCreatorInfoType>(
+          info: expectedInfoType,
+        ),
+      );
     },
   );
 }

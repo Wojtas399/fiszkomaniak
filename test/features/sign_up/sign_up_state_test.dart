@@ -1,10 +1,10 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/features/sign_up/bloc/sign_up_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:fiszkomaniak/validators/email_validator.dart';
 import 'package:fiszkomaniak/validators/password_validator.dart';
 import 'package:fiszkomaniak/validators/username_validator.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockUsernameValidator extends Mock implements UsernameValidator {}
 
@@ -139,7 +139,7 @@ void main() {
       final state2 = state.copyWith();
 
       expect(state.status, expectedStatus);
-      expect(state2.status, const BlocStatusComplete());
+      expect(state2.status, const BlocStatusInProgress());
     },
   );
 

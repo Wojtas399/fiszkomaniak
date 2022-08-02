@@ -1,6 +1,6 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/features/sign_in/bloc/sign_in_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late SignInState state;
@@ -49,7 +49,7 @@ void main() {
       final state2 = state.copyWith();
 
       expect(state.status, expectedStatus);
-      expect(state2.status, const BlocStatusComplete());
+      expect(state2.status, const BlocStatusInProgress());
     },
   );
 

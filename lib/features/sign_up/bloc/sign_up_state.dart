@@ -59,7 +59,7 @@ class SignUpState extends Equatable {
       usernameValidator: _usernameValidator,
       emailValidator: _emailValidator,
       passwordValidator: _passwordValidator,
-      status: status ?? const BlocStatusComplete(),
+      status: status ?? const BlocStatusInProgress(),
       username: username ?? this.username,
       email: email ?? this.email,
       password: password ?? this.password,

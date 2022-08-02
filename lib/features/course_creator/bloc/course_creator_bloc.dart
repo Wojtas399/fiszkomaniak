@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/add_new_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/check_course_name_usage_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/update_course_name_use_case.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../domain/use_cases/courses/add_new_course_use_case.dart';
+import '../../../domain/use_cases/courses/check_course_name_usage_use_case.dart';
+import '../../../domain/use_cases/courses/update_course_name_use_case.dart';
+import '../../../features/course_creator/course_creator_mode.dart';
 import '../../../models/bloc_status.dart';
 
 part 'course_creator_event.dart';
@@ -19,7 +19,16 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     required AddNewCourseUseCase addNewCourseUseCase,
     required CheckCourseNameUsageUseCase checkCourseNameUsageUseCase,
     required UpdateCourseNameUseCase updateCourseNameUseCase,
-  }) : super(const CourseCreatorState()) {
+    BlocStatus status = const BlocStatusInitial(),
+    CourseCreatorMode mode = const CourseCreatorCreateMode(),
+    String courseName = '',
+  }) : super(
+          CourseCreatorState(
+            status: status,
+            mode: mode,
+            courseName: courseName,
+          ),
+        ) {
     _addNewCourseUseCase = addNewCourseUseCase;
     _checkCourseNameUsageUseCase = checkCourseNameUsageUseCase;
     _updateCourseNameUseCase = updateCourseNameUseCase;
@@ -63,10 +72,8 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     final bool isCourseNameAlreadyTaken =
         await _checkCourseNameUsageUseCase.execute(courseName: courseName);
     if (isCourseNameAlreadyTaken) {
-      emit(state.copyWith(
-        status: const BlocStatusComplete(
-          info: CourseCreatorInfoType.courseNameIsAlreadyTaken,
-        ),
+      emit(state.copyWithInfoType(
+        CourseCreatorInfoType.courseNameIsAlreadyTaken,
       ));
     } else {
       CourseCreatorMode mode = state.mode;
@@ -83,10 +90,8 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     Emitter<CourseCreatorState> emit,
   ) async {
     await _addNewCourseUseCase.execute(courseName: courseName);
-    emit(state.copyWith(
-      status: const BlocStatusComplete(
-        info: CourseCreatorInfoType.courseHasBeenAdded,
-      ),
+    emit(state.copyWithInfoType(
+      CourseCreatorInfoType.courseHasBeenAdded,
     ));
   }
 
@@ -99,10 +104,8 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
       courseId: courseId,
       newCourseName: newCourseName,
     );
-    emit(state.copyWith(
-      status: const BlocStatusComplete(
-        info: CourseCreatorInfoType.courseHasBeenUpdated,
-      ),
+    emit(state.copyWithInfoType(
+      CourseCreatorInfoType.courseHasBeenUpdated,
     ));
   }
 }

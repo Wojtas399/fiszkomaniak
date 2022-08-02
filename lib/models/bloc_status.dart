@@ -11,6 +11,10 @@ class BlocStatusInitial extends BlocStatus {
   const BlocStatusInitial();
 }
 
+class BlocStatusInProgress extends BlocStatus {
+  const BlocStatusInProgress();
+}
+
 class BlocStatusLoading extends BlocStatus {
   const BlocStatusLoading();
 }
