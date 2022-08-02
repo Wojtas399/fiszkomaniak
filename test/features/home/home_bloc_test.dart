@@ -10,12 +10,16 @@ import 'package:fiszkomaniak/domain/use_cases/notifications/initialize_notificat
 import 'package:fiszkomaniak/domain/use_cases/user/get_days_streak_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/user/get_user_avatar_url_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/user/load_user_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/load_all_sessions_use_case.dart';
 import 'package:fiszkomaniak/features/home/bloc/home_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 
 class MockLoadUserUserCase extends Mock implements LoadUserUseCase {}
 
 class MockLoadAllGroupsUseCase extends Mock implements LoadAllGroupsUseCase {}
+
+class MockLoadAllSessionsUseCase extends Mock
+    implements LoadAllSessionsUseCase {}
 
 class MockLoadAppearanceSettingsUseCase extends Mock
     implements LoadAppearanceSettingsUseCase {}
@@ -37,6 +41,7 @@ class MockGetDaysStreakUseCase extends Mock implements GetDaysStreakUseCase {}
 void main() {
   final loadUserUseCase = MockLoadUserUserCase();
   final loadAllGroupsUseCase = MockLoadAllGroupsUseCase();
+  final loadAllSessionsUseCase = MockLoadAllSessionsUseCase();
   final loadAppearanceSettingsUseCase = MockLoadAppearanceSettingsUseCase();
   final loadNotificationsSettingsUseCase =
       MockLoadNotificationsSettingsUseCase();
@@ -57,6 +62,7 @@ void main() {
     return HomeBloc(
       loadUserUseCase: loadUserUseCase,
       loadAllGroupsUseCase: loadAllGroupsUseCase,
+      loadAllSessionsUseCase: loadAllSessionsUseCase,
       loadAppearanceSettingsUseCase: loadAppearanceSettingsUseCase,
       loadNotificationsSettingsUseCase: loadNotificationsSettingsUseCase,
       initializeNotificationsSettingsUseCase:
@@ -86,6 +92,7 @@ void main() {
   tearDown(() {
     reset(loadUserUseCase);
     reset(loadAllGroupsUseCase);
+    reset(loadAllSessionsUseCase);
     reset(loadAppearanceSettingsUseCase);
     reset(loadNotificationsSettingsUseCase);
     reset(getUserAvatarUrlUseCase);
@@ -102,6 +109,9 @@ void main() {
         ).thenAnswer((_) async => '');
         when(
           () => loadAllGroupsUseCase.execute(),
+        ).thenAnswer((_) async => '');
+        when(
+          () => loadAllSessionsUseCase.execute(),
         ).thenAnswer((_) async => '');
         when(
           () => loadAppearanceSettingsUseCase.execute(),
@@ -124,7 +134,7 @@ void main() {
       });
 
       blocTest(
-        'should call use cases responsible for loading user, all groups, appearance and notifications settings, use case responsible for initializing notifications settings and should set params listener',
+        'should call use cases responsible for loading user, all groups, all sessions, appearance and notifications settings, use case responsible for initializing notifications settings and should set params listener',
         build: () => createBloc(),
         act: (HomeBloc bloc) {
           bloc.add(HomeEventInitialize());
@@ -146,6 +156,9 @@ void main() {
           ).called(1);
           verify(
             () => loadAllGroupsUseCase.execute(),
+          ).called(1);
+          verify(
+            () => loadAllSessionsUseCase.execute(),
           ).called(1);
           verify(
             () => loadAppearanceSettingsUseCase.execute(),
@@ -180,6 +193,9 @@ void main() {
           ).called(1);
           verify(
             () => loadAllGroupsUseCase.execute(),
+          ).called(1);
+          verify(
+            () => loadAllSessionsUseCase.execute(),
           ).called(1);
           verify(
             () => loadAppearanceSettingsUseCase.execute(),

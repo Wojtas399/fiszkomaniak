@@ -10,6 +10,7 @@ import '../../../domain/use_cases/notifications/initialize_notifications_setting
 import '../../../domain/use_cases/user/get_days_streak_use_case.dart';
 import '../../../domain/use_cases/user/get_user_avatar_url_use_case.dart';
 import '../../../domain/use_cases/user/load_user_use_case.dart';
+import '../../../domain/use_cases/sessions/load_all_sessions_use_case.dart';
 import '../../../domain/entities/appearance_settings.dart';
 import '../../../models/bloc_status.dart';
 
@@ -20,6 +21,7 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   late final LoadUserUseCase _loadUserUseCase;
   late final LoadAllGroupsUseCase _loadAllGroupsUseCase;
+  late final LoadAllSessionsUseCase _loadAllSessionsUseCase;
   late final LoadAppearanceSettingsUseCase _loadAppearanceSettingsUseCase;
   late final LoadNotificationsSettingsUseCase _loadNotificationsSettingsUseCase;
   late final InitializeNotificationsSettingsUseCase
@@ -32,6 +34,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({
     required LoadUserUseCase loadUserUseCase,
     required LoadAllGroupsUseCase loadAllGroupsUseCase,
+    required LoadAllSessionsUseCase loadAllSessionsUseCase,
     required LoadAppearanceSettingsUseCase loadAppearanceSettingsUseCase,
     required LoadNotificationsSettingsUseCase loadNotificationsSettingsUseCase,
     required InitializeNotificationsSettingsUseCase
@@ -56,6 +59,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         ) {
     _loadUserUseCase = loadUserUseCase;
     _loadAllGroupsUseCase = loadAllGroupsUseCase;
+    _loadAllSessionsUseCase = loadAllSessionsUseCase;
     _loadAppearanceSettingsUseCase = loadAppearanceSettingsUseCase;
     _loadNotificationsSettingsUseCase = loadNotificationsSettingsUseCase;
     _initializeNotificationsSettingsUseCase =
@@ -103,6 +107,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Future<void> _loadData() async {
     await _loadUserUseCase.execute();
     await _loadAllGroupsUseCase.execute();
+    await _loadAllSessionsUseCase.execute();
     await _loadAppearanceSettingsUseCase.execute();
     await _loadNotificationsSettingsUseCase.execute();
     await _initializeNotificationsSettingsUseCase.execute();

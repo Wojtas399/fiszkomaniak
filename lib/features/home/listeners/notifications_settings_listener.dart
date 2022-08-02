@@ -56,7 +56,6 @@ class NotificationsSettingsListener {
   }
 
   Future<void> initialize() async {
-    _currentSettings = await _getNotificationsSettingsUseCase.execute().first;
     _setNotificationsSettingsListener();
   }
 
@@ -89,7 +88,7 @@ class NotificationsSettingsListener {
     bool newValue,
   ) async {
     bool? currentValue = _currentSettings?.areSessionsPlannedNotificationsOn;
-    if (currentValue != null && newValue != currentValue) {
+    if (newValue != currentValue) {
       if (newValue) {
         await _setSessionsScheduledNotificationsUseCase.execute();
       } else {
@@ -105,7 +104,7 @@ class NotificationsSettingsListener {
     bool newValue,
   ) async {
     bool? currentValue = _currentSettings?.areSessionsDefaultNotificationsOn;
-    if (currentValue != null && newValue != currentValue) {
+    if (newValue != currentValue) {
       if (newValue) {
         await _setSessionsDefaultNotificationsUseCase.execute();
       } else {
@@ -121,7 +120,7 @@ class NotificationsSettingsListener {
     bool newValue,
   ) async {
     bool? currentValue = _currentSettings?.areLossOfDaysStreakNotificationsOn;
-    if (currentValue != null && newValue != currentValue) {
+    if (newValue != currentValue) {
       if (newValue) {
         await _setLossOfDaysStreakNotificationUseCase.execute();
       } else {

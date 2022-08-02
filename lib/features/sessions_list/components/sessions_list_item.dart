@@ -1,14 +1,14 @@
-import 'package:fiszkomaniak/components/card_item.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/features/sessions_list/bloc/sessions_list_bloc.dart';
-import 'package:fiszkomaniak/models/time_model.dart';
-import 'package:fiszkomaniak/ui_extensions/ui_duration_extensions.dart';
-import 'package:fiszkomaniak/ui_extensions/ui_time_extensions.dart';
-import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/card_item.dart';
+import '../../../config/navigation.dart';
+import '../../../features/session_preview/bloc/session_preview_mode.dart';
+import '../../../ui_extensions/ui_duration_extensions.dart';
+import '../../../ui_extensions/ui_time_extensions.dart';
+import '../../../utils/utils.dart';
 import '../../../models/date_model.dart';
+import '../../../models/time_model.dart';
+import '../sessions_list_cubit.dart';
 
 class SessionsListItem extends StatelessWidget {
   final SessionItemParams params;
