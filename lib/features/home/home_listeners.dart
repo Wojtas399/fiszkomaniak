@@ -46,6 +46,9 @@ class HomeListeners extends StatelessWidget {
           GetFinishedSessionsAchievedConditionUseCase(
         achievementsInterface: context.read<AchievementsInterface>(),
       ),
+      getNotificationsSettingsUseCase: GetNotificationsSettingsUseCase(
+        settingsInterface: context.read<SettingsInterface>(),
+      ),
     );
     final NotificationsListener notificationsListener = NotificationsListener(
       getSelectedNotificationUseCase: GetSelectedNotificationUseCase(

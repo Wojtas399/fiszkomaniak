@@ -1,8 +1,10 @@
 import 'dart:async';
 import '../../../components/dialogs/dialogs.dart';
+import '../../../domain/entities/settings.dart';
 import '../../../domain/use_cases/achievements/get_all_flashcards_achieved_condition_use_case.dart';
 import '../../../domain/use_cases/achievements/get_finished_sessions_achieved_condition_use_case.dart';
 import '../../../domain/use_cases/achievements/get_remembered_flashcards_achieved_condition_use_case.dart';
+import '../../../domain/use_cases/settings/get_notifications_settings_use_case.dart';
 
 class AchievementsListener {
   late final GetAllFlashcardsAchievedConditionUseCase
@@ -11,6 +13,7 @@ class AchievementsListener {
       _getRememberedFlashcardsAchievedConditionUseCase;
   late final GetFinishedSessionsAchievedConditionUseCase
       _getFinishedSessionsAchievedConditionUseCase;
+  late final GetNotificationsSettingsUseCase _getNotificationsSettingsUseCase;
   StreamSubscription<int?>? _allFlashcardsAchievedConditionListener;
   StreamSubscription<int?>? _rememberedFlashcardsAchievedConditionListener;
   StreamSubscription<int?>? _finishedSessionsAchievedConditionListener;
@@ -22,6 +25,7 @@ class AchievementsListener {
         getRememberedFlashcardsAchievedConditionUseCase,
     required GetFinishedSessionsAchievedConditionUseCase
         getFinishedSessionsAchievedConditionUseCase,
+    required GetNotificationsSettingsUseCase getNotificationsSettingsUseCase,
   }) {
     _getAllFlashcardsAchievedConditionUseCase =
         getAllFlashcardsAchievedConditionUseCase;
@@ -29,6 +33,7 @@ class AchievementsListener {
         getRememberedFlashcardsAchievedConditionUseCase;
     _getFinishedSessionsAchievedConditionUseCase =
         getFinishedSessionsAchievedConditionUseCase;
+    _getNotificationsSettingsUseCase = getNotificationsSettingsUseCase;
   }
 
   void initialize() {
@@ -49,40 +54,55 @@ class AchievementsListener {
   void _setAllFlashcardsAchievedConditionListener() {
     _allFlashcardsAchievedConditionListener ??=
         _getAllFlashcardsAchievedConditionUseCase.execute().listen(
-      (int? achievedConditionValue) async {
-        if (achievedConditionValue != null) {
-          await _showInfoAboutNewAchievedConditionOfAllFlashcards(
-            achievedConditionValue,
-          );
-        }
-      },
-    );
+              _manageAllFlashcardsAchievedCondition,
+            );
   }
 
   void _setRememberedFlashcardsAchievedConditionListener() {
     _rememberedFlashcardsAchievedConditionListener ??=
         _getRememberedFlashcardsAchievedConditionUseCase.execute().listen(
-      (int? achievedConditionValue) async {
-        if (achievedConditionValue != null) {
-          await _showInfoAboutNewAchievedConditionOfRememberedFlashcards(
-            achievedConditionValue,
-          );
-        }
-      },
-    );
+              _manageRememberedFlashcardsAchievedCondition,
+            );
   }
 
   void _setFinishedSessionsAchievedConditionListener() {
     _finishedSessionsAchievedConditionListener =
         _getFinishedSessionsAchievedConditionUseCase.execute().listen(
-      (int? achievedConditionValue) async {
-        if (achievedConditionValue != null) {
-          await _showInfoAboutNewAchievedConditionOfFinishedSessions(
-            achievedConditionValue,
-          );
-        }
-      },
-    );
+              _manageFinishedSessionsAchievedCondition,
+            );
+  }
+
+  Future<void> _manageAllFlashcardsAchievedCondition(
+    int? achievedConditionValue,
+  ) async {
+    if (achievedConditionValue != null &&
+        await _areAchievementsNotificationsOn()) {
+      await _showInfoAboutNewAchievedConditionOfAllFlashcards(
+        achievedConditionValue,
+      );
+    }
+  }
+
+  Future<void> _manageRememberedFlashcardsAchievedCondition(
+    int? achievedConditionValue,
+  ) async {
+    if (achievedConditionValue != null &&
+        await _areAchievementsNotificationsOn()) {
+      await _showInfoAboutNewAchievedConditionOfRememberedFlashcards(
+        achievedConditionValue,
+      );
+    }
+  }
+
+  Future<void> _manageFinishedSessionsAchievedCondition(
+    int? achievedConditionValue,
+  ) async {
+    if (achievedConditionValue != null &&
+        await _areAchievementsNotificationsOn()) {
+      await _showInfoAboutNewAchievedConditionOfFinishedSessions(
+        achievedConditionValue,
+      );
+    }
   }
 
   Future<void> _showInfoAboutNewAchievedConditionOfAllFlashcards(
@@ -116,5 +136,11 @@ class AchievementsListener {
       textBeforeAchievementValue: 'Dotychczas ukończyłeś ponad',
       textAfterAchievementValue: 'sesji. Gratulacje!',
     );
+  }
+
+  Future<bool> _areAchievementsNotificationsOn() async {
+    final NotificationsSettings notificationsSettings =
+        await _getNotificationsSettingsUseCase.execute().first;
+    return notificationsSettings.areAchievementsNotificationsOn;
   }
 }
