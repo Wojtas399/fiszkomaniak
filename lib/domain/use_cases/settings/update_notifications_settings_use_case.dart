@@ -1,22 +1,22 @@
-import 'package:fiszkomaniak/interfaces/notifications_settings_interface.dart';
+import '../../../interfaces/settings_interface.dart';
 
 class UpdateNotificationsSettingsUseCase {
-  late final NotificationsSettingsInterface _notificationsSettingsInterface;
+  late final SettingsInterface _settingsInterface;
 
   UpdateNotificationsSettingsUseCase({
-    required NotificationsSettingsInterface notificationsSettingsInterface,
+    required SettingsInterface settingsInterface,
   }) {
-    _notificationsSettingsInterface = notificationsSettingsInterface;
+    _settingsInterface = settingsInterface;
   }
 
   Future<void> execute({
-    bool? areSessionsPlannedNotificationsOn,
+    bool? areSessionsScheduledNotificationsOn,
     bool? areSessionsDefaultNotificationsOn,
     bool? areAchievementsNotificationsOn,
     bool? areLossOfDaysStreakNotificationsOn,
   }) async {
-    await _notificationsSettingsInterface.updateSettings(
-      areSessionsPlannedNotificationsOn: areSessionsPlannedNotificationsOn,
+    await _settingsInterface.updateNotificationsSettings(
+      areSessionsScheduledNotificationsOn: areSessionsScheduledNotificationsOn,
       areSessionsDefaultNotificationsOn: areSessionsDefaultNotificationsOn,
       areAchievementsNotificationsOn: areAchievementsNotificationsOn,
       areLossOfDaysStreakNotificationsOn: areLossOfDaysStreakNotificationsOn,

@@ -1,9 +1,9 @@
-import '../../../domain/entities/notifications_settings.dart';
 import '../../../domain/entities/session.dart';
+import '../../../domain/entities/settings.dart';
 import '../../../interfaces/groups_interface.dart';
-import '../../../interfaces/notifications_settings_interface.dart';
-import '../../../interfaces/sessions_interface.dart';
 import '../../../interfaces/notifications_interface.dart';
+import '../../../interfaces/sessions_interface.dart';
+import '../../../interfaces/settings_interface.dart';
 import '../../../models/date_model.dart';
 import '../../../models/time_model.dart';
 
@@ -11,18 +11,18 @@ class AddSessionUseCase {
   late final SessionsInterface _sessionsInterface;
   late final GroupsInterface _groupsInterface;
   late final NotificationsInterface _notificationsInterface;
-  late final NotificationsSettingsInterface _notificationsSettingsInterface;
+  late final SettingsInterface _settingsInterface;
 
   AddSessionUseCase({
     required SessionsInterface sessionsInterface,
     required GroupsInterface groupsInterface,
     required NotificationsInterface notificationsInterface,
-    required NotificationsSettingsInterface notificationsSettingsInterface,
+    required SettingsInterface settingsInterface,
   }) {
     _sessionsInterface = sessionsInterface;
     _groupsInterface = groupsInterface;
     _notificationsInterface = notificationsInterface;
-    _notificationsSettingsInterface = notificationsSettingsInterface;
+    _settingsInterface = settingsInterface;
   }
 
   Future<void> execute({
@@ -45,7 +45,7 @@ class AddSessionUseCase {
     );
     if (sessionId != null) {
       final NotificationsSettings notificationsSettings =
-          await _notificationsSettingsInterface.notificationsSettings$.first;
+          await _settingsInterface.notificationsSettings$.first;
       final String groupName =
           await _groupsInterface.getGroupName(groupId: groupId).first;
       if (notificationsSettings.areSessionsDefaultNotificationsOn) {
@@ -57,7 +57,7 @@ class AddSessionUseCase {
         );
       }
       if (notificationTime != null &&
-          notificationsSettings.areSessionsPlannedNotificationsOn) {
+          notificationsSettings.areSessionsScheduledNotificationsOn) {
         await _notificationsInterface.setScheduledNotificationForSession(
           sessionId: sessionId,
           groupName: groupName,

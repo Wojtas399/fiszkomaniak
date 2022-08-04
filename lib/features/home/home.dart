@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import '../../domain/use_cases/appearance_settings/get_appearance_settings_use_case.dart';
-import '../../domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
 import '../../domain/use_cases/groups/load_all_groups_use_case.dart';
-import '../../domain/use_cases/notifications_settings/load_notifications_settings_use_case.dart';
 import '../../domain/use_cases/notifications/initialize_notifications_settings_use_case.dart';
+import '../../domain/use_cases/settings/get_appearance_settings_use_case.dart';
+import '../../domain/use_cases/settings/load_settings_use_case.dart';
 import '../../domain/use_cases/user/get_days_streak_use_case.dart';
 import '../../domain/use_cases/user/get_user_avatar_url_use_case.dart';
 import '../../domain/use_cases/user/load_user_use_case.dart';
 import '../../domain/use_cases/sessions/load_all_sessions_use_case.dart';
-import '../../interfaces/appearance_settings_interface.dart';
 import '../../interfaces/groups_interface.dart';
-import '../../interfaces/notifications_settings_interface.dart';
 import '../../interfaces/sessions_interface.dart';
+import '../../interfaces/settings_interface.dart';
 import '../../interfaces/user_interface.dart';
 import '../../interfaces/notifications_interface.dart';
 import '../../providers/theme_provider.dart';
@@ -49,8 +47,6 @@ class _HomeBlocProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppearanceSettingsInterface appearanceSettingsInterface =
-        context.read<AppearanceSettingsInterface>();
     return BlocProvider(
       create: (BuildContext context) => HomeBloc(
         loadUserUseCase: LoadUserUseCase(
@@ -62,12 +58,8 @@ class _HomeBlocProvider extends StatelessWidget {
         loadAllSessionsUseCase: LoadAllSessionsUseCase(
           sessionsInterface: context.read<SessionsInterface>(),
         ),
-        loadAppearanceSettingsUseCase: LoadAppearanceSettingsUseCase(
-          appearanceSettingsInterface: appearanceSettingsInterface,
-        ),
-        loadNotificationsSettingsUseCase: LoadNotificationsSettingsUseCase(
-          notificationsSettingsInterface:
-              context.read<NotificationsSettingsInterface>(),
+        loadSettingsUseCase: LoadSettingsUseCase(
+          settingsInterface: context.read<SettingsInterface>(),
         ),
         initializeNotificationsSettingsUseCase:
             InitializeNotificationsSettingsUseCase(
@@ -77,7 +69,7 @@ class _HomeBlocProvider extends StatelessWidget {
           userInterface: context.read<UserInterface>(),
         ),
         getAppearanceSettingsUseCase: GetAppearanceSettingsUseCase(
-          appearanceSettingsInterface: appearanceSettingsInterface,
+          settingsInterface: context.read<SettingsInterface>(),
         ),
         getDaysStreakUseCase: GetDaysStreakUseCase(
           userInterface: context.read<UserInterface>(),

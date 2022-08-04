@@ -11,12 +11,12 @@ import '../../domain/use_cases/notifications/get_selected_notification_use_case.
 import '../../domain/use_cases/notifications/set_loss_of_days_streak_notification_use_case.dart';
 import '../../domain/use_cases/notifications/set_sessions_default_notifications_use_case.dart';
 import '../../domain/use_cases/notifications/set_sessions_scheduled_notifications_use_case.dart';
-import '../../domain/use_cases/notifications_settings/get_notifications_settings_use_case.dart';
+import '../../domain/use_cases/settings/get_notifications_settings_use_case.dart';
 import '../../interfaces/achievements_interface.dart';
 import '../../interfaces/groups_interface.dart';
 import '../../interfaces/notifications_interface.dart';
-import '../../interfaces/notifications_settings_interface.dart';
 import '../../interfaces/sessions_interface.dart';
+import '../../interfaces/settings_interface.dart';
 import '../../interfaces/user_interface.dart';
 import '../../providers/date_provider.dart';
 import 'listeners/achievements_listener.dart';
@@ -58,8 +58,7 @@ class HomeListeners extends StatelessWidget {
     final NotificationsSettingsListener notificationsSettingsListener =
         NotificationsSettingsListener(
       getNotificationsSettingsUseCase: GetNotificationsSettingsUseCase(
-        notificationsSettingsInterface:
-            context.read<NotificationsSettingsInterface>(),
+        settingsInterface: context.read<SettingsInterface>(),
       ),
       setSessionsDefaultNotificationsUseCase:
           SetSessionsDefaultNotificationsUseCase(

@@ -1,12 +1,12 @@
-import 'package:fiszkomaniak/interfaces/appearance_settings_interface.dart';
+import '../../../interfaces/settings_interface.dart';
 
 class UpdateAppearanceSettingsUseCase {
-  late final AppearanceSettingsInterface _appearanceSettingsInterface;
+  late final SettingsInterface _settingsInterface;
 
   UpdateAppearanceSettingsUseCase({
-    required AppearanceSettingsInterface appearanceSettingsInterface,
+    required SettingsInterface settingsInterface,
   }) {
-    _appearanceSettingsInterface = appearanceSettingsInterface;
+    _settingsInterface = settingsInterface;
   }
 
   Future<void> execute({
@@ -14,7 +14,7 @@ class UpdateAppearanceSettingsUseCase {
     bool? isDarkModeCompatibilityWithSystemOn,
     bool? isSessionTimerInvisibilityOn,
   }) async {
-    await _appearanceSettingsInterface.updateSettings(
+    await _settingsInterface.updateAppearanceSettings(
       isDarkModeOn: isDarkModeOn,
       isDarkModeCompatibilityWithSystemOn: isDarkModeCompatibilityWithSystemOn,
       isSessionTimerInvisibilityOn: isSessionTimerInvisibilityOn,

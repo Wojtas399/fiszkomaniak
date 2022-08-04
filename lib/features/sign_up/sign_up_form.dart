@@ -4,9 +4,8 @@ import '../../../components/dialogs/dialogs.dart';
 import '../../../domain/use_cases/auth/sign_up_use_case.dart';
 import '../../../interfaces/achievements_interface.dart';
 import '../../../interfaces/auth_interface.dart';
+import '../../../interfaces/settings_interface.dart';
 import '../../../interfaces/user_interface.dart';
-import '../../../interfaces/appearance_settings_interface.dart';
-import '../../../interfaces/notifications_settings_interface.dart';
 import '../../../models/bloc_status.dart';
 import '../../../validators/email_validator.dart';
 import '../../../validators/password_validator.dart';
@@ -53,10 +52,7 @@ class _SignUpBlocProvider extends StatelessWidget {
           authInterface: context.read<AuthInterface>(),
           userInterface: context.read<UserInterface>(),
           achievementsInterface: context.read<AchievementsInterface>(),
-          appearanceSettingsInterface:
-              context.read<AppearanceSettingsInterface>(),
-          notificationsSettingsInterface:
-              context.read<NotificationsSettingsInterface>(),
+          settingsInterface: context.read<SettingsInterface>(),
         ),
         usernameValidator: UsernameValidator(),
         emailValidator: EmailValidator(),

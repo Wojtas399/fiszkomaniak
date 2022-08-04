@@ -1,60 +1,86 @@
-import 'package:fiszkomaniak/domain/entities/appearance_settings.dart';
-import 'package:fiszkomaniak/domain/entities/notifications_settings.dart';
-import 'package:fiszkomaniak/features/settings/bloc/settings_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fiszkomaniak/domain/entities/settings.dart';
+import 'package:fiszkomaniak/features/settings/bloc/settings_bloc.dart';
 
 void main() {
   late SettingsState state;
 
   setUp(
     () => state = const SettingsState(
-      appearanceSettings: AppearanceSettings(
-        isDarkModeOn: false,
-        isDarkModeCompatibilityWithSystemOn: false,
-        isSessionTimerInvisibilityOn: false,
-      ),
-      notificationsSettings: NotificationsSettings(
-        areSessionsPlannedNotificationsOn: false,
-        areSessionsDefaultNotificationsOn: false,
-        areAchievementsNotificationsOn: false,
-        areLossOfDaysStreakNotificationsOn: false,
+      settings: Settings(
+        appearanceSettings: AppearanceSettings(
+          isDarkModeOn: false,
+          isDarkModeCompatibilityWithSystemOn: false,
+          isSessionTimerInvisibilityOn: false,
+        ),
+        notificationsSettings: NotificationsSettings(
+          areSessionsScheduledNotificationsOn: false,
+          areSessionsDefaultNotificationsOn: false,
+          areAchievementsNotificationsOn: false,
+          areLossOfDaysStreakNotificationsOn: false,
+        ),
       ),
       areAllNotificationsOn: false,
     ),
   );
 
   test(
-    'copy with appearance settings',
+    'appearance settings, should return appearance settings from settings',
     () {
-      const AppearanceSettings expectedSettings = AppearanceSettings(
-        isDarkModeOn: true,
-        isDarkModeCompatibilityWithSystemOn: false,
-        isSessionTimerInvisibilityOn: true,
+      final AppearanceSettings expectedAppearanceSettings =
+          createAppearanceSettings();
+
+      state = state.copyWith(
+        settings: createSettings(
+          appearanceSettings: expectedAppearanceSettings,
+        ),
       );
 
-      final state2 = state.copyWith(appearanceSettings: expectedSettings);
-      final state3 = state2.copyWith();
-
-      expect(state2.appearanceSettings, expectedSettings);
-      expect(state3.appearanceSettings, expectedSettings);
+      expect(
+        state.appearanceSettings,
+        expectedAppearanceSettings,
+      );
     },
   );
 
   test(
-    'copy with notifications settings',
+    'notifications settings, should return notifications settings from settings',
     () {
-      const NotificationsSettings expectedSettings = NotificationsSettings(
-        areSessionsPlannedNotificationsOn: true,
-        areSessionsDefaultNotificationsOn: false,
-        areAchievementsNotificationsOn: true,
-        areLossOfDaysStreakNotificationsOn: false,
+      final NotificationsSettings expectedNotificationsSettings =
+          createNotificationsSettings();
+
+      state = state.copyWith(
+        settings: createSettings(
+          notificationsSettings: expectedNotificationsSettings,
+        ),
       );
 
-      final state2 = state.copyWith(notificationsSettings: expectedSettings);
-      final state3 = state2.copyWith();
+      expect(
+        state.notificationsSettings,
+        expectedNotificationsSettings,
+      );
+    },
+  );
 
-      expect(state2.notificationsSettings, expectedSettings);
-      expect(state3.notificationsSettings, expectedSettings);
+  test(
+    'copy with settings',
+    () {
+      final Settings expectedSettings = createSettings(
+        appearanceSettings: createAppearanceSettings(
+          isDarkModeOn: true,
+          isSessionTimerInvisibilityOn: true,
+        ),
+        notificationsSettings: createNotificationsSettings(
+          areSessionsScheduledNotificationsOn: true,
+          areAchievementsNotificationsOn: true,
+        ),
+      );
+
+      state = state.copyWith(settings: expectedSettings);
+      final state2 = state.copyWith();
+
+      expect(state.settings, expectedSettings);
+      expect(state2.settings, expectedSettings);
     },
   );
 
@@ -63,11 +89,11 @@ void main() {
     () {
       const bool expectedValue = true;
 
-      final state2 = state.copyWith(areAllNotificationsOn: expectedValue);
-      final state3 = state2.copyWith();
+      state = state.copyWith(areAllNotificationsOn: expectedValue);
+      final state2 = state.copyWith();
 
+      expect(state.areAllNotificationsOn, expectedValue);
       expect(state2.areAllNotificationsOn, expectedValue);
-      expect(state3.areAllNotificationsOn, expectedValue);
     },
   );
 }

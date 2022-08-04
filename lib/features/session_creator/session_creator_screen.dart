@@ -1,25 +1,25 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/load_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/add_session_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/update_session_use_case.dart';
-import 'package:fiszkomaniak/features/home/home.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:fiszkomaniak/features/session_creator/components/session_creator_content.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
-import 'package:fiszkomaniak/interfaces/notifications_settings_interface.dart';
-import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:fiszkomaniak/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../components/dialogs/dialogs.dart';
+import '../../config/navigation.dart';
+import '../../domain/use_cases/courses/get_all_courses_use_case.dart';
+import '../../domain/use_cases/courses/get_course_use_case.dart';
+import '../../domain/use_cases/courses/load_all_courses_use_case.dart';
+import '../../domain/use_cases/groups/get_group_use_case.dart';
+import '../../domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
+import '../../domain/use_cases/sessions/add_session_use_case.dart';
+import '../../domain/use_cases/sessions/update_session_use_case.dart';
+import '../../features/home/home.dart';
+import '../../features/session_creator/bloc/session_creator_bloc.dart';
+import '../../features/session_creator/bloc/session_creator_mode.dart';
+import '../../features/session_creator/components/session_creator_content.dart';
+import '../../interfaces/courses_interface.dart';
+import '../../interfaces/groups_interface.dart';
+import '../../interfaces/notifications_interface.dart';
+import '../../interfaces/settings_interface.dart';
+import '../../interfaces/sessions_interface.dart';
+import '../../models/bloc_status.dart';
+import '../../utils/time_utils.dart';
 
 class SessionCreatorScreen extends StatelessWidget {
   final SessionCreatorMode mode;
@@ -72,15 +72,13 @@ class _SessionCreatorBlocProvider extends StatelessWidget {
           sessionsInterface: context.read<SessionsInterface>(),
           groupsInterface: context.read<GroupsInterface>(),
           notificationsInterface: context.read<NotificationsInterface>(),
-          notificationsSettingsInterface:
-              context.read<NotificationsSettingsInterface>(),
+          settingsInterface: context.read<SettingsInterface>(),
         ),
         updateSessionUseCase: UpdateSessionUseCase(
           sessionsInterface: context.read<SessionsInterface>(),
           groupsInterface: context.read<GroupsInterface>(),
           notificationsInterface: context.read<NotificationsInterface>(),
-          notificationsSettingsInterface:
-              context.read<NotificationsSettingsInterface>(),
+          settingsInterface: context.read<SettingsInterface>(),
         ),
         timeUtils: TimeUtils(),
       )..add(SessionCreatorEventInitialize(mode: mode)),

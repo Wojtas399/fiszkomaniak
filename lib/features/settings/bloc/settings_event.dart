@@ -4,18 +4,10 @@ abstract class SettingsEvent {}
 
 class SettingsEventInitialize extends SettingsEvent {}
 
-class SettingsEventAppearanceSettingsUpdated extends SettingsEvent {
-  final AppearanceSettings appearanceSettings;
+class SettingsEventSettingsUpdated extends SettingsEvent {
+  final Settings settings;
 
-  SettingsEventAppearanceSettingsUpdated({required this.appearanceSettings});
-}
-
-class SettingsEventNotificationsSettingsUpdated extends SettingsEvent {
-  final NotificationsSettings notificationsSettings;
-
-  SettingsEventNotificationsSettingsUpdated({
-    required this.notificationsSettings,
-  });
+  SettingsEventSettingsUpdated({required this.settings});
 }
 
 class SettingsEventAppearanceSettingsChanged extends SettingsEvent {
@@ -31,13 +23,13 @@ class SettingsEventAppearanceSettingsChanged extends SettingsEvent {
 }
 
 class SettingsEventNotificationsSettingsChanged extends SettingsEvent {
-  final bool? areSessionsPlannedNotificationsOn;
+  final bool? areSessionsScheduledNotificationsOn;
   final bool? areSessionsDefaultNotificationsOn;
   final bool? areAchievementsNotificationsOn;
   final bool? areLossOfDaysStreakNotificationsOn;
 
   SettingsEventNotificationsSettingsChanged({
-    this.areSessionsPlannedNotificationsOn,
+    this.areSessionsScheduledNotificationsOn,
     this.areSessionsDefaultNotificationsOn,
     this.areAchievementsNotificationsOn,
     this.areLossOfDaysStreakNotificationsOn,

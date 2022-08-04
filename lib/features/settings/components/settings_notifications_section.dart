@@ -1,9 +1,9 @@
-import 'package:fiszkomaniak/components/switch_item.dart';
-import 'package:fiszkomaniak/features/settings/bloc/settings_bloc.dart';
-import 'package:fiszkomaniak/features/settings/components/settings_switch_item_with_description.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/switch_item.dart';
+import '../../../features/settings/bloc/settings_bloc.dart';
+import '../../../features/settings/components/settings_switch_item_with_description.dart';
 import '../../../components/section.dart';
 
 class SettingsNotificationsSection extends StatelessWidget {
@@ -16,7 +16,7 @@ class SettingsNotificationsSection extends StatelessWidget {
       trailing: const _AllNotificationsSwitchItem(),
       child: Column(
         children: const [
-          _PlannedSessionsSwitchItem(),
+          _ScheduledSessionsSwitchItem(),
           _DefaultSessionsSwitchItem(),
           _AchievementsSwitchItem(),
           _LossOfDaysStreakSwitchItem(),
@@ -42,7 +42,7 @@ class _AllNotificationsSwitchItem extends StatelessWidget {
 
   void _onChanged(bool isSwitched, BuildContext context) {
     context.read<SettingsBloc>().add(SettingsEventNotificationsSettingsChanged(
-          areSessionsPlannedNotificationsOn: isSwitched,
+          areSessionsScheduledNotificationsOn: isSwitched,
           areSessionsDefaultNotificationsOn: isSwitched,
           areAchievementsNotificationsOn: isSwitched,
           areLossOfDaysStreakNotificationsOn: isSwitched,
@@ -50,14 +50,14 @@ class _AllNotificationsSwitchItem extends StatelessWidget {
   }
 }
 
-class _PlannedSessionsSwitchItem extends StatelessWidget {
-  const _PlannedSessionsSwitchItem();
+class _ScheduledSessionsSwitchItem extends StatelessWidget {
+  const _ScheduledSessionsSwitchItem();
 
   @override
   Widget build(BuildContext context) {
     final bool isSwitched = context.select(
       (SettingsBloc bloc) =>
-          bloc.state.notificationsSettings.areSessionsPlannedNotificationsOn,
+          bloc.state.notificationsSettings.areSessionsScheduledNotificationsOn,
     );
     return SettingsSwitchItemWithDescription(
       icon: MdiIcons.calendarCheckOutline,
@@ -69,7 +69,7 @@ class _PlannedSessionsSwitchItem extends StatelessWidget {
 
   void _onChanged(bool isSwitched, BuildContext context) {
     context.read<SettingsBloc>().add(SettingsEventNotificationsSettingsChanged(
-          areSessionsPlannedNotificationsOn: isSwitched,
+          areSessionsScheduledNotificationsOn: isSwitched,
         ));
   }
 }

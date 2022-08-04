@@ -1,7 +1,7 @@
 import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/config/theme/global_theme.dart';
 import 'package:fiszkomaniak/features/initial_home/initial_home.dart';
-import 'package:fiszkomaniak/global_interfaces_provider.dart';
+import 'package:fiszkomaniak/global_provider.dart';
 import 'package:fiszkomaniak/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,7 +15,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         final themeProvider = Provider.of<ThemeProvider>(context);
         return Provider(
           create: (_) => Navigation(),
-          child: GlobalInterfacesProvider(
+          child: GlobalProvider(
             child: MaterialApp(
               title: 'Fiszkomaniak',
               themeMode: themeProvider.themeMode,

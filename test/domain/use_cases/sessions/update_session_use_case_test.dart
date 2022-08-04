@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:fiszkomaniak/domain/entities/notifications_settings.dart';
+import 'package:fiszkomaniak/domain/entities/settings.dart';
 import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:fiszkomaniak/domain/use_cases/sessions/update_session_use_case.dart';
 import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
-import 'package:fiszkomaniak/interfaces/notifications_settings_interface.dart';
+import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
@@ -17,8 +17,7 @@ class MockGroupsInterface extends Mock implements GroupsInterface {}
 class MockNotificationsInterface extends Mock
     implements NotificationsInterface {}
 
-class MockNotificationsSettingsInterface extends Mock
-    implements NotificationsSettingsInterface {}
+class MockSettingsInterface extends Mock implements SettingsInterface {}
 
 class FakeTime extends Fake implements Time {}
 
@@ -26,7 +25,7 @@ void main() {
   final sessionsInterface = MockSessionsInterface();
   final groupsInterface = MockGroupsInterface();
   final notificationsInterface = MockNotificationsInterface();
-  final notificationsSettingsInterface = MockNotificationsSettingsInterface();
+  final settingsInterface = MockSettingsInterface();
   late UpdateSessionUseCase useCase;
   const String sessionId = 's1';
   const String groupId = 'g1';
@@ -53,7 +52,7 @@ void main() {
       sessionsInterface: sessionsInterface,
       groupsInterface: groupsInterface,
       notificationsInterface: notificationsInterface,
-      notificationsSettingsInterface: notificationsSettingsInterface,
+      settingsInterface: settingsInterface,
     );
     when(
       () => sessionsInterface.updateSession(
@@ -87,18 +86,23 @@ void main() {
     ).thenAnswer((_) async => '');
   });
 
+  tearDown(() {
+    reset(sessionsInterface);
+    reset(groupsInterface);
+    reset(notificationsInterface);
+    reset(settingsInterface);
+  });
+
   test(
     'should call method responsible for updating session',
     () async {
       when(
-        () => notificationsSettingsInterface.notificationsSettings$,
+        () => settingsInterface.notificationsSettings$,
       ).thenAnswer(
         (_) => Stream.value(
-          const NotificationsSettings(
-            areSessionsPlannedNotificationsOn: false,
+          createNotificationsSettings(
+            areSessionsScheduledNotificationsOn: false,
             areSessionsDefaultNotificationsOn: false,
-            areAchievementsNotificationsOn: false,
-            areLossOfDaysStreakNotificationsOn: false,
           ),
         ),
       );
@@ -129,14 +133,12 @@ void main() {
     'additionally should call method responsible for setting default notification if default notifications are turned on',
     () async {
       when(
-        () => notificationsSettingsInterface.notificationsSettings$,
+        () => settingsInterface.notificationsSettings$,
       ).thenAnswer(
         (_) => Stream.value(
-          const NotificationsSettings(
-            areSessionsPlannedNotificationsOn: false,
+          createNotificationsSettings(
+            areSessionsScheduledNotificationsOn: false,
             areSessionsDefaultNotificationsOn: true,
-            areAchievementsNotificationsOn: false,
-            areLossOfDaysStreakNotificationsOn: false,
           ),
         ),
       );
@@ -174,14 +176,12 @@ void main() {
     'additionally should call method responsible for setting scheduled notification if scheduled notifications are turned on and notification time is not null',
     () async {
       when(
-        () => notificationsSettingsInterface.notificationsSettings$,
+        () => settingsInterface.notificationsSettings$,
       ).thenAnswer(
         (_) => Stream.value(
-          const NotificationsSettings(
-            areSessionsPlannedNotificationsOn: true,
+          createNotificationsSettings(
+            areSessionsScheduledNotificationsOn: true,
             areSessionsDefaultNotificationsOn: false,
-            areAchievementsNotificationsOn: false,
-            areLossOfDaysStreakNotificationsOn: false,
           ),
         ),
       );
@@ -238,14 +238,12 @@ void main() {
         ),
       );
       when(
-        () => notificationsSettingsInterface.notificationsSettings$,
+        () => settingsInterface.notificationsSettings$,
       ).thenAnswer(
         (_) => Stream.value(
-          const NotificationsSettings(
-            areSessionsPlannedNotificationsOn: true,
+          createNotificationsSettings(
+            areSessionsScheduledNotificationsOn: true,
             areSessionsDefaultNotificationsOn: false,
-            areAchievementsNotificationsOn: false,
-            areLossOfDaysStreakNotificationsOn: false,
           ),
         ),
       );

@@ -1,32 +1,31 @@
 part of 'settings_bloc.dart';
 
 class SettingsState extends Equatable {
-  final AppearanceSettings appearanceSettings;
-  final NotificationsSettings notificationsSettings;
+  final Settings settings;
   final bool areAllNotificationsOn;
 
   const SettingsState({
-    required this.appearanceSettings,
-    required this.notificationsSettings,
+    required this.settings,
     required this.areAllNotificationsOn,
   });
 
   @override
   List<Object> get props => [
-        appearanceSettings,
-        notificationsSettings,
+        settings,
         areAllNotificationsOn,
       ];
 
+  AppearanceSettings get appearanceSettings => settings.appearanceSettings;
+
+  NotificationsSettings get notificationsSettings =>
+      settings.notificationsSettings;
+
   SettingsState copyWith({
-    AppearanceSettings? appearanceSettings,
-    NotificationsSettings? notificationsSettings,
+    Settings? settings,
     bool? areAllNotificationsOn,
   }) {
     return SettingsState(
-      appearanceSettings: appearanceSettings ?? this.appearanceSettings,
-      notificationsSettings:
-          notificationsSettings ?? this.notificationsSettings,
+      settings: settings ?? this.settings,
       areAllNotificationsOn:
           areAllNotificationsOn ?? this.areAllNotificationsOn,
     );

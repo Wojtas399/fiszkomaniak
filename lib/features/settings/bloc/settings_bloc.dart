@@ -1,60 +1,52 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/use_cases/appearance_settings/get_appearance_settings_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/appearance_settings/update_appearance_settings_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/notifications_settings/get_notifications_settings_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/notifications_settings/update_notifications_settings_use_case.dart';
-import 'package:fiszkomaniak/domain/entities/appearance_settings.dart';
-import 'package:fiszkomaniak/domain/entities/notifications_settings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../domain/entities/settings.dart';
+import '../../../domain/use_cases/settings/get_settings_use_case.dart';
+import '../../../domain/use_cases/settings/update_appearance_settings_use_case.dart';
+import '../../../domain/use_cases/settings/update_notifications_settings_use_case.dart';
 
 part 'settings_event.dart';
 
 part 'settings_state.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
-  late final GetAppearanceSettingsUseCase _getAppearanceSettingsUseCase;
-  late final GetNotificationsSettingsUseCase _getNotificationsSettingsUseCase;
+  late final GetSettingsUseCase _getSettingsUseCase;
   late final UpdateAppearanceSettingsUseCase _updateAppearanceSettingsUseCase;
   late final UpdateNotificationsSettingsUseCase
       _updateNotificationsSettingsUseCase;
-  StreamSubscription<AppearanceSettings>? _appearanceSettingsListener;
-  StreamSubscription<NotificationsSettings>? _notificationsSettingsListener;
+  StreamSubscription<Settings>? _settingsListener;
 
   SettingsBloc({
-    required GetAppearanceSettingsUseCase getAppearanceSettingsUseCase,
-    required GetNotificationsSettingsUseCase getNotificationsSettingsUseCase,
+    required GetSettingsUseCase getSettingsUseCase,
     required UpdateAppearanceSettingsUseCase updateAppearanceSettingsUseCase,
     required UpdateNotificationsSettingsUseCase
         updateNotificationsSettingsUseCase,
-    AppearanceSettings appearanceSettings = const AppearanceSettings(
-      isDarkModeOn: false,
-      isDarkModeCompatibilityWithSystemOn: false,
-      isSessionTimerInvisibilityOn: false,
-    ),
-    NotificationsSettings notificationsSettings = const NotificationsSettings(
-      areSessionsPlannedNotificationsOn: false,
-      areSessionsDefaultNotificationsOn: false,
-      areAchievementsNotificationsOn: false,
-      areLossOfDaysStreakNotificationsOn: false,
+    Settings settings = const Settings(
+      appearanceSettings: AppearanceSettings(
+        isDarkModeOn: false,
+        isDarkModeCompatibilityWithSystemOn: false,
+        isSessionTimerInvisibilityOn: false,
+      ),
+      notificationsSettings: NotificationsSettings(
+        areSessionsScheduledNotificationsOn: false,
+        areSessionsDefaultNotificationsOn: false,
+        areAchievementsNotificationsOn: false,
+        areLossOfDaysStreakNotificationsOn: false,
+      ),
     ),
     bool areAllNotificationsOn = false,
   }) : super(
           SettingsState(
-            appearanceSettings: appearanceSettings,
-            notificationsSettings: notificationsSettings,
+            settings: settings,
             areAllNotificationsOn: areAllNotificationsOn,
           ),
         ) {
-    _getAppearanceSettingsUseCase = getAppearanceSettingsUseCase;
-    _getNotificationsSettingsUseCase = getNotificationsSettingsUseCase;
+    _getSettingsUseCase = getSettingsUseCase;
     _updateAppearanceSettingsUseCase = updateAppearanceSettingsUseCase;
     _updateNotificationsSettingsUseCase = updateNotificationsSettingsUseCase;
     on<SettingsEventInitialize>(_initialize);
-    on<SettingsEventAppearanceSettingsUpdated>(_appearanceSettingsUpdated);
-    on<SettingsEventNotificationsSettingsUpdated>(
-      _notificationsSettingsUpdated,
-    );
+    on<SettingsEventSettingsUpdated>(_settingsUpdated);
     on<SettingsEventAppearanceSettingsChanged>(_appearanceSettingsChanged);
     on<SettingsEventNotificationsSettingsChanged>(
       _notificationsSettingsChanged,
@@ -63,8 +55,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   @override
   Future<void> close() {
-    _appearanceSettingsListener?.cancel();
-    _notificationsSettingsListener?.cancel();
+    _settingsListener?.cancel();
     return super.close();
   }
 
@@ -72,27 +63,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     SettingsEventInitialize event,
     Emitter<SettingsState> emit,
   ) async {
-    _setAppearanceSettingsListener();
-    _setNotificationsSettingsListener();
+    _setSettingsListener();
   }
 
-  void _appearanceSettingsUpdated(
-    SettingsEventAppearanceSettingsUpdated event,
+  void _settingsUpdated(
+    SettingsEventSettingsUpdated event,
     Emitter<SettingsState> emit,
   ) {
     emit(state.copyWith(
-      appearanceSettings: event.appearanceSettings,
-    ));
-  }
-
-  void _notificationsSettingsUpdated(
-    SettingsEventNotificationsSettingsUpdated event,
-    Emitter<SettingsState> emit,
-  ) {
-    emit(state.copyWith(
-      notificationsSettings: event.notificationsSettings,
+      settings: event.settings,
       areAllNotificationsOn: _areAllNotificationsOn(
-        event.notificationsSettings,
+        event.settings.notificationsSettings,
       ),
     ));
   }
@@ -114,8 +95,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     Emitter<SettingsState> emit,
   ) async {
     await _updateNotificationsSettingsUseCase.execute(
-      areSessionsPlannedNotificationsOn:
-          event.areSessionsPlannedNotificationsOn,
+      areSessionsScheduledNotificationsOn:
+          event.areSessionsScheduledNotificationsOn,
       areSessionsDefaultNotificationsOn:
           event.areSessionsDefaultNotificationsOn,
       areAchievementsNotificationsOn: event.areAchievementsNotificationsOn,
@@ -124,30 +105,16 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     );
   }
 
-  void _setAppearanceSettingsListener() {
-    _appearanceSettingsListener =
-        _getAppearanceSettingsUseCase.execute().listen(
-              (appearanceSettings) => add(
-                SettingsEventAppearanceSettingsUpdated(
-                  appearanceSettings: appearanceSettings,
-                ),
-              ),
-            );
-  }
-
-  void _setNotificationsSettingsListener() {
-    _notificationsSettingsListener =
-        _getNotificationsSettingsUseCase.execute().listen(
-              (notificationsSettings) => add(
-                SettingsEventNotificationsSettingsUpdated(
-                  notificationsSettings: notificationsSettings,
-                ),
-              ),
-            );
+  void _setSettingsListener() {
+    _settingsListener ??= _getSettingsUseCase.execute().listen(
+          (Settings settings) => add(
+            SettingsEventSettingsUpdated(settings: settings),
+          ),
+        );
   }
 
   bool _areAllNotificationsOn(NotificationsSettings settings) {
-    return settings.areSessionsPlannedNotificationsOn &&
+    return settings.areSessionsScheduledNotificationsOn &&
         settings.areSessionsDefaultNotificationsOn &&
         settings.areAchievementsNotificationsOn &&
         settings.areLossOfDaysStreakNotificationsOn;

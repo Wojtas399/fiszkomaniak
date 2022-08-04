@@ -1,11 +1,11 @@
 class NotificationsSettingsDbModel {
-  final bool? areSessionsPlannedNotificationsOn;
+  final bool? areSessionsScheduledNotificationsOn;
   final bool? areSessionsDefaultNotificationsOn;
   final bool? areAchievementsNotificationsOn;
   final bool? areLossOfDaysNotificationsOn;
 
   NotificationsSettingsDbModel({
-    this.areSessionsPlannedNotificationsOn,
+    this.areSessionsScheduledNotificationsOn,
     this.areSessionsDefaultNotificationsOn,
     this.areAchievementsNotificationsOn,
     this.areLossOfDaysNotificationsOn,
@@ -13,8 +13,8 @@ class NotificationsSettingsDbModel {
 
   NotificationsSettingsDbModel.fromJson(Map<String, Object?> json)
       : this(
-          areSessionsPlannedNotificationsOn:
-              json['areSessionsPlannedNotificationsOn']! as bool,
+          areSessionsScheduledNotificationsOn:
+              json['areSessionsScheduledNotificationsOn']! as bool,
           areSessionsDefaultNotificationsOn:
               json['areSessionsDefaultNotificationsOn']! as bool,
           areAchievementsNotificationsOn:
@@ -25,7 +25,8 @@ class NotificationsSettingsDbModel {
 
   Map<String, bool?> toJson() {
     Map<String, bool?> params = {
-      'areSessionsPlannedNotificationsOn': areSessionsPlannedNotificationsOn,
+      'areSessionsScheduledNotificationsOn':
+          areSessionsScheduledNotificationsOn,
       'areSessionsDefaultNotificationsOn': areSessionsDefaultNotificationsOn,
       'areAchievementsNotificationsOn': areAchievementsNotificationsOn,
       'areLossOfDaysNotificationsOn': areLossOfDaysNotificationsOn,

@@ -1,12 +1,12 @@
 import 'dart:async';
+import '../../../domain/entities/settings.dart';
 import '../../../domain/use_cases/notifications/delete_loss_of_days_streak_notification_use_case.dart';
 import '../../../domain/use_cases/notifications/delete_sessions_default_notifications_use_case.dart';
 import '../../../domain/use_cases/notifications/delete_sessions_scheduled_notifications_use_case.dart';
 import '../../../domain/use_cases/notifications/set_loss_of_days_streak_notification_use_case.dart';
 import '../../../domain/use_cases/notifications/set_sessions_default_notifications_use_case.dart';
 import '../../../domain/use_cases/notifications/set_sessions_scheduled_notifications_use_case.dart';
-import '../../../domain/entities/notifications_settings.dart';
-import '../../../domain/use_cases/notifications_settings/get_notifications_settings_use_case.dart';
+import '../../../domain/use_cases/settings/get_notifications_settings_use_case.dart';
 
 class NotificationsSettingsListener {
   late final GetNotificationsSettingsUseCase _getNotificationsSettingsUseCase;
@@ -74,7 +74,7 @@ class NotificationsSettingsListener {
     NotificationsSettings newSettings,
   ) async {
     _manageSessionsScheduledNotificationsStatus(
-      newSettings.areSessionsPlannedNotificationsOn,
+      newSettings.areSessionsScheduledNotificationsOn,
     );
     _manageSessionsDefaultNotificationsStatus(
       newSettings.areSessionsDefaultNotificationsOn,
@@ -87,7 +87,7 @@ class NotificationsSettingsListener {
   Future<void> _manageSessionsScheduledNotificationsStatus(
     bool newValue,
   ) async {
-    bool? currentValue = _currentSettings?.areSessionsPlannedNotificationsOn;
+    bool? currentValue = _currentSettings?.areSessionsScheduledNotificationsOn;
     if (newValue != currentValue) {
       if (newValue) {
         await _setSessionsScheduledNotificationsUseCase.execute();
@@ -95,7 +95,7 @@ class NotificationsSettingsListener {
         await _deleteSessionsScheduledNotificationsUseCase.execute();
       }
       _currentSettings = _currentSettings?.copyWith(
-        areSessionsPlannedNotificationsOn: newValue,
+        areSessionsScheduledNotificationsOn: newValue,
       );
     }
   }

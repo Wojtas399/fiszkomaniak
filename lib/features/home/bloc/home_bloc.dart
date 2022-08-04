@@ -2,16 +2,15 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:equatable/equatable.dart';
-import '../../../domain/use_cases/appearance_settings/get_appearance_settings_use_case.dart';
-import '../../../domain/use_cases/appearance_settings/load_appearance_settings_use_case.dart';
+import '../../../domain/entities/settings.dart';
 import '../../../domain/use_cases/groups/load_all_groups_use_case.dart';
-import '../../../domain/use_cases/notifications_settings/load_notifications_settings_use_case.dart';
 import '../../../domain/use_cases/notifications/initialize_notifications_settings_use_case.dart';
+import '../../../domain/use_cases/settings/get_appearance_settings_use_case.dart';
+import '../../../domain/use_cases/settings/load_settings_use_case.dart';
 import '../../../domain/use_cases/user/get_days_streak_use_case.dart';
 import '../../../domain/use_cases/user/get_user_avatar_url_use_case.dart';
 import '../../../domain/use_cases/user/load_user_use_case.dart';
 import '../../../domain/use_cases/sessions/load_all_sessions_use_case.dart';
-import '../../../domain/entities/appearance_settings.dart';
 import '../../../models/bloc_status.dart';
 
 part 'home_event.dart';
@@ -22,8 +21,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   late final LoadUserUseCase _loadUserUseCase;
   late final LoadAllGroupsUseCase _loadAllGroupsUseCase;
   late final LoadAllSessionsUseCase _loadAllSessionsUseCase;
-  late final LoadAppearanceSettingsUseCase _loadAppearanceSettingsUseCase;
-  late final LoadNotificationsSettingsUseCase _loadNotificationsSettingsUseCase;
+  late final LoadSettingsUseCase _loadSettingsUseCase;
   late final InitializeNotificationsSettingsUseCase
       _initializeNotificationsSettingsUseCase;
   late final GetUserAvatarUrlUseCase _getUserAvatarUrlUseCase;
@@ -35,8 +33,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required LoadUserUseCase loadUserUseCase,
     required LoadAllGroupsUseCase loadAllGroupsUseCase,
     required LoadAllSessionsUseCase loadAllSessionsUseCase,
-    required LoadAppearanceSettingsUseCase loadAppearanceSettingsUseCase,
-    required LoadNotificationsSettingsUseCase loadNotificationsSettingsUseCase,
+    required LoadSettingsUseCase loadSettingsUseCase,
     required InitializeNotificationsSettingsUseCase
         initializeNotificationsSettingsUseCase,
     required GetUserAvatarUrlUseCase getUserAvatarUrlUseCase,
@@ -60,8 +57,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _loadUserUseCase = loadUserUseCase;
     _loadAllGroupsUseCase = loadAllGroupsUseCase;
     _loadAllSessionsUseCase = loadAllSessionsUseCase;
-    _loadAppearanceSettingsUseCase = loadAppearanceSettingsUseCase;
-    _loadNotificationsSettingsUseCase = loadNotificationsSettingsUseCase;
+    _loadSettingsUseCase = loadSettingsUseCase;
     _initializeNotificationsSettingsUseCase =
         initializeNotificationsSettingsUseCase;
     _getUserAvatarUrlUseCase = getUserAvatarUrlUseCase;
@@ -108,8 +104,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     await _loadUserUseCase.execute();
     await _loadAllGroupsUseCase.execute();
     await _loadAllSessionsUseCase.execute();
-    await _loadAppearanceSettingsUseCase.execute();
-    await _loadNotificationsSettingsUseCase.execute();
+    await _loadSettingsUseCase.execute();
     await _initializeNotificationsSettingsUseCase.execute();
   }
 
