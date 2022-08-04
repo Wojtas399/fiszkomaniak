@@ -4,6 +4,7 @@ import 'package:fiszkomaniak/domain/use_cases/auth/delete_logged_user_account_us
 import 'package:fiszkomaniak/interfaces/achievements_interface.dart';
 import 'package:fiszkomaniak/interfaces/auth_interface.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
+import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 
 class MockUserInterface extends Mock implements UserInterface {}
 
@@ -11,14 +12,18 @@ class MockAuthInterface extends Mock implements AuthInterface {}
 
 class MockAchievementsInterface extends Mock implements AchievementsInterface {}
 
+class MockSettingsInterface extends Mock implements SettingsInterface {}
+
 void main() {
   final userInterface = MockUserInterface();
   final authInterface = MockAuthInterface();
   final achievementsInterface = MockAchievementsInterface();
+  final settingsInterface = MockSettingsInterface();
   final useCase = DeleteLoggedUserAccountUseCase(
     userInterface: userInterface,
     authInterface: authInterface,
     achievementsInterface: achievementsInterface,
+    settingsInterface: settingsInterface,
   );
 
   test(
@@ -27,8 +32,12 @@ void main() {
       when(
         () => authInterface.reauthenticate(password: 'password'),
       ).thenAnswer((_) async => '');
-      when(() => userInterface.deleteAvatar()).thenAnswer((_) async => '');
-      when(() => userInterface.deleteAllUserData()).thenAnswer((_) async => '');
+      when(
+        () => userInterface.deleteAvatar(),
+      ).thenAnswer((_) async => '');
+      when(
+        () => userInterface.deleteAllUserData(),
+      ).thenAnswer((_) async => '');
       when(
         () => authInterface.deleteLoggedUserAccount(),
       ).thenAnswer((_) async => '');
@@ -38,11 +47,24 @@ void main() {
       verify(
         () => authInterface.reauthenticate(password: 'password'),
       ).called(1);
-      verify(() => userInterface.deleteAvatar()).called(1);
-      verify(() => userInterface.deleteAllUserData()).called(1);
-      verify(() => authInterface.deleteLoggedUserAccount()).called(1);
-      verify(() => userInterface.reset()).called(1);
-      verify(() => achievementsInterface.reset()).called(1);
+      verify(
+        () => userInterface.deleteAvatar(),
+      ).called(1);
+      verify(
+        () => userInterface.deleteAllUserData(),
+      ).called(1);
+      verify(
+        () => authInterface.deleteLoggedUserAccount(),
+      ).called(1);
+      verify(
+        () => userInterface.reset(),
+      ).called(1);
+      verify(
+        () => achievementsInterface.reset(),
+      ).called(1);
+      verify(
+        () => settingsInterface.reset(),
+      ).called(1);
     },
   );
 }

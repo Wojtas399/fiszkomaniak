@@ -15,6 +15,7 @@ import '../../domain/use_cases/user/update_avatar_use_case.dart';
 import '../../interfaces/achievements_interface.dart';
 import '../../interfaces/auth_interface.dart';
 import '../../interfaces/user_interface.dart';
+import '../../interfaces/settings_interface.dart';
 import '../../models/bloc_status.dart';
 import 'bloc/profile_bloc.dart';
 import 'components/profile_content.dart';
@@ -67,11 +68,13 @@ class _ProfileBlocProvider extends StatelessWidget {
           authInterface: context.read<AuthInterface>(),
           userInterface: context.read<UserInterface>(),
           achievementsInterface: context.read<AchievementsInterface>(),
+          settingsInterface: context.read<SettingsInterface>(),
         ),
         deleteLoggedUserAccountUseCase: DeleteLoggedUserAccountUseCase(
           userInterface: context.read<UserInterface>(),
           authInterface: context.read<AuthInterface>(),
           achievementsInterface: context.read<AchievementsInterface>(),
+          settingsInterface: context.read<SettingsInterface>(),
         ),
         deleteAvatarUseCase: DeleteAvatarUseCase(
           userInterface: context.read<UserInterface>(),

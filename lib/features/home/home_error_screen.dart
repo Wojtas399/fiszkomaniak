@@ -6,6 +6,7 @@ import '../../domain/use_cases/auth/sign_out_use_case.dart';
 import '../../interfaces/achievements_interface.dart';
 import '../../interfaces/auth_interface.dart';
 import '../../interfaces/user_interface.dart';
+import '../../interfaces/settings_interface.dart';
 import '../initial_home/initial_home.dart';
 
 class HomeErrorScreen extends StatelessWidget {
@@ -71,6 +72,7 @@ class _Button extends StatelessWidget {
       authInterface: context.read<AuthInterface>(),
       userInterface: context.read<UserInterface>(),
       achievementsInterface: context.read<AchievementsInterface>(),
+      settingsInterface: context.read<SettingsInterface>(),
     );
     return Button(
       label: 'Wróć do ekranu początkowego',
