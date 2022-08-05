@@ -1,7 +1,7 @@
-import 'package:fiszkomaniak/components/app_bar_with_search_text_field.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/app_bar_with_search_text_field.dart';
+import '../../../features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 
 class CourseGroupsPreviewAppBar extends StatelessWidget
     implements PreferredSizeWidget {

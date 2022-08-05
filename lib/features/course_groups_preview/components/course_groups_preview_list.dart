@@ -1,10 +1,12 @@
-import 'package:fiszkomaniak/components/group_item/group_item.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/group_item/group_item.dart';
 import '../../../components/bouncing_scroll.dart';
 import '../../../components/on_tap_focus_lose_area.dart';
+import '../../../config/navigation.dart';
+import '../../../domain/entities/group.dart';
+import '../../../features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
+import '../../../utils/group_utils.dart';
 
 class CourseGroupsPreviewList extends StatelessWidget {
   const CourseGroupsPreviewList({super.key});
@@ -29,22 +31,45 @@ class _GroupsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<GroupItemParams> groupsItemsParams = context.select(
-      (CourseGroupsPreviewBloc bloc) => bloc.state.groupsItemsParams,
+    final String courseName = context.select(
+      (CourseGroupsPreviewBloc bloc) => bloc.state.courseName,
+    );
+    final List<Group> groupsFromCourseMatchingToSearchValue = context.select(
+      (CourseGroupsPreviewBloc bloc) =>
+          bloc.state.groupsFromCourseMatchingToSearchValue,
     );
     return Column(
-      children: groupsItemsParams
-          .map((group) => _createGroupItem(context, group))
+      children: groupsFromCourseMatchingToSearchValue
+          .map(
+            (Group group) => _GroupItem(
+              group: group,
+              courseName: courseName,
+            ),
+          )
           .toList(),
     );
   }
+}
 
-  Widget _createGroupItem(BuildContext context, GroupItemParams params) {
+class _GroupItem extends StatelessWidget {
+  final Group group;
+  final String courseName;
+
+  const _GroupItem({
+    required this.group,
+    required this.courseName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return GroupItem(
-      key: ValueKey(params.name),
-      params: params,
+      groupName: group.name,
+      courseName: courseName,
+      amountOfRememberedFlashcards:
+          GroupUtils.getAmountOfRememberedFlashcards(group),
+      amountOfAllFlashcards: group.flashcards.length,
       onPressed: () {
-        context.read<Navigation>().navigateToGroupPreview(params.id);
+        context.read<Navigation>().navigateToGroupPreview(group.id);
       },
     );
   }

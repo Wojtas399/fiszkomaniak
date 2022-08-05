@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/domain/entities/group.dart';
-import 'package:fiszkomaniak/domain/entities/session.dart';
+import '../domain/entities/group.dart';
+import '../domain/entities/session.dart';
 import '../domain/entities/flashcard.dart';
 
 class GroupUtils {
@@ -12,5 +12,14 @@ class GroupUtils {
       return FlashcardsType.values;
     }
     return [FlashcardsType.all];
+  }
+
+  static int getAmountOfRememberedFlashcards(Group group) {
+    return group.flashcards
+        .where(
+          (Flashcard flashcard) =>
+              flashcard.status == FlashcardStatus.remembered,
+        )
+        .length;
   }
 }

@@ -1,9 +1,9 @@
-import 'package:fiszkomaniak/components/empty_content_info.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/components/course_groups_preview_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/empty_content_info.dart';
+import '../../../features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
+import '../../../features/course_groups_preview/components/course_groups_preview_list.dart';
 
 class CourseGroupsPreviewBody extends StatelessWidget {
   const CourseGroupsPreviewBody({super.key});

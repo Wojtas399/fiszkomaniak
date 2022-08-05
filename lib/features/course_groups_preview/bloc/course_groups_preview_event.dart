@@ -14,23 +14,14 @@ class CourseGroupsPreviewEventInitialize extends CourseGroupsPreviewEvent {
   List<Object> get props => [courseId];
 }
 
-class CourseGroupsPreviewEventCourseNameUpdated
+class CourseGroupsPreviewEventListenedParamsUpdated
     extends CourseGroupsPreviewEvent {
-  final String updatedCourseName;
+  final CourseGroupsPreviewStateListenedParams params;
 
-  CourseGroupsPreviewEventCourseNameUpdated({required this.updatedCourseName});
-
-  @override
-  List<Object> get props => [updatedCourseName];
-}
-
-class CourseGroupsPreviewEventGroupsUpdated extends CourseGroupsPreviewEvent {
-  final List<GroupItemParams> updatedGroups;
-
-  CourseGroupsPreviewEventGroupsUpdated({required this.updatedGroups});
+  CourseGroupsPreviewEventListenedParamsUpdated({required this.params});
 
   @override
-  List<Object> get props => [updatedGroups];
+  List<Object> get props => [params];
 }
 
 class CourseGroupsPreviewEventSearchValueChanged

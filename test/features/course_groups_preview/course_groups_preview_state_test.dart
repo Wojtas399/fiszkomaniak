@@ -1,72 +1,25 @@
-import 'package:fiszkomaniak/components/group_item/group_item.dart';
-import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
 
 void main() {
   late CourseGroupsPreviewState state;
 
   setUp(() {
-    state = CourseGroupsPreviewState();
+    state = const CourseGroupsPreviewState(
+      courseName: '',
+      searchValue: '',
+      groupsFromCourse: [],
+    );
   });
 
-  test(
-    'initial state',
-    () {
-      expect(state.courseName, '');
-      expect(state.searchValue, '');
-    },
-  );
-
-  test(
-    'copy with course name',
-    () {
-      const String expectedCourseName = 'course name';
-
-      final state2 = state.copyWith(courseName: expectedCourseName);
-      final state3 = state2.copyWith();
-
-      expect(state2.courseName, expectedCourseName);
-      expect(state3.courseName, expectedCourseName);
-    },
-  );
-
-  test(
-    'copy with search value',
-    () {
-      const String expectedSearchValue = 'search value';
-
-      final state2 = state.copyWith(searchValue: expectedSearchValue);
-      final state3 = state2.copyWith();
-
-      expect(state2.searchValue, expectedSearchValue);
-      expect(state3.searchValue, expectedSearchValue);
-    },
-  );
-
-  test(
-    'copy with groups from course',
-    () {
-      final List<GroupItemParams> expectedGroupsItemsParams = [
-        createGroupItemParams(name: 'group 1'),
-        createGroupItemParams(name: 'group 2'),
-      ];
-
-      final state2 =
-          state.copyWith(groupsFromCourse: expectedGroupsItemsParams);
-      final state3 = state2.copyWith();
-
-      expect(state2.groupsItemsParams, expectedGroupsItemsParams);
-      expect(state3.groupsItemsParams, expectedGroupsItemsParams);
-    },
-  );
-
   group(
-    'group items params',
+    'group from course matching to search value',
     () {
-      final List<GroupItemParams> groupsItemsParams = [
-        createGroupItemParams(name: 'group 1'),
-        createGroupItemParams(name: 'group name 2'),
-        createGroupItemParams(name: 'group name 3'),
+      final List<Group> groups = [
+        createGroup(name: 'group 1'),
+        createGroup(name: 'group name 2'),
+        createGroup(name: 'group name 3'),
       ];
 
       test(
@@ -75,11 +28,11 @@ void main() {
           const String searchValue = '';
 
           state = state.copyWith(
-            groupsFromCourse: groupsItemsParams,
+            groupsFromCourse: groups,
             searchValue: searchValue,
           );
 
-          expect(state.groupsItemsParams, groupsItemsParams);
+          expect(state.groupsFromCourseMatchingToSearchValue, groups);
         },
       );
 
@@ -89,13 +42,13 @@ void main() {
           const String searchValue = 'name';
 
           state = state.copyWith(
-            groupsFromCourse: groupsItemsParams,
+            groupsFromCourse: groups,
             searchValue: searchValue,
           );
 
           expect(
-            state.groupsItemsParams,
-            [groupsItemsParams[1], groupsItemsParams[2]],
+            state.groupsFromCourseMatchingToSearchValue,
+            [groups[1], groups[2]],
           );
         },
       );
@@ -112,13 +65,55 @@ void main() {
   test(
     'are groups in course, should return true if there is at least one group in course',
     () {
-      final List<GroupItemParams> groupsItemsParams = [
-        createGroupItemParams(name: 'group 1'),
+      final List<Group> groups = [
+        createGroup(name: 'group 1'),
       ];
 
-      state = state.copyWith(groupsFromCourse: groupsItemsParams);
+      state = state.copyWith(groupsFromCourse: groups);
 
       expect(state.areGroupsInCourse, true);
+    },
+  );
+
+  test(
+    'copy with course name',
+    () {
+      const String expectedCourseName = 'course name';
+
+      state = state.copyWith(courseName: expectedCourseName);
+      final state2 = state.copyWith();
+
+      expect(state.courseName, expectedCourseName);
+      expect(state2.courseName, expectedCourseName);
+    },
+  );
+
+  test(
+    'copy with search value',
+    () {
+      const String expectedSearchValue = 'search value';
+
+      state = state.copyWith(searchValue: expectedSearchValue);
+      final state2 = state.copyWith();
+
+      expect(state.searchValue, expectedSearchValue);
+      expect(state2.searchValue, expectedSearchValue);
+    },
+  );
+
+  test(
+    'copy with groups from course',
+    () {
+      final List<Group> expectedGroups = [
+        createGroup(name: 'group 1'),
+        createGroup(name: 'group 2'),
+      ];
+
+      state = state.copyWith(groupsFromCourse: expectedGroups);
+      final state2 = state.copyWith();
+
+      expect(state.groupsFromCourse, expectedGroups);
+      expect(state2.groupsFromCourse, expectedGroups);
     },
   );
 }

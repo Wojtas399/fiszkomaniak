@@ -3,25 +3,23 @@ part of 'course_groups_preview_bloc.dart';
 class CourseGroupsPreviewState extends Equatable {
   final String courseName;
   final String searchValue;
-  late final List<GroupItemParams> _groupsFromCourse;
+  final List<Group> groupsFromCourse;
 
-  CourseGroupsPreviewState({
-    this.courseName = '',
-    this.searchValue = '',
-    List<GroupItemParams> groupsFromCourse = const [],
-  }) {
-    _groupsFromCourse = groupsFromCourse;
-  }
+  const CourseGroupsPreviewState({
+    required this.courseName,
+    required this.searchValue,
+    required this.groupsFromCourse,
+  });
 
   @override
   List<Object> get props => [
         courseName,
         searchValue,
-        _groupsFromCourse,
+        groupsFromCourse,
       ];
 
-  List<GroupItemParams> get groupsItemsParams {
-    final List<GroupItemParams> matchingGroups = _groupsFromCourse
+  List<Group> get groupsFromCourseMatchingToSearchValue {
+    final List<Group> matchingGroups = groupsFromCourse
         .where(
           (group) => group.name.toLowerCase().contains(
                 searchValue.toLowerCase(),
@@ -32,24 +30,40 @@ class CourseGroupsPreviewState extends Equatable {
     return matchingGroups;
   }
 
-  bool get areGroupsInCourse => _groupsFromCourse.isNotEmpty;
+  bool get areGroupsInCourse => groupsFromCourse.isNotEmpty;
 
   CourseGroupsPreviewState copyWith({
     String? courseName,
     String? searchValue,
-    List<GroupItemParams>? groupsFromCourse,
+    List<Group>? groupsFromCourse,
   }) {
     return CourseGroupsPreviewState(
       courseName: courseName ?? this.courseName,
       searchValue: searchValue ?? this.searchValue,
-      groupsFromCourse: groupsFromCourse ?? _groupsFromCourse,
+      groupsFromCourse: groupsFromCourse ?? this.groupsFromCourse,
     );
   }
 
   int _setGroupsAlphabeticallyByName(
-    GroupItemParams group1,
-    GroupItemParams group2,
+    Group group1,
+    Group group2,
   ) {
     return group1.name.compareTo(group2.name);
   }
+}
+
+class CourseGroupsPreviewStateListenedParams extends Equatable {
+  final String courseName;
+  final List<Group> groupsFromCourse;
+
+  const CourseGroupsPreviewStateListenedParams({
+    required this.courseName,
+    required this.groupsFromCourse,
+  });
+
+  @override
+  List<Object> get props => [
+        courseName,
+        groupsFromCourse,
+      ];
 }
