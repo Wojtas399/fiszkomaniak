@@ -34,7 +34,7 @@ class SignInState extends Equatable {
 
   SignInState copyWithError(SignInErrorType errorType) {
     return copyWith(
-      status: BlocStatusError<SignInErrorType>(errorType: errorType),
+      status: BlocStatusError<SignInErrorType>(error: errorType),
     );
   }
 }

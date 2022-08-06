@@ -251,7 +251,7 @@ void main() {
     expect: () => [
       createState(
         status: const BlocStatusError<FlashcardPreviewError>(
-          errorType: FlashcardPreviewError.flashcardIsIncomplete,
+          error: FlashcardPreviewError.flashcardIsIncomplete,
         ),
       ),
     ],

@@ -106,7 +106,7 @@ class _FlashcardPreviewBlocListener extends StatelessWidget {
           }
         } else if (blocStatus is BlocStatusError) {
           Dialogs.closeLoadingDialog(context);
-          final FlashcardPreviewError? error = blocStatus.errorType;
+          final FlashcardPreviewError? error = blocStatus.error;
           if (error != null) {
             _manageError(error);
           }

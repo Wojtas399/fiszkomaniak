@@ -320,7 +320,7 @@ void main() {
           ),
           createState(
             status: const BlocStatusError<SignUpErrorType>(
-              errorType: SignUpErrorType.emailAlreadyInUse,
+              error: SignUpErrorType.emailAlreadyInUse,
             ),
             username: 'username',
             email: 'email',

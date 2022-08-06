@@ -106,7 +106,7 @@ class _ProfileBlocListener extends StatelessWidget {
           }
         } else if (blocStatus is BlocStatusError) {
           Dialogs.closeLoadingDialog(context);
-          final ProfileErrorType? errorType = blocStatus.errorType;
+          final ProfileErrorType? errorType = blocStatus.error;
           if (errorType != null) {
             _manageErrorType(errorType);
           }

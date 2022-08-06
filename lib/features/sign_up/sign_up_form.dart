@@ -79,7 +79,7 @@ class _SignUpBlocListener extends StatelessWidget {
           Dialogs.closeLoadingDialog(context);
         } else if (blocStatus is BlocStatusError) {
           Dialogs.closeLoadingDialog(context);
-          final SignUpErrorType? errorType = blocStatus.errorType;
+          final SignUpErrorType? errorType = blocStatus.error;
           if (errorType != null) {
             _manageErrorType(errorType, context);
           }

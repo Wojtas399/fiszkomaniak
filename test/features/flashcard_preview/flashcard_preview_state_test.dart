@@ -173,7 +173,7 @@ void main() {
       expect(
         state.status,
         const BlocStatusError<FlashcardPreviewError>(
-          errorType: expectedError,
+          error: expectedError,
         ),
       );
     },

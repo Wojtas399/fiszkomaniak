@@ -60,7 +60,7 @@ class _ResetPasswordStateListener extends StatelessWidget {
           }
         } else if (blocStatus is BlocStatusError) {
           Dialogs.closeLoadingDialog(context);
-          final ResetPasswordErrorType? errorType = blocStatus.errorType;
+          final ResetPasswordErrorType? errorType = blocStatus.error;
           if (errorType != null) {
             _manageErrorType(errorType, context);
           }

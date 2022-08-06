@@ -62,7 +62,7 @@ void main() {
       expect(
         state.status,
         const BlocStatusError<ResetPasswordErrorType>(
-          errorType: ResetPasswordErrorType.userNotFound,
+          error: ResetPasswordErrorType.userNotFound,
         ),
       );
     },

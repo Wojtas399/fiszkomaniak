@@ -182,7 +182,7 @@ void main() {
       ),
       createState(
         status: const BlocStatusError<SignInErrorType>(
-          errorType: SignInErrorType.userNotFound,
+          error: SignInErrorType.userNotFound,
         ),
         email: 'email',
         password: 'password',
@@ -223,7 +223,7 @@ void main() {
       ),
       createState(
         status: const BlocStatusError<SignInErrorType>(
-          errorType: SignInErrorType.invalidEmail,
+          error: SignInErrorType.invalidEmail,
         ),
         email: 'email',
         password: 'password',
@@ -264,7 +264,7 @@ void main() {
       ),
       createState(
         status: const BlocStatusError<SignInErrorType>(
-          errorType: SignInErrorType.wrongPassword,
+          error: SignInErrorType.wrongPassword,
         ),
         email: 'email',
         password: 'password',

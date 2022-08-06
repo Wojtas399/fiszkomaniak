@@ -46,7 +46,7 @@ class ProfileState extends Equatable {
 
   ProfileState copyWithErrorType(ProfileErrorType errorType) {
     return copyWith(
-      status: BlocStatusError<ProfileErrorType>(errorType: errorType),
+      status: BlocStatusError<ProfileErrorType>(error: errorType),
     );
   }
 }

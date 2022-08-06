@@ -399,7 +399,7 @@ void main() {
           createState(status: const BlocStatusLoading()),
           createState(
             status: const BlocStatusError<ProfileErrorType>(
-              errorType: ProfileErrorType.wrongPassword,
+              error: ProfileErrorType.wrongPassword,
             ),
           ),
         ],
@@ -523,7 +523,7 @@ void main() {
       createState(status: const BlocStatusLoading()),
       createState(
         status: const BlocStatusError<ProfileErrorType>(
-          errorType: ProfileErrorType.wrongPassword,
+          error: ProfileErrorType.wrongPassword,
         ),
       ),
     ],

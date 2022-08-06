@@ -89,7 +89,7 @@ void main() {
       expect(
         state.status,
         const BlocStatusError<SignInErrorType>(
-          errorType: SignInErrorType.invalidEmail,
+          error: SignInErrorType.invalidEmail,
         ),
       );
     },

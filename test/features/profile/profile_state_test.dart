@@ -100,7 +100,7 @@ void main() {
       expect(
         state.status,
         const BlocStatusError<ProfileErrorType>(
-          errorType: ProfileErrorType.wrongPassword,
+          error: ProfileErrorType.wrongPassword,
         ),
       );
     },

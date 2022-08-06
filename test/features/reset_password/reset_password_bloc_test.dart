@@ -103,7 +103,7 @@ void main() {
     expect: () => [
       createState(
         status: const BlocStatusError(
-          errorType: ResetPasswordErrorType.invalidEmail,
+          error: ResetPasswordErrorType.invalidEmail,
         ),
         email: 'email',
       ),
@@ -136,7 +136,7 @@ void main() {
       ),
       createState(
         status: const BlocStatusError(
-          errorType: ResetPasswordErrorType.userNotFound,
+          error: ResetPasswordErrorType.userNotFound,
         ),
         email: 'email',
       ),

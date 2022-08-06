@@ -56,7 +56,7 @@ class FlashcardPreviewState extends Equatable {
 
   FlashcardPreviewState copyWithError(FlashcardPreviewError error) {
     return copyWith(
-      status: BlocStatusError<FlashcardPreviewError>(errorType: error),
+      status: BlocStatusError<FlashcardPreviewError>(error: error),
     );
   }
 }

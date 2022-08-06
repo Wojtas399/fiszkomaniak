@@ -26,7 +26,7 @@ class ResetPasswordState extends Equatable {
 
   ResetPasswordState copyWithError(ResetPasswordErrorType errorType) {
     return copyWith(
-      status: BlocStatusError<ResetPasswordErrorType>(errorType: errorType),
+      status: BlocStatusError<ResetPasswordErrorType>(error: errorType),
     );
   }
 }

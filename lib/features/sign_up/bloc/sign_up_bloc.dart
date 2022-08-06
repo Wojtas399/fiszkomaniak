@@ -99,7 +99,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         if (exception == AuthException.emailAlreadyInUse) {
           emit(state.copyWith(
             status: const BlocStatusError<SignUpErrorType>(
-              errorType: SignUpErrorType.emailAlreadyInUse,
+              error: SignUpErrorType.emailAlreadyInUse,
             ),
           ));
         }
