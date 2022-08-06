@@ -1,10 +1,10 @@
-import 'package:fiszkomaniak/components/custom_icon_button.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
-import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/app_bar_with_close_button.dart';
+import '../../../components/custom_icon_button.dart';
+import '../../../utils/utils.dart';
+import '../bloc/flashcard_preview_bloc.dart';
 
 class FlashcardPreviewAppBar extends StatelessWidget
     implements PreferredSizeWidget {
@@ -47,7 +47,7 @@ class _DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   void _onDelete(BuildContext context) {
     context
         .read<FlashcardPreviewBloc>()
-        .add(FlashcardPreviewEventRemoveFlashcard());
+        .add(FlashcardPreviewEventDeleteFlashcard());
   }
 }
 

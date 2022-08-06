@@ -1,18 +1,19 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/flashcards/remove_flashcard_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/flashcards/update_flashcard_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview_dialogs.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/components/flashcard_preview_content.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../components/dialogs/dialogs.dart';
+import '../../config/navigation.dart';
+import '../../domain/use_cases/courses/get_course_use_case.dart';
+import '../../domain/use_cases/flashcards/remove_flashcard_use_case.dart';
+import '../../domain/use_cases/flashcards/update_flashcard_use_case.dart';
+import '../../domain/use_cases/groups/get_group_use_case.dart';
+import '../../interfaces/courses_interface.dart';
+import '../../interfaces/groups_interface.dart';
+import '../../models/bloc_status.dart';
+import 'bloc/flashcard_preview_bloc.dart';
+import 'components/flashcard_preview_content.dart';
+import 'flashcard_preview_dialogs.dart';
+
 
 class FlashcardPreviewScreenArguments extends Equatable {
   final String groupId;
@@ -74,10 +75,12 @@ class _FlashcardPreviewBlocProvider extends StatelessWidget {
           groupsInterface: groupsInterface,
         ),
         flashcardPreviewDialogs: FlashcardPreviewDialogs(),
-      )..add(FlashcardPreviewEventInitialize(
-          groupId: groupId,
-          flashcardIndex: flashcardIndex,
-        )),
+      )..add(
+          FlashcardPreviewEventInitialize(
+            groupId: groupId,
+            flashcardIndex: flashcardIndex,
+          ),
+        ),
       child: child,
     );
   }
@@ -97,9 +100,15 @@ class _FlashcardPreviewBlocListener extends StatelessWidget {
           Dialogs.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
           Dialogs.closeLoadingDialog(context);
-          final FlashcardPreviewInfoType? infoType = blocStatus.info;
-          if (infoType != null) {
-            _manageInfoType(infoType, context);
+          final FlashcardPreviewInfo? info = blocStatus.info;
+          if (info != null) {
+            _manageInfo(info, context);
+          }
+        } else if (blocStatus is BlocStatusError) {
+          Dialogs.closeLoadingDialog(context);
+          final FlashcardPreviewError? error = blocStatus.errorType;
+          if (error != null) {
+            _manageError(error);
           }
         }
       },
@@ -107,21 +116,27 @@ class _FlashcardPreviewBlocListener extends StatelessWidget {
     );
   }
 
-  void _manageInfoType(
-    FlashcardPreviewInfoType infoType,
+  void _manageInfo(
+    FlashcardPreviewInfo info,
     BuildContext context,
   ) {
-    if (infoType == FlashcardPreviewInfoType.flashcardIsIncomplete) {
-      Dialogs.showDialogWithMessage(
-        title: 'Niekompletna fiszka',
-        message:
-            'Pytanie lub odpowiedź pozostały puste. Uzupełnij je aby móc zapisać zmiany.',
-      );
-    } else if (infoType == FlashcardPreviewInfoType.flashcardHasBeenUpdated) {
+    if (info == FlashcardPreviewInfo.flashcardHasBeenUpdated) {
       Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano fiszkę');
-    } else if (infoType == FlashcardPreviewInfoType.flashcardHasBeenRemoved) {
+    } else if (info == FlashcardPreviewInfo.flashcardHasBeenDeleted) {
       context.read<Navigation>().moveBack();
       Dialogs.showSnackbarWithMessage('Pomyślnie usunięto fiszkę');
+    }
+  }
+
+  void _manageError(FlashcardPreviewError error) {
+    switch (error) {
+      case FlashcardPreviewError.flashcardIsIncomplete:
+        Dialogs.showDialogWithMessage(
+          title: 'Niekompletna fiszka',
+          message:
+              'Pytanie lub odpowiedź pozostały puste. Uzupełnij je aby móc zapisać zmiany.',
+        );
+        break;
     }
   }
 }

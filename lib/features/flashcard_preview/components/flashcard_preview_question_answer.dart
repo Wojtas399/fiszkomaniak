@@ -1,8 +1,8 @@
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'flashcard_preview_flashcard_with_title.dart';
+import '../../../models/bloc_status.dart';
+import '../bloc/flashcard_preview_bloc.dart';
 
 class FlashcardPreviewQuestionAnswer extends StatelessWidget {
   const FlashcardPreviewQuestionAnswer({super.key});
@@ -66,12 +66,12 @@ class _Question extends StatelessWidget {
   bool _haveQuestionAndAnswerBeenInitialized(BlocStatus status) {
     return status is BlocStatusComplete &&
         status.info ==
-            FlashcardPreviewInfoType.questionAndAnswerHaveBeenInitialized;
+            FlashcardPreviewInfo.questionAndAnswerHaveBeenInitialized;
   }
 
   bool _haveQuestionAndAnswerBeenReset(BlocStatus status) {
     return status is BlocStatusComplete &&
-        status.info == FlashcardPreviewInfoType.questionAndAnswerHaveBeenReset;
+        status.info == FlashcardPreviewInfo.questionAndAnswerHaveBeenReset;
   }
 }
 
@@ -118,11 +118,11 @@ class _Answer extends StatelessWidget {
   bool _haveQuestionAndAnswerBeenInitialized(BlocStatus status) {
     return status is BlocStatusComplete &&
         status.info ==
-            FlashcardPreviewInfoType.questionAndAnswerHaveBeenInitialized;
+            FlashcardPreviewInfo.questionAndAnswerHaveBeenInitialized;
   }
 
   bool _haveQuestionAndAnswerBeenReset(BlocStatus status) {
     return status is BlocStatusComplete &&
-        status.info == FlashcardPreviewInfoType.questionAndAnswerHaveBeenReset;
+        status.info == FlashcardPreviewInfo.questionAndAnswerHaveBeenReset;
   }
 }

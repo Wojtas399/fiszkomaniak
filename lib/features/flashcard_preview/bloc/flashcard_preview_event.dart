@@ -49,4 +49,4 @@ class FlashcardPreviewEventResetChanges extends FlashcardPreviewEvent {}
 
 class FlashcardPreviewEventSaveChanges extends FlashcardPreviewEvent {}
 
-class FlashcardPreviewEventRemoveFlashcard extends FlashcardPreviewEvent {}
+class FlashcardPreviewEventDeleteFlashcard extends FlashcardPreviewEvent {}

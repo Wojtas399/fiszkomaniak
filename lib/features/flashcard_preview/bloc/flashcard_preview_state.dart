@@ -39,7 +39,7 @@ class FlashcardPreviewState extends Equatable {
     String? answer,
   }) {
     return FlashcardPreviewState(
-      status: status ?? const BlocStatusComplete<FlashcardPreviewInfoType>(),
+      status: status ?? const BlocStatusInProgress(),
       flashcard: flashcard ?? this.flashcard,
       group: group ?? this.group,
       courseName: courseName ?? this.courseName,
@@ -47,12 +47,27 @@ class FlashcardPreviewState extends Equatable {
       answer: answer ?? this.answer,
     );
   }
+
+  FlashcardPreviewState copyWithInfo(FlashcardPreviewInfo info) {
+    return copyWith(
+      status: BlocStatusComplete<FlashcardPreviewInfo>(info: info),
+    );
+  }
+
+  FlashcardPreviewState copyWithError(FlashcardPreviewError error) {
+    return copyWith(
+      status: BlocStatusError<FlashcardPreviewError>(errorType: error),
+    );
+  }
 }
 
-enum FlashcardPreviewInfoType {
+enum FlashcardPreviewInfo {
   questionAndAnswerHaveBeenInitialized,
   questionAndAnswerHaveBeenReset,
-  flashcardIsIncomplete,
   flashcardHasBeenUpdated,
-  flashcardHasBeenRemoved,
+  flashcardHasBeenDeleted,
+}
+
+enum FlashcardPreviewError {
+  flashcardIsIncomplete,
 }

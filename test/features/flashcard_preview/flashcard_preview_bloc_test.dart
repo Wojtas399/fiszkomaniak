@@ -1,4 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
@@ -9,8 +11,6 @@ import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview_dialogs.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
 
@@ -33,11 +33,11 @@ void main() {
   final flashcardPreviewDialogs = MockFlashcardPreviewDialogs();
 
   FlashcardPreviewBloc createBloc({
+    BlocStatus status = const BlocStatusInitial(),
     Flashcard? flashcard,
     Group? group,
-    String? courseName,
-    String? question,
-    String? answer,
+    String question = '',
+    String answer = '',
   }) {
     return FlashcardPreviewBloc(
       getGroupUseCase: getGroupUseCase,
@@ -45,11 +45,11 @@ void main() {
       updateFlashcardUseCase: updateFlashcardUseCase,
       removeFlashcardUseCase: removeFlashcardUseCase,
       flashcardPreviewDialogs: flashcardPreviewDialogs,
+      status: status,
       flashcard: flashcard,
       group: group,
-      courseName: courseName ?? '',
-      question: question ?? '',
-      answer: answer ?? '',
+      question: question,
+      answer: answer,
     );
   }
 
@@ -62,7 +62,7 @@ void main() {
     String? answer,
   }) {
     return FlashcardPreviewState(
-      status: status ?? const BlocStatusComplete<FlashcardPreviewInfoType>(),
+      status: status ?? const BlocStatusInProgress(),
       flashcard: flashcard,
       group: group,
       courseName: courseName ?? '',
@@ -94,7 +94,7 @@ void main() {
       final Course course = createCourse(id: 'c1', name: 'course 1');
 
       blocTest(
-        'should set group listener, should load group and course and should update the whole status',
+        'should set group listener, should load group and course name and should update the whole status',
         build: () => createBloc(),
         setUp: () {
           when(
@@ -111,9 +111,8 @@ void main() {
         },
         expect: () => [
           createState(
-            status: const BlocStatusComplete<FlashcardPreviewInfoType>(
-              info:
-                  FlashcardPreviewInfoType.questionAndAnswerHaveBeenInitialized,
+            status: const BlocStatusComplete<FlashcardPreviewInfo>(
+              info: FlashcardPreviewInfo.questionAndAnswerHaveBeenInitialized,
             ),
             flashcard: flashcards[1],
             group: group,
@@ -156,7 +155,9 @@ void main() {
         'should update group, flashcard, question and answer in state',
         build: () => createBloc(flashcard: flashcard),
         act: (FlashcardPreviewBloc bloc) {
-          bloc.add(FlashcardPreviewEventGroupUpdated(group: group));
+          bloc.add(
+            FlashcardPreviewEventGroupUpdated(group: group),
+          );
         },
         expect: () => [
           createState(
@@ -167,6 +168,22 @@ void main() {
           ),
         ],
       );
+
+      blocTest(
+        'should not update group, flashcard, question and answer in state if flashcard has been deleted',
+        build: () => createBloc(
+          status: const BlocStatusComplete<FlashcardPreviewInfo>(
+            info: FlashcardPreviewInfo.flashcardHasBeenDeleted,
+          ),
+          flashcard: flashcard,
+        ),
+        act: (FlashcardPreviewBloc bloc) {
+          bloc.add(
+            FlashcardPreviewEventGroupUpdated(group: group),
+          );
+        },
+        expect: () => [],
+      );
     },
   );
 
@@ -174,7 +191,9 @@ void main() {
     'question changed, should update question in state',
     build: () => createBloc(),
     act: (FlashcardPreviewBloc bloc) {
-      bloc.add(FlashcardPreviewEventQuestionChanged(question: 'question'));
+      bloc.add(
+        FlashcardPreviewEventQuestionChanged(question: 'question'),
+      );
     },
     expect: () => [
       createState(question: 'question'),
@@ -185,7 +204,9 @@ void main() {
     'answer changed, should update answer in state',
     build: () => createBloc(),
     act: (FlashcardPreviewBloc bloc) {
-      bloc.add(FlashcardPreviewEventAnswerChanged(answer: 'answer'));
+      bloc.add(
+        FlashcardPreviewEventAnswerChanged(answer: 'answer'),
+      );
     },
     expect: () => [
       createState(answer: 'answer'),
@@ -201,12 +222,14 @@ void main() {
         'should set original question and answer in state',
         build: () => createBloc(flashcard: flashcard),
         act: (FlashcardPreviewBloc bloc) {
-          bloc.add(FlashcardPreviewEventResetChanges());
+          bloc.add(
+            FlashcardPreviewEventResetChanges(),
+          );
         },
         expect: () => [
           createState(
-            status: const BlocStatusComplete<FlashcardPreviewInfoType>(
-              info: FlashcardPreviewInfoType.questionAndAnswerHaveBeenReset,
+            status: const BlocStatusComplete<FlashcardPreviewInfo>(
+              info: FlashcardPreviewInfo.questionAndAnswerHaveBeenReset,
             ),
             flashcard: flashcard,
             question: flashcard.question,
@@ -221,12 +244,14 @@ void main() {
     'save changes, question or answer is empty, should emit appropriate info',
     build: () => createBloc(),
     act: (FlashcardPreviewBloc bloc) {
-      bloc.add(FlashcardPreviewEventSaveChanges());
+      bloc.add(
+        FlashcardPreviewEventSaveChanges(),
+      );
     },
     expect: () => [
       createState(
-        status: const BlocStatusComplete<FlashcardPreviewInfoType>(
-          info: FlashcardPreviewInfoType.flashcardIsIncomplete,
+        status: const BlocStatusError<FlashcardPreviewError>(
+          errorType: FlashcardPreviewError.flashcardIsIncomplete,
         ),
       ),
     ],
@@ -261,7 +286,9 @@ void main() {
           ).thenAnswer((_) async => '');
         },
         act: (FlashcardPreviewBloc bloc) {
-          bloc.add(FlashcardPreviewEventSaveChanges());
+          bloc.add(
+            FlashcardPreviewEventSaveChanges(),
+          );
         },
         expect: () => [
           createState(
@@ -272,8 +299,8 @@ void main() {
             answer: 'answer',
           ),
           createState(
-            status: const BlocStatusComplete<FlashcardPreviewInfoType>(
-              info: FlashcardPreviewInfoType.flashcardHasBeenUpdated,
+            status: const BlocStatusComplete<FlashcardPreviewInfo>(
+              info: FlashcardPreviewInfo.flashcardHasBeenUpdated,
             ),
             group: group,
             flashcard: flashcard,
@@ -317,7 +344,9 @@ void main() {
           ).thenAnswer((_) async => '');
         },
         act: (FlashcardPreviewBloc bloc) {
-          bloc.add(FlashcardPreviewEventSaveChanges());
+          bloc.add(
+            FlashcardPreviewEventSaveChanges(),
+          );
         },
         expect: () => [],
         verify: (_) {
@@ -353,7 +382,9 @@ void main() {
       ).thenAnswer((_) async => '');
     },
     act: (FlashcardPreviewBloc bloc) {
-      bloc.add(FlashcardPreviewEventRemoveFlashcard());
+      bloc.add(
+        FlashcardPreviewEventDeleteFlashcard(),
+      );
     },
     expect: () => [
       createState(
@@ -362,8 +393,8 @@ void main() {
         flashcard: createFlashcard(index: 0),
       ),
       createState(
-        status: const BlocStatusComplete<FlashcardPreviewInfoType>(
-          info: FlashcardPreviewInfoType.flashcardHasBeenRemoved,
+        status: const BlocStatusComplete<FlashcardPreviewInfo>(
+          info: FlashcardPreviewInfo.flashcardHasBeenDeleted,
         ),
         group: createGroup(id: 'g1'),
         flashcard: createFlashcard(index: 0),
@@ -397,7 +428,9 @@ void main() {
       ).thenAnswer((_) async => '');
     },
     act: (FlashcardPreviewBloc bloc) {
-      bloc.add(FlashcardPreviewEventRemoveFlashcard());
+      bloc.add(
+        FlashcardPreviewEventDeleteFlashcard(),
+      );
     },
     expect: () => [],
     verify: (_) {

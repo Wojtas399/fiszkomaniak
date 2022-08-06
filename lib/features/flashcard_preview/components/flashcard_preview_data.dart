@@ -1,14 +1,14 @@
-import 'package:fiszkomaniak/components/item_with_icon.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
-import 'package:fiszkomaniak/domain/entities/flashcard.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/components/flashcard_preview_question_answer.dart';
-import 'package:fiszkomaniak/ui_extensions/flashcard_status_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/item_with_icon.dart';
+import '../../../domain/entities/flashcard.dart';
+import '../../../ui_extensions/flashcard_status_extensions.dart';
+import '../bloc/flashcard_preview_bloc.dart';
+import 'flashcard_preview_question_answer.dart';
 
-class FlashcardPreviewInfo extends StatelessWidget {
-  const FlashcardPreviewInfo({super.key});
+class FlashcardPreviewData extends StatelessWidget {
+  const FlashcardPreviewData({super.key});
 
   @override
   Widget build(BuildContext context) {
