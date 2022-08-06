@@ -1,216 +1,175 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/components/course_item.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
-import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_all_courses_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/load_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/remove_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/domain/use_cases/courses/delete_course_use_case.dart';
 import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_bloc.dart';
 import 'package:fiszkomaniak/features/courses_library/courses_library_dialogs.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockGetAllCoursesUseCase extends Mock implements GetAllCoursesUseCase {}
 
 class MockLoadAllCoursesUseCase extends Mock implements LoadAllCoursesUseCase {}
 
-class MockRemoveCourseUseCase extends Mock implements RemoveCourseUseCase {}
-
-class MockGetGroupsByCourseIdUseCase extends Mock
-    implements GetGroupsByCourseIdUseCase {}
+class MockDeleteCourseUseCase extends Mock implements DeleteCourseUseCase {}
 
 class MockCoursesLibraryDialogs extends Mock implements CoursesLibraryDialogs {}
-
-class MockNavigation extends Mock implements Navigation {}
 
 void main() {
   final getAllCoursesUseCase = MockGetAllCoursesUseCase();
   final loadAllCoursesUseCase = MockLoadAllCoursesUseCase();
-  final removeCourseUseCase = MockRemoveCourseUseCase();
-  final getGroupsByCourseIdUseCase = MockGetGroupsByCourseIdUseCase();
+  final deleteCourseUseCase = MockDeleteCourseUseCase();
   final coursesLibraryDialogs = MockCoursesLibraryDialogs();
-  final navigation = MockNavigation();
-  late CoursesLibraryBloc bloc;
 
-  setUp(() {
-    bloc = CoursesLibraryBloc(
+  CoursesLibraryBloc createBloc() {
+    return CoursesLibraryBloc(
       getAllCoursesUseCase: getAllCoursesUseCase,
       loadAllCoursesUseCase: loadAllCoursesUseCase,
-      removeCourseUseCase: removeCourseUseCase,
-      getGroupsByCourseIdUseCase: getGroupsByCourseIdUseCase,
+      deleteCourseUseCase: deleteCourseUseCase,
       coursesLibraryDialogs: coursesLibraryDialogs,
-      navigation: navigation,
     );
-  });
+  }
+
+  CoursesLibraryState createState({
+    BlocStatus status = const BlocStatusInProgress(),
+    List<Course> allCourses = const [],
+  }) {
+    return CoursesLibraryState(
+      status: status,
+      allCourses: allCourses,
+    );
+  }
 
   tearDown(() {
     reset(getAllCoursesUseCase);
     reset(loadAllCoursesUseCase);
-    reset(removeCourseUseCase);
-    reset(getGroupsByCourseIdUseCase);
+    reset(deleteCourseUseCase);
     reset(coursesLibraryDialogs);
-    reset(navigation);
   });
 
-  blocTest(
-    'initialize, should set all courses listener and call method responsible for loading them',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => getAllCoursesUseCase.execute(),
-      ).thenAnswer(
-        (_) => Stream.value([
-          createCourse(id: 'c1', name: 'course name'),
-        ]),
+  group(
+    'initialize',
+    () {
+      final List<Course> allCourses = [
+        createCourse(id: 'c1', name: 'course 1'),
+        createCourse(id: 'c2', name: 'course 2'),
+      ];
+
+      blocTest(
+        'should call method responsible for loading all courses and should set listener for theses courses',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => getAllCoursesUseCase.execute(),
+          ).thenAnswer((_) => Stream.value(allCourses));
+          when(
+            () => loadAllCoursesUseCase.execute(),
+          ).thenAnswer((_) async => '');
+        },
+        act: (CoursesLibraryBloc bloc) {
+          bloc.add(CoursesLibraryEventInitialize());
+        },
+        expect: () => [
+          createState(
+            status: const BlocStatusLoading(),
+          ),
+          createState(
+            status: const BlocStatusComplete(),
+          ),
+          createState(
+            status: const BlocStatusInProgress(),
+            allCourses: allCourses,
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => loadAllCoursesUseCase.execute(),
+          ).called(1);
+        },
       );
-      when(
-        () => getGroupsByCourseIdUseCase.execute(courseId: 'c1'),
-      ).thenAnswer(
-        (_) => Stream.value([
-          createGroup(id: 'g1'),
-          createGroup(id: 'g2'),
-          createGroup(id: 'g3'),
-        ]),
+    },
+  );
+
+  group(
+    'all courses updated',
+    () {
+      final List<Course> allCourses = [
+        createCourse(id: 'c1'),
+        createCourse(id: 'c2'),
+      ];
+
+      blocTest(
+        'should update all courses in state',
+        build: () => createBloc(),
+        act: (CoursesLibraryBloc bloc) {
+          bloc.add(
+            CoursesLibraryEventAllCoursesUpdated(allCourses: allCourses),
+          );
+        },
+        expect: () => [
+          createState(
+            allCourses: allCourses,
+          ),
+        ],
       );
-      when(() => loadAllCoursesUseCase.execute()).thenAnswer((_) async => '');
-    },
-    act: (_) => bloc.add(CoursesLibraryEventInitialize()),
-    expect: () => [
-      const CoursesLibraryState(
-        status: BlocStatusLoading(),
-      ),
-      const CoursesLibraryState(
-        status: BlocStatusComplete(),
-      ),
-      CoursesLibraryState(
-        status: const BlocStatusComplete(),
-        coursesItemsParams: [
-          createCourseItemParams(
-            title: 'course name',
-            amountOfGroups: 3,
-          ),
-        ],
-      ),
-    ],
-  );
-
-  blocTest(
-    'courses items params updated, should update state',
-    build: () => bloc,
-    act: (_) => bloc.add(
-      CoursesLibraryEventCoursesItemsParamsUpdated(
-        updatedCoursesItemsParams: [
-          createCourseItemParams(
-            title: 'course 1',
-            amountOfGroups: 2,
-          ),
-          createCourseItemParams(
-            title: 'course 2',
-            amountOfGroups: 4,
-          ),
-        ],
-      ),
-    ),
-    expect: () => [
-      CoursesLibraryState(
-        status: const BlocStatusComplete(),
-        coursesItemsParams: [
-          createCourseItemParams(
-            title: 'course 1',
-            amountOfGroups: 2,
-          ),
-          createCourseItemParams(
-            title: 'course 2',
-            amountOfGroups: 4,
-          ),
-        ],
-      ),
-    ],
-  );
-
-  blocTest(
-    'course pressed, should navigate to course groups preview',
-    build: () => bloc,
-    act: (_) => bloc.add(CoursesLibraryEventCoursePressed(courseId: 'c1')),
-    verify: (_) {
-      verify(() => navigation.navigateToCourseGroupsPreview('c1')).called(1);
     },
   );
 
   blocTest(
-    'edit course, should navigate to course creator',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => navigation.navigateToCourseCreator(CourseCreatorEditMode(
-          course: createCourse(id: 'c1'),
-        )),
-      ).thenAnswer((_) async => '');
-    },
-    act: (_) => bloc.add(CoursesLibraryEventEditCourse(
-      course: createCourse(id: 'c1'),
-    )),
-    verify: (_) {
-      verify(
-        () => navigation.navigateToCourseCreator(CourseCreatorEditMode(
-          course: createCourse(id: 'c1'),
-        )),
-      ).called(1);
-    },
-  );
-
-  blocTest(
-    'remove course, should call remove course use case if confirmed',
-    build: () => bloc,
+    'delete course, confirmed, should call use case responsible for deleting course',
+    build: () => createBloc(),
     setUp: () {
       when(
         () => coursesLibraryDialogs.askForDeleteConfirmation(),
       ).thenAnswer((_) async => true);
       when(
-        () => removeCourseUseCase.execute(courseId: 'c1'),
+        () => deleteCourseUseCase.execute(courseId: 'c1'),
       ).thenAnswer((_) async => '');
     },
-    act: (_) => bloc.add(CoursesLibraryEventRemoveCourse(courseId: 'c1')),
+    act: (CoursesLibraryBloc bloc) {
+      bloc.add(
+        CoursesLibraryEventDeleteCourse(courseId: 'c1'),
+      );
+    },
     expect: () => [
-      const CoursesLibraryState(status: BlocStatusLoading()),
-      const CoursesLibraryState(
-        status: BlocStatusComplete(
+      createState(
+        status: const BlocStatusLoading(),
+      ),
+      createState(
+        status: const BlocStatusComplete<CoursesLibraryInfoType>(
           info: CoursesLibraryInfoType.courseHasBeenRemoved,
         ),
       ),
     ],
     verify: (_) {
       verify(
-        () => coursesLibraryDialogs.askForDeleteConfirmation(),
-      ).called(1);
-      verify(
-        () => removeCourseUseCase.execute(courseId: 'c1'),
+        () => deleteCourseUseCase.execute(courseId: 'c1'),
       ).called(1);
     },
   );
 
   blocTest(
-    'remove course, should not call remove course use case if not confirmed',
-    build: () => bloc,
+    'delete course, cancelled, should not call use case responsible for deleting course',
+    build: () => createBloc(),
     setUp: () {
       when(
         () => coursesLibraryDialogs.askForDeleteConfirmation(),
       ).thenAnswer((_) async => false);
       when(
-        () => removeCourseUseCase.execute(courseId: 'c1'),
+        () => deleteCourseUseCase.execute(courseId: 'c1'),
       ).thenAnswer((_) async => '');
     },
-    act: (_) => bloc.add(CoursesLibraryEventRemoveCourse(courseId: 'c1')),
-    expect: () => [],
+    act: (CoursesLibraryBloc bloc) {
+      bloc.add(
+        CoursesLibraryEventDeleteCourse(courseId: 'c1'),
+      );
+    },
     verify: (_) {
-      verify(
-        () => coursesLibraryDialogs.askForDeleteConfirmation(),
-      ).called(1);
-      verifyNever(() => removeCourseUseCase.execute(courseId: 'c1'));
+      verifyNever(
+        () => deleteCourseUseCase.execute(courseId: 'c1'),
+      );
     },
   );
 }

@@ -1,17 +1,14 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/load_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/remove_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
-import 'package:fiszkomaniak/features/courses_library/bloc/courses_library_bloc.dart';
-import 'package:fiszkomaniak/features/courses_library/components/courses_library_content.dart';
-import 'package:fiszkomaniak/features/courses_library/courses_library_dialogs.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../components/dialogs/dialogs.dart';
+import '../../domain/use_cases/courses/get_all_courses_use_case.dart';
+import '../../domain/use_cases/courses/load_all_courses_use_case.dart';
+import '../../domain/use_cases/courses/delete_course_use_case.dart';
+import '../../interfaces/courses_interface.dart';
+import '../../models/bloc_status.dart';
+import 'bloc/courses_library_bloc.dart';
+import 'components/courses_library_content.dart';
+import 'courses_library_dialogs.dart';
 
 class CoursesLibraryScreen extends StatelessWidget {
   const CoursesLibraryScreen({super.key});
@@ -42,14 +39,10 @@ class _CoursesLibraryBlocProvider extends StatelessWidget {
         loadAllCoursesUseCase: LoadAllCoursesUseCase(
           coursesInterface: coursesInterface,
         ),
-        removeCourseUseCase: RemoveCourseUseCase(
+        deleteCourseUseCase: DeleteCourseUseCase(
           coursesInterface: coursesInterface,
         ),
-        getGroupsByCourseIdUseCase: GetGroupsByCourseIdUseCase(
-          groupsInterface: context.read<GroupsInterface>(),
-        ),
         coursesLibraryDialogs: CoursesLibraryDialogs(),
-        navigation: context.read<Navigation>(),
       )..add(CoursesLibraryEventInitialize()),
       child: child,
     );

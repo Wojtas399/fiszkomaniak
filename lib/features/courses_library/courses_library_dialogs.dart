@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
+import '../../components/dialogs/dialogs.dart';
 
 class CoursesLibraryDialogs {
   Future<bool> askForDeleteConfirmation() async {

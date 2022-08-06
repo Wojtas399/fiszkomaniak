@@ -1,6 +1,6 @@
-import 'package:fiszkomaniak/features/courses_library/components/courses_library_course_item_info.dart';
-import 'package:fiszkomaniak/features/courses_library/components/courses_library_course_popup_menu.dart';
 import 'package:flutter/material.dart';
+import 'courses_library_course_item_info.dart';
+import 'courses_library_course_popup_menu.dart';
 
 class CoursesLibraryCourseItem extends StatelessWidget {
   final String title;

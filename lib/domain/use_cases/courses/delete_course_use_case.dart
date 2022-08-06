@@ -1,9 +1,9 @@
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
+import '../../../interfaces/courses_interface.dart';
 
-class RemoveCourseUseCase {
+class DeleteCourseUseCase {
   late final CoursesInterface _coursesInterface;
 
-  RemoveCourseUseCase({required CoursesInterface coursesInterface}) {
+  DeleteCourseUseCase({required CoursesInterface coursesInterface}) {
     _coursesInterface = coursesInterface;
   }
 

@@ -7,39 +7,21 @@ abstract class CoursesLibraryEvent extends Equatable {
 
 class CoursesLibraryEventInitialize extends CoursesLibraryEvent {}
 
-class CoursesLibraryEventCoursesItemsParamsUpdated extends CoursesLibraryEvent {
-  final List<CourseItemParams> updatedCoursesItemsParams;
+class CoursesLibraryEventAllCoursesUpdated extends CoursesLibraryEvent {
+  final List<Course> allCourses;
 
-  CoursesLibraryEventCoursesItemsParamsUpdated({
-    required this.updatedCoursesItemsParams,
+  CoursesLibraryEventAllCoursesUpdated({
+    required this.allCourses,
   });
 
   @override
-  List<Object> get props => [updatedCoursesItemsParams];
+  List<Object> get props => [allCourses];
 }
 
-class CoursesLibraryEventCoursePressed extends CoursesLibraryEvent {
+class CoursesLibraryEventDeleteCourse extends CoursesLibraryEvent {
   final String courseId;
 
-  CoursesLibraryEventCoursePressed({required this.courseId});
-
-  @override
-  List<Object> get props => [courseId];
-}
-
-class CoursesLibraryEventEditCourse extends CoursesLibraryEvent {
-  final Course course;
-
-  CoursesLibraryEventEditCourse({required this.course});
-
-  @override
-  List<Object> get props => [course];
-}
-
-class CoursesLibraryEventRemoveCourse extends CoursesLibraryEvent {
-  final String courseId;
-
-  CoursesLibraryEventRemoveCourse({required this.courseId});
+  CoursesLibraryEventDeleteCourse({required this.courseId});
 
   @override
   List<Object> get props => [courseId];

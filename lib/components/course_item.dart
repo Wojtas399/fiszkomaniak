@@ -1,14 +1,19 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/courses_library/components/courses_library_course_item_info.dart';
-import 'package:fiszkomaniak/features/courses_library/components/courses_library_course_popup_menu.dart';
 import 'package:flutter/material.dart';
+import '../features/courses_library/components/courses_library_course_item_info.dart';
+import '../features/courses_library/components/courses_library_course_popup_menu.dart';
 
 class CourseItem extends StatelessWidget {
-  final CourseItemParams params;
+  final String courseName;
+  final int amountOfGroups;
+  final VoidCallback onPressed;
+  final Function(CoursePopupAction action) onActionSelected;
 
   const CourseItem({
     super.key,
-    required this.params,
+    required this.courseName,
+    required this.amountOfGroups,
+    required this.onPressed,
+    required this.onActionSelected,
   });
 
   @override
@@ -17,7 +22,7 @@ class CourseItem extends StatelessWidget {
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 8.0),
       child: GestureDetector(
-        onTap: params.onPressed,
+        onTap: onPressed,
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -27,11 +32,11 @@ class CourseItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CoursesLibraryCourseItemInfo(
-                title: params.title,
-                amountOfGroups: params.amountOfGroups,
+                title: courseName,
+                amountOfGroups: amountOfGroups,
               ),
               CoursesLibraryCoursePopupMenu(
-                onActionSelected: params.onActionSelected,
+                onActionSelected: onActionSelected,
               ),
             ],
           ),
@@ -39,38 +44,4 @@ class CourseItem extends StatelessWidget {
       ),
     );
   }
-}
-
-class CourseItemParams extends Equatable {
-  final String title;
-  final int amountOfGroups;
-  final VoidCallback onPressed;
-  final Function(CoursePopupAction action) onActionSelected;
-
-  const CourseItemParams({
-    required this.title,
-    required this.amountOfGroups,
-    required this.onPressed,
-    required this.onActionSelected,
-  });
-
-  @override
-  List<Object> get props => [
-        title,
-        amountOfGroups,
-      ];
-}
-
-CourseItemParams createCourseItemParams({
-  String? title,
-  int? amountOfGroups,
-  VoidCallback? onPressed,
-  Function(CoursePopupAction action)? onActionSelected,
-}) {
-  return CourseItemParams(
-    title: title ?? '',
-    amountOfGroups: amountOfGroups ?? 0,
-    onPressed: onPressed ?? () {},
-    onActionSelected: onActionSelected ?? (_) {},
-  );
 }

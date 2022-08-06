@@ -1,18 +1,12 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/components/course_item.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/load_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/remove_course_use_case.dart';
-import 'package:fiszkomaniak/domain/entities/course.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
-import 'package:fiszkomaniak/features/courses_library/courses_library_dialogs.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rxdart/rxdart.dart';
-import '../../../config/navigation.dart';
-import '../../course_creator/course_creator_mode.dart';
-import '../components/courses_library_course_popup_menu.dart';
+import '../../../domain/entities/course.dart';
+import '../../../domain/use_cases/courses/get_all_courses_use_case.dart';
+import '../../../domain/use_cases/courses/load_all_courses_use_case.dart';
+import '../../../domain/use_cases/courses/delete_course_use_case.dart';
+import '../../../features/courses_library/courses_library_dialogs.dart';
+import '../../../models/bloc_status.dart';
 
 part 'courses_library_event.dart';
 
@@ -22,38 +16,35 @@ class CoursesLibraryBloc
     extends Bloc<CoursesLibraryEvent, CoursesLibraryState> {
   late final GetAllCoursesUseCase _getAllCoursesUseCase;
   late final LoadAllCoursesUseCase _loadAllCoursesUseCase;
-  late final RemoveCourseUseCase _removeCourseUseCase;
-  late final GetGroupsByCourseIdUseCase _getGroupsByCourseIdUseCase;
+  late final DeleteCourseUseCase _deleteCourseUseCase;
   late final CoursesLibraryDialogs _coursesLibraryDialogs;
-  late final Navigation _navigation;
-  StreamSubscription<List<CourseItemParams>>? _coursesItemsParamsListener;
+  StreamSubscription<List<Course>>? _allCoursesListener;
 
   CoursesLibraryBloc({
     required GetAllCoursesUseCase getAllCoursesUseCase,
     required LoadAllCoursesUseCase loadAllCoursesUseCase,
-    required RemoveCourseUseCase removeCourseUseCase,
-    required GetGroupsByCourseIdUseCase getGroupsByCourseIdUseCase,
+    required DeleteCourseUseCase deleteCourseUseCase,
     required CoursesLibraryDialogs coursesLibraryDialogs,
-    required Navigation navigation,
-  }) : super(const CoursesLibraryState()) {
+    BlocStatus status = const BlocStatusInitial(),
+    List<Course> allCourses = const [],
+  }) : super(
+          CoursesLibraryState(
+            status: status,
+            allCourses: allCourses,
+          ),
+        ) {
     _getAllCoursesUseCase = getAllCoursesUseCase;
     _loadAllCoursesUseCase = loadAllCoursesUseCase;
-    _removeCourseUseCase = removeCourseUseCase;
-    _getGroupsByCourseIdUseCase = getGroupsByCourseIdUseCase;
+    _deleteCourseUseCase = deleteCourseUseCase;
     _coursesLibraryDialogs = coursesLibraryDialogs;
-    _navigation = navigation;
     on<CoursesLibraryEventInitialize>(_initialize);
-    on<CoursesLibraryEventCoursesItemsParamsUpdated>(
-      _coursesItemsParamsUpdated,
-    );
-    on<CoursesLibraryEventCoursePressed>(_coursePressed);
-    on<CoursesLibraryEventEditCourse>(_editCourse);
-    on<CoursesLibraryEventRemoveCourse>(_removeCourse);
+    on<CoursesLibraryEventAllCoursesUpdated>(_allCoursesUpdated);
+    on<CoursesLibraryEventDeleteCourse>(_deleteCourse);
   }
 
   @override
   Future<void> close() {
-    _coursesItemsParamsListener?.cancel();
+    _allCoursesListener?.cancel();
     return super.close();
   }
 
@@ -64,40 +55,24 @@ class CoursesLibraryBloc
     emit(state.copyWith(
       status: const BlocStatusLoading(),
     ));
-    _setCoursesParamsListener();
     await _loadAllCoursesUseCase.execute();
     emit(state.copyWith(
       status: const BlocStatusComplete(),
     ));
+    _setAllCoursesListener();
   }
 
-  void _coursesItemsParamsUpdated(
-    CoursesLibraryEventCoursesItemsParamsUpdated event,
+  void _allCoursesUpdated(
+    CoursesLibraryEventAllCoursesUpdated event,
     Emitter<CoursesLibraryState> emit,
   ) {
     emit(state.copyWith(
-      coursesItemsParams: event.updatedCoursesItemsParams,
+      allCourses: event.allCourses,
     ));
   }
 
-  void _coursePressed(
-    CoursesLibraryEventCoursePressed event,
-    Emitter<CoursesLibraryState> emit,
-  ) {
-    _navigation.navigateToCourseGroupsPreview(event.courseId);
-  }
-
-  void _editCourse(
-    CoursesLibraryEventEditCourse event,
-    Emitter<CoursesLibraryState> emit,
-  ) {
-    _navigation.navigateToCourseCreator(
-      CourseCreatorEditMode(course: event.course),
-    );
-  }
-
-  Future<void> _removeCourse(
-    CoursesLibraryEventRemoveCourse event,
+  Future<void> _deleteCourse(
+    CoursesLibraryEventDeleteCourse event,
     Emitter<CoursesLibraryState> emit,
   ) async {
     final bool confirmation =
@@ -106,51 +81,19 @@ class CoursesLibraryBloc
       emit(state.copyWith(
         status: const BlocStatusLoading(),
       ));
-      await _removeCourseUseCase.execute(courseId: event.courseId);
+      await _deleteCourseUseCase.execute(courseId: event.courseId);
       emit(state.copyWith(
-        status: const BlocStatusComplete(
+        status: const BlocStatusComplete<CoursesLibraryInfoType>(
           info: CoursesLibraryInfoType.courseHasBeenRemoved,
         ),
       ));
     }
   }
 
-  void _setCoursesParamsListener() {
-    _coursesItemsParamsListener = _getAllCoursesUseCase
-        .execute()
-        .switchMap(
-          (courses) => Rx.combineLatest(
-            courses.map(_createCourseItemParams),
-            (List<CourseItemParams> coursesItemsParams) => coursesItemsParams,
-          ),
-        )
-        .listen(
-          (coursesItemsParams) => add(
-            CoursesLibraryEventCoursesItemsParamsUpdated(
-              updatedCoursesItemsParams: coursesItemsParams,
-            ),
-          ),
-        );
-  }
-
-  Stream<CourseItemParams> _createCourseItemParams(Course course) {
-    return _getGroupsByCourseIdUseCase.execute(courseId: course.id).map(
-          (groupsFromCourse) => CourseItemParams(
-            title: course.name,
-            amountOfGroups: groupsFromCourse.length,
-            onPressed: () => add(
-              CoursesLibraryEventCoursePressed(courseId: course.id),
-            ),
-            onActionSelected: (CoursePopupAction action) {
-              switch (action) {
-                case CoursePopupAction.edit:
-                  add(CoursesLibraryEventEditCourse(course: course));
-                  break;
-                case CoursePopupAction.remove:
-                  add(CoursesLibraryEventRemoveCourse(courseId: course.id));
-                  break;
-              }
-            },
+  void _setAllCoursesListener() {
+    _allCoursesListener ??= _getAllCoursesUseCase.execute().listen(
+          (List<Course> allCourses) => add(
+            CoursesLibraryEventAllCoursesUpdated(allCourses: allCourses),
           ),
         );
   }
