@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/flashcard.dart';
 import '../../../domain/entities/group.dart';
+import '../../../domain/use_cases/groups/get_group_use_case.dart';
 
 part 'group_flashcards_preview_event.dart';
 
@@ -16,16 +16,16 @@ class GroupFlashcardsPreviewBloc
 
   GroupFlashcardsPreviewBloc({
     required GetGroupUseCase getGroupUseCase,
-    String? groupId,
-    String? groupName,
-    List<Flashcard>? flashcards,
-    String? searchValue,
+    String groupId = '',
+    String groupName = '',
+    List<Flashcard> flashcards = const [],
+    String searchValue = '',
   }) : super(
           GroupFlashcardsPreviewState(
-            groupId: groupId ?? '',
-            groupName: groupName ?? '',
-            flashcardsFromGroup: flashcards ?? [],
-            searchValue: searchValue ?? '',
+            groupId: groupId,
+            groupName: groupName,
+            flashcardsFromGroup: flashcards,
+            searchValue: searchValue,
           ),
         ) {
     _getGroupUseCase = getGroupUseCase;
@@ -44,9 +44,6 @@ class GroupFlashcardsPreviewBloc
     GroupFlashcardsPreviewEventInitialize event,
     Emitter<GroupFlashcardsPreviewState> emit,
   ) async {
-    final Group group =
-        await _getGroupUseCase.execute(groupId: event.groupId).first;
-    add(GroupFlashcardsPreviewEventGroupChanged(group: group));
     _setGroupListener(event.groupId);
   }
 
@@ -54,7 +51,9 @@ class GroupFlashcardsPreviewBloc
     GroupFlashcardsPreviewEventSearchValueChanged event,
     Emitter<GroupFlashcardsPreviewState> emit,
   ) {
-    emit(state.copyWith(searchValue: event.searchValue));
+    emit(state.copyWith(
+      searchValue: event.searchValue,
+    ));
   }
 
   void _groupChanged(
@@ -70,7 +69,9 @@ class GroupFlashcardsPreviewBloc
 
   void _setGroupListener(String groupId) {
     _groupListener = _getGroupUseCase.execute(groupId: groupId).listen(
-          (group) => add(GroupFlashcardsPreviewEventGroupChanged(group: group)),
+          (group) => add(
+            GroupFlashcardsPreviewEventGroupChanged(group: group),
+          ),
         );
   }
 }
