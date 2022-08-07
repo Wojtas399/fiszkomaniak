@@ -11,6 +11,7 @@ import '../../domain/use_cases/notifications/get_selected_notification_use_case.
 import '../../domain/use_cases/notifications/set_loss_of_days_streak_notification_use_case.dart';
 import '../../domain/use_cases/notifications/set_sessions_default_notifications_use_case.dart';
 import '../../domain/use_cases/notifications/set_sessions_scheduled_notifications_use_case.dart';
+import '../../domain/use_cases/user/get_days_streak_use_case.dart';
 import '../../domain/use_cases/settings/get_notifications_settings_use_case.dart';
 import '../../interfaces/achievements_interface.dart';
 import '../../interfaces/groups_interface.dart';
@@ -22,6 +23,7 @@ import '../../providers/date_provider.dart';
 import 'listeners/achievements_listener.dart';
 import 'listeners/notifications_listener.dart';
 import 'listeners/notifications_settings_listener.dart';
+import 'listeners/user_listener.dart';
 
 class HomeListeners extends StatelessWidget {
   final Widget child;
@@ -96,9 +98,21 @@ class HomeListeners extends StatelessWidget {
         notificationsInterface: context.read<NotificationsInterface>(),
       ),
     );
+    final UserListener userListener = UserListener(
+      getDaysStreakUseCase: GetDaysStreakUseCase(
+        userInterface: context.read<UserInterface>(),
+      ),
+      setLossOfDaysStreakNotificationUseCase:
+          SetLossOfDaysStreakNotificationUseCase(
+        userInterface: context.read<UserInterface>(),
+        notificationsInterface: context.read<NotificationsInterface>(),
+        dateProvider: DateProvider(),
+      ),
+    );
     achievementsListener.initialize();
     notificationsListener.initialize();
     notificationsSettingsListener.initialize();
+    userListener.initialize();
     return Provider(
       create: (_) => achievementsListener,
       dispose: (_, AchievementsListener listener) => listener.dispose(),
@@ -109,7 +123,11 @@ class HomeListeners extends StatelessWidget {
           create: (_) => notificationsSettingsListener,
           dispose: (_, NotificationsSettingsListener listener) =>
               listener.dispose(),
-          child: child,
+          child: Provider(
+            create: (_) => userListener,
+            dispose: (_, UserListener listener) => listener.dispose(),
+            child: child,
+          ),
         ),
       ),
     );
