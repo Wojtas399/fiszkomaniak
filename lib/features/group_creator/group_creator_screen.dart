@@ -98,12 +98,12 @@ class _GroupCreatorBlocListener extends StatelessWidget {
   void _manageInfo(GroupCreatorInfo info, BuildContext context) {
     switch (info) {
       case GroupCreatorInfo.groupHasBeenAdded:
-        context.read<Navigation>().backHome();
+        Navigation.backHome();
         context.read<HomePageController>().moveToPage(0);
         Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
         break;
       case GroupCreatorInfo.groupHasBeenEdited:
-        context.read<Navigation>().moveBack();
+        Navigation.moveBack();
         Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizaowano grupę.');
         break;
     }

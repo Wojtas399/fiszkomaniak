@@ -133,10 +133,10 @@ class _ProfileBlocListener extends StatelessWidget {
         Dialogs.showSnackbarWithMessage('Pomyślnie zmieniono hasło');
         break;
       case ProfileInfoType.userHasBeenSignedOut:
-        context.read<Navigation>().pushReplacementToInitialHome();
+        Navigation.pushReplacementToInitialHome();
         break;
       case ProfileInfoType.userAccountHasBeenDeleted:
-        context.read<Navigation>().pushReplacementToInitialHome();
+        Navigation.pushReplacementToInitialHome();
         Dialogs.showDialogWithMessage(
           title: 'Konto usunięte',
           message:

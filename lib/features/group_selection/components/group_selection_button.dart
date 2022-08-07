@@ -22,7 +22,7 @@ class GroupSelectionButton extends StatelessWidget {
     final String? selectedGroupId =
         context.read<GroupSelectionBloc>().state.selectedGroup?.id;
     if (selectedGroupId != null) {
-      context.read<Navigation>().navigateToFlashcardsEditor(selectedGroupId);
+      Navigation.navigateToFlashcardsEditor(selectedGroupId);
     }
   }
 }

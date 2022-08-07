@@ -135,7 +135,7 @@ class _LearningProcessBlocListener extends StatelessWidget {
         _backHome(context);
         break;
       case LearningProcessInfoType.sessionHasBeenAborted:
-        context.read<Navigation>().moveBack();
+        Navigation.moveBack();
         break;
     }
   }
@@ -150,7 +150,7 @@ class _LearningProcessBlocListener extends StatelessWidget {
   }
 
   void _backHome(BuildContext context) {
-    context.read<Navigation>().backHome();
+    Navigation.backHome();
     context.read<HomePageController>().moveToPage(0);
   }
 }

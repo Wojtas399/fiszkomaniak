@@ -1,11 +1,11 @@
-import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/on_tap_focus_lose_area.dart';
 import '../../../components/buttons/button.dart';
 import '../../../components/textfields/custom_textfield.dart';
+import '../bloc/course_creator_bloc.dart';
+import '../course_creator_mode.dart';
 
 class CourseCreatorContent extends StatelessWidget {
   final TextEditingController courseNameController = TextEditingController();
@@ -29,21 +29,16 @@ class CourseCreatorContent extends StatelessWidget {
                 icon: MdiIcons.archive,
                 label: 'Nazwa kursu',
                 controller: courseNameController,
-                onChanged: (String value) {
-                  context
-                      .read<CourseCreatorBloc>()
-                      .add(CourseCreatorEventCourseNameChanged(
-                        courseName: value,
-                      ));
-                },
+                onChanged: (String value) => _onCourseNameChanged(
+                  value,
+                  context,
+                ),
               ),
               Button(
                 label: _getButtonText(state.mode),
                 onPressed: state.isButtonDisabled
                     ? null
-                    : () => context
-                        .read<CourseCreatorBloc>()
-                        .add(CourseCreatorEventSaveChanges()),
+                    : () => _onSubmitButtonPressed(context),
               ),
             ],
           ),
@@ -59,5 +54,15 @@ class CourseCreatorContent extends StatelessWidget {
       return 'zapisz';
     }
     return '';
+  }
+
+  void _onCourseNameChanged(String value, BuildContext context) {
+    context
+        .read<CourseCreatorBloc>()
+        .add(CourseCreatorEventCourseNameChanged(courseName: value));
+  }
+
+  void _onSubmitButtonPressed(BuildContext context) {
+    context.read<CourseCreatorBloc>().add(CourseCreatorEventSaveChanges());
   }
 }

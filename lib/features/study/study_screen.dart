@@ -88,7 +88,7 @@ class _GroupItem extends StatelessWidget {
               GroupUtils.getAmountOfRememberedFlashcards(group),
           amountOfAllFlashcards: group.flashcards.length,
           onPressed: () {
-            context.read<Navigation>().navigateToGroupPreview(group.id);
+            Navigation.navigateToGroupPreview(group.id);
           },
         );
       },

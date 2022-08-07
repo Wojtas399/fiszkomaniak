@@ -123,7 +123,7 @@ class _FlashcardPreviewBlocListener extends StatelessWidget {
     if (info == FlashcardPreviewInfo.flashcardHasBeenUpdated) {
       Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano fiszkę');
     } else if (info == FlashcardPreviewInfo.flashcardHasBeenDeleted) {
-      context.read<Navigation>().moveBack();
+      Navigation.moveBack();
       Dialogs.showSnackbarWithMessage('Pomyślnie usunięto fiszkę');
     }
   }

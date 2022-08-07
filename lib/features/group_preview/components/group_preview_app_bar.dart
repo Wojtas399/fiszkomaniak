@@ -53,9 +53,9 @@ class GroupPreviewAppBar extends StatelessWidget
   void _navigateToGroupCreatorInEditMode(BuildContext context) {
     final Group? group = context.read<GroupPreviewBloc>().state.group;
     if (group != null) {
-      context.read<Navigation>().navigateToGroupCreator(
-            GroupCreatorEditMode(group: group),
-          );
+      Navigation.navigateToGroupCreator(
+        GroupCreatorEditMode(group: group),
+      );
     }
   }
 }

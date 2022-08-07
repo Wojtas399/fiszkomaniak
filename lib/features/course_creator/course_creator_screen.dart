@@ -103,12 +103,12 @@ class _CourseCreatorBlocListener extends StatelessWidget {
         );
         break;
       case CourseCreatorInfoType.courseHasBeenAdded:
-        context.read<Navigation>().backHome();
+        Navigation.backHome();
         context.read<HomePageController>().moveToPage(2);
         Dialogs.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
         break;
       case CourseCreatorInfoType.courseHasBeenUpdated:
-        context.read<Navigation>().backHome();
+        Navigation.backHome();
         context.read<HomePageController>().moveToPage(2);
         Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano kurs');
         break;

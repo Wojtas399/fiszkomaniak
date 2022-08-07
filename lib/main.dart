@@ -1,4 +1,3 @@
-import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/config/theme/global_theme.dart';
 import 'package:fiszkomaniak/features/initial_home/initial_home.dart';
 import 'package:fiszkomaniak/global_provider.dart';
@@ -23,22 +22,19 @@ class MyApp extends StatelessWidget {
       create: (BuildContext context) => ThemeProvider(),
       builder: (BuildContext context, _) {
         final themeProvider = Provider.of<ThemeProvider>(context);
-        return Provider(
-          create: (_) => Navigation(),
-          child: GlobalProvider(
-            child: MaterialApp(
-              title: 'Fiszkomaniak',
-              themeMode: themeProvider.themeMode,
-              theme: GlobalTheme.lightTheme,
-              darkTheme: GlobalTheme.darkTheme,
-              localizationsDelegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: const [Locale('pl', 'PL')],
-              home: const InitialHome(),
-            ),
+        return GlobalProvider(
+          child: MaterialApp(
+            title: 'Fiszkomaniak',
+            themeMode: themeProvider.themeMode,
+            theme: GlobalTheme.lightTheme,
+            darkTheme: GlobalTheme.darkTheme,
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('pl', 'PL')],
+            home: const InitialHome(),
           ),
         );
       },

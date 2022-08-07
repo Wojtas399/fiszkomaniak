@@ -47,7 +47,7 @@ class _InitialHomeBlocListener extends StatelessWidget {
     return BlocListener<InitialHomeBloc, InitialHomeState>(
       listener: (BuildContext context, InitialHomeState state) {
         if (state.isUserLogged) {
-          context.read<Navigation>().pushReplacementToHome(context);
+          Navigation.pushReplacementToHome(context);
         }
       },
       child: child,

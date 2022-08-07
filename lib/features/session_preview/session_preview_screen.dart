@@ -95,7 +95,7 @@ class _SessionPreviewBlocListener extends StatelessWidget {
   ) {
     switch (infoType) {
       case SessionPreviewInfoType.sessionHasBeenDeleted:
-        context.read<Navigation>().moveBack();
+        Navigation.moveBack();
         Dialogs.showSnackbarWithMessage('Pomyślnie usunięto sesję');
         break;
     }

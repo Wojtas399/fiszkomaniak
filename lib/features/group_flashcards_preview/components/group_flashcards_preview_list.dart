@@ -39,6 +39,6 @@ class GroupFlashcardsPreviewList extends StatelessWidget {
     int index,
     BuildContext context,
   ) {
-    context.read<Navigation>().navigateToFlashcardPreview(groupId, index);
+    Navigation.navigateToFlashcardPreview(groupId, index);
   }
 }

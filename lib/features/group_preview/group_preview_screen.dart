@@ -92,7 +92,7 @@ class _GroupPreviewBlocListener extends StatelessWidget {
   void _manageBlocInfo(GroupPreviewInfoType info, BuildContext context) {
     switch (info) {
       case GroupPreviewInfoType.groupHasBeenRemoved:
-        context.read<Navigation>().backHome();
+        Navigation.backHome();
         context.read<HomePageController>().moveToPage(0);
         Dialogs.showSnackbarWithMessage('Pomyślnie usunięto grupę.');
         break;

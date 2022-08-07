@@ -76,9 +76,9 @@ class _QuickSessionButton extends StatelessWidget {
   void _onPressedQuickSession(BuildContext context) {
     final String? groupId = context.read<GroupPreviewBloc>().state.group?.id;
     if (groupId != null) {
-      context.read<Navigation>().navigateToSessionPreview(
-            SessionPreviewModeQuick(groupId: groupId),
-          );
+      Navigation.navigateToSessionPreview(
+        SessionPreviewModeQuick(groupId: groupId),
+      );
     }
   }
 }

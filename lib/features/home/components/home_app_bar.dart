@@ -37,7 +37,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   void _onSettingsPressed(BuildContext context) {
-    context.read<Navigation>().navigateToSettings();
+    Navigation.navigateToSettings();
   }
 }
 

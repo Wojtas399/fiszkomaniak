@@ -69,14 +69,14 @@ class _FlashcardsOptions extends StatelessWidget {
   void _editFlashcards(BuildContext context) {
     final String? groupId = context.read<GroupPreviewBloc>().state.group?.id;
     if (groupId != null) {
-      context.read<Navigation>().navigateToFlashcardsEditor(groupId);
+      Navigation.navigateToFlashcardsEditor(groupId);
     }
   }
 
   void _reviewFlashcards(BuildContext context) {
     final String? groupId = context.read<GroupPreviewBloc>().state.group?.id;
     if (groupId != null) {
-      context.read<Navigation>().navigateToGroupFlashcardsPreview(groupId);
+      Navigation.navigateToGroupFlashcardsPreview(groupId);
     }
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/card_item.dart';
 import '../../../config/navigation.dart';
 import '../../../features/session_preview/bloc/session_preview_mode.dart';
@@ -49,9 +48,9 @@ class SessionsListItem extends StatelessWidget {
   }
 
   void _onPressed(BuildContext context) {
-    context.read<Navigation>().navigateToSessionPreview(
-          SessionPreviewModeNormal(sessionId: params.sessionId),
-        );
+    Navigation.navigateToSessionPreview(
+      SessionPreviewModeNormal(sessionId: params.sessionId),
+    );
   }
 }
 

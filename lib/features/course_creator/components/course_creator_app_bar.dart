@@ -1,8 +1,8 @@
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/app_bar_with_close_button.dart';
+import '../bloc/course_creator_bloc.dart';
+import '../course_creator_mode.dart';
 
 class CourseCreatorAppBar extends StatelessWidget
     implements PreferredSizeWidget {

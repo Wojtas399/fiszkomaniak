@@ -138,12 +138,12 @@ class _SessionCreatorBlocListener extends StatelessWidget {
         );
         break;
       case SessionCreatorInfoType.sessionHasBeenAdded:
-        context.read<Navigation>().backHome();
+        Navigation.backHome();
         context.read<HomePageController>().moveToPage(1);
         Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową sesję');
         break;
       case SessionCreatorInfoType.sessionHasBeenUpdated:
-        context.read<Navigation>().moveBack();
+        Navigation.moveBack();
         Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano sesję');
         break;
     }

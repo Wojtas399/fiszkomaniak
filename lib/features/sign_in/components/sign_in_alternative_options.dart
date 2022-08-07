@@ -65,6 +65,6 @@ class _PasswordRecoveryOption extends StatelessWidget {
   }
 
   void _onPressed(BuildContext context) {
-    context.read<Navigation>().navigateToResetPassword(context);
+    Navigation.navigateToResetPassword(context);
   }
 }

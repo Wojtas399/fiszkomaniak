@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../config/navigation.dart';
@@ -24,34 +23,34 @@ class HomeActionButton extends StatelessWidget {
           child: const Icon(MdiIcons.archive),
           label: 'Kurs',
           onTap: () {
-            context.read<Navigation>().navigateToCourseCreator(
-                  const CourseCreatorCreateMode(),
-                );
+            Navigation.navigateToCourseCreator(
+              const CourseCreatorCreateMode(),
+            );
           },
         ),
         SpeedDialChild(
           child: const Icon(MdiIcons.folder),
           label: 'Grupa',
           onTap: () {
-            context.read<Navigation>().navigateToGroupCreator(
-                  const GroupCreatorCreateMode(),
-                );
+            Navigation.navigateToGroupCreator(
+              const GroupCreatorCreateMode(),
+            );
           },
         ),
         SpeedDialChild(
           child: const Icon(MdiIcons.cards),
           label: 'Fiszki',
           onTap: () {
-            context.read<Navigation>().navigateToGroupSelection();
+            Navigation.navigateToGroupSelection();
           },
         ),
         SpeedDialChild(
           child: const Icon(MdiIcons.calendarCheck),
           label: 'Sesja',
           onTap: () {
-            context.read<Navigation>().navigateToSessionCreator(
-                  const SessionCreatorCreateMode(),
-                );
+            Navigation.navigateToSessionCreator(
+              const SessionCreatorCreateMode(),
+            );
           },
         ),
       ],

@@ -72,9 +72,9 @@ class _SessionOptions extends StatelessWidget {
   void _navigateToSessionEditor(BuildContext context) {
     final Session? session = context.read<SessionPreviewBloc>().state.session;
     if (session != null) {
-      context.read<Navigation>().navigateToSessionCreator(
-            SessionCreatorEditMode(session: session),
-          );
+      Navigation.navigateToSessionCreator(
+        SessionCreatorEditMode(session: session),
+      );
     }
   }
 }

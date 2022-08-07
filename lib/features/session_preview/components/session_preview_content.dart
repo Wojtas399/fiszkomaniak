@@ -69,16 +69,15 @@ class _StartLearningButton extends StatelessWidget {
     final SessionPreviewState state = context.read<SessionPreviewBloc>().state;
     final String? groupId = state.group?.id;
     if (groupId != null) {
-      context.read<Navigation>().navigateToLearningProcess(
-            LearningProcessData(
-              groupId: groupId,
-              flashcardsType: state.flashcardsType,
-              areQuestionsAndAnswersSwapped:
-                  state.areQuestionsAndAnswersSwapped,
-              sessionId: state.session?.id,
-              duration: state.duration,
-            ),
-          );
+      Navigation.navigateToLearningProcess(
+        LearningProcessData(
+          groupId: groupId,
+          flashcardsType: state.flashcardsType,
+          areQuestionsAndAnswersSwapped: state.areQuestionsAndAnswersSwapped,
+          sessionId: state.session?.id,
+          duration: state.duration,
+        ),
+      );
     }
   }
 }

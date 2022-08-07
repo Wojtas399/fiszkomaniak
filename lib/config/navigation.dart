@@ -1,55 +1,55 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
-import 'package:fiszkomaniak/config/routes.dart';
-import 'package:fiszkomaniak/config/slide_right_route_animation.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview_screen.dart';
-import 'package:fiszkomaniak/features/group_creator/group_creator_mode.dart';
-import 'package:fiszkomaniak/features/home/home_router.dart';
-import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
-import 'package:fiszkomaniak/features/initial_home/initial_home.dart';
-import 'package:fiszkomaniak/features/reset_password/reset_password_screen.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:flutter/material.dart';
+import '../components/dialogs/dialogs.dart';
+import '../config/routes.dart';
+import '../config/slide_right_route_animation.dart';
+import '../features/flashcard_preview/flashcard_preview_screen.dart';
+import '../features/group_creator/group_creator_mode.dart';
+import '../features/home/home_router.dart';
+import '../config/slide_up_route_animation.dart';
+import '../features/course_creator/course_creator_mode.dart';
+import '../features/initial_home/initial_home.dart';
+import '../features/reset_password/reset_password_screen.dart';
+import '../features/session_creator/bloc/session_creator_mode.dart';
+import '../features/session_preview/bloc/session_preview_mode.dart';
 import '../features/home/home.dart';
 import '../features/learning_process/learning_process_data.dart';
 
 class Navigation {
-  void moveBack({Object? objectToReturn}) {
+  static void moveBack({Object? objectToReturn}) {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pop(objectToReturn);
   }
 
-  void pushReplacementToInitialHome() {
+  static void pushReplacementToInitialHome() {
     navigatorKey.currentState?.pushReplacement(
       SlideRightRouteAnimation(page: const InitialHome()),
     );
   }
 
-  void pushReplacementToHome(BuildContext context) {
+  static void pushReplacementToHome(BuildContext context) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const Home()),
     );
   }
 
-  void navigateToResetPassword(BuildContext context) {
+  static void navigateToResetPassword(BuildContext context) {
     Navigator.of(context).push(SlideUpRouteAnimation(
       page: const ResetPasswordScreen(),
     ));
   }
 
-  void backHome() {
+  static void backHome() {
     navigatorKey.currentState?.popUntil(
       ModalRoute.withName(Routes.home),
     );
   }
 
-  void navigateToSettings() {
+  static void navigateToSettings() {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(Routes.settings);
   }
 
-  Future<void> navigateToCourseCreator(CourseCreatorMode mode) async {
+  static Future<void> navigateToCourseCreator(CourseCreatorMode mode) async {
     Dialogs.hideSnackbar();
     await Future.delayed(
       const Duration(milliseconds: 1),
@@ -62,7 +62,7 @@ class Navigation {
     );
   }
 
-  Future<void> navigateToGroupCreator(GroupCreatorMode mode) async {
+  static Future<void> navigateToGroupCreator(GroupCreatorMode mode) async {
     Dialogs.hideSnackbar();
     await Future.delayed(
       const Duration(milliseconds: 1),
@@ -75,7 +75,7 @@ class Navigation {
     );
   }
 
-  void navigateToSessionCreator(SessionCreatorMode mode) async {
+  static void navigateToSessionCreator(SessionCreatorMode mode) async {
     Dialogs.hideSnackbar();
     await Future.delayed(
       const Duration(milliseconds: 1),
@@ -88,14 +88,14 @@ class Navigation {
     );
   }
 
-  void navigateToGroupSelection() {
+  static void navigateToGroupSelection() {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.groupSelection,
     );
   }
 
-  void navigateToFlashcardsEditor(String groupId) {
+  static void navigateToFlashcardsEditor(String groupId) {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.flashcardsEditor,
@@ -103,7 +103,7 @@ class Navigation {
     );
   }
 
-  void navigateToCourseGroupsPreview(String courseId) {
+  static void navigateToCourseGroupsPreview(String courseId) {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.courseGroupsPreview,
@@ -111,7 +111,7 @@ class Navigation {
     );
   }
 
-  void navigateToGroupFlashcardsPreview(String groupId) {
+  static void navigateToGroupFlashcardsPreview(String groupId) {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.groupFlashcardsPreview,
@@ -119,7 +119,7 @@ class Navigation {
     );
   }
 
-  void navigateToGroupPreview(String groupId) {
+  static void navigateToGroupPreview(String groupId) {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.groupPreview,
@@ -127,7 +127,7 @@ class Navigation {
     );
   }
 
-  void navigateToFlashcardPreview(String groupId, int flashcardIndex) {
+  static void navigateToFlashcardPreview(String groupId, int flashcardIndex) {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.flashcardPreview,
@@ -138,7 +138,7 @@ class Navigation {
     );
   }
 
-  void navigateToSessionPreview(SessionPreviewMode mode) {
+  static void navigateToSessionPreview(SessionPreviewMode mode) {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.sessionPreview,
@@ -146,7 +146,7 @@ class Navigation {
     );
   }
 
-  void navigateToLearningProcess(LearningProcessData data) {
+  static void navigateToLearningProcess(LearningProcessData data) {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.session,

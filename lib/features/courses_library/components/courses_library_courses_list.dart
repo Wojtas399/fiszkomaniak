@@ -80,7 +80,7 @@ class _CourseItem extends StatelessWidget {
   }
 
   void _onPressed(BuildContext context) {
-    context.read<Navigation>().navigateToCourseGroupsPreview(course.id);
+    Navigation.navigateToCourseGroupsPreview(course.id);
   }
 
   void _onActionSelected(
@@ -89,9 +89,9 @@ class _CourseItem extends StatelessWidget {
   ) {
     switch (action) {
       case CoursePopupAction.edit:
-        context.read<Navigation>().navigateToCourseCreator(
-              CourseCreatorEditMode(course: course),
-            );
+        Navigation.navigateToCourseCreator(
+          CourseCreatorEditMode(course: course),
+        );
         break;
       case CoursePopupAction.remove:
         context.read<CoursesLibraryBloc>().add(
