@@ -1,12 +1,13 @@
-import 'package:fiszkomaniak/domain/entities/flashcard.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_bloc.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
+
+class TestFlashcardsEditorUtils with FlashcardsEditorUtils {}
 
 void main() {
-  late FlashcardsEditorUtils utils;
+  late TestFlashcardsEditorUtils utils;
 
-  setUp(() => utils = FlashcardsEditorUtils());
+  setUp(() => utils = TestFlashcardsEditorUtils());
 
   test(
     'create initial editor flashcards, should create editor flashcards and add one empty flashcard',

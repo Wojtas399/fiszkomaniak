@@ -1,8 +1,6 @@
-import 'package:fiszkomaniak/utils/utils.dart';
-import '../../../domain/entities/flashcard.dart';
-import 'flashcards_editor_state.dart';
+part of 'flashcards_editor_bloc.dart';
 
-class FlashcardsEditorUtils {
+mixin FlashcardsEditorUtils {
   List<EditorFlashcard> createInitialEditorFlashcards(
     List<Flashcard> flashcards,
   ) {

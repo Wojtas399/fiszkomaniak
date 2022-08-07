@@ -7,9 +7,6 @@ import '../../interfaces/achievements_interface.dart';
 import '../../interfaces/groups_interface.dart';
 import '../../models/bloc_status.dart';
 import 'bloc/flashcards_editor_bloc.dart';
-import 'bloc/flashcards_editor_state.dart';
-import 'bloc/flashcards_editor_event.dart';
-import 'bloc/flashcards_editor_utils.dart';
 import 'components/flashcards_editor_content.dart';
 import 'flashcards_editor_dialogs.dart';
 
@@ -52,7 +49,6 @@ class _FlashcardsEditorBlocProvider extends StatelessWidget {
           achievementsInterface: context.read<AchievementsInterface>(),
         ),
         flashcardsEditorDialogs: FlashcardsEditorDialogs(),
-        flashcardsEditorUtils: FlashcardsEditorUtils(),
       )..add(FlashcardsEditorEventInitialize(groupId: groupId)),
       child: child,
     );
@@ -73,9 +69,15 @@ class _FlashcardsEditorBlocListener extends StatelessWidget {
           Dialogs.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
           Dialogs.closeLoadingDialog(context);
-          final FlashcardsEditorInfoType? infoType = blocStatus.info;
-          if (infoType != null) {
-            _manageInfoType(infoType, context);
+          final FlashcardsEditorInfo? info = blocStatus.info;
+          if (info != null) {
+            _manageInfo(info);
+          }
+        } else if (blocStatus is BlocStatusError) {
+          Dialogs.closeLoadingDialog(context);
+          final FlashcardsEditorError? error = blocStatus.error;
+          if (error != null) {
+            _manageError(error);
           }
         }
       },
@@ -83,26 +85,28 @@ class _FlashcardsEditorBlocListener extends StatelessWidget {
     );
   }
 
-  void _manageInfoType(
-    FlashcardsEditorInfoType infoType,
-    BuildContext context,
-  ) {
-    switch (infoType) {
-      case FlashcardsEditorInfoType.noChangesHaveBeenMade:
+  void _manageInfo(FlashcardsEditorInfo info) {
+    switch (info) {
+      case FlashcardsEditorInfo.editedFlashcardsHaveBeenSaved:
+        Dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
+        break;
+    }
+  }
+
+  void _manageError(FlashcardsEditorError error) {
+    switch (error) {
+      case FlashcardsEditorError.noChangesHaveBeenMade:
         Dialogs.showDialogWithMessage(
           title: 'Brak zmian',
           message:
               'Nie wprowadzono żadnych zmian do fiszek. Wprowadź je, aby móc wykonać tę operację.',
         );
         break;
-      case FlashcardsEditorInfoType.incompleteFlashcardsExist:
+      case FlashcardsEditorError.incompleteFlashcardsExist:
         Dialogs.showDialogWithMessage(
           title: 'Niekompletne fiszki',
           message: 'Niektóry fiszki nie zostały w pełni uzupełnione.',
         );
-        break;
-      case FlashcardsEditorInfoType.editedFlashcardsHaveBeenSaved:
-        Dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
         break;
     }
   }

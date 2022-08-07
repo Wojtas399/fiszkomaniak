@@ -1,10 +1,8 @@
-import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_bloc.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/components/flashcards_editor_item.dart';
-import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../utils/utils.dart';
+import '../bloc/flashcards_editor_bloc.dart';
+import '../components/flashcards_editor_item.dart';
 
 class FlashcardsEditorList extends StatelessWidget {
   const FlashcardsEditorList({super.key});

@@ -1,16 +1,13 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/use_cases/flashcards/save_edited_flashcards_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_bloc.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_event.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_utils.dart';
 import 'package:fiszkomaniak/features/flashcards_editor/flashcards_editor_dialogs.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
 
@@ -20,13 +17,10 @@ class MockSaveEditedFlashcardsUseCase extends Mock
 class MockFlashcardsEditorDialogs extends Mock
     implements FlashcardsEditorDialogs {}
 
-class MockFlashcardsEditorUtils extends Mock implements FlashcardsEditorUtils {}
-
 void main() {
   final getGroupUseCase = MockGetGroupUseCase();
   final saveEditedFlashcardsUseCase = MockSaveEditedFlashcardsUseCase();
   final flashcardsEditorDialogs = MockFlashcardsEditorDialogs();
-  final flashcardsEditorUtils = MockFlashcardsEditorUtils();
 
   FlashcardsEditorBloc createBloc({
     BlocStatus status = const BlocStatusInitial(),
@@ -38,7 +32,20 @@ void main() {
       getGroupUseCase: getGroupUseCase,
       saveEditedFlashcardsUseCase: saveEditedFlashcardsUseCase,
       flashcardsEditorDialogs: flashcardsEditorDialogs,
-      flashcardsEditorUtils: flashcardsEditorUtils,
+      status: status,
+      group: group,
+      editorFlashcards: editorFlashcards,
+      keyCounter: keyCounter,
+    );
+  }
+
+  FlashcardsEditorState createState({
+    BlocStatus status = const BlocStatusInProgress(),
+    Group? group,
+    List<EditorFlashcard> editorFlashcards = const [],
+    int keyCounter = 0,
+  }) {
+    return FlashcardsEditorState(
       status: status,
       group: group,
       editorFlashcards: editorFlashcards,
@@ -50,7 +57,6 @@ void main() {
     reset(getGroupUseCase);
     reset(saveEditedFlashcardsUseCase);
     reset(flashcardsEditorDialogs);
-    reset(flashcardsEditorUtils);
   });
 
   group(
@@ -63,9 +69,25 @@ void main() {
       ];
       final Group group = createGroup(id: 'g1', flashcards: flashcards);
       final List<EditorFlashcard> editorFlashcards = [
-        createEditorFlashcard(key: 'f0', question: 'q0', answer: 'a0'),
-        createEditorFlashcard(key: 'f1', question: 'q1', answer: 'a1'),
-        createEditorFlashcard(key: 'f2', question: 'q2', answer: 'a2'),
+        createEditorFlashcard(
+          key: 'flashcard0',
+          question: 'q0',
+          answer: 'a0',
+          completionStatus: EditorFlashcardCompletionStatus.complete,
+        ),
+        createEditorFlashcard(
+          key: 'flashcard1',
+          question: 'q1',
+          answer: 'a1',
+          completionStatus: EditorFlashcardCompletionStatus.complete,
+        ),
+        createEditorFlashcard(
+          key: 'flashcard2',
+          question: 'q2',
+          answer: 'a2',
+          completionStatus: EditorFlashcardCompletionStatus.complete,
+        ),
+        createEditorFlashcard(key: 'flashcard3'),
       ];
 
       blocTest(
@@ -75,21 +97,17 @@ void main() {
           when(
             () => getGroupUseCase.execute(groupId: 'g1'),
           ).thenAnswer((_) => Stream.value(group));
-          when(
-            () => flashcardsEditorUtils.createInitialEditorFlashcards(
-              flashcards,
-            ),
-          ).thenReturn(editorFlashcards);
         },
         act: (FlashcardsEditorBloc bloc) {
-          bloc.add(FlashcardsEditorEventInitialize(groupId: 'g1'));
+          bloc.add(
+            FlashcardsEditorEventInitialize(groupId: 'g1'),
+          );
         },
         expect: () => [
-          FlashcardsEditorState(
-            status: const BlocStatusComplete<FlashcardsEditorInfoType>(),
+          createState(
             group: group,
             editorFlashcards: editorFlashcards,
-            keyCounter: 2,
+            keyCounter: editorFlashcards.length - 1,
           ),
         ],
       );
@@ -116,12 +134,12 @@ void main() {
           ).thenAnswer((_) async => true);
         },
         act: (FlashcardsEditorBloc bloc) {
-          bloc.add(FlashcardsEditorEventRemoveFlashcard(flashcardIndex: 1));
+          bloc.add(
+            FlashcardsEditorEventRemoveFlashcard(flashcardIndex: 1),
+          );
         },
         expect: () => [
-          FlashcardsEditorState(
-            status: const BlocStatusComplete<FlashcardsEditorInfoType>(),
-            group: null,
+          createState(
             editorFlashcards: [editorFlashcards[0]],
             keyCounter: 1,
           ),
@@ -140,29 +158,30 @@ void main() {
           ).thenAnswer((_) async => false);
         },
         act: (FlashcardsEditorBloc bloc) {
-          bloc.add(FlashcardsEditorEventRemoveFlashcard(flashcardIndex: 1));
+          bloc.add(
+            FlashcardsEditorEventRemoveFlashcard(flashcardIndex: 1),
+          );
         },
         expect: () => [],
       );
 
       blocTest(
         'should remove flashcard and add new empty flashcard if there is only one flashcard in list',
-        build: () => createBloc(editorFlashcards: [editorFlashcards[0]]),
+        build: () => createBloc(
+          editorFlashcards: [editorFlashcards[0]],
+        ),
         setUp: () {
           when(
             () => flashcardsEditorDialogs.askForDeleteConfirmation(),
           ).thenAnswer((_) async => true);
-          when(
-            () => flashcardsEditorUtils.addNewEditorFlashcard([], 0),
-          ).thenReturn([createEditorFlashcard(key: 'flashcard0')]);
         },
         act: (FlashcardsEditorBloc bloc) {
-          bloc.add(FlashcardsEditorEventRemoveFlashcard(flashcardIndex: 0));
+          bloc.add(
+            FlashcardsEditorEventRemoveFlashcard(flashcardIndex: 0),
+          );
         },
         expect: () => [
-          FlashcardsEditorState(
-            status: const BlocStatusComplete<FlashcardsEditorInfoType>(),
-            group: null,
+          createState(
             editorFlashcards: [createEditorFlashcard(key: 'flashcard0')],
             keyCounter: 0,
           ),
@@ -176,13 +195,13 @@ void main() {
     () {
       final List<EditorFlashcard> editorFlashcards = [
         createEditorFlashcard(
-          key: 'f0',
+          key: 'flashcard0',
           question: 'q0',
           answer: 'a0',
           completionStatus: EditorFlashcardCompletionStatus.complete,
         ),
         createEditorFlashcard(
-          key: 'f1',
+          key: 'flashcard1',
           question: 'q1',
           answer: 'a1',
           completionStatus: EditorFlashcardCompletionStatus.complete,
@@ -193,9 +212,7 @@ void main() {
         editorFlashcards[1].copyWith(question: 'question1'),
       ];
       final EditorFlashcard newEditorFlashcard = createEditorFlashcard(
-        key: 'f2',
-        question: '',
-        answer: '',
+        key: 'flashcard2',
       );
 
       blocTest(
@@ -204,24 +221,6 @@ void main() {
           editorFlashcards: editorFlashcards,
           keyCounter: 1,
         ),
-        setUp: () {
-          when(
-            () => flashcardsEditorUtils
-                .removeEmptyEditorFlashcardsApartFromLastAndEditedOne(
-              updatedEditorFlashcards,
-              1,
-            ),
-          ).thenReturn(updatedEditorFlashcards);
-          when(
-            () => flashcardsEditorUtils.addNewEditorFlashcard(
-              updatedEditorFlashcards,
-              2,
-            ),
-          ).thenReturn([
-            ...updatedEditorFlashcards,
-            newEditorFlashcard,
-          ]);
-        },
         act: (FlashcardsEditorBloc bloc) {
           bloc.add(
             FlashcardsEditorEventValueChanged(
@@ -231,10 +230,11 @@ void main() {
           );
         },
         expect: () => [
-          FlashcardsEditorState(
-            status: const BlocStatusComplete<FlashcardsEditorInfoType>(),
-            group: null,
-            editorFlashcards: [...updatedEditorFlashcards, newEditorFlashcard],
+          createState(
+            editorFlashcards: [
+              ...updatedEditorFlashcards,
+              newEditorFlashcard,
+            ],
             keyCounter: 2,
           ),
         ],
@@ -270,26 +270,6 @@ void main() {
           editorFlashcards: editorFlashcards,
           keyCounter: 1,
         ),
-        setUp: () {
-          when(
-            () => flashcardsEditorUtils
-                .removeEmptyEditorFlashcardsApartFromLastAndEditedOne(
-              updatedEditorFlashcards,
-              0,
-            ),
-          ).thenReturn(updatedEditorFlashcards);
-          when(
-            () => flashcardsEditorUtils
-                .updateCompletionStatusInEditorFlashcardsMarkedAsIncomplete(
-              updatedEditorFlashcards,
-            ),
-          ).thenReturn([
-            updatedEditorFlashcards[0].copyWith(
-              completionStatus: EditorFlashcardCompletionStatus.complete,
-            ),
-            updatedEditorFlashcards[1],
-          ]);
-        },
         act: (FlashcardsEditorBloc bloc) {
           bloc.add(
             FlashcardsEditorEventValueChanged(
@@ -299,9 +279,7 @@ void main() {
           );
         },
         expect: () => [
-          FlashcardsEditorState(
-            status: const BlocStatusComplete<FlashcardsEditorInfoType>(),
-            group: null,
+          createState(
             editorFlashcards: [
               updatedEditorFlashcards[0].copyWith(
                 completionStatus: EditorFlashcardCompletionStatus.complete,
@@ -318,116 +296,40 @@ void main() {
   group(
     'save',
     () {
+      final Group group = createGroup(
+        flashcards: [
+          createFlashcard(index: 0, question: 'q0', answer: 'a0'),
+        ],
+      );
       final List<EditorFlashcard> editorFlashcards = [
-        createEditorFlashcard(key: 'f0', question: 'q0', answer: 'a0'),
-        createEditorFlashcard(),
+        createEditorFlashcard(
+          key: 'flashcard0',
+          question: 'question0',
+          answer: 'answer0',
+          completionStatus: EditorFlashcardCompletionStatus.complete,
+        ),
+        createEditorFlashcard(key: 'flashcard1'),
       ];
-
-      blocTest(
-        'should emit no changes info when editor flashcards are same as group flashcards',
-        build: () => createBloc(
-          group: createGroup(),
-          editorFlashcards: editorFlashcards,
-        ),
-        setUp: () {
-          when(
-            () =>
-                flashcardsEditorUtils.areEditorFlashcardsSameAsGroupFlashcards(
-              [],
-              [editorFlashcards[0]],
-            ),
-          ).thenReturn(true);
-        },
-        act: (FlashcardsEditorBloc bloc) {
-          bloc.add(FlashcardsEditorEventSave());
-        },
-        expect: () => [
-          FlashcardsEditorState(
-            status: const BlocStatusComplete<FlashcardsEditorInfoType>(
-              info: FlashcardsEditorInfoType.noChangesHaveBeenMade,
-            ),
-            group: createGroup(),
-            editorFlashcards: editorFlashcards,
-            keyCounter: 0,
-          ),
-        ],
-      );
-
-      blocTest(
-        'should emit incomplete flashcards info and update editor flashcards when there is at least one incomplete flashcard',
-        build: () => createBloc(
-          group: createGroup(),
-          editorFlashcards: editorFlashcards,
-        ),
-        setUp: () {
-          when(
-            () =>
-                flashcardsEditorUtils.areEditorFlashcardsSameAsGroupFlashcards(
-              [],
-              [editorFlashcards[0]],
-            ),
-          ).thenReturn(false);
-          when(
-            () => flashcardsEditorUtils.areThereIncompleteEditorFlashcards(
-              [editorFlashcards[0]],
-            ),
-          ).thenReturn(true);
-          when(
-            () =>
-                flashcardsEditorUtils.updateEditorFlashcardsCompletionStatuses(
-              editorFlashcards,
-            ),
-          ).thenReturn(editorFlashcards);
-        },
-        act: (FlashcardsEditorBloc bloc) {
-          bloc.add(FlashcardsEditorEventSave());
-        },
-        expect: () => [
-          FlashcardsEditorState(
-            status: const BlocStatusComplete<FlashcardsEditorInfoType>(
-              info: FlashcardsEditorInfoType.incompleteFlashcardsExist,
-            ),
-            group: createGroup(),
-            editorFlashcards: editorFlashcards,
-            keyCounter: 0,
-          ),
-        ],
-      );
 
       blocTest(
         'confirmed, should save edited flashcards',
         build: () => createBloc(
-          group: createGroup(),
+          group: group,
           editorFlashcards: editorFlashcards,
         ),
         setUp: () {
           when(
-            () =>
-                flashcardsEditorUtils.areEditorFlashcardsSameAsGroupFlashcards(
-              [],
-              [editorFlashcards[0]],
-            ),
-          ).thenReturn(false);
-          when(
-            () => flashcardsEditorUtils.areThereIncompleteEditorFlashcards(
-              [editorFlashcards[0]],
-            ),
-          ).thenReturn(false);
-          when(
             () => flashcardsEditorDialogs.askForSaveConfirmation(),
           ).thenAnswer((_) async => true);
-          when(
-            () => flashcardsEditorUtils.convertEditorFlashcardsToFlashcards(
-              [editorFlashcards[0]],
-            ),
-          ).thenReturn(
-            [createFlashcard(index: 0, question: 'q0', answer: 'a0')],
-          );
           when(
             () => saveEditedFlashcardsUseCase.execute(
               groupId: '',
               flashcards: [
-                createFlashcard(index: 0, question: 'q0', answer: 'a0'),
+                createFlashcard(
+                  index: 0,
+                  question: 'question0',
+                  answer: 'answer0',
+                ),
               ],
             ),
           ).thenAnswer((_) async => '');
@@ -436,19 +338,17 @@ void main() {
           bloc.add(FlashcardsEditorEventSave());
         },
         expect: () => [
-          FlashcardsEditorState(
+          createState(
             status: const BlocStatusLoading(),
-            group: createGroup(),
+            group: group,
             editorFlashcards: editorFlashcards,
-            keyCounter: 0,
           ),
-          FlashcardsEditorState(
-            status: const BlocStatusComplete<FlashcardsEditorInfoType>(
-              info: FlashcardsEditorInfoType.editedFlashcardsHaveBeenSaved,
+          createState(
+            status: const BlocStatusComplete<FlashcardsEditorInfo>(
+              info: FlashcardsEditorInfo.editedFlashcardsHaveBeenSaved,
             ),
-            group: createGroup(),
+            group: group,
             editorFlashcards: editorFlashcards,
-            keyCounter: 0,
           ),
         ],
         verify: (_) {
@@ -456,7 +356,11 @@ void main() {
             () => saveEditedFlashcardsUseCase.execute(
               groupId: '',
               flashcards: [
-                createFlashcard(index: 0, question: 'q0', answer: 'a0'),
+                createFlashcard(
+                  index: 0,
+                  question: 'question0',
+                  answer: 'answer0',
+                ),
               ],
             ),
           ).called(1);
@@ -466,25 +370,25 @@ void main() {
       blocTest(
         'cancelled, should not save edited flashcards',
         build: () => createBloc(
-          group: createGroup(),
+          group: group,
           editorFlashcards: editorFlashcards,
         ),
         setUp: () {
           when(
-            () =>
-                flashcardsEditorUtils.areEditorFlashcardsSameAsGroupFlashcards(
-              [],
-              [editorFlashcards[0]],
-            ),
-          ).thenReturn(false);
-          when(
-            () => flashcardsEditorUtils.areThereIncompleteEditorFlashcards(
-              [editorFlashcards[0]],
-            ),
-          ).thenReturn(false);
-          when(
             () => flashcardsEditorDialogs.askForSaveConfirmation(),
           ).thenAnswer((_) async => false);
+          when(
+            () => saveEditedFlashcardsUseCase.execute(
+              groupId: '',
+              flashcards: [
+                createFlashcard(
+                  index: 0,
+                  question: 'question0',
+                  answer: 'answer0',
+                ),
+              ],
+            ),
+          ).thenAnswer((_) async => '');
         },
         act: (FlashcardsEditorBloc bloc) {
           bloc.add(FlashcardsEditorEventSave());
@@ -495,11 +399,77 @@ void main() {
             () => saveEditedFlashcardsUseCase.execute(
               groupId: '',
               flashcards: [
-                createFlashcard(index: 0, question: 'q0', answer: 'a0'),
+                createFlashcard(
+                  index: 0,
+                  question: 'question0',
+                  answer: 'answer0',
+                ),
               ],
             ),
           );
         },
+      );
+
+      blocTest(
+        'should emit no changes info when editor flashcards are same as group flashcards',
+        build: () => createBloc(
+          group: group,
+          editorFlashcards: [
+            editorFlashcards.first.copyWith(question: 'q0', answer: 'a0'),
+            editorFlashcards[1],
+          ],
+        ),
+        act: (FlashcardsEditorBloc bloc) {
+          bloc.add(
+            FlashcardsEditorEventSave(),
+          );
+        },
+        expect: () => [
+          createState(
+            status: const BlocStatusError<FlashcardsEditorError>(
+              error: FlashcardsEditorError.noChangesHaveBeenMade,
+            ),
+            group: group,
+            editorFlashcards: [
+              editorFlashcards.first.copyWith(question: 'q0', answer: 'a0'),
+              editorFlashcards[1],
+            ],
+            keyCounter: 0,
+          ),
+        ],
+      );
+
+      blocTest(
+        'should emit incomplete flashcards info and update editor flashcards when there is at least one incomplete flashcard',
+        build: () => createBloc(
+          group: group,
+          editorFlashcards: [
+            editorFlashcards.first.copyWith(
+              question: '',
+              completionStatus: EditorFlashcardCompletionStatus.incomplete,
+            ),
+            editorFlashcards[1],
+          ],
+        ),
+        act: (FlashcardsEditorBloc bloc) {
+          bloc.add(FlashcardsEditorEventSave());
+        },
+        expect: () => [
+          createState(
+            status: const BlocStatusError<FlashcardsEditorError>(
+              error: FlashcardsEditorError.incompleteFlashcardsExist,
+            ),
+            group: group,
+            editorFlashcards: [
+              editorFlashcards.first.copyWith(
+                question: '',
+                completionStatus: EditorFlashcardCompletionStatus.incomplete,
+              ),
+              editorFlashcards[1],
+            ],
+            keyCounter: 0,
+          ),
+        ],
       );
     },
   );

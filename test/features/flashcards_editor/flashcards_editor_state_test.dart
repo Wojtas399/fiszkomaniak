@@ -1,7 +1,7 @@
-import 'package:fiszkomaniak/domain/entities/group.dart';
-import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_state.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fiszkomaniak/domain/entities/group.dart';
+import 'package:fiszkomaniak/features/flashcards_editor/bloc/flashcards_editor_bloc.dart';
+import 'package:fiszkomaniak/models/bloc_status.dart';
 
 void main() {
   late FlashcardsEditorState state;
@@ -52,10 +52,7 @@ void main() {
       final state3 = state2.copyWith();
 
       expect(state2.status, expectedBlocStatus);
-      expect(
-        state3.status,
-        const BlocStatusComplete<FlashcardsEditorInfoType>(),
-      );
+      expect(state3.status, const BlocStatusInProgress());
     },
   );
 
@@ -98,6 +95,40 @@ void main() {
 
       expect(state2.keyCounter, expectedKeyCounter);
       expect(state3.keyCounter, expectedKeyCounter);
+    },
+  );
+
+  test(
+    'copy with info',
+    () {
+      const FlashcardsEditorInfo expectedInfo =
+          FlashcardsEditorInfo.editedFlashcardsHaveBeenSaved;
+
+      state = state.copyWithInfo(expectedInfo);
+
+      expect(
+        state.status,
+        const BlocStatusComplete<FlashcardsEditorInfo>(
+          info: expectedInfo,
+        ),
+      );
+    },
+  );
+
+  test(
+    'copy with error',
+    () {
+      const FlashcardsEditorError expectedError =
+          FlashcardsEditorError.incompleteFlashcardsExist;
+
+      state = state.copyWithError(expectedError);
+
+      expect(
+        state.status,
+        const BlocStatusError<FlashcardsEditorError>(
+          error: expectedError,
+        ),
+      );
     },
   );
 }

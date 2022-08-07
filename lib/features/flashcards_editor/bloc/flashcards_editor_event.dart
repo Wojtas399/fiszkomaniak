@@ -1,3 +1,5 @@
+part of 'flashcards_editor_bloc.dart';
+
 abstract class FlashcardsEditorEvent {}
 
 class FlashcardsEditorEventInitialize extends FlashcardsEditorEvent {
