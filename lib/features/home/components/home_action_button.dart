@@ -4,7 +4,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../config/navigation.dart';
 import '../../../features/course_creator/course_creator_mode.dart';
-import '../../../features/group_creator/bloc/group_creator_mode.dart';
+import '../../group_creator/group_creator_mode.dart';
 import '../../../features/session_creator/bloc/session_creator_mode.dart';
 
 class HomeActionButton extends StatelessWidget {

@@ -6,7 +6,6 @@ import '../../features/flashcard_preview/flashcard_preview_screen.dart';
 import '../../features/flashcards_editor/flashcards_editor_screen.dart';
 import '../../features/group_flashcards_preview/group_flashcards_preview_screen.dart';
 import '../../features/group_selection/group_selection_screen.dart';
-import '../../features/group_creator/bloc/group_creator_mode.dart';
 import '../../features/group_creator/group_creator_screen.dart';
 import '../../features/group_preview/group_preview_screen.dart';
 import '../../features/home/home.dart';
@@ -17,6 +16,7 @@ import '../../features/session_preview/bloc/session_preview_mode.dart';
 import '../../features/session_preview/session_preview_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../config/routes.dart';
+import '../group_creator/group_creator_mode.dart';
 import '../learning_process/learning_process_screen.dart';
 import '../learning_process/learning_process_data.dart';
 

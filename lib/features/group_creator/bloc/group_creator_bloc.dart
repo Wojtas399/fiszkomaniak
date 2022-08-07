@@ -1,13 +1,13 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
-import 'package:fiszkomaniak/domain/entities/course.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../domain/entities/course.dart';
 import '../../../domain/use_cases/courses/get_all_courses_use_case.dart';
 import '../../../domain/use_cases/courses/load_all_courses_use_case.dart';
 import '../../../domain/use_cases/groups/add_group_use_case.dart';
 import '../../../domain/use_cases/groups/check_group_name_usage_in_course_use_case.dart';
 import '../../../domain/use_cases/groups/update_group_use_case.dart';
+import '../../../models/bloc_status.dart';
+import '../group_creator_mode.dart';
 
 part 'group_creator_event.dart';
 
@@ -28,7 +28,24 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
         checkGroupNameUsageInCourseUseCase,
     required AddGroupUseCase addGroupUseCase,
     required UpdateGroupUseCase updateGroupUseCase,
-  }) : super(const GroupCreatorState()) {
+    GroupCreatorMode mode = const GroupCreatorCreateMode(),
+    BlocStatus status = const BlocStatusInitial(),
+    Course? selectedCourse,
+    List<Course> allCourses = const [],
+    String groupName = '',
+    String nameForQuestions = '',
+    String nameForAnswers = '',
+  }) : super(
+          GroupCreatorState(
+            mode: mode,
+            status: status,
+            selectedCourse: selectedCourse,
+            allCourses: allCourses,
+            groupName: groupName,
+            nameForQuestions: nameForQuestions,
+            nameForAnswers: nameForAnswers,
+          ),
+        ) {
     _loadAllCoursesUseCase = loadAllCoursesUseCase;
     _getAllCoursesUseCase = getAllCoursesUseCase;
     _checkGroupNameUsageInCourseUseCase = checkGroupNameUsageInCourseUseCase;
@@ -54,12 +71,14 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
     final GroupCreatorMode mode = event.mode;
     if (mode is GroupCreatorCreateMode) {
       emit(state.copyWith(
+        status: const BlocStatusComplete(),
         mode: mode,
         allCourses: allCourses,
       ));
     } else if (mode is GroupCreatorEditMode) {
       emit(state.copyWith(
         mode: mode,
+        status: const BlocStatusComplete(),
         selectedCourse: allCourses.firstWhere(
           (course) => course.id == mode.group.courseId,
         ),
@@ -75,21 +94,27 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
     GroupCreatorEventCourseChanged event,
     Emitter<GroupCreatorState> emit,
   ) {
-    emit(state.copyWith(selectedCourse: event.course));
+    emit(state.copyWith(
+      selectedCourse: event.course,
+    ));
   }
 
   void _onGroupNameChanged(
     GroupCreatorEventGroupNameChanged event,
     Emitter<GroupCreatorState> emit,
   ) {
-    emit(state.copyWith(groupName: event.groupName));
+    emit(state.copyWith(
+      groupName: event.groupName,
+    ));
   }
 
   void _onNameForQuestionsChanged(
     GroupCreatorEventNameForQuestionsChanged event,
     Emitter<GroupCreatorState> emit,
   ) {
-    emit(state.copyWith(nameForQuestions: event.nameForQuestions));
+    emit(state.copyWith(
+      nameForQuestions: event.nameForQuestions,
+    ));
   }
 
   void _onNameForAnswersChanged(
@@ -107,10 +132,8 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
       status: const BlocStatusLoading(),
     ));
     if (_shouldCheckGroupName() && await _isGroupNameAlreadyTaken()) {
-      emit(state.copyWith(
-        status: const BlocStatusComplete<GroupCreatorInfoType>(
-          info: GroupCreatorInfoType.groupNameIsAlreadyTaken,
-        ),
+      emit(state.copyWithError(
+        GroupCreatorError.groupNameIsAlreadyTaken,
       ));
     } else {
       await _doAppropriateSubmitOperation(emit);
@@ -160,10 +183,8 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
       nameForQuestions: nameForQuestions,
       nameForAnswers: nameForAnswers,
     );
-    emit(state.copyWith(
-      status: const BlocStatusComplete<GroupCreatorInfoType>(
-        info: GroupCreatorInfoType.groupHasBeenAdded,
-      ),
+    emit(state.copyWithInfo(
+      GroupCreatorInfo.groupHasBeenAdded,
     ));
   }
 
@@ -182,10 +203,8 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
       nameForQuestions: nameForQuestions,
       nameForAnswers: nameForAnswers,
     );
-    emit(state.copyWith(
-      status: const BlocStatusComplete<GroupCreatorInfoType>(
-        info: GroupCreatorInfoType.groupHasBeenEdited,
-      ),
+    emit(state.copyWithInfo(
+      GroupCreatorInfo.groupHasBeenEdited,
     ));
   }
 

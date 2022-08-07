@@ -2,7 +2,7 @@ import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
 import 'package:fiszkomaniak/config/routes.dart';
 import 'package:fiszkomaniak/config/slide_right_route_animation.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview_screen.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
+import 'package:fiszkomaniak/features/group_creator/group_creator_mode.dart';
 import 'package:fiszkomaniak/features/home/home_router.dart';
 import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
 import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';

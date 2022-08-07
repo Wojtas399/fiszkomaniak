@@ -1,6 +1,6 @@
 import 'package:fiszkomaniak/components/popup_menu.dart';
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
+import 'package:fiszkomaniak/features/group_creator/group_creator_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

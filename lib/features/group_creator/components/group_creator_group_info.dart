@@ -1,9 +1,9 @@
-import 'package:fiszkomaniak/components/textfields/custom_textfield.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_bloc.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/textfields/custom_textfield.dart';
+import '../bloc/group_creator_bloc.dart';
+import '../group_creator_mode.dart';
 
 class GroupCreatorGroupInfo extends StatelessWidget {
   final _groupNameController = TextEditingController();

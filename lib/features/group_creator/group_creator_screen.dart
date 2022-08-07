@@ -1,23 +1,19 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
-import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/load_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/add_group_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/check_group_name_usage_in_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/update_group_use_case.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_bloc.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
-import 'package:fiszkomaniak/features/group_creator/components/group_creator_app_bar.dart';
-import 'package:fiszkomaniak/features/group_creator/components/group_creator_course_selection.dart';
-import 'package:fiszkomaniak/features/group_creator/components/group_creator_group_info.dart';
-import 'package:fiszkomaniak/features/group_creator/components/group_creator_submit_button.dart';
-import 'package:fiszkomaniak/features/home/home.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../components/dialogs/dialogs.dart';
+import '../../config/navigation.dart';
+import '../../domain/use_cases/courses/get_all_courses_use_case.dart';
+import '../../domain/use_cases/courses/load_all_courses_use_case.dart';
+import '../../domain/use_cases/groups/add_group_use_case.dart';
+import '../../domain/use_cases/groups/check_group_name_usage_in_course_use_case.dart';
+import '../../domain/use_cases/groups/update_group_use_case.dart';
+import '../../features/home/home.dart';
+import '../../interfaces/courses_interface.dart';
+import '../../interfaces/groups_interface.dart';
+import '../../models/bloc_status.dart';
+import 'bloc/group_creator_bloc.dart';
+import 'components/group_creator_content.dart';
+import 'group_creator_mode.dart';
 
 class GroupCreatorScreen extends StatelessWidget {
   final GroupCreatorMode mode;
@@ -28,30 +24,8 @@ class GroupCreatorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return _GroupCreatorBlocProvider(
       mode: mode,
-      child: _GroupCreatorBlocListener(
-        child: Scaffold(
-          appBar: const GroupCreatorAppBar(),
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: OnTapFocusLoseArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        const GroupCreatorCourseSelection(),
-                        const SizedBox(height: 24),
-                        GroupCreatorGroupInfo(),
-                      ],
-                    ),
-                    const GroupCreatorSubmitButton(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
+      child: const _GroupCreatorBlocListener(
+        child: GroupCreatorContent(),
       ),
     );
   }
@@ -105,9 +79,15 @@ class _GroupCreatorBlocListener extends StatelessWidget {
           Dialogs.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
           Dialogs.closeLoadingDialog(context);
-          final info = blocStatus.info;
+          final GroupCreatorInfo? info = blocStatus.info;
           if (info != null) {
-            _manageBlocInfo(context, info);
+            _manageInfo(info, context);
+          }
+        } else if (blocStatus is BlocStatusError) {
+          Dialogs.closeLoadingDialog(context);
+          final GroupCreatorError? error = blocStatus.error;
+          if (error != null) {
+            _manageError(error);
           }
         }
       },
@@ -115,23 +95,28 @@ class _GroupCreatorBlocListener extends StatelessWidget {
     );
   }
 
-  void _manageBlocInfo(BuildContext context, GroupCreatorInfoType info) {
+  void _manageInfo(GroupCreatorInfo info, BuildContext context) {
     switch (info) {
-      case GroupCreatorInfoType.groupNameIsAlreadyTaken:
+      case GroupCreatorInfo.groupHasBeenAdded:
+        context.read<Navigation>().backHome();
+        context.read<HomePageController>().moveToPage(0);
+        Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
+        break;
+      case GroupCreatorInfo.groupHasBeenEdited:
+        context.read<Navigation>().moveBack();
+        Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizaowano grupę.');
+        break;
+    }
+  }
+
+  void _manageError(GroupCreatorError error) {
+    switch (error) {
+      case GroupCreatorError.groupNameIsAlreadyTaken:
         Dialogs.showDialogWithMessage(
           title: 'Zajęta nazwa grupy',
           message:
               'Już istnieje grupa o takiej nazwie. Zmień ją aby móc kontynuować operację.',
         );
-        break;
-      case GroupCreatorInfoType.groupHasBeenAdded:
-        context.read<Navigation>().backHome();
-        context.read<HomePageController>().moveToPage(0);
-        Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
-        break;
-      case GroupCreatorInfoType.groupHasBeenEdited:
-        context.read<Navigation>().moveBack();
-        Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizaowano grupę.');
         break;
     }
   }

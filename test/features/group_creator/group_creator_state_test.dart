@@ -1,125 +1,24 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_bloc.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
+import 'package:fiszkomaniak/features/group_creator/group_creator_mode.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late GroupCreatorState state;
 
   setUp(() {
-    state = const GroupCreatorState();
+    state = const GroupCreatorState(
+      mode: GroupCreatorCreateMode(),
+      status: BlocStatusInitial(),
+      selectedCourse: null,
+      allCourses: [],
+      groupName: '',
+      nameForQuestions: '',
+      nameForAnswers: '',
+    );
   });
-
-  test(
-    'initial state',
-    () {
-      expect(state.mode, const GroupCreatorCreateMode());
-      expect(state.status, const BlocStatusInitial());
-      expect(state.selectedCourse, null);
-      expect(state.allCourses, []);
-      expect(state.groupName, '');
-      expect(state.nameForQuestions, '');
-      expect(state.nameForAnswers, '');
-    },
-  );
-
-  test(
-    'copy with mode',
-    () {
-      final GroupCreatorMode expectedMode = GroupCreatorEditMode(
-        group: createGroup(id: 'g1'),
-      );
-
-      final state2 = state.copyWith(mode: expectedMode);
-      final state3 = state2.copyWith();
-
-      expect(state2.mode, expectedMode);
-      expect(state3.mode, expectedMode);
-    },
-  );
-
-  test(
-    'copy with status',
-    () {
-      const BlocStatus expectedStatus = BlocStatusLoading();
-
-      final state2 = state.copyWith(status: expectedStatus);
-      final state3 = state2.copyWith();
-
-      expect(state2.status, expectedStatus);
-      expect(state3.status, const BlocStatusComplete<GroupCreatorInfoType>());
-    },
-  );
-
-  test(
-    'copy with selected course',
-    () {
-      final Course expectedCourse = createCourse(id: 'c1', name: 'course 1');
-
-      final state2 = state.copyWith(selectedCourse: expectedCourse);
-      final state3 = state2.copyWith();
-
-      expect(state2.selectedCourse, expectedCourse);
-      expect(state3.selectedCourse, expectedCourse);
-    },
-  );
-
-  test(
-    'copy with all courses',
-    () {
-      final List<Course> expectedCourses = [
-        createCourse(id: 'c1', name: 'course 1 name'),
-        createCourse(id: 'c2', name: 'course 2 name'),
-      ];
-
-      final state2 = state.copyWith(allCourses: expectedCourses);
-      final state3 = state2.copyWith();
-
-      expect(state2.allCourses, expectedCourses);
-      expect(state3.allCourses, expectedCourses);
-    },
-  );
-
-  test(
-    'copy with group name',
-    () {
-      const String expectedName = 'group 1';
-
-      final state2 = state.copyWith(groupName: expectedName);
-      final state3 = state2.copyWith();
-
-      expect(state2.groupName, expectedName);
-      expect(state3.groupName, expectedName);
-    },
-  );
-
-  test(
-    'copy with name for questions',
-    () {
-      const String expectedName = 'questions';
-
-      final state2 = state.copyWith(nameForQuestions: expectedName);
-      final state3 = state2.copyWith();
-
-      expect(state2.nameForQuestions, expectedName);
-      expect(state3.nameForQuestions, expectedName);
-    },
-  );
-
-  test(
-    'copy with name for answers',
-    () {
-      const String expectedName = 'answers';
-
-      final state2 = state.copyWith(nameForAnswers: expectedName);
-      final state3 = state2.copyWith();
-
-      expect(state2.nameForAnswers, expectedName);
-      expect(state3.nameForAnswers, expectedName);
-    },
-  );
 
   test(
     'is button disabled, course has not been selected, should be true',
@@ -211,6 +110,135 @@ void main() {
       );
 
       expect(state.isButtonDisabled, true);
+    },
+  );
+
+  test(
+    'copy with mode',
+    () {
+      final GroupCreatorMode expectedMode = GroupCreatorEditMode(
+        group: createGroup(id: 'g1'),
+      );
+
+      state = state.copyWith(mode: expectedMode);
+      final state2 = state.copyWith();
+
+      expect(state.mode, expectedMode);
+      expect(state2.mode, expectedMode);
+    },
+  );
+
+  test(
+    'copy with status',
+    () {
+      const BlocStatus expectedStatus = BlocStatusLoading();
+
+      state = state.copyWith(status: expectedStatus);
+      final state2 = state.copyWith();
+
+      expect(state.status, expectedStatus);
+      expect(state2.status, const BlocStatusInProgress());
+    },
+  );
+
+  test(
+    'copy with selected course',
+    () {
+      final Course expectedCourse = createCourse(id: 'c1', name: 'course 1');
+
+      state = state.copyWith(selectedCourse: expectedCourse);
+      final state2 = state.copyWith();
+
+      expect(state.selectedCourse, expectedCourse);
+      expect(state2.selectedCourse, expectedCourse);
+    },
+  );
+
+  test(
+    'copy with all courses',
+    () {
+      final List<Course> expectedCourses = [
+        createCourse(id: 'c1', name: 'course 1 name'),
+        createCourse(id: 'c2', name: 'course 2 name'),
+      ];
+
+      state = state.copyWith(allCourses: expectedCourses);
+      final state2 = state.copyWith();
+
+      expect(state.allCourses, expectedCourses);
+      expect(state2.allCourses, expectedCourses);
+    },
+  );
+
+  test(
+    'copy with group name',
+    () {
+      const String expectedName = 'group 1';
+
+      state = state.copyWith(groupName: expectedName);
+      final state2 = state.copyWith();
+
+      expect(state.groupName, expectedName);
+      expect(state2.groupName, expectedName);
+    },
+  );
+
+  test(
+    'copy with name for questions',
+    () {
+      const String expectedName = 'questions';
+
+      state = state.copyWith(nameForQuestions: expectedName);
+      final state2 = state.copyWith();
+
+      expect(state.nameForQuestions, expectedName);
+      expect(state2.nameForQuestions, expectedName);
+    },
+  );
+
+  test(
+    'copy with name for answers',
+    () {
+      const String expectedName = 'answers';
+
+      state = state.copyWith(nameForAnswers: expectedName);
+      final state2 = state.copyWith();
+
+      expect(state.nameForAnswers, expectedName);
+      expect(state2.nameForAnswers, expectedName);
+    },
+  );
+
+  test(
+    'copy with info',
+    () {
+      const GroupCreatorInfo expectedInfo = GroupCreatorInfo.groupHasBeenEdited;
+
+      state = state.copyWithInfo(expectedInfo);
+
+      expect(
+        state.status,
+        const BlocStatusComplete<GroupCreatorInfo>(
+          info: expectedInfo,
+        ),
+      );
+    },
+  );
+
+  test(
+    'copy with error',
+    () {
+      const GroupCreatorError expectedError =
+          GroupCreatorError.groupNameIsAlreadyTaken;
+
+      state = state.copyWithError(expectedError);
+
+      expect(
+        state.status,
+        const BlocStatusError<GroupCreatorError>(
+          error: expectedError,
+        ),
+      );
     },
   );
 }
