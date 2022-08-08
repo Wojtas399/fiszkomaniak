@@ -60,7 +60,7 @@ class Dialogs {
     );
   }
 
-  static Future<bool?> askForConfirmation({
+  static Future<bool> askForConfirmation({
     required String title,
     required String text,
     String? confirmButtonText,
@@ -79,7 +79,7 @@ class Dialogs {
         ),
       );
     }
-    return null;
+    return false;
   }
 
   static Future<bool?> askForImageConfirmation({

@@ -82,6 +82,7 @@ class _GroupItem extends StatelessWidget {
       stream: _getCourseName(context),
       builder: (_, AsyncSnapshot<String> snapshot) {
         return GroupItem(
+          key: ObjectKey(group),
           groupName: group.name,
           courseName: snapshot.data ?? '',
           amountOfRememberedFlashcards:

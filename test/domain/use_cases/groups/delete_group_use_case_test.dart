@@ -1,13 +1,13 @@
-import 'package:fiszkomaniak/domain/use_cases/groups/remove_group_use_case.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/delete_group_use_case.dart';
+import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 
 class MockGroupsInterface extends Mock implements GroupsInterface {}
 
 void main() {
   final groupsInterface = MockGroupsInterface();
-  final useCase = RemoveGroupUseCase(groupsInterface: groupsInterface);
+  final useCase = DeleteGroupUseCase(groupsInterface: groupsInterface);
 
   test(
     'should call method from groups interface responsible for removing group',

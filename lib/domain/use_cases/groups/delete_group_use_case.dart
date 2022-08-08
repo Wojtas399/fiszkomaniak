@@ -1,9 +1,9 @@
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
+import '../../../interfaces/groups_interface.dart';
 
-class RemoveGroupUseCase {
+class DeleteGroupUseCase {
   late final GroupsInterface _groupsInterface;
 
-  RemoveGroupUseCase({required GroupsInterface groupsInterface}) {
+  DeleteGroupUseCase({required GroupsInterface groupsInterface}) {
     _groupsInterface = groupsInterface;
   }
 

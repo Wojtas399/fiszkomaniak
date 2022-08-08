@@ -1,12 +1,12 @@
-import 'package:fiszkomaniak/components/flashcards_progress_bar.dart';
-import 'package:fiszkomaniak/components/section.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/flashcards_progress_bar.dart';
+import '../../../components/section.dart';
+import '../../../config/navigation.dart';
+import '../bloc/group_preview_bloc.dart';
 
-class GroupPreviewFlashcardsState extends StatelessWidget {
-  const GroupPreviewFlashcardsState({super.key});
+class GroupPreviewFlashcardsStatus extends StatelessWidget {
+  const GroupPreviewFlashcardsStatus({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -29,8 +29,14 @@ class GroupsRepository implements GroupsInterface {
   Stream<Group> getGroupById({required String groupId}) {
     if (_isGroupLoaded(groupId)) {
       return allGroups$.map(
-        (groups) => groups.firstWhere((group) => group.id == groupId),
-      );
+        (List<Group> groups) {
+          final List<Group?> groupsForSearching = [...groups];
+          return groupsForSearching.firstWhere(
+            (Group? group) => group?.id == groupId,
+            orElse: () => null,
+          );
+        },
+      ).whereType<Group>();
     }
     return Rx.fromCallable(() async => await _loadGroupFromDb(groupId))
         .whereType<Group>()

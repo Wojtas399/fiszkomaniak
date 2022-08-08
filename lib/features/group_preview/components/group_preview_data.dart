@@ -1,12 +1,12 @@
-import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/item_with_icon.dart';
 import '../../../components/section.dart';
+import '../bloc/group_preview_bloc.dart';
 
-class GroupPreviewInformation extends StatelessWidget {
-  const GroupPreviewInformation({super.key});
+class GroupPreviewData extends StatelessWidget {
+  const GroupPreviewData({super.key});
 
   @override
   Widget build(BuildContext context) {

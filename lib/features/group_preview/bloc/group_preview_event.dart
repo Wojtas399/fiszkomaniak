@@ -23,13 +23,4 @@ class GroupPreviewEventGroupUpdated extends GroupPreviewEvent {
   List<Object> get props => [group];
 }
 
-class GroupPreviewEventCourseChanged extends GroupPreviewEvent {
-  final String courseId;
-
-  GroupPreviewEventCourseChanged({required this.courseId});
-
-  @override
-  List<Object> get props => [courseId];
-}
-
-class GroupPreviewEventRemoveGroup extends GroupPreviewEvent {}
+class GroupPreviewEventDeleteGroup extends GroupPreviewEvent {}

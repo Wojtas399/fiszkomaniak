@@ -6,22 +6,24 @@ class GroupPreviewState extends Equatable {
   final Course? course;
 
   const GroupPreviewState({
-    this.status = const BlocStatusInitial(),
-    this.group,
-    this.course,
+    required this.status,
+    required this.group,
+    required this.course,
   });
 
   @override
   List<Object> get props => [
         status,
-        group ?? createGroup(),
-        course ?? createCourse(),
+        group ?? '',
+        course ?? '',
       ];
 
   int get amountOfAllFlashcards => group?.flashcards.length ?? 0;
 
   int get amountOfRememberedFlashcards =>
       group?.flashcards.where(_isFlashcardRemembered).length ?? 0;
+
+  bool get doesGroupExist => group != null;
 
   bool get isQuickSessionButtonDisabled => amountOfAllFlashcards == 0;
 
@@ -31,9 +33,17 @@ class GroupPreviewState extends Equatable {
     Course? course,
   }) {
     return GroupPreviewState(
-      status: status ?? const BlocStatusComplete<GroupPreviewInfoType>(),
+      status: status ?? const BlocStatusInProgress(),
       group: group ?? this.group,
       course: course ?? this.course,
+    );
+  }
+
+  GroupPreviewState copyWithInfo(GroupPreviewInfo info) {
+    return copyWith(
+      status: const BlocStatusComplete<GroupPreviewInfo>(
+        info: GroupPreviewInfo.groupHasBeenDeleted,
+      ),
     );
   }
 
@@ -42,4 +52,4 @@ class GroupPreviewState extends Equatable {
   }
 }
 
-enum GroupPreviewInfoType { groupHasBeenRemoved }
+enum GroupPreviewInfo { groupHasBeenDeleted }
