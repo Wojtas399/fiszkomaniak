@@ -13,8 +13,8 @@ class DateProvider {
     return Date.now().addDays(1);
   }
 
-  bool isAfterNineteenToday() {
-    return _timeUtils.isPastTime(
+  bool isBeforeNineteenToday() {
+    return !_timeUtils.isPastTime(
       const Time(hour: 19, minute: 00),
       Date.now(),
     );

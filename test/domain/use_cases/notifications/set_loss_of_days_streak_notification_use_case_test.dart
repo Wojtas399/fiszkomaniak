@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:fiszkomaniak/domain/entities/day.dart';
 import 'package:fiszkomaniak/domain/use_cases/notifications/set_loss_of_days_streak_notification_use_case.dart';
 import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/user_interface.dart';
@@ -25,13 +26,18 @@ void main() {
     registerFallbackValue(FakeDate());
   });
 
-  setUp(
-    () => useCase = SetLossOfDaysStreakNotificationUseCase(
+  setUp(() {
+    useCase = SetLossOfDaysStreakNotificationUseCase(
       userInterface: userInterface,
       notificationsInterface: notificationsInterface,
       dateProvider: dateProvider,
-    ),
-  );
+    );
+    when(
+      () => notificationsInterface.setLossOfDaysStreakNotification(
+        date: any(named: 'date'),
+      ),
+    ).thenAnswer((_) async => '');
+  });
 
   tearDown(() {
     reset(userInterface);
@@ -40,23 +46,26 @@ void main() {
   });
 
   test(
-    'should call method responsible for setting loss of days streak notification with tomorrow date if it is past nineteen today',
+    'should call method responsible for setting loss of days streak notification with tomorrow date if user has already studied today',
     () async {
-      const Date tomorrowDate = Date(year: 2022, month: 5, day: 2);
+      const Date todayDate = Date(year: 2022, month: 5, day: 2);
+      const Date tomorrowDate = Date(year: 2022, month: 5, day: 3);
+      final List<Day> days = [
+        createDay(date: const Date(year: 2022, month: 5, day: 1)),
+        createDay(date: todayDate),
+      ];
       when(
         () => userInterface.daysStreak$,
       ).thenAnswer((_) => Stream.value(2));
       when(
-        () => dateProvider.isAfterNineteenToday(),
-      ).thenReturn(true);
+        () => userInterface.days$,
+      ).thenAnswer((_) => Stream.value(days));
+      when(
+        () => dateProvider.getNow(),
+      ).thenReturn(todayDate);
       when(
         () => dateProvider.getTomorrowDate(),
       ).thenReturn(tomorrowDate);
-      when(
-        () => notificationsInterface.setLossOfDaysStreakNotification(
-          date: tomorrowDate,
-        ),
-      ).thenAnswer((_) async => '');
 
       await useCase.execute();
 
@@ -69,23 +78,25 @@ void main() {
   );
 
   test(
-    'should call method responsible for setting loss of days streak notification with today date if it is before nineteen today',
+    'should call method responsible for setting loss of days streak notification with today date if user has studied yesterday and now is before nineteen oclock',
     () async {
-      const Date todayDate = Date(year: 2022, month: 5, day: 1);
+      const Date todayDate = Date(year: 2022, month: 5, day: 3);
+      final List<Day> days = [
+        createDay(date: const Date(year: 2022, month: 5, day: 1)),
+        createDay(date: const Date(year: 2022, month: 5, day: 2)),
+      ];
       when(
         () => userInterface.daysStreak$,
-      ).thenAnswer((_) => Stream.value(2));
+      ).thenAnswer((_) => Stream.value(1));
       when(
-        () => dateProvider.isAfterNineteenToday(),
-      ).thenReturn(false);
+        () => userInterface.days$,
+      ).thenAnswer((_) => Stream.value(days));
+      when(
+        () => dateProvider.isBeforeNineteenToday(),
+      ).thenReturn(true);
       when(
         () => dateProvider.getNow(),
       ).thenReturn(todayDate);
-      when(
-        () => notificationsInterface.setLossOfDaysStreakNotification(
-          date: todayDate,
-        ),
-      ).thenAnswer((_) async => '');
 
       await useCase.execute();
 
@@ -94,6 +105,37 @@ void main() {
           date: todayDate,
         ),
       ).called(1);
+    },
+  );
+
+  test(
+    'should not call method responsible for setting loss of days streak notification with today date if user has studied yesterday but now is after nineteen oclock',
+    () async {
+      const Date todayDate = Date(year: 2022, month: 5, day: 3);
+      final List<Day> days = [
+        createDay(date: const Date(year: 2022, month: 5, day: 1)),
+        createDay(date: const Date(year: 2022, month: 5, day: 2)),
+      ];
+      when(
+        () => userInterface.daysStreak$,
+      ).thenAnswer((_) => Stream.value(1));
+      when(
+        () => userInterface.days$,
+      ).thenAnswer((_) => Stream.value(days));
+      when(
+        () => dateProvider.isBeforeNineteenToday(),
+      ).thenReturn(false);
+      when(
+        () => dateProvider.getNow(),
+      ).thenReturn(todayDate);
+
+      await useCase.execute();
+
+      verifyNever(
+        () => notificationsInterface.setLossOfDaysStreakNotification(
+          date: todayDate,
+        ),
+      );
     },
   );
 
@@ -103,11 +145,6 @@ void main() {
       when(
         () => userInterface.daysStreak$,
       ).thenAnswer((_) => Stream.value(0));
-      when(
-        () => notificationsInterface.setLossOfDaysStreakNotification(
-          date: any(named: 'date'),
-        ),
-      ).thenAnswer((_) async => '');
 
       await useCase.execute();
 
