@@ -138,4 +138,9 @@ class HomePageController extends ChangeNotifier {
     this.pageNumber = pageNumber;
     notifyListeners();
   }
+
+  void changePageNumber(int pageNumber) {
+    this.pageNumber = pageNumber;
+    notifyListeners();
+  }
 }

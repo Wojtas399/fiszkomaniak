@@ -41,6 +41,9 @@ class _PageView extends StatelessWidget {
         CoursesLibraryScreen(),
         ProfileScreen(),
       ],
+      onPageChanged: (int pageIndex) {
+        context.read<HomePageController>().changePageNumber(pageIndex);
+      },
     );
   }
 }

@@ -52,10 +52,14 @@ class CoursesLibraryBloc
     CoursesLibraryEventInitialize event,
     Emitter<CoursesLibraryState> emit,
   ) async {
-    emit(state.copyWith(
-      status: const BlocStatusLoading(),
-    ));
-    await _loadAllCoursesUseCase.execute();
+    await _loadAllCoursesUseCase.execute().timeout(
+      const Duration(seconds: 1),
+      onTimeout: () {
+        emit(state.copyWith(
+          status: const BlocStatusLoading(),
+        ));
+      },
+    );
     emit(state.copyWith(
       status: const BlocStatusComplete(),
     ));
