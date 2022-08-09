@@ -1,68 +1,25 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
+import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:fiszkomaniak/domain/entities/flashcard.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late GroupSelectionState state;
 
-  setUp(() => state = GroupSelectionState());
-
-  test(
-    'initial state',
-    () {
-      expect(state.status, const BlocStatusInitial());
-      expect(state.coursesToSelect, {});
-      expect(state.groupsFromCourseToSelect, {});
-      expect(state.selectedCourse, null);
-      expect(state.selectedGroup, null);
-    },
+  setUp(
+    () => state = const GroupSelectionState(
+      status: BlocStatusInitial(),
+      allCourses: [],
+      groupsFromCourse: [],
+      selectedCourse: null,
+      selectedGroup: null,
+    ),
   );
 
   test(
-    'courses to select, should be a map in which keys are courses ids and values are courses names',
-    () {
-      final List<Course> courses = [
-        createCourse(id: 'c1', name: 'course 1'),
-        createCourse(id: 'c2', name: 'course 2'),
-      ];
-
-      state = state.copyWith(allCourses: courses);
-
-      expect(
-        state.coursesToSelect,
-        {
-          'c1': 'course 1',
-          'c2': 'course 2',
-        },
-      );
-    },
-  );
-
-  test(
-    'groups from course to select, should be a map in which keys are groups ids and values are groups names',
-    () {
-      final List<Group> groups = [
-        createGroup(id: 'g1', name: 'group one'),
-        createGroup(id: 'g2', name: 'group two'),
-      ];
-
-      state = state.copyWith(groupsFromCourse: groups);
-
-      expect(
-        state.groupsFromCourseToSelect,
-        {
-          'g1': 'group one',
-          'g2': 'group two',
-        },
-      );
-    },
-  );
-
-  test(
-    'amount of all flashcards, should be a number which represents the amount of all flashcards in selected group',
+    'amount of all flashcards',
     () {
       final Group group = createGroup(
         flashcards: [
@@ -79,7 +36,7 @@ void main() {
   );
 
   test(
-    'amount of remembered flashcards, should be a number which represents the amount of remembered flashcards in selected group',
+    'amount of remembered flashcards',
     () {
       final Group group = createGroup(
         flashcards: [
@@ -136,67 +93,43 @@ void main() {
     () {
       const BlocStatus expectedStatus = BlocStatusLoading();
 
-      final state2 = state.copyWith(status: expectedStatus);
-      final state3 = state2.copyWith();
+      state = state.copyWith(status: expectedStatus);
+      final state2 = state.copyWith();
 
-      expect(state2.status, expectedStatus);
-      expect(state3.status, const BlocStatusComplete());
+      expect(state.status, expectedStatus);
+      expect(state2.status, const BlocStatusInProgress());
     },
   );
 
   test(
     'copy with courses',
     () {
-      final List<Course> courses = [
+      final List<Course> expectedCourses = [
         createCourse(id: 'c1', name: 'course 1'),
         createCourse(id: 'c2', name: 'course 2'),
       ];
 
-      final state2 = state.copyWith(allCourses: courses);
-      final state3 = state2.copyWith();
+      state = state.copyWith(allCourses: expectedCourses);
+      final state2 = state.copyWith();
 
-      expect(
-        state2.coursesToSelect,
-        {
-          'c1': 'course 1',
-          'c2': 'course 2',
-        },
-      );
-      expect(
-        state3.coursesToSelect,
-        {
-          'c1': 'course 1',
-          'c2': 'course 2',
-        },
-      );
+      expect(state.allCourses, expectedCourses);
+      expect(state2.allCourses, expectedCourses);
     },
   );
 
   test(
     'copy with groups from course',
     () {
-      final List<Group> groups = [
+      final List<Group> expectedGroups = [
         createGroup(id: 'g1', name: 'group 1'),
         createGroup(id: 'g2', name: 'group 2'),
       ];
 
-      final state2 = state.copyWith(groupsFromCourse: groups);
-      final state3 = state2.copyWith();
+      state = state.copyWith(groupsFromCourse: expectedGroups);
+      final state2 = state.copyWith();
 
-      expect(
-        state2.groupsFromCourseToSelect,
-        {
-          'g1': 'group 1',
-          'g2': 'group 2',
-        },
-      );
-      expect(
-        state3.groupsFromCourseToSelect,
-        {
-          'g1': 'group 1',
-          'g2': 'group 2',
-        },
-      );
+      expect(state.groupsFromCourse, expectedGroups);
+      expect(state2.groupsFromCourse, expectedGroups);
     },
   );
 
@@ -205,11 +138,11 @@ void main() {
     () {
       final Course expectedCourse = createCourse(id: 'c1');
 
-      final state2 = state.copyWith(selectedCourse: expectedCourse);
-      final state3 = state2.copyWith();
+      state = state.copyWith(selectedCourse: expectedCourse);
+      final state2 = state.copyWith();
 
+      expect(state.selectedCourse, expectedCourse);
       expect(state2.selectedCourse, expectedCourse);
-      expect(state3.selectedCourse, expectedCourse);
     },
   );
 
@@ -218,11 +151,11 @@ void main() {
     () {
       final Group expectedGroup = createGroup(id: 'c1');
 
-      final state2 = state.copyWith(selectedGroup: expectedGroup);
-      final state3 = state2.copyWith();
+      state = state.copyWith(selectedGroup: expectedGroup);
+      final state2 = state.copyWith();
 
-      expect(state2.selectedGroup, expectedGroup);
-      expect(state3.selectedGroup, null);
+      expect(state.selectedGroup, expectedGroup);
+      expect(state2.selectedGroup, null);
     },
   );
 }

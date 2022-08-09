@@ -1,16 +1,16 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/load_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
-import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_bloc.dart';
-import 'package:fiszkomaniak/features/group_selection/components/group_selection_content.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../components/dialogs/dialogs.dart';
+import '../../domain/use_cases/courses/get_all_courses_use_case.dart';
+import '../../domain/use_cases/courses/get_course_use_case.dart';
+import '../../domain/use_cases/courses/load_all_courses_use_case.dart';
+import '../../domain/use_cases/groups/get_group_use_case.dart';
+import '../../domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
+import '../../interfaces/groups_interface.dart';
+import '../../models/bloc_status.dart';
 import '../../interfaces/courses_interface.dart';
+import 'bloc/group_selection_bloc.dart';
+import 'components/group_selection_content.dart';
 
 class GroupSelectionScreen extends StatelessWidget {
   const GroupSelectionScreen({super.key});
@@ -32,21 +32,23 @@ class _GroupSelectionBlocProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CoursesInterface coursesInterface = context.read<CoursesInterface>();
-    final GroupsInterface groupsInterface = context.read<GroupsInterface>();
     return BlocProvider(
       create: (BuildContext context) => GroupSelectionBloc(
         loadAllCoursesUseCase: LoadAllCoursesUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
         getAllCoursesUseCase: GetAllCoursesUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
-        getCourseUseCase: GetCourseUseCase(coursesInterface: coursesInterface),
+        getCourseUseCase: GetCourseUseCase(
+          coursesInterface: context.read<CoursesInterface>(),
+        ),
         getGroupsByCourseIdUseCase: GetGroupsByCourseIdUseCase(
-          groupsInterface: groupsInterface,
+          groupsInterface: context.read<GroupsInterface>(),
         ),
-        getGroupUseCase: GetGroupUseCase(groupsInterface: groupsInterface),
+        getGroupUseCase: GetGroupUseCase(
+          groupsInterface: context.read<GroupsInterface>(),
+        ),
       )..add(GroupSelectionEventInitialize()),
       child: child,
     );

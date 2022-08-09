@@ -2,36 +2,27 @@ part of 'group_selection_bloc.dart';
 
 class GroupSelectionState extends Equatable {
   final BlocStatus status;
-  late final List<Course> _allCourses;
-  late final List<Group> _groupsFromCourse;
+  final List<Course> allCourses;
+  final List<Group> groupsFromCourse;
   final Course? selectedCourse;
   final Group? selectedGroup;
 
-  GroupSelectionState({
-    this.status = const BlocStatusInitial(),
-    List<Course> allCourses = const [],
-    List<Group> groupsFromCourse = const [],
-    this.selectedCourse,
-    this.selectedGroup,
-  }) {
-    _allCourses = allCourses;
-    _groupsFromCourse = groupsFromCourse;
-  }
+  const GroupSelectionState({
+    required this.status,
+    required this.allCourses,
+    required this.groupsFromCourse,
+    required this.selectedCourse,
+    required this.selectedGroup,
+  });
 
   @override
   List<Object> get props => [
         status,
-        _allCourses,
-        _groupsFromCourse,
+        allCourses,
+        groupsFromCourse,
         selectedCourse ?? createCourse(),
         selectedGroup ?? createGroup(),
       ];
-
-  Map<String, String> get coursesToSelect =>
-      {for (final course in _allCourses) course.id: course.name};
-
-  Map<String, String> get groupsFromCourseToSelect =>
-      {for (final group in _groupsFromCourse) group.id: group.name};
 
   int get amountOfAllFlashcards => selectedGroup?.flashcards.length ?? 0;
 
@@ -48,9 +39,9 @@ class GroupSelectionState extends Equatable {
     Group? selectedGroup,
   }) {
     return GroupSelectionState(
-      status: status ?? const BlocStatusComplete(),
-      allCourses: allCourses ?? _allCourses,
-      groupsFromCourse: groupsFromCourse ?? _groupsFromCourse,
+      status: status ?? const BlocStatusInProgress(),
+      allCourses: allCourses ?? this.allCourses,
+      groupsFromCourse: groupsFromCourse ?? this.groupsFromCourse,
       selectedCourse: selectedCourse ?? this.selectedCourse,
       selectedGroup: selectedGroup,
     );

@@ -73,9 +73,6 @@ void main() {
         },
         expect: () => [
           createState(
-            status: const BlocStatusLoading(),
-          ),
-          createState(
             status: const BlocStatusComplete(),
           ),
           createState(

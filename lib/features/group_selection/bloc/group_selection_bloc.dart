@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/load_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/course.dart';
 import '../../../domain/entities/flashcard.dart';
 import '../../../domain/entities/group.dart';
+import '../../../domain/use_cases/courses/get_all_courses_use_case.dart';
+import '../../../domain/use_cases/courses/get_course_use_case.dart';
+import '../../../domain/use_cases/courses/load_all_courses_use_case.dart';
+import '../../../domain/use_cases/groups/get_group_use_case.dart';
+import '../../../domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
+import '../../../models/bloc_status.dart';
 
 part 'group_selection_event.dart';
 
@@ -30,7 +30,20 @@ class GroupSelectionBloc
     required GetCourseUseCase getCourseUseCase,
     required GetGroupsByCourseIdUseCase getGroupsByCourseIdUseCase,
     required GetGroupUseCase getGroupUseCase,
-  }) : super(GroupSelectionState()) {
+    BlocStatus status = const BlocStatusInitial(),
+    List<Course> allCourses = const [],
+    List<Group> groupsFromCourse = const [],
+    Course? selectedCourse,
+    Group? selectedGroup,
+  }) : super(
+          GroupSelectionState(
+            status: status,
+            allCourses: allCourses,
+            groupsFromCourse: groupsFromCourse,
+            selectedCourse: selectedCourse,
+            selectedGroup: selectedGroup,
+          ),
+        ) {
     _loadAllCoursesUseCase = loadAllCoursesUseCase;
     _getAllCoursesUseCase = getAllCoursesUseCase;
     _getCourseUseCase = getCourseUseCase;
@@ -96,9 +109,9 @@ class GroupSelectionBloc
   }
 
   void _setGroupListener(String groupId) {
-    _groupListener ??= _getGroupUseCase.execute(groupId: groupId).listen(
-          (group) => add(GroupSelectionEventGroupUpdated(group: group)),
-        );
+    _groupListener ??= _getGroupUseCase
+        .execute(groupId: groupId)
+        .listen((group) => add(GroupSelectionEventGroupUpdated(group: group)));
   }
 
   void _cancelGroupListener() {
