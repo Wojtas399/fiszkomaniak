@@ -1,14 +1,14 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/session.dart';
 
-class LearningProcessData extends Equatable {
+class LearningProcessArguments extends Equatable {
   final String? sessionId;
   final String groupId;
   final Duration? duration;
   final FlashcardsType flashcardsType;
   final bool areQuestionsAndAnswersSwapped;
 
-  const LearningProcessData({
+  const LearningProcessArguments({
     required this.groupId,
     required this.flashcardsType,
     required this.areQuestionsAndAnswersSwapped,
@@ -26,14 +26,14 @@ class LearningProcessData extends Equatable {
       ];
 }
 
-LearningProcessData createLearningProcessData({
+LearningProcessArguments createLearningProcessArguments({
   String? sessionId,
   String? groupId,
   Duration? duration,
   FlashcardsType? flashcardsType,
   bool? areQuestionsAndAnswersSwapped,
 }) {
-  return LearningProcessData(
+  return LearningProcessArguments(
     sessionId: sessionId,
     groupId: groupId ?? '',
     duration: duration,

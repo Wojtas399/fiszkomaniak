@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/flashcards_stack/flashcards_stack_model.dart';
 import '../../../domain/entities/group.dart';
 import '../../../domain/entities/session.dart';
 import '../../../domain/entities/flashcard.dart';
@@ -8,15 +7,14 @@ import '../../../domain/use_cases/achievements/add_finished_session_use_case.dar
 import '../../../domain/use_cases/courses/get_course_use_case.dart';
 import '../../../domain/use_cases/sessions/save_session_progress_use_case.dart';
 import '../../../domain/use_cases/groups/get_group_use_case.dart';
-import '../../../domain/use_cases/sessions/remove_session_use_case.dart';
+import '../../../domain/use_cases/sessions/delete_session_use_case.dart';
 import '../../../models/bloc_status.dart';
-import '../learning_process_dialogs.dart';
-import '../learning_process_utils.dart';
-import '../learning_process_data.dart';
 
 part 'learning_process_event.dart';
 
 part 'learning_process_state.dart';
+
+part 'learning_process_utils.dart';
 
 class LearningProcessBloc
     extends Bloc<LearningProcessEvent, LearningProcessState>
@@ -25,16 +23,14 @@ class LearningProcessBloc
   late final GetCourseUseCase _getCourseUseCase;
   late final SaveSessionProgressUseCase _saveSessionProgressUseCase;
   late final AddFinishedSessionUseCase _addFinishedSessionUseCase;
-  late final RemoveSessionUseCase _removeSessionUseCase;
-  late final LearningProcessDialogs _dialogs;
+  late final DeleteSessionUseCase _deleteSessionUseCase;
 
   LearningProcessBloc({
     required GetGroupUseCase getGroupUseCase,
     required GetCourseUseCase getCourseUseCase,
     required SaveSessionProgressUseCase saveSessionProgressUseCase,
     required AddFinishedSessionUseCase addFinishedSessionUseCase,
-    required RemoveSessionUseCase removeSessionUseCase,
-    required LearningProcessDialogs learningProcessDialogs,
+    required DeleteSessionUseCase deleteSessionUseCase,
     BlocStatus status = const BlocStatusInitial(),
     String? sessionId,
     String courseName = '',
@@ -65,15 +61,14 @@ class LearningProcessBloc
     _getCourseUseCase = getCourseUseCase;
     _saveSessionProgressUseCase = saveSessionProgressUseCase;
     _addFinishedSessionUseCase = addFinishedSessionUseCase;
-    _removeSessionUseCase = removeSessionUseCase;
-    _dialogs = learningProcessDialogs;
+    _deleteSessionUseCase = deleteSessionUseCase;
     on<LearningProcessEventInitialize>(_initialize);
     on<LearningProcessEventRememberedFlashcard>(_rememberedFlashcard);
     on<LearningProcessEventForgottenFlashcard>(_forgottenFlashcard);
     on<LearningProcessEventReset>(_reset);
-    on<LearningProcessEventTimeFinished>(_timeFinished);
-    on<LearningProcessEventEndSession>(_endSession);
-    on<LearningProcessEventExit>(_exit);
+    on<LearningProcessEventRemoveDuration>(_removeDuration);
+    on<LearningProcessEventSessionFinished>(_sessionFinished);
+    on<LearningProcessEventSessionAborted>(_sessionAborted);
   }
 
   Future<void> _initialize(
@@ -81,23 +76,23 @@ class LearningProcessBloc
     Emitter<LearningProcessState> emit,
   ) async {
     emit(state.copyWith(status: const BlocStatusLoading()));
-    final Group group = await _getGroup(event.data.groupId);
+    final Group group = await _getGroup(event.groupId);
     final String courseName = await _getCourseName(group.courseId);
     emit(state.copyWith(
-      status: const BlocStatusComplete<LearningProcessInfoType>(
-        info: LearningProcessInfoType.initialDataHasBeenLoaded,
+      status: const BlocStatusComplete<LearningProcessInfo>(
+        info: LearningProcessInfo.initialDataHaveBeenSet,
       ),
-      sessionId: event.data.sessionId,
+      sessionId: event.sessionId,
       courseName: courseName,
       group: group,
-      duration: event.data.duration,
-      areQuestionsAndAnswersSwapped: event.data.areQuestionsAndAnswersSwapped,
+      duration: event.duration,
+      areQuestionsAndAnswersSwapped: event.areQuestionsAndAnswersSwapped,
       rememberedFlashcards: getRememberedFlashcards(group.flashcards),
       notRememberedFlashcards: getNotRememberedFlashcards(group.flashcards),
-      flashcardsType: event.data.flashcardsType,
+      flashcardsType: event.flashcardsType,
       amountOfFlashcardsInStack: getAmountOfFlashcardsMatchingToFlashcardsType(
         group.flashcards,
-        event.data.flashcardsType,
+        event.flashcardsType,
       ),
     ));
   }
@@ -160,8 +155,8 @@ class LearningProcessBloc
         )
         .length;
     emit(state.copyWith(
-      status: const BlocStatusComplete<LearningProcessInfoType>(
-        info: LearningProcessInfoType.flashcardsStackHasBeenReset,
+      status: const BlocStatusComplete<LearningProcessInfo>(
+        info: LearningProcessInfo.flashcardsStackHasBeenReset,
       ),
       indexOfDisplayedFlashcard: 0,
       flashcardsType: flashcardsType,
@@ -169,54 +164,43 @@ class LearningProcessBloc
     ));
   }
 
-  Future<void> _timeFinished(
-    LearningProcessEventTimeFinished event,
+  void _removeDuration(
+    LearningProcessEventRemoveDuration event,
     Emitter<LearningProcessState> emit,
-  ) async {
-    if (await _doesUserWantToContinue()) {
-      emit(state.copyWith(removedDuration: true));
-    } else {
-      emit(state.copyWith(status: const BlocStatusLoading()));
-      await _saveProgress();
-      await _addSessionToAchievements();
-      await _removeSession();
-      emit(state.copyWith(
-        status: const BlocStatusComplete<LearningProcessInfoType>(
-          info: LearningProcessInfoType.sessionHasBeenFinished,
-        ),
-      ));
-    }
-  }
-
-  Future<void> _endSession(
-    LearningProcessEventEndSession event,
-    Emitter<LearningProcessState> emit,
-  ) async {
-    emit(state.copyWith(status: const BlocStatusLoading()));
-    await _saveProgress();
-    await _addSessionToAchievements();
-    await _removeSession();
+  ) {
     emit(state.copyWith(
-      status: const BlocStatusComplete<LearningProcessInfoType>(
-        info: LearningProcessInfoType.sessionHasBeenFinished,
-      ),
+      removedDuration: true,
     ));
   }
 
-  Future<void> _exit(
-    LearningProcessEventExit event,
+  Future<void> _sessionFinished(
+    LearningProcessEventSessionFinished event,
     Emitter<LearningProcessState> emit,
   ) async {
-    final bool saveConfirmation = await _dialogs.askForSaveConfirmation();
-    if (saveConfirmation) {
-      emit(state.copyWith(status: const BlocStatusLoading()));
+    emit(state.copyWith(
+      status: const BlocStatusLoading(),
+    ));
+    await _saveProgress();
+    await _addSessionToAchievements();
+    await _removeSession();
+    emit(state.copyWithInfo(
+      LearningProcessInfo.sessionHasBeenFinished,
+    ));
+  }
+
+  Future<void> _sessionAborted(
+    LearningProcessEventSessionAborted event,
+    Emitter<LearningProcessState> emit,
+  ) async {
+    if (event.doesUserWantToSaveProgress) {
+      emit(state.copyWith(
+        status: const BlocStatusLoading(),
+      ));
       await _saveProgress();
       await _addSessionToAchievements();
     }
-    emit(state.copyWith(
-      status: const BlocStatusComplete<LearningProcessInfoType>(
-        info: LearningProcessInfoType.sessionHasBeenAborted,
-      ),
+    emit(state.copyWithInfo(
+      LearningProcessInfo.sessionHasBeenAborted,
     ));
   }
 
@@ -238,10 +222,6 @@ class LearningProcessBloc
     return state.indexOfDisplayedFlashcard;
   }
 
-  Future<bool> _doesUserWantToContinue() async {
-    return await _dialogs.askForContinuing();
-  }
-
   Future<void> _saveProgress() async {
     final String? groupId = state.group?.id;
     if (groupId != null) {
@@ -259,7 +239,7 @@ class LearningProcessBloc
   Future<void> _removeSession() async {
     final String? sessionId = state.sessionId;
     if (sessionId != null && sessionId.isNotEmpty) {
-      await _removeSessionUseCase.execute(sessionId: sessionId);
+      await _deleteSessionUseCase.execute(sessionId: sessionId);
     }
   }
 }

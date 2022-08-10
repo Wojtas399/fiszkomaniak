@@ -3,7 +3,7 @@ import 'package:fiszkomaniak/config/navigation.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/sessions/get_session_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/delete_session_use_case.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/components/session_preview_content.dart';
 import 'package:fiszkomaniak/features/session_preview/session_preview_dialogs.dart';
@@ -54,7 +54,7 @@ class _SessionPreviewBlocProvider extends StatelessWidget {
         getCourseUseCase: GetCourseUseCase(
           coursesInterface: context.read<CoursesInterface>(),
         ),
-        removeSessionUseCase: RemoveSessionUseCase(
+        deleteSessionUseCase: DeleteSessionUseCase(
           sessionsInterface: context.read<SessionsInterface>(),
           notificationsInterface: context.read<NotificationsInterface>(),
         ),

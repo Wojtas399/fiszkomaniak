@@ -1,5 +1,5 @@
 import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/learning_process/learning_process_data.dart';
+import 'package:fiszkomaniak/features/learning_process/learning_process_arguments.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/components/session_preview_app_bar.dart';
 import 'package:fiszkomaniak/features/session_preview/components/session_preview_flashcards.dart';
@@ -70,11 +70,11 @@ class _StartLearningButton extends StatelessWidget {
     final String? groupId = state.group?.id;
     if (groupId != null) {
       Navigation.navigateToLearningProcess(
-        LearningProcessData(
+        LearningProcessArguments(
+          sessionId: state.session?.id,
           groupId: groupId,
           flashcardsType: state.flashcardsType,
           areQuestionsAndAnswersSwapped: state.areQuestionsAndAnswersSwapped,
-          sessionId: state.session?.id,
           duration: state.duration,
         ),
       );

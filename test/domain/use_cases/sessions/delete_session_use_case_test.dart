@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/delete_session_use_case.dart';
 import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 
@@ -12,7 +12,7 @@ class MockNotificationsInterface extends Mock
 void main() {
   final sessionsInterface = MockSessionsInterface();
   final notificationsInterface = MockNotificationsInterface();
-  final useCase = RemoveSessionUseCase(
+  final useCase = DeleteSessionUseCase(
     sessionsInterface: sessionsInterface,
     notificationsInterface: notificationsInterface,
   );

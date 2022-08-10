@@ -1,11 +1,11 @@
 import '../../../interfaces/sessions_interface.dart';
 import '../../../interfaces/notifications_interface.dart';
 
-class RemoveSessionUseCase {
+class DeleteSessionUseCase {
   late final SessionsInterface _sessionsInterface;
   late final NotificationsInterface _notificationsInterface;
 
-  RemoveSessionUseCase({
+  DeleteSessionUseCase({
     required SessionsInterface sessionsInterface,
     required NotificationsInterface notificationsInterface,
   }) {

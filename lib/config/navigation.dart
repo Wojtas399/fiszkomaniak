@@ -12,7 +12,7 @@ import '../features/reset_password/reset_password_screen.dart';
 import '../features/session_creator/bloc/session_creator_mode.dart';
 import '../features/session_preview/bloc/session_preview_mode.dart';
 import '../features/home/home.dart';
-import '../features/learning_process/learning_process_data.dart';
+import '../features/learning_process/learning_process_arguments.dart';
 
 class Navigation {
   static void moveBack({Object? objectToReturn}) {
@@ -146,11 +146,11 @@ class Navigation {
     );
   }
 
-  static void navigateToLearningProcess(LearningProcessData data) {
+  static void navigateToLearningProcess(LearningProcessArguments arguments) {
     Dialogs.hideSnackbar();
     navigatorKey.currentState?.pushNamed(
       Routes.session,
-      arguments: data,
+      arguments: arguments,
     );
   }
 }

@@ -5,11 +5,12 @@ import '../../components/flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import '../../components/flashcards_stack/flashcards_stack_model.dart';
 import '../../components/flashcards_stack/components/flashcards_stack_bloc_provider.dart';
 import '../../config/navigation.dart';
+import '../../domain/entities/flashcard.dart';
 import '../../domain/use_cases/achievements/add_finished_session_use_case.dart';
 import '../../domain/use_cases/courses/get_course_use_case.dart';
 import '../../domain/use_cases/sessions/save_session_progress_use_case.dart';
 import '../../domain/use_cases/groups/get_group_use_case.dart';
-import '../../domain/use_cases/sessions/remove_session_use_case.dart';
+import '../../domain/use_cases/sessions/delete_session_use_case.dart';
 import '../../features/home/home.dart';
 import '../../interfaces/achievements_interface.dart';
 import '../../interfaces/courses_interface.dart';
@@ -20,21 +21,20 @@ import '../../interfaces/notifications_interface.dart';
 import '../../models/bloc_status.dart';
 import 'bloc/learning_process_bloc.dart';
 import 'components/learning_process_content.dart';
-import 'learning_process_dialogs.dart';
-import 'learning_process_data.dart';
+import 'learning_process_arguments.dart';
 
 class LearningProcessScreen extends StatelessWidget {
-  final LearningProcessData data;
+  final LearningProcessArguments arguments;
 
   const LearningProcessScreen({
     super.key,
-    required this.data,
+    required this.arguments,
   });
 
   @override
   Widget build(BuildContext context) {
     return _LearningProcessBlocProvider(
-      data: data,
+      arguments: arguments,
       child: FlashcardsStackBlocProvider(
         child: _LearningProcessBlocListener(
           child: _FlashcardsStackListener(
@@ -56,11 +56,11 @@ class LearningProcessScreen extends StatelessWidget {
 }
 
 class _LearningProcessBlocProvider extends StatelessWidget {
-  final LearningProcessData data;
+  final LearningProcessArguments arguments;
   final Widget child;
 
   const _LearningProcessBlocProvider({
-    required this.data,
+    required this.arguments,
     required this.child,
   });
 
@@ -82,12 +82,20 @@ class _LearningProcessBlocProvider extends StatelessWidget {
         addFinishedSessionUseCase: AddFinishedSessionUseCase(
           achievementsInterface: context.read<AchievementsInterface>(),
         ),
-        removeSessionUseCase: RemoveSessionUseCase(
+        deleteSessionUseCase: DeleteSessionUseCase(
           sessionsInterface: context.read<SessionsInterface>(),
           notificationsInterface: context.read<NotificationsInterface>(),
         ),
-        learningProcessDialogs: LearningProcessDialogs(),
-      )..add(LearningProcessEventInitialize(data: data)),
+      )..add(
+          LearningProcessEventInitialize(
+            sessionId: arguments.sessionId,
+            groupId: arguments.groupId,
+            duration: arguments.duration,
+            flashcardsType: arguments.flashcardsType,
+            areQuestionsAndAnswersSwapped:
+                arguments.areQuestionsAndAnswersSwapped,
+          ),
+        ),
       child: child,
     );
   }
@@ -107,11 +115,14 @@ class _LearningProcessBlocListener extends StatelessWidget {
           Dialogs.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
           Dialogs.closeLoadingDialog(context);
-          final LearningProcessInfoType? infoType = blocStatus.info;
-          if (infoType != null) {
-            _manageInfoType(
-              infoType,
-              state.stackFlashcards,
+          final LearningProcessInfo? info = blocStatus.info;
+          if (info != null) {
+            _manageInfo(
+              info,
+              _createStackFlashcards(
+                state.flashcardsInStack,
+                state.areQuestionsAndAnswersSwapped,
+              ),
               context,
             );
           }
@@ -121,20 +132,39 @@ class _LearningProcessBlocListener extends StatelessWidget {
     );
   }
 
-  void _manageInfoType(
-    LearningProcessInfoType infoType,
+  List<StackFlashcard> _createStackFlashcards(
+    List<Flashcard> flashcards,
+    bool areQuestionsAndAnswersSwapped,
+  ) {
+    return flashcards
+        .map(
+          (Flashcard flashcard) => StackFlashcard(
+            index: flashcard.index,
+            question: areQuestionsAndAnswersSwapped
+                ? flashcard.answer
+                : flashcard.question,
+            answer: areQuestionsAndAnswersSwapped
+                ? flashcard.question
+                : flashcard.answer,
+          ),
+        )
+        .toList();
+  }
+
+  void _manageInfo(
+    LearningProcessInfo infoType,
     List<StackFlashcard> flashcardsInfo,
     BuildContext context,
   ) {
     switch (infoType) {
-      case LearningProcessInfoType.initialDataHasBeenLoaded:
-      case LearningProcessInfoType.flashcardsStackHasBeenReset:
+      case LearningProcessInfo.initialDataHaveBeenSet:
+      case LearningProcessInfo.flashcardsStackHasBeenReset:
         _initializeFlashcardsStack(flashcardsInfo, context);
         break;
-      case LearningProcessInfoType.sessionHasBeenFinished:
+      case LearningProcessInfo.sessionHasBeenFinished:
         _backHome(context);
         break;
-      case LearningProcessInfoType.sessionHasBeenAborted:
+      case LearningProcessInfo.sessionHasBeenAborted:
         Navigation.moveBack();
         break;
     }

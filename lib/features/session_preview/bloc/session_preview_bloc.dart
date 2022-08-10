@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/sessions/get_session_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/delete_session_use_case.dart';
 import 'package:fiszkomaniak/features/session_preview/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
@@ -22,7 +22,7 @@ class SessionPreviewBloc
   late final GetSessionUseCase _getSessionUseCase;
   late final GetGroupUseCase _getGroupUseCase;
   late final GetCourseUseCase _getCourseUseCase;
-  late final RemoveSessionUseCase _removeSessionUseCase;
+  late final DeleteSessionUseCase _deleteSessionUseCase;
   late final SessionPreviewDialogs _sessionPreviewDialogs;
   StreamSubscription<Session>? _sessionListener;
 
@@ -30,7 +30,7 @@ class SessionPreviewBloc
     required GetSessionUseCase getSessionUseCase,
     required GetGroupUseCase getGroupUseCase,
     required GetCourseUseCase getCourseUseCase,
-    required RemoveSessionUseCase removeSessionUseCase,
+    required DeleteSessionUseCase deleteSessionUseCase,
     required SessionPreviewDialogs sessionPreviewDialogs,
     BlocStatus status = const BlocStatusInitial(),
     SessionPreviewMode? mode,
@@ -55,7 +55,7 @@ class SessionPreviewBloc
     _getSessionUseCase = getSessionUseCase;
     _getGroupUseCase = getGroupUseCase;
     _getCourseUseCase = getCourseUseCase;
-    _removeSessionUseCase = removeSessionUseCase;
+    _deleteSessionUseCase = deleteSessionUseCase;
     _sessionPreviewDialogs = sessionPreviewDialogs;
     on<SessionPreviewEventInitialize>(_initialize);
     on<SessionPreviewEventSessionUpdated>(_sessionUpdated);
@@ -143,7 +143,7 @@ class SessionPreviewBloc
     final Session? session = state.session;
     if (session != null && await _hasSessionRemovalBeenConfirmed()) {
       emit(state.copyWith(status: const BlocStatusLoading()));
-      await _removeSessionUseCase.execute(sessionId: session.id);
+      await _deleteSessionUseCase.execute(sessionId: session.id);
       emit(state.copyWith(
         status: const BlocStatusComplete<SessionPreviewInfoType>(
           info: SessionPreviewInfoType.sessionHasBeenDeleted,

@@ -18,7 +18,7 @@ import '../../features/settings/settings_screen.dart';
 import '../../config/routes.dart';
 import '../group_creator/group_creator_mode.dart';
 import '../learning_process/learning_process_screen.dart';
-import '../learning_process/learning_process_data.dart';
+import '../learning_process/learning_process_arguments.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -118,7 +118,7 @@ class _HomeRouterState extends State<HomeRouter> {
       case Routes.session:
         return MaterialPageRoute(
           builder: (_) => LearningProcessScreen(
-            data: routeSettings.arguments as LearningProcessData,
+            arguments: routeSettings.arguments as LearningProcessArguments,
           ),
         );
       default:

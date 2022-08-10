@@ -5,7 +5,7 @@ import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/sessions/get_session_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/delete_session_use_case.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/features/session_preview/session_preview_dialogs.dart';
@@ -19,7 +19,7 @@ class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
 
 class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
 
-class MockRemoveSessionUseCase extends Mock implements RemoveSessionUseCase {}
+class MockDeleteSessionUseCase extends Mock implements DeleteSessionUseCase {}
 
 class MockSessionPreviewDialogs extends Mock implements SessionPreviewDialogs {}
 
@@ -27,7 +27,7 @@ void main() {
   final getSessionUseCase = MockGetSessionUseCase();
   final getGroupUseCase = MockGetGroupUseCase();
   final getCourseUseCase = MockGetCourseUseCase();
-  final removeSessionUseCase = MockRemoveSessionUseCase();
+  final deleteSessionUseCase = MockDeleteSessionUseCase();
   final sessionPreviewDialogs = MockSessionPreviewDialogs();
 
   SessionPreviewBloc createBloc({
@@ -40,7 +40,7 @@ void main() {
       getSessionUseCase: getSessionUseCase,
       getGroupUseCase: getGroupUseCase,
       getCourseUseCase: getCourseUseCase,
-      removeSessionUseCase: removeSessionUseCase,
+      deleteSessionUseCase: deleteSessionUseCase,
       sessionPreviewDialogs: sessionPreviewDialogs,
       status: status,
       session: session,
@@ -75,7 +75,7 @@ void main() {
     reset(getSessionUseCase);
     reset(getGroupUseCase);
     reset(getCourseUseCase);
-    reset(removeSessionUseCase);
+    reset(deleteSessionUseCase);
     reset(sessionPreviewDialogs);
   });
 
@@ -283,7 +283,7 @@ void main() {
 
       setUp(() {
         when(
-          () => removeSessionUseCase.execute(sessionId: 's1'),
+          () => deleteSessionUseCase.execute(sessionId: 's1'),
         ).thenAnswer((_) async => '');
       });
 
@@ -316,7 +316,9 @@ void main() {
           verify(
             () => sessionPreviewDialogs.askForDeleteConfirmation(),
           ).called(1);
-          verify(() => removeSessionUseCase.execute(sessionId: 's1')).called(1);
+          verify(
+            () => deleteSessionUseCase.execute(sessionId: 's1'),
+          ).called(1);
         },
       );
 

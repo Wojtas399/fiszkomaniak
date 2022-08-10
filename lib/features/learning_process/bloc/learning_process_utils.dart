@@ -1,5 +1,4 @@
-import '../../domain/entities/flashcard.dart';
-import '../../domain/entities/session.dart';
+part of 'learning_process_bloc.dart';
 
 mixin LearningProcessUtils {
   List<Flashcard> getRememberedFlashcards(List<Flashcard> flashcards) {
