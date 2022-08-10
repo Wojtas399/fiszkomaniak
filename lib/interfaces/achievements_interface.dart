@@ -1,7 +1,7 @@
 import '../domain/entities/flashcard.dart';
 
 abstract class AchievementsInterface {
-  Stream<int?> get allFlashcardsAmount$;
+  Stream<int?> get rememberedFlashcardsAmount;
 
   Stream<int?> get allFlashcardsAchievedCondition$;
 
@@ -9,7 +9,7 @@ abstract class AchievementsInterface {
 
   Stream<int?> get finishedSessionsAchievedCondition$;
 
-  Future<void> loadAllFlashcardsAmount();
+  Future<void> loadRememberedFlashcardsAmount();
 
   Future<void> setInitialAchievements();
 

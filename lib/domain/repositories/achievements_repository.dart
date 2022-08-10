@@ -6,7 +6,7 @@ import '../entities/flashcard.dart';
 
 class AchievementsRepository implements AchievementsInterface {
   late final FireAchievementsService _fireAchievementsService;
-  final BehaviorSubject<int?> _allFlashcardsAmount$ =
+  final BehaviorSubject<int?> _rememberedFlashcardsAmount$ =
       BehaviorSubject<int?>.seeded(null);
   final BehaviorSubject<int?> _allFlashcardsAchievedCondition$ =
       BehaviorSubject<int?>.seeded(null);
@@ -22,7 +22,8 @@ class AchievementsRepository implements AchievementsInterface {
   }
 
   @override
-  Stream<int?> get allFlashcardsAmount$ => _allFlashcardsAmount$.stream;
+  Stream<int?> get rememberedFlashcardsAmount =>
+      _rememberedFlashcardsAmount$.stream;
 
   @override
   Stream<int?> get allFlashcardsAchievedCondition$ =>
@@ -37,12 +38,12 @@ class AchievementsRepository implements AchievementsInterface {
       _finishedSessionsAchievedCondition$.stream;
 
   @override
-  Future<void> loadAllFlashcardsAmount() async {
-    final AchievementDbModel? allFlashcardsAmount =
-        await _fireAchievementsService.loadAllFlashcardsAmount();
-    if (allFlashcardsAmount != null) {
-      _allFlashcardsAmount$.add(
-        allFlashcardsAmount.completedElementsIds?.length ?? 0,
+  Future<void> loadRememberedFlashcardsAmount() async {
+    final AchievementDbModel? rememberedFlashcardsAmount =
+        await _fireAchievementsService.loadRememberedFlashcardsAmount();
+    if (rememberedFlashcardsAmount != null) {
+      _rememberedFlashcardsAmount$.add(
+        rememberedFlashcardsAmount.completedElementsIds?.length ?? 0,
       );
     }
   }
@@ -61,7 +62,6 @@ class AchievementsRepository implements AchievementsInterface {
     final int? newAchievementValue =
         await _fireAchievementsService.updateAllFlashcardsAmount(flashcardsIds);
     if (newAchievementValue != null) {
-      _allFlashcardsAmount$.add(newAchievementValue);
       await _checkAllFlashcardsAchievedConditionValue(
         newAchievementValue,
       );
@@ -80,6 +80,7 @@ class AchievementsRepository implements AchievementsInterface {
     final int? newAchievementValue = await _fireAchievementsService
         .updateRememberedFlashcardsAmount(flashcardsIds);
     if (newAchievementValue != null) {
+      _rememberedFlashcardsAmount$.add(newAchievementValue);
       await _checkRememberedFlashcardsAchievedConditionValue(
         newAchievementValue,
       );
@@ -101,7 +102,7 @@ class AchievementsRepository implements AchievementsInterface {
 
   @override
   void reset() {
-    _allFlashcardsAmount$.add(null);
+    _rememberedFlashcardsAmount$.add(null);
     _allFlashcardsAchievedCondition$.add(null);
     _rememberedFlashcardsAchievedCondition$.add(null);
     _finishedSessionsAchievedCondition$.add(null);

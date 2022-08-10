@@ -1,16 +1,16 @@
 import 'package:rxdart/rxdart.dart';
 import '../../../interfaces/achievements_interface.dart';
 
-class GetAllFlashcardsAmountUseCase {
+class GetRememberedFlashcardsAmountUseCase {
   late final AchievementsInterface _achievementsInterface;
 
-  GetAllFlashcardsAmountUseCase({
+  GetRememberedFlashcardsAmountUseCase({
     required AchievementsInterface achievementsInterface,
   }) {
     _achievementsInterface = achievementsInterface;
   }
 
   Stream<int> execute() {
-    return _achievementsInterface.allFlashcardsAmount$.whereType<int>();
+    return _achievementsInterface.rememberedFlashcardsAmount.whereType<int>();
   }
 }

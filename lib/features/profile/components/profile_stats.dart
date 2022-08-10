@@ -49,7 +49,7 @@ class _DaysInARow extends StatelessWidget {
     );
     return _NumberInfo(
       icon: MdiIcons.medalOutline,
-      label: 'Dni z rzędu',
+      label: 'Dni nauki z rzędu',
       value: daysInARow,
     );
   }
@@ -61,11 +61,11 @@ class _AmountOfFlashcards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int amount = context.select(
-      (ProfileBloc bloc) => bloc.state.amountOfAllFlashcards,
+      (ProfileBloc bloc) => bloc.state.amountOfRememberedFlashcards,
     );
     return _NumberInfo(
       icon: MdiIcons.cardsOutline,
-      label: 'Ilość fiszek',
+      label: 'Nauczone fiszki',
       value: amount,
     );
   }
@@ -91,9 +91,12 @@ class _NumberInfo extends StatelessWidget {
         const SizedBox(width: 8.0),
         Column(
           children: [
-            Text(label),
+            Text(label, textAlign: TextAlign.center),
             const SizedBox(height: 4.0),
-            Text('$value'),
+            Text(
+              '$value',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
           ],
         ),
       ],

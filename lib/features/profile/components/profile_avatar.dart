@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/avatar/avatar.dart';
 import '../../../components/avatar/avatar_image_type.dart';
+import '../../../components/dialogs/dialogs.dart';
 import '../../../components/modal_bottom_sheet.dart';
 import '../bloc/profile_bloc.dart';
 
@@ -43,7 +45,7 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
         if (actionNumber == 0) {
           await _changeAvatar(context);
         } else if (actionNumber == 1) {
-          context.read<ProfileBloc>().add(ProfileEventDeleteAvatar());
+          await _deleteAvatar(context);
         }
       }
     }
@@ -55,10 +57,8 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
       final String? imagePath = await _askForNewImage(
         imageSource == 0 ? ImageSource.camera : ImageSource.gallery,
       );
-      if (imagePath != null && mounted) {
-        context.read<ProfileBloc>().add(
-              ProfileEventChangeAvatar(imagePath: imagePath),
-            );
+      if (imagePath != null) {
+        await _setNewImageAsAvatar(imagePath);
       }
     }
   }
@@ -71,6 +71,15 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
         ModalBottomSheetOption(icon: MdiIcons.delete, text: 'Usuń'),
       ],
     );
+  }
+
+  Future<void> _deleteAvatar(BuildContext context) async {
+    final bool confirmation = await _askForAvatarDeletionConfirmation();
+    if (confirmation && mounted) {
+      context.read<ProfileBloc>().add(
+            ProfileEventDeleteAvatar(),
+          );
+    }
   }
 
   Future<int?> _askForImageSource() async {
@@ -89,5 +98,30 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
       return file.path;
     }
     return null;
+  }
+
+  Future<void> _setNewImageAsAvatar(String imagePath) async {
+    final bool newAvatarConfirmation = await _askForNewAvatarConfirmation(
+      imagePath,
+    );
+    if (newAvatarConfirmation && mounted) {
+      context.read<ProfileBloc>().add(
+            ProfileEventChangeAvatar(imagePath: imagePath),
+          );
+    }
+  }
+
+  Future<bool> _askForNewAvatarConfirmation(String imagePath) async {
+    return await Dialogs.askForImageConfirmation(
+      imageFile: File(imagePath),
+    );
+  }
+
+  Future<bool> _askForAvatarDeletionConfirmation() async {
+    return await Dialogs.askForConfirmation(
+      title: "Usuwanie",
+      text: 'Czy na pewno chcesz usunąć obecne zdjęcie profilowe?',
+      confirmButtonText: 'Usuń',
+    );
   }
 }

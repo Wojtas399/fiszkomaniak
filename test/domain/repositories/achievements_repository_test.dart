@@ -23,36 +23,36 @@ void main() {
   });
 
   test(
-    'load all flashcards amount, should set amount of completed elements from all flashcards amount achievement',
+    'load remembered flashcards amount, should set amount of completed elements from remembered flashcards amount achievement',
     () async {
       const List<String> completedElementsIds = ['f1', 'f2', 'f3'];
       when(
-        () => fireAchievementsService.loadAllFlashcardsAmount(),
+        () => fireAchievementsService.loadRememberedFlashcardsAmount(),
       ).thenAnswer(
         (_) async => const AchievementDbModel(
           completedElementsIds: completedElementsIds,
         ),
       );
 
-      await repository.loadAllFlashcardsAmount();
+      await repository.loadRememberedFlashcardsAmount();
 
       expect(
-        await repository.allFlashcardsAmount$.first,
+        await repository.rememberedFlashcardsAmount.first,
         completedElementsIds.length,
       );
     },
   );
 
   test(
-    'load all flashcards amount, should set 0 if completed elements are set as null',
+    'load remembered flashcards amount, should set 0 if completed elements are set as null',
     () async {
       when(
-        () => fireAchievementsService.loadAllFlashcardsAmount(),
+        () => fireAchievementsService.loadRememberedFlashcardsAmount(),
       ).thenAnswer((_) async => const AchievementDbModel());
 
-      await repository.loadAllFlashcardsAmount();
+      await repository.loadRememberedFlashcardsAmount();
 
-      expect(await repository.allFlashcardsAmount$.first, 0);
+      expect(await repository.rememberedFlashcardsAmount.first, 0);
     },
   );
 
@@ -96,7 +96,7 @@ void main() {
       });
 
       test(
-        'should call method responsible for updating all flashcards amount and should assign new achievement value to stream',
+        'should call method responsible for updating all flashcards amount',
         () async {
           when(
             () => fireAchievementsService.getNextAchievedCondition(
@@ -110,20 +110,9 @@ void main() {
             flashcards: flashcards,
           );
 
-          expect(await repository.allFlashcardsAmount$.first, 100);
-          expect(
-            await repository.allFlashcardsAchievedCondition$.first,
-            null,
-          );
           verify(
             () => fireAchievementsService.updateAllFlashcardsAmount(
               flashcardsIds,
-            ),
-          ).called(1);
-          verify(
-            () => fireAchievementsService.getNextAchievedCondition(
-              achievementType: allFlashcardsAmountId,
-              value: 100,
             ),
           ).called(1);
         },
@@ -148,17 +137,6 @@ void main() {
             await repository.allFlashcardsAchievedCondition$.first,
             100,
           );
-          verify(
-            () => fireAchievementsService.updateAllFlashcardsAmount(
-              flashcardsIds,
-            ),
-          ).called(1);
-          verify(
-            () => fireAchievementsService.getNextAchievedCondition(
-              achievementType: allFlashcardsAmountId,
-              value: 100,
-            ),
-          ).called(1);
         },
       );
 
@@ -182,7 +160,6 @@ void main() {
             flashcards: flashcards,
           );
 
-          expect(await repository.allFlashcardsAmount$.first, null);
           verify(
             () => fireAchievementsService.updateAllFlashcardsAmount(
               flashcardsIds,
@@ -224,7 +201,7 @@ void main() {
       });
 
       test(
-        'should call method responsible for updating remembered flashcards amount',
+        'should call method responsible for updating remembered flashcards amount and should assign new achievement value to remembered flashcards stream',
         () async {
           when(
             () => fireAchievementsService.getNextAchievedCondition(
@@ -239,18 +216,12 @@ void main() {
           );
 
           expect(
-            await repository.rememberedFlashcardsAchievedCondition$.first,
-            null,
+            await repository.rememberedFlashcardsAmount.first,
+            100,
           );
           verify(
             () => fireAchievementsService.updateRememberedFlashcardsAmount(
               flashcardsIds,
-            ),
-          ).called(1);
-          verify(
-            () => fireAchievementsService.getNextAchievedCondition(
-              achievementType: rememberedFlashcardsId,
-              value: 100,
             ),
           ).called(1);
         },
@@ -275,17 +246,6 @@ void main() {
             await repository.rememberedFlashcardsAchievedCondition$.first,
             100,
           );
-          verify(
-            () => fireAchievementsService.updateRememberedFlashcardsAmount(
-              flashcardsIds,
-            ),
-          ).called(1);
-          verify(
-            () => fireAchievementsService.getNextAchievedCondition(
-              achievementType: rememberedFlashcardsId,
-              value: 100,
-            ),
-          ).called(1);
         },
       );
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/dialogs/dialogs.dart';
+import '../../../components/dialogs/single_input_dialog/single_input_dialog.dart';
 import '../../../components/item_with_icon.dart';
 import '../../../components/section.dart';
 import '../../../config/theme/colors.dart';
@@ -34,11 +36,44 @@ class ProfileAccountOptions extends StatelessWidget {
     );
   }
 
-  void _onSignOutPressed(BuildContext context) {
-    context.read<ProfileBloc>().add(ProfileEventSignOut());
+  Future<void> _onSignOutPressed(BuildContext context) async {
+    final ProfileBloc profileBloc = context.read<ProfileBloc>();
+    final bool confirmation = await _askForSignOutConfirmation();
+    if (confirmation) {
+      profileBloc.add(
+        ProfileEventSignOut(),
+      );
+    }
   }
 
-  void _onRemoveAccountPressed(BuildContext context) {
-    context.read<ProfileBloc>().add(ProfileEventDeleteAccount());
+  Future<void> _onRemoveAccountPressed(BuildContext context) async {
+    final ProfileBloc profileBloc = context.read<ProfileBloc>();
+    final String? password = await _askForAccountDeletionConfirmationPassword();
+    if (password != null) {
+      profileBloc.add(
+        ProfileEventDeleteAccount(password: password),
+      );
+    }
+  }
+
+  Future<bool> _askForSignOutConfirmation() async {
+    return await Dialogs.askForConfirmation(
+      title: 'Wylogowywanie',
+      text: 'Czy na pewno chcesz się wylogować z tego konta?',
+      confirmButtonText: 'Wyloguj',
+    );
+  }
+
+  Future<String?> _askForAccountDeletionConfirmationPassword() async {
+    return await Dialogs.askForValue(
+      appBarTitle: 'Usuwanie konta',
+      textFieldIcon: MdiIcons.lock,
+      textFieldType: TextFieldType.password,
+      textFieldLabel: 'Hasło',
+      title: 'Czy na pewno chcesz usunąć konto?',
+      message:
+          'Usunięcie konta spowoduje również nieodwracalne usunięcie wszystkich danych powiązanych z tym kontem. Jeśli chcesz wykonać tą operację, potwierdź ją hasłem.',
+      submitButtonLabel: 'Usuń',
+    );
   }
 }

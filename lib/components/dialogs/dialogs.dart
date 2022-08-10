@@ -82,7 +82,7 @@ class Dialogs {
     return false;
   }
 
-  static Future<bool?> askForImageConfirmation({
+  static Future<bool> askForImageConfirmation({
     required File imageFile,
   }) async {
     final BuildContext? context = navigatorKey.currentContext;
@@ -92,7 +92,7 @@ class Dialogs {
         page: ImageConfirmationDialog(imageFile: imageFile),
       ));
     }
-    return null;
+    return false;
   }
 
   static Future<String?> askForValue({
