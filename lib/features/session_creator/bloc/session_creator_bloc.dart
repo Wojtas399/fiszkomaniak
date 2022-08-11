@@ -1,21 +1,21 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/load_all_courses_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/add_session_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/update_session_use_case.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:fiszkomaniak/domain/entities/group.dart';
-import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/course.dart';
+import '../../../domain/entities/group.dart';
+import '../../../domain/entities/session.dart';
+import '../../../domain/use_cases/courses/get_all_courses_use_case.dart';
+import '../../../domain/use_cases/courses/get_course_use_case.dart';
+import '../../../domain/use_cases/courses/load_all_courses_use_case.dart';
+import '../../../domain/use_cases/groups/get_group_use_case.dart';
+import '../../../domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
+import '../../../domain/use_cases/sessions/add_session_use_case.dart';
+import '../../../domain/use_cases/sessions/update_session_use_case.dart';
+import '../../../models/bloc_status.dart';
+import '../../../models/date_model.dart';
 import '../../../models/time_model.dart';
 import '../../../utils/group_utils.dart';
 import '../../../utils/time_utils.dart';
+import 'session_creator_mode.dart';
 
 part 'session_creator_event.dart';
 
@@ -158,7 +158,7 @@ class SessionCreatorBloc
     if (_isChosenDateWithStartTimeFromThePast(event.date) ||
         _isChosenDateWithNotificationTimeFromThePast(event.date)) {
       emit(state.copyWithInfo(
-        SessionCreatorInfoType.timeFromThePast,
+        SessionCreatorInfo.timeFromThePast,
       ));
     } else {
       emit(state.copyWith(
@@ -173,13 +173,13 @@ class SessionCreatorBloc
   ) async {
     if (_checkIfChosenTimeIsFromThePast(event.startTime)) {
       emit(state.copyWithInfo(
-        SessionCreatorInfoType.timeFromThePast,
+        SessionCreatorInfo.timeFromThePast,
       ));
     } else if (_checkIfChosenStartTimeIsEarlierThanNotificationTime(
       event.startTime,
     )) {
       emit(state.copyWithInfo(
-        SessionCreatorInfoType.chosenStartTimeIsEarlierThanNotificationTime,
+        SessionCreatorInfo.chosenStartTimeIsEarlierThanNotificationTime,
       ));
     } else {
       emit(state.copyWith(startTime: event.startTime));
@@ -199,13 +199,13 @@ class SessionCreatorBloc
   ) async {
     if (_checkIfChosenTimeIsFromThePast(event.notificationTime)) {
       emit(state.copyWithInfo(
-        SessionCreatorInfoType.timeFromThePast,
+        SessionCreatorInfo.timeFromThePast,
       ));
     } else if (_checkIfChosenNotificationTimeIsLaterThanStartTime(
       event.notificationTime,
     )) {
       emit(state.copyWithInfo(
-        SessionCreatorInfoType.chosenNotificationTimeIsLaterThanStartTime,
+        SessionCreatorInfo.chosenNotificationTimeIsLaterThanStartTime,
       ));
     } else {
       emit(state.copyWith(notificationTime: event.notificationTime));
@@ -235,18 +235,19 @@ class SessionCreatorBloc
     if (mode is SessionCreatorCreateMode) {
       await _addSession();
       emit(state.copyWithInfo(
-        SessionCreatorInfoType.sessionHasBeenAdded,
+        SessionCreatorInfo.sessionHasBeenAdded,
       ));
     } else if (mode is SessionCreatorEditMode) {
       await _updateSession(mode.session.id);
       emit(state.copyWithInfo(
-        SessionCreatorInfoType.sessionHasBeenUpdated,
+        SessionCreatorInfo.sessionHasBeenUpdated,
       ));
     }
   }
 
   Future<void> _initializeCreateMode(Emitter<SessionCreatorState> emit) async {
     emit(state.copyWith(
+      status: const BlocStatusComplete(),
       courses: await _getAllCoursesUseCase.execute().first,
     ));
   }
@@ -262,6 +263,7 @@ class SessionCreatorBloc
     final Course course = await _getCourse(group.courseId);
     final List<Group> groupsFromCourse = await _getGroupsFromCourse(course.id);
     emit(state.copyWith(
+      status: const BlocStatusComplete(),
       mode: editMode,
       courses: allCourses,
       groups: groupsFromCourse,

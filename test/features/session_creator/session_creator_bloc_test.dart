@@ -1,4 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
@@ -16,8 +18,6 @@ import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
 import 'package:fiszkomaniak/utils/time_utils.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockLoadAllCoursesUseCase extends Mock implements LoadAllCoursesUseCase {}
 
@@ -47,10 +47,7 @@ void main() {
   final timeUtils = MockTimeUtils();
 
   SessionCreatorBloc createBloc({
-    BlocStatus status = const BlocStatusInitial(),
     SessionCreatorMode mode = const SessionCreatorCreateMode(),
-    List<Course> courses = const [],
-    List<Group>? groups,
     Course? selectedCourse,
     Group? selectedGroup,
     FlashcardsType flashcardsType = FlashcardsType.all,
@@ -69,10 +66,7 @@ void main() {
       addSessionUseCase: addSessionUseCase,
       updateSessionUseCase: updateSessionUseCase,
       timeUtils: timeUtils,
-      status: status,
       mode: mode,
-      courses: courses,
-      groups: groups,
       selectedCourse: selectedCourse,
       selectedGroup: selectedGroup,
       flashcardsType: flashcardsType,
@@ -85,7 +79,7 @@ void main() {
   }
 
   SessionCreatorState createState({
-    BlocStatus status = const BlocStatusComplete<SessionCreatorInfoType>(),
+    BlocStatus status = const BlocStatusInProgress(),
     SessionCreatorMode mode = const SessionCreatorCreateMode(),
     List<Course> courses = const [],
     List<Group>? groups,
@@ -165,17 +159,26 @@ void main() {
           );
         },
         expect: () => [
-          createState(status: const BlocStatusLoading()),
-          createState(courses: allCourses),
+          createState(
+            status: const BlocStatusLoading(),
+          ),
+          createState(
+            status: const BlocStatusComplete(),
+            courses: allCourses,
+          ),
         ],
         verify: (_) {
-          verify(() => loadAllCoursesUseCase.execute()).called(1);
-          verify(() => getAllCoursesUseCase.execute()).called(1);
+          verify(
+            () => loadAllCoursesUseCase.execute(),
+          ).called(1);
+          verify(
+            () => getAllCoursesUseCase.execute(),
+          ).called(1);
         },
       );
 
       blocTest(
-        'edit mode, should load and set all courses, groups from course and group and course assigned to session',
+        'edit mode, should load and set all courses, groups from course and group with course assigned to session',
         build: () => createBloc(),
         setUp: () {
           when(
@@ -196,8 +199,11 @@ void main() {
           );
         },
         expect: () => [
-          createState(status: const BlocStatusLoading()),
           createState(
+            status: const BlocStatusLoading(),
+          ),
+          createState(
+            status: const BlocStatusComplete(),
             mode: SessionCreatorEditMode(session: session),
             courses: allCourses,
             groups: groups,
@@ -213,12 +219,8 @@ void main() {
           ),
         ],
         verify: (_) {
-          verify(() => loadAllCoursesUseCase.execute()).called(1);
-          verify(() => getAllCoursesUseCase.execute()).called(1);
-          verify(() => getGroupUseCase.execute(groupId: 'g1')).called(1);
-          verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
           verify(
-            () => getGroupsByCourseIdUseCase.execute(courseId: 'c1'),
+            () => loadAllCoursesUseCase.execute(),
           ).called(1);
         },
       );
@@ -256,7 +258,9 @@ void main() {
           selectedGroup: groupsFromCourse[0],
         ),
         act: (SessionCreatorBloc bloc) {
-          bloc.add(SessionCreatorEventCourseSelected(courseId: 'c1'));
+          bloc.add(
+            SessionCreatorEventCourseSelected(courseId: 'c1'),
+          );
         },
         expect: () => [
           createState(
@@ -265,12 +269,6 @@ void main() {
             selectedGroup: groupsFromCourse[0],
           ),
         ],
-        verify: (_) {
-          verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
-          verify(
-            () => getGroupsByCourseIdUseCase.execute(courseId: 'c1'),
-          ).called(1);
-        },
       );
 
       blocTest(
@@ -280,7 +278,9 @@ void main() {
           selectedGroup: groupsFromCourse[0],
         ),
         act: (SessionCreatorBloc bloc) {
-          bloc.add(SessionCreatorEventCourseSelected(courseId: 'c1'));
+          bloc.add(
+            SessionCreatorEventCourseSelected(courseId: 'c1'),
+          );
         },
         expect: () => [
           createState(
@@ -293,12 +293,6 @@ void main() {
             selectedGroup: null,
           ),
         ],
-        verify: (_) {
-          verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
-          verify(
-            () => getGroupsByCourseIdUseCase.execute(courseId: 'c1'),
-          ).called(1);
-        },
       );
     },
   );
@@ -317,10 +311,14 @@ void main() {
           ).thenAnswer((_) => Stream.value(selectedGroup));
         },
         act: (SessionCreatorBloc bloc) {
-          bloc.add(SessionCreatorEventGroupSelected(groupId: 'g1'));
+          bloc.add(
+            SessionCreatorEventGroupSelected(groupId: 'g1'),
+          );
         },
         expect: () => [
-          createState(selectedGroup: selectedGroup),
+          createState(
+            selectedGroup: selectedGroup,
+          ),
         ],
       );
     },
@@ -337,7 +335,9 @@ void main() {
       );
     },
     expect: () => [
-      createState(flashcardsType: FlashcardsType.remembered),
+      createState(
+        flashcardsType: FlashcardsType.remembered,
+      ),
     ],
   );
 
@@ -348,7 +348,9 @@ void main() {
       areQuestionsAndAnswersSwapped: false,
     ),
     act: (SessionCreatorBloc bloc) {
-      bloc.add(SessionCreatorEventSwapQuestionsWithAnswers());
+      bloc.add(
+        SessionCreatorEventSwapQuestionsWithAnswers(),
+      );
     },
     expect: () => [
       createState(
@@ -362,7 +364,9 @@ void main() {
     'swap questions name with answers name, should not change value if group has not been selected',
     build: () => createBloc(areQuestionsAndAnswersSwapped: false),
     act: (SessionCreatorBloc bloc) {
-      bloc.add(SessionCreatorEventSwapQuestionsWithAnswers());
+      bloc.add(
+        SessionCreatorEventSwapQuestionsWithAnswers(),
+      );
     },
     expect: () => [],
   );
@@ -389,8 +393,8 @@ void main() {
     },
     expect: () => [
       createState(
-        status: const BlocStatusComplete<SessionCreatorInfoType>(
-          info: SessionCreatorInfoType.timeFromThePast,
+        status: const BlocStatusComplete<SessionCreatorInfo>(
+          info: SessionCreatorInfo.timeFromThePast,
         ),
         startTime: const Time(hour: 12, minute: 30),
       ),
@@ -419,8 +423,8 @@ void main() {
     },
     expect: () => [
       createState(
-        status: const BlocStatusComplete<SessionCreatorInfoType>(
-          info: SessionCreatorInfoType.timeFromThePast,
+        status: const BlocStatusComplete<SessionCreatorInfo>(
+          info: SessionCreatorInfo.timeFromThePast,
         ),
         notificationTime: const Time(hour: 12, minute: 30),
       ),
@@ -466,8 +470,8 @@ void main() {
     },
     expect: () => [
       createState(
-        status: const BlocStatusComplete<SessionCreatorInfoType>(
-          info: SessionCreatorInfoType.timeFromThePast,
+        status: const BlocStatusComplete<SessionCreatorInfo>(
+          info: SessionCreatorInfo.timeFromThePast,
         ),
         date: const Date(year: 2022, month: 1, day: 1),
       ),
@@ -496,9 +500,8 @@ void main() {
     },
     expect: () => [
       createState(
-        status: const BlocStatusComplete<SessionCreatorInfoType>(
-          info: SessionCreatorInfoType
-              .chosenStartTimeIsEarlierThanNotificationTime,
+        status: const BlocStatusComplete<SessionCreatorInfo>(
+          info: SessionCreatorInfo.chosenStartTimeIsEarlierThanNotificationTime,
         ),
         notificationTime: const Time(hour: 19, minute: 45),
       ),
@@ -561,8 +564,8 @@ void main() {
     },
     expect: () => [
       createState(
-        status: const BlocStatusComplete<SessionCreatorInfoType>(
-          info: SessionCreatorInfoType.timeFromThePast,
+        status: const BlocStatusComplete<SessionCreatorInfo>(
+          info: SessionCreatorInfo.timeFromThePast,
         ),
         date: const Date(year: 2022, month: 1, day: 1),
       ),
@@ -591,9 +594,8 @@ void main() {
     },
     expect: () => [
       createState(
-        status: const BlocStatusComplete<SessionCreatorInfoType>(
-          info:
-              SessionCreatorInfoType.chosenNotificationTimeIsLaterThanStartTime,
+        status: const BlocStatusComplete<SessionCreatorInfo>(
+          info: SessionCreatorInfo.chosenNotificationTimeIsLaterThanStartTime,
         ),
         startTime: const Time(hour: 12, minute: 45),
       ),
@@ -623,7 +625,9 @@ void main() {
       duration: const Duration(minutes: 15),
     ),
     act: (SessionCreatorBloc bloc) {
-      bloc.add(SessionCreatorEventCleanDurationTime());
+      bloc.add(
+        SessionCreatorEventCleanDurationTime(),
+      );
     },
     expect: () => [
       createState(duration: null),
@@ -636,7 +640,9 @@ void main() {
       notificationTime: const Time(hour: 12, minute: 30),
     ),
     act: (SessionCreatorBloc bloc) {
-      bloc.add(SessionCreatorEventCleanNotificationTime());
+      bloc.add(
+        SessionCreatorEventCleanNotificationTime(),
+      );
     },
     expect: () => [
       createState(notificationTime: null),
@@ -696,8 +702,8 @@ void main() {
             notificationTime: session.notificationTime,
           ),
           createState(
-            status: const BlocStatusComplete<SessionCreatorInfoType>(
-              info: SessionCreatorInfoType.sessionHasBeenAdded,
+            status: const BlocStatusComplete<SessionCreatorInfo>(
+              info: SessionCreatorInfo.sessionHasBeenAdded,
             ),
             selectedGroup: createGroup(id: 'g1'),
             flashcardsType: session.flashcardsType,
@@ -765,8 +771,8 @@ void main() {
             notificationTime: session.notificationTime,
           ),
           createState(
-            status: const BlocStatusComplete<SessionCreatorInfoType>(
-              info: SessionCreatorInfoType.sessionHasBeenUpdated,
+            status: const BlocStatusComplete<SessionCreatorInfo>(
+              info: SessionCreatorInfo.sessionHasBeenUpdated,
             ),
             mode: SessionCreatorEditMode(session: session),
             selectedGroup: createGroup(id: 'g1'),

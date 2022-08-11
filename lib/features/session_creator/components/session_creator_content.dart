@@ -1,12 +1,12 @@
-import 'package:fiszkomaniak/features/session_creator/components/session_creator_app_bar.dart';
-import 'package:fiszkomaniak/features/session_creator/components/session_creator_date_and_time.dart';
-import 'package:fiszkomaniak/features/session_creator/components/session_creator_flashcards.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/bouncing_scroll.dart';
 import '../../../components/buttons/button.dart';
 import '../bloc/session_creator_bloc.dart';
 import '../bloc/session_creator_mode.dart';
+import 'session_creator_app_bar.dart';
+import 'session_creator_date_and_time.dart';
+import 'session_creator_flashcards.dart';
 
 class SessionCreatorContent extends StatelessWidget {
   const SessionCreatorContent({super.key});
