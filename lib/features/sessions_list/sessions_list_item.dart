@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
-import '../../../components/card_item.dart';
-import '../../../config/navigation.dart';
-import '../../../features/session_preview/bloc/session_preview_mode.dart';
-import '../../../ui_extensions/ui_duration_extensions.dart';
-import '../../../ui_extensions/ui_time_extensions.dart';
-import '../../../utils/utils.dart';
-import '../../../models/date_model.dart';
-import '../../../models/time_model.dart';
-import '../sessions_list_cubit.dart';
+import '../../components/card_item.dart';
+import '../../config/navigation.dart';
+import '../../models/date_model.dart';
+import '../../models/time_model.dart';
+import '../../utils/utils.dart';
+import '../../ui_extensions/ui_duration_extensions.dart';
+import '../../ui_extensions/ui_time_extensions.dart';
+import '../session_preview/bloc/session_preview_mode.dart';
 
 class SessionsListItem extends StatelessWidget {
-  final SessionItemParams params;
+  final String sessionId;
+  final Date date;
+  final Time startTime;
+  final Duration? duration;
+  final String groupName;
+  final String courseName;
 
   const SessionsListItem({
     super.key,
-    required this.params,
+    required this.sessionId,
+    required this.date,
+    required this.startTime,
+    required this.duration,
+    required this.groupName,
+    required this.courseName,
   });
 
   @override
@@ -24,19 +33,19 @@ class SessionsListItem extends StatelessWidget {
         onTap: () => _onPressed(context),
         child: Row(
           children: [
-            _BigDate(date: params.date),
+            _BigDate(date: date),
             const VerticalDivider(thickness: 1),
             Expanded(
               child: Column(
                 children: [
                   _Title(
-                    courseName: params.courseName,
-                    groupName: params.groupName,
+                    courseName: courseName,
+                    groupName: groupName,
                   ),
                   const SizedBox(height: 8),
                   _TimeAndDuration(
-                    time: params.startTime,
-                    duration: params.duration,
+                    time: startTime,
+                    duration: duration,
                   ),
                 ],
               ),
@@ -49,7 +58,7 @@ class SessionsListItem extends StatelessWidget {
 
   void _onPressed(BuildContext context) {
     Navigation.navigateToSessionPreview(
-      SessionPreviewModeNormal(sessionId: params.sessionId),
+      SessionPreviewModeNormal(sessionId: sessionId),
     );
   }
 }
