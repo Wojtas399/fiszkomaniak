@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../features/course_creator/course_creator_screen.dart';
-import '../../features/course_creator/course_creator_mode.dart';
+import '../course_creator/bloc/course_creator_mode.dart';
 import '../../features/course_groups_preview/course_groups_preview_screen.dart';
 import '../../features/flashcard_preview/flashcard_preview_screen.dart';
 import '../../features/flashcards_editor/flashcards_editor_screen.dart';

@@ -5,7 +5,7 @@ import '../../../components/on_tap_focus_lose_area.dart';
 import '../../../components/buttons/button.dart';
 import '../../../components/textfields/custom_textfield.dart';
 import '../bloc/course_creator_bloc.dart';
-import '../course_creator_mode.dart';
+import '../bloc/course_creator_mode.dart';
 
 class CourseCreatorContent extends StatelessWidget {
   final TextEditingController courseNameController = TextEditingController();

@@ -6,7 +6,7 @@ import '../features/flashcard_preview/flashcard_preview_screen.dart';
 import '../features/group_creator/group_creator_mode.dart';
 import '../features/home/home_router.dart';
 import '../config/slide_up_route_animation.dart';
-import '../features/course_creator/course_creator_mode.dart';
+import '../features/course_creator/bloc/course_creator_mode.dart';
 import '../features/initial_home/initial_home.dart';
 import '../features/reset_password/reset_password_screen.dart';
 import '../features/session_creator/bloc/session_creator_mode.dart';

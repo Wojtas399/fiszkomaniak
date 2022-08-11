@@ -1,17 +1,17 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/add_new_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/check_course_name_usage_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/update_course_name_use_case.dart';
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
-import 'package:fiszkomaniak/features/course_creator/components/course_creator_app_bar.dart';
-import 'package:fiszkomaniak/features/course_creator/components/course_creator_content.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../components/dialogs/dialogs.dart';
+import '../../config/navigation.dart';
+import '../../domain/use_cases/courses/add_new_course_use_case.dart';
+import '../../domain/use_cases/courses/check_course_name_usage_use_case.dart';
+import '../../domain/use_cases/courses/update_course_name_use_case.dart';
+import '../../interfaces/courses_interface.dart';
 import '../../models/bloc_status.dart';
 import '../home/home.dart';
+import 'bloc/course_creator_bloc.dart';
+import 'bloc/course_creator_mode.dart';
+import 'components/course_creator_app_bar.dart';
+import 'components/course_creator_content.dart';
 
 class CourseCreatorScreen extends StatelessWidget {
   final CourseCreatorMode mode;
@@ -80,9 +80,15 @@ class _CourseCreatorBlocListener extends StatelessWidget {
           Dialogs.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
           Dialogs.closeLoadingDialog(context);
-          final CourseCreatorInfoType? info = blocStatus.info;
+          final CourseCreatorInfo? info = blocStatus.info;
           if (info != null) {
-            _displayAppropriateUIInfo(blocStatus.info, context);
+            _manageInfo(blocStatus.info, context);
+          }
+        } else if (blocStatus is BlocStatusError) {
+          Dialogs.closeLoadingDialog(context);
+          final CourseCreatorError? error = blocStatus.error;
+          if (error != null) {
+            _manageError(error);
           }
         }
       },
@@ -90,27 +96,32 @@ class _CourseCreatorBlocListener extends StatelessWidget {
     );
   }
 
-  void _displayAppropriateUIInfo(
-    CourseCreatorInfoType infoType,
+  void _manageInfo(
+    CourseCreatorInfo info,
     BuildContext context,
   ) {
-    switch (infoType) {
-      case CourseCreatorInfoType.courseNameIsAlreadyTaken:
+    switch (info) {
+      case CourseCreatorInfo.courseHasBeenAdded:
+        Navigation.backHome();
+        context.read<HomePageController>().moveToPage(2);
+        Dialogs.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
+        break;
+      case CourseCreatorInfo.courseHasBeenUpdated:
+        Navigation.backHome();
+        context.read<HomePageController>().moveToPage(2);
+        Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano kurs');
+        break;
+    }
+  }
+
+  void _manageError(CourseCreatorError error) {
+    switch (error) {
+      case CourseCreatorError.courseNameIsAlreadyTaken:
         Dialogs.showDialogWithMessage(
           title: 'Zajęta nazwa',
           message:
               'Kurs o podanej nazwie już istnieje. Spróbuj wpisać inną nazwę.',
         );
-        break;
-      case CourseCreatorInfoType.courseHasBeenAdded:
-        Navigation.backHome();
-        context.read<HomePageController>().moveToPage(2);
-        Dialogs.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
-        break;
-      case CourseCreatorInfoType.courseHasBeenUpdated:
-        Navigation.backHome();
-        context.read<HomePageController>().moveToPage(2);
-        Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano kurs');
         break;
     }
   }

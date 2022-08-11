@@ -6,7 +6,7 @@ import '../../../config/navigation.dart';
 import '../../../domain/entities/course.dart';
 import '../../../domain/entities/group.dart';
 import '../../../domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
-import '../../../features/course_creator/course_creator_mode.dart';
+import '../../course_creator/bloc/course_creator_mode.dart';
 import '../../../interfaces/groups_interface.dart';
 import '../bloc/courses_library_bloc.dart';
 import 'courses_library_course_popup_menu.dart';
