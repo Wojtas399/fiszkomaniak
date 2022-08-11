@@ -1,6 +1,6 @@
-import 'package:fiszkomaniak/components/switch_item.dart';
 import 'package:flutter/material.dart';
 import '../../../components/item_with_icon.dart';
+import '../../../components/switch_item.dart';
 
 class SettingsSwitchItemWithDescription extends StatelessWidget {
   final String text;

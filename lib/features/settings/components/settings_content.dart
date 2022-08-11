@@ -1,7 +1,7 @@
-import 'package:fiszkomaniak/features/settings/components/settings_appearance_section.dart';
-import 'package:fiszkomaniak/features/settings/components/settings_notifications_section.dart';
 import 'package:flutter/material.dart';
 import '../../../components/app_bar_with_close_button.dart';
+import 'settings_appearance_section.dart';
+import 'settings_notifications_section.dart';
 
 class SettingsContent extends StatelessWidget {
   const SettingsContent({super.key});
