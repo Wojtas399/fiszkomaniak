@@ -1,13 +1,14 @@
-import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/domain/entities/session.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/components/popup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/app_bar_with_close_button.dart';
+import '../../../components/dialogs/dialogs.dart';
+import '../../../components/popup_menu.dart';
+import '../../../config/navigation.dart';
+import '../../../domain/entities/session.dart';
+import '../../session_creator/bloc/session_creator_mode.dart';
+import '../bloc/session_preview_bloc.dart';
+import '../bloc/session_preview_mode.dart';
 
 class SessionPreviewAppBar extends StatelessWidget
     implements PreferredSizeWidget {
@@ -59,13 +60,14 @@ class _SessionOptions extends StatelessWidget {
     );
   }
 
-  void _managePopupActions(BuildContext context, int selectedActionIndex) {
+  Future<void> _managePopupActions(
+    BuildContext context,
+    int selectedActionIndex,
+  ) async {
     if (selectedActionIndex == 0) {
       _navigateToSessionEditor(context);
     } else if (selectedActionIndex == 1) {
-      context
-          .read<SessionPreviewBloc>()
-          .add(SessionPreviewEventRemoveSession());
+      await _deleteSession(context);
     }
   }
 
@@ -76,5 +78,23 @@ class _SessionOptions extends StatelessWidget {
         SessionCreatorEditMode(session: session),
       );
     }
+  }
+
+  Future<void> _deleteSession(BuildContext context) async {
+    final SessionPreviewBloc bloc = context.read<SessionPreviewBloc>();
+    final bool confirmation = await _askForSessionDeletionConfirmation();
+    if (confirmation) {
+      bloc.add(
+        SessionPreviewEventDeleteSession(),
+      );
+    }
+  }
+
+  Future<bool> _askForSessionDeletionConfirmation() async {
+    return await Dialogs.askForConfirmation(
+      title: 'Usuwanie sesji',
+      text: 'Czy na pewno chcesz usunąć tą sesję?',
+      confirmButtonText: 'Usuń',
+    );
   }
 }

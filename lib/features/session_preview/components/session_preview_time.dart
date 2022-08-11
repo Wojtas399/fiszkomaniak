@@ -1,14 +1,14 @@
-import 'package:fiszkomaniak/components/custom_icon_button.dart';
-import 'package:fiszkomaniak/components/item_with_icon.dart';
-import 'package:fiszkomaniak/components/time_picker.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/ui_extensions/ui_duration_extensions.dart';
-import 'package:fiszkomaniak/ui_extensions/ui_time_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/custom_icon_button.dart';
+import '../../../components/item_with_icon.dart';
+import '../../../components/time_picker.dart';
 import '../../../models/time_model.dart';
+import '../../../ui_extensions/ui_duration_extensions.dart';
+import '../../../ui_extensions/ui_time_extensions.dart';
+import '../bloc/session_preview_bloc.dart';
+import '../bloc/session_preview_mode.dart';
 
 class SessionPreviewTime extends StatelessWidget {
   const SessionPreviewTime({super.key});

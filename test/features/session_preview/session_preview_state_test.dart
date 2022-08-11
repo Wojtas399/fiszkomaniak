@@ -1,3 +1,4 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/entities/session.dart';
@@ -5,7 +6,6 @@ import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late SessionPreviewState state;
@@ -138,11 +138,11 @@ void main() {
     () {
       const BlocStatus expectedStatus = BlocStatusLoading();
 
-      final state2 = state.copyWith(status: expectedStatus);
-      final state3 = state2.copyWith();
+      state = state.copyWith(status: expectedStatus);
+      final state2 = state.copyWith();
 
-      expect(state2.status, expectedStatus);
-      expect(state3.status, const BlocStatusComplete<SessionPreviewInfoType>());
+      expect(state.status, expectedStatus);
+      expect(state2.status, const BlocStatusInProgress());
     },
   );
 
@@ -153,11 +153,11 @@ void main() {
         groupId: 'g1',
       );
 
-      final state2 = state.copyWith(mode: expectedMode);
-      final state3 = state2.copyWith();
+      state = state.copyWith(mode: expectedMode);
+      final state2 = state.copyWith();
 
+      expect(state.mode, expectedMode);
       expect(state2.mode, expectedMode);
-      expect(state3.mode, expectedMode);
     },
   );
 
@@ -166,11 +166,11 @@ void main() {
     () {
       final Session expectedSession = createSession(id: 's1');
 
-      final state2 = state.copyWith(session: expectedSession);
-      final state3 = state2.copyWith();
+      state = state.copyWith(session: expectedSession);
+      final state2 = state.copyWith();
 
+      expect(state.session, expectedSession);
       expect(state2.session, expectedSession);
-      expect(state3.session, expectedSession);
     },
   );
 
@@ -179,11 +179,11 @@ void main() {
     () {
       final Group expectedGroup = createGroup(id: 'g1');
 
-      final state2 = state.copyWith(group: expectedGroup);
-      final state3 = state2.copyWith();
+      state = state.copyWith(group: expectedGroup);
+      final state2 = state.copyWith();
 
+      expect(state.group, expectedGroup);
       expect(state2.group, expectedGroup);
-      expect(state3.group, expectedGroup);
     },
   );
 
@@ -192,11 +192,11 @@ void main() {
     () {
       const String expectedName = 'course name';
 
-      final state2 = state.copyWith(courseName: expectedName);
-      final state3 = state2.copyWith();
+      state = state.copyWith(courseName: expectedName);
+      final state2 = state.copyWith();
 
+      expect(state.courseName, expectedName);
       expect(state2.courseName, expectedName);
-      expect(state3.courseName, expectedName);
     },
   );
 
@@ -205,11 +205,11 @@ void main() {
     () {
       const Duration expectedDuration = Duration(minutes: 30);
 
-      final state2 = state.copyWith(duration: expectedDuration);
-      final state3 = state2.copyWith();
+      state = state.copyWith(duration: expectedDuration);
+      final state2 = state.copyWith();
 
+      expect(state.duration, expectedDuration);
       expect(state2.duration, expectedDuration);
-      expect(state3.duration, expectedDuration);
     },
   );
 
@@ -218,11 +218,11 @@ void main() {
     () {
       const FlashcardsType expectedType = FlashcardsType.remembered;
 
-      final state2 = state.copyWith(flashcardsType: expectedType);
-      final state3 = state2.copyWith();
+      state = state.copyWith(flashcardsType: expectedType);
+      final state2 = state.copyWith();
 
+      expect(state.flashcardsType, expectedType);
       expect(state2.flashcardsType, expectedType);
-      expect(state3.flashcardsType, expectedType);
     },
   );
 
@@ -231,13 +231,11 @@ void main() {
     () {
       const bool expectedValue = true;
 
-      final state2 = state.copyWith(
-        areQuestionsAndAnswersSwapped: expectedValue,
-      );
-      final state3 = state2.copyWith();
+      state = state.copyWith(areQuestionsAndAnswersSwapped: expectedValue);
+      final state2 = state.copyWith();
 
+      expect(state.areQuestionsAndAnswersSwapped, expectedValue);
       expect(state2.areQuestionsAndAnswersSwapped, expectedValue);
-      expect(state3.areQuestionsAndAnswersSwapped, expectedValue);
     },
   );
 
@@ -245,11 +243,27 @@ void main() {
     'copy with duration as null',
     () {
       const Duration duration = Duration(minutes: 30);
+
       state = state.copyWith(duration: duration);
-      final state2 = state.copyWithDurationAsNull();
+      final state2 = state.copyWith(durationAsNull: true);
 
       expect(state.duration, duration);
       expect(state2.duration, null);
+    },
+  );
+
+  test(
+    'copy with info',
+    () {
+      const SessionPreviewInfo expectedInfo =
+          SessionPreviewInfo.sessionHasBeenDeleted;
+
+      state = state.copyWithInfo(expectedInfo);
+
+      expect(
+        state.status,
+        const BlocStatusComplete<SessionPreviewInfo>(info: expectedInfo),
+      );
     },
   );
 }

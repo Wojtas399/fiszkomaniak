@@ -67,34 +67,28 @@ class SessionPreviewState extends Equatable {
     Duration? duration,
     FlashcardsType? flashcardsType,
     bool? areQuestionsAndAnswersSwapped,
+    bool durationAsNull = false,
   }) {
     return SessionPreviewState(
-      status: status ?? const BlocStatusComplete<SessionPreviewInfoType>(),
+      status: status ?? const BlocStatusInProgress(),
       mode: mode ?? this.mode,
       session: session ?? this.session,
       group: group ?? this.group,
       courseName: courseName ?? this.courseName,
-      duration: duration ?? this.duration,
+      duration: durationAsNull ? null : duration ?? this.duration,
       flashcardsType: flashcardsType ?? this.flashcardsType,
       areQuestionsAndAnswersSwapped:
           areQuestionsAndAnswersSwapped ?? this.areQuestionsAndAnswersSwapped,
     );
   }
 
-  SessionPreviewState copyWithDurationAsNull() {
-    return SessionPreviewState(
-      status: status,
-      mode: mode,
-      session: session,
-      group: group,
-      courseName: courseName,
-      duration: null,
-      flashcardsType: flashcardsType,
-      areQuestionsAndAnswersSwapped: areQuestionsAndAnswersSwapped,
+  SessionPreviewState copyWithInfo(SessionPreviewInfo info) {
+    return copyWith(
+      status: BlocStatusComplete<SessionPreviewInfo>(info: info),
     );
   }
 }
 
-enum SessionPreviewInfoType {
+enum SessionPreviewInfo {
   sessionHasBeenDeleted,
 }
