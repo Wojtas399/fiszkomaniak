@@ -49,7 +49,8 @@ class AddSessionUseCase {
       final String groupName =
           await _groupsInterface.getGroupName(groupId: groupId).first;
       if (notificationsSettings.areSessionsDefaultNotificationsOn) {
-        await _notificationsInterface.setDefaultNotificationForSession(
+        await _notificationsInterface
+            .setNotificationForSession15minBeforeStartTime(
           sessionId: sessionId,
           groupName: groupName,
           date: date,

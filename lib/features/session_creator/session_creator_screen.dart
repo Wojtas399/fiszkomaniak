@@ -79,6 +79,7 @@ class _SessionCreatorBlocProvider extends StatelessWidget {
           groupsInterface: context.read<GroupsInterface>(),
           notificationsInterface: context.read<NotificationsInterface>(),
           settingsInterface: context.read<SettingsInterface>(),
+          timeUtils: TimeUtils(),
         ),
         timeUtils: TimeUtils(),
       )..add(SessionCreatorEventInitialize(mode: mode)),

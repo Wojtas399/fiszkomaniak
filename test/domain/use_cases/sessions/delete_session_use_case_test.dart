@@ -18,13 +18,13 @@ void main() {
   );
 
   test(
-    'should call method responsible for deleting session, deleting session default notification and for deleting session scheduled notification',
+    'should call method responsible for deleting session, deleting session notification 15 min before start time and for deleting session scheduled notification',
     () async {
       when(
         () => sessionsInterface.removeSession('s1'),
       ).thenAnswer((_) async => '');
       when(
-        () => notificationsInterface.deleteDefaultNotificationForSession(
+        () => notificationsInterface.deleteNotificationForSession15minBeforeStartTime(
           sessionId: 's1',
         ),
       ).thenAnswer((_) async => '');
@@ -40,7 +40,7 @@ void main() {
         () => sessionsInterface.removeSession('s1'),
       ).called(1);
       verify(
-        () => notificationsInterface.deleteDefaultNotificationForSession(
+        () => notificationsInterface.deleteNotificationForSession15minBeforeStartTime(
           sessionId: 's1',
         ),
       ).called(1);

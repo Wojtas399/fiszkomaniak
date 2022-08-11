@@ -26,7 +26,7 @@ void main() {
   );
 
   test(
-    'for all sessions should call method responsible for setting default notification',
+    'for all sessions should call method responsible for setting notification 15 min before start time',
     () async {
       final List<Session> sessions = [
         createSession(
@@ -56,7 +56,7 @@ void main() {
         ),
       ).thenAnswer((_) => Stream.value('group2'));
       when(
-        () => notificationsInterface.setDefaultNotificationForSession(
+        () => notificationsInterface.setNotificationForSession15minBeforeStartTime(
           sessionId: sessions[0].id,
           groupName: 'group1',
           date: sessions[0].date,
@@ -64,7 +64,7 @@ void main() {
         ),
       ).thenAnswer((_) async => '');
       when(
-        () => notificationsInterface.setDefaultNotificationForSession(
+        () => notificationsInterface.setNotificationForSession15minBeforeStartTime(
           sessionId: sessions[1].id,
           groupName: 'group2',
           date: sessions[1].date,
@@ -75,7 +75,7 @@ void main() {
       await useCase.execute();
 
       verify(
-        () => notificationsInterface.setDefaultNotificationForSession(
+        () => notificationsInterface.setNotificationForSession15minBeforeStartTime(
           sessionId: sessions[0].id,
           groupName: 'group1',
           date: sessions[0].date,
@@ -83,7 +83,7 @@ void main() {
         ),
       ).called(1);
       verify(
-        () => notificationsInterface.setDefaultNotificationForSession(
+        () => notificationsInterface.setNotificationForSession15minBeforeStartTime(
           sessionId: sessions[1].id,
           groupName: 'group2',
           date: sessions[1].date,

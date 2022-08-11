@@ -24,7 +24,7 @@ class SetSessionsDefaultNotificationsUseCase {
     for (final Session session in allSessions) {
       final String groupName =
           await _groupsInterface.getGroupName(groupId: session.groupId).first;
-      await _notificationsInterface.setDefaultNotificationForSession(
+      await _notificationsInterface.setNotificationForSession15minBeforeStartTime(
         sessionId: session.id,
         groupName: groupName,
         date: session.date,

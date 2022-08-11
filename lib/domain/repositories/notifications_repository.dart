@@ -64,7 +64,7 @@ class NotificationsRepository implements NotificationsInterface {
   }
 
   @override
-  Future<void> setDefaultNotificationForSession({
+  Future<void> setNotificationForSession15minBeforeStartTime({
     required String sessionId,
     required String groupName,
     required Date date,
@@ -106,7 +106,7 @@ class NotificationsRepository implements NotificationsInterface {
   }
 
   @override
-  Future<void> deleteDefaultNotificationForSession({
+  Future<void> deleteNotificationForSession15minBeforeStartTime({
     required String sessionId,
   }) async {
     await _localNotificationsService.cancelDefaultNotificationForSession(

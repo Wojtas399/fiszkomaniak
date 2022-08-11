@@ -9,6 +9,7 @@ import 'package:fiszkomaniak/interfaces/settings_interface.dart';
 import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
+import 'package:fiszkomaniak/utils/time_utils.dart';
 
 class MockSessionsInterface extends Mock implements SessionsInterface {}
 
@@ -19,6 +20,8 @@ class MockNotificationsInterface extends Mock
 
 class MockSettingsInterface extends Mock implements SettingsInterface {}
 
+class MockTimeUtils extends Mock implements TimeUtils {}
+
 class FakeTime extends Fake implements Time {}
 
 void main() {
@@ -26,6 +29,7 @@ void main() {
   final groupsInterface = MockGroupsInterface();
   final notificationsInterface = MockNotificationsInterface();
   final settingsInterface = MockSettingsInterface();
+  final timeUtils = MockTimeUtils();
   late UpdateSessionUseCase useCase;
   const String sessionId = 's1';
   const String groupId = 'g1';
@@ -53,6 +57,7 @@ void main() {
       groupsInterface: groupsInterface,
       notificationsInterface: notificationsInterface,
       settingsInterface: settingsInterface,
+      timeUtils: timeUtils,
     );
     when(
       () => sessionsInterface.updateSession(
@@ -68,7 +73,17 @@ void main() {
       () => groupsInterface.getGroupName(groupId: groupId),
     ).thenAnswer((_) => Stream.value(groupName));
     when(
-      () => notificationsInterface.setDefaultNotificationForSession(
+      () => settingsInterface.notificationsSettings$,
+    ).thenAnswer((_) => Stream.value(createNotificationsSettings()));
+    when(
+      () => timeUtils.isPastTime(startTime.subtractMinutes(15), date),
+    ).thenReturn(false);
+    when(
+      () => timeUtils.isNow(startTime.subtractMinutes(15), date),
+    ).thenReturn(false);
+    when(
+      () =>
+          notificationsInterface.setNotificationForSession15minBeforeStartTime(
         sessionId: sessionId,
         groupName: groupName,
         date: date,
@@ -84,6 +99,17 @@ void main() {
         sessionStartTime: startTime,
       ),
     ).thenAnswer((_) async => '');
+    when(
+      () => notificationsInterface
+          .deleteNotificationForSession15minBeforeStartTime(
+        sessionId: sessionId,
+      ),
+    ).thenAnswer((_) async => '');
+    when(
+      () => notificationsInterface.deleteScheduledNotificationForSession(
+        sessionId: sessionId,
+      ),
+    ).thenAnswer((_) async => '');
   });
 
   tearDown(() {
@@ -91,22 +117,12 @@ void main() {
     reset(groupsInterface);
     reset(notificationsInterface);
     reset(settingsInterface);
+    reset(timeUtils);
   });
 
   test(
     'should call method responsible for updating session',
     () async {
-      when(
-        () => settingsInterface.notificationsSettings$,
-      ).thenAnswer(
-        (_) => Stream.value(
-          createNotificationsSettings(
-            areSessionsScheduledNotificationsOn: false,
-            areSessionsDefaultNotificationsOn: false,
-          ),
-        ),
-      );
-
       await useCase.execute(
         sessionId: sessionId,
         groupId: groupId,
@@ -130,17 +146,64 @@ void main() {
   );
 
   test(
-    'additionally should call method responsible for setting default notification if default notifications are turned on',
+    'should call method responsible for deleting notification 15 min before start time if this time is from the past',
+    () async {
+      when(
+        () => timeUtils.isPastTime(startTime.subtractMinutes(15), date),
+      ).thenReturn(true);
+
+      await useCase.execute(
+        sessionId: sessionId,
+        groupId: groupId,
+        date: date,
+        startTime: startTime,
+        duration: duration,
+        notificationTime: notificationTime,
+      );
+
+      verify(
+        () => notificationsInterface
+            .deleteNotificationForSession15minBeforeStartTime(
+          sessionId: sessionId,
+        ),
+      ).called(1);
+    },
+  );
+
+  test(
+    'should call method responsible for deleting notification 15 min before start time if this time is from now',
+    () async {
+      when(
+        () => timeUtils.isPastTime(startTime.subtractMinutes(15), date),
+      ).thenReturn(true);
+
+      await useCase.execute(
+        sessionId: sessionId,
+        groupId: groupId,
+        date: date,
+        startTime: startTime,
+        duration: duration,
+        notificationTime: notificationTime,
+      );
+
+      verify(
+        () => notificationsInterface
+            .deleteNotificationForSession15minBeforeStartTime(
+          sessionId: sessionId,
+        ),
+      ).called(1);
+    },
+  );
+
+  test(
+    'should call method responsible for setting notification 15 min before start time if default notifications are turned on and time 15 min before start time is from future',
     () async {
       when(
         () => settingsInterface.notificationsSettings$,
       ).thenAnswer(
-        (_) => Stream.value(
-          createNotificationsSettings(
-            areSessionsScheduledNotificationsOn: false,
-            areSessionsDefaultNotificationsOn: true,
-          ),
-        ),
+        (_) => Stream.value(createNotificationsSettings(
+          areSessionsDefaultNotificationsOn: true,
+        )),
       );
 
       await useCase.execute(
@@ -153,37 +216,26 @@ void main() {
       );
 
       verify(
-        () => notificationsInterface.setDefaultNotificationForSession(
+        () => notificationsInterface
+            .setNotificationForSession15minBeforeStartTime(
           sessionId: sessionId,
           groupName: groupName,
           date: date,
           sessionStartTime: startTime,
         ),
       ).called(1);
-      verifyNever(
-        () => notificationsInterface.setScheduledNotificationForSession(
-          sessionId: sessionId,
-          groupName: groupName,
-          date: date,
-          time: notificationTime,
-          sessionStartTime: startTime,
-        ),
-      );
     },
   );
 
   test(
-    'additionally should call method responsible for setting scheduled notification if scheduled notifications are turned on and notification time is not null',
+    'should call method responsible for setting scheduled notification if scheduled notifications are turned on and notification time is not null',
     () async {
       when(
         () => settingsInterface.notificationsSettings$,
       ).thenAnswer(
-        (_) => Stream.value(
-          createNotificationsSettings(
-            areSessionsScheduledNotificationsOn: true,
-            areSessionsDefaultNotificationsOn: false,
-          ),
-        ),
+        (_) => Stream.value(createNotificationsSettings(
+          areSessionsScheduledNotificationsOn: true,
+        )),
       );
 
       await useCase.execute(
@@ -195,14 +247,6 @@ void main() {
         notificationTime: notificationTime,
       );
 
-      verifyNever(
-        () => notificationsInterface.setDefaultNotificationForSession(
-          sessionId: sessionId,
-          groupName: groupName,
-          date: date,
-          sessionStartTime: startTime,
-        ),
-      );
       verify(
         () => notificationsInterface.setScheduledNotificationForSession(
           sessionId: sessionId,
@@ -216,7 +260,7 @@ void main() {
   );
 
   test(
-    'should not call method responsible for setting scheduled notification if notification time is null',
+    'should call method responsible for deleting scheduled notification if notification time is null or sessions scheduled notifications are turned off',
     () async {
       when(
         () => sessionsInterface.updateSession(
@@ -237,16 +281,6 @@ void main() {
           notificationTime: null,
         ),
       );
-      when(
-        () => settingsInterface.notificationsSettings$,
-      ).thenAnswer(
-        (_) => Stream.value(
-          createNotificationsSettings(
-            areSessionsScheduledNotificationsOn: true,
-            areSessionsDefaultNotificationsOn: false,
-          ),
-        ),
-      );
 
       await useCase.execute(
         sessionId: sessionId,
@@ -257,13 +291,9 @@ void main() {
         notificationTime: null,
       );
 
-      verifyNever(
-        () => notificationsInterface.setScheduledNotificationForSession(
+      verify(
+        () => notificationsInterface.deleteScheduledNotificationForSession(
           sessionId: sessionId,
-          groupName: groupName,
-          date: date,
-          time: any(named: 'time'),
-          sessionStartTime: startTime,
         ),
       );
     },

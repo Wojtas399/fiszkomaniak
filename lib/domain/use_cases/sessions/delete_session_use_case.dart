@@ -15,7 +15,8 @@ class DeleteSessionUseCase {
 
   Future<void> execute({required String sessionId}) async {
     await _sessionsInterface.removeSession(sessionId);
-    await _notificationsInterface.deleteDefaultNotificationForSession(
+    await _notificationsInterface
+        .deleteNotificationForSession15minBeforeStartTime(
       sessionId: sessionId,
     );
     await _notificationsInterface.deleteScheduledNotificationForSession(
