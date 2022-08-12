@@ -10,6 +10,9 @@ class Utils {
   }
 
   static List<T> removeLastElement<T>(List<T> elements) {
+    if (elements.isEmpty) {
+      return elements;
+    }
     return elements.getRange(0, elements.length - 1).toList();
   }
 }

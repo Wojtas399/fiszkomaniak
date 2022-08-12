@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/models/date_model.dart';
+import '../models/date_model.dart';
 
 class DateUtils {
   static int compareDates(Date date1, Date date2) {

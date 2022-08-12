@@ -1,6 +1,6 @@
-import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:fiszkomaniak/models/time_model.dart';
-import 'package:fiszkomaniak/utils/date_utils.dart';
+import '../models/date_model.dart';
+import '../models/time_model.dart';
+import 'date_utils.dart';
 
 class TimeUtils {
   int compareTimes(Time time1, Time time2) {
