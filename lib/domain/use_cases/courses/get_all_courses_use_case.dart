@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/domain/entities/course.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
+import '../../../domain/entities/course.dart';
+import '../../../interfaces/courses_interface.dart';
 
 class GetAllCoursesUseCase {
   late final CoursesInterface _coursesInterface;

@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
+import '../../../interfaces/sessions_interface.dart';
 
 class LoadAllSessionsUseCase {
   late final SessionsInterface _sessionsInterface;

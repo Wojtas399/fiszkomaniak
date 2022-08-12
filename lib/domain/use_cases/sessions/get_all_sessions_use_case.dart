@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/domain/entities/session.dart';
-import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
+import '../../../domain/entities/session.dart';
+import '../../../interfaces/sessions_interface.dart';
 
 class GetAllSessionsUseCase {
   late final SessionsInterface _sessionsInterface;

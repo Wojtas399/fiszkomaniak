@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/domain/entities/flashcard.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
+import '../../../domain/entities/flashcard.dart';
+import '../../../interfaces/groups_interface.dart';
 
 class UpdateFlashcardUseCase {
   late final GroupsInterface _groupsInterface;

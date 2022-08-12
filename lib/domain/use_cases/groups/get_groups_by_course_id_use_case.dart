@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/domain/entities/group.dart';
+import '../../../interfaces/groups_interface.dart';
+import '../../../domain/entities/group.dart';
 
 class GetGroupsByCourseIdUseCase {
   late final GroupsInterface _groupsInterface;
