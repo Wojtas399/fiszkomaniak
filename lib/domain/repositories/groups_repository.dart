@@ -200,19 +200,21 @@ class GroupsRepository implements GroupsInterface {
     final String? courseId = groupData?.courseId;
     final String? nameForQuestions = groupData?.nameForQuestions;
     final String? nameForAnswers = groupData?.nameForAnswers;
+    final List<FlashcardDbModel>? flashcards = groupData?.flashcards;
     if (groupId != null &&
         groupData != null &&
         name != null &&
         courseId != null &&
         nameForQuestions != null &&
-        nameForAnswers != null) {
+        nameForAnswers != null &&
+        flashcards != null) {
       return Group(
         id: groupId,
         name: name,
         courseId: courseId,
         nameForQuestions: nameForQuestions,
         nameForAnswers: nameForAnswers,
-        flashcards: groupData.flashcards
+        flashcards: flashcards
             .map(_convertFlashcardDbModelToFlashcard)
             .whereType<Flashcard>()
             .toList(),

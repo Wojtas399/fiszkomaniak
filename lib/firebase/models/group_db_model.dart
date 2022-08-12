@@ -6,14 +6,14 @@ class GroupDbModel extends Equatable {
   final String? courseId;
   final String? nameForQuestions;
   final String? nameForAnswers;
-  final List<FlashcardDbModel> flashcards;
+  final List<FlashcardDbModel>? flashcards;
 
   const GroupDbModel({
     this.name,
     this.courseId,
     this.nameForQuestions,
     this.nameForAnswers,
-    this.flashcards = const [],
+    this.flashcards,
   });
 
   GroupDbModel.fromJson(Map<String, Object?> json)
@@ -35,7 +35,7 @@ class GroupDbModel extends Equatable {
       'courseId': courseId,
       'nameForQuestions': nameForQuestions,
       'nameForAnswers': nameForAnswers,
-      'flashcards': flashcards.map((flashcard) => flashcard.toJson()).toList(),
+      'flashcards': flashcards?.map((flashcard) => flashcard.toJson()).toList(),
     }..removeWhere((key, value) => value == null);
   }
 
@@ -45,7 +45,7 @@ class GroupDbModel extends Equatable {
         courseId ?? '',
         nameForQuestions ?? '',
         nameForAnswers ?? '',
-        flashcards,
+        flashcards ?? '',
       ];
 }
 
