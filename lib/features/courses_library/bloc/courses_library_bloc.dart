@@ -2,10 +2,9 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/course.dart';
+import '../../../domain/use_cases/courses/delete_course_use_case.dart';
 import '../../../domain/use_cases/courses/get_all_courses_use_case.dart';
 import '../../../domain/use_cases/courses/load_all_courses_use_case.dart';
-import '../../../domain/use_cases/courses/delete_course_use_case.dart';
-import '../../../features/courses_library/courses_library_dialogs.dart';
 import '../../../models/bloc_status.dart';
 
 part 'courses_library_event.dart';
@@ -17,14 +16,12 @@ class CoursesLibraryBloc
   late final GetAllCoursesUseCase _getAllCoursesUseCase;
   late final LoadAllCoursesUseCase _loadAllCoursesUseCase;
   late final DeleteCourseUseCase _deleteCourseUseCase;
-  late final CoursesLibraryDialogs _coursesLibraryDialogs;
   StreamSubscription<List<Course>>? _allCoursesListener;
 
   CoursesLibraryBloc({
     required GetAllCoursesUseCase getAllCoursesUseCase,
     required LoadAllCoursesUseCase loadAllCoursesUseCase,
     required DeleteCourseUseCase deleteCourseUseCase,
-    required CoursesLibraryDialogs coursesLibraryDialogs,
     BlocStatus status = const BlocStatusInitial(),
     List<Course> allCourses = const [],
   }) : super(
@@ -36,7 +33,6 @@ class CoursesLibraryBloc
     _getAllCoursesUseCase = getAllCoursesUseCase;
     _loadAllCoursesUseCase = loadAllCoursesUseCase;
     _deleteCourseUseCase = deleteCourseUseCase;
-    _coursesLibraryDialogs = coursesLibraryDialogs;
     on<CoursesLibraryEventInitialize>(_initialize);
     on<CoursesLibraryEventAllCoursesUpdated>(_allCoursesUpdated);
     on<CoursesLibraryEventDeleteCourse>(_deleteCourse);
@@ -79,19 +75,13 @@ class CoursesLibraryBloc
     CoursesLibraryEventDeleteCourse event,
     Emitter<CoursesLibraryState> emit,
   ) async {
-    final bool confirmation =
-        await _coursesLibraryDialogs.askForDeleteConfirmation();
-    if (confirmation == true) {
-      emit(state.copyWith(
-        status: const BlocStatusLoading(),
-      ));
-      await _deleteCourseUseCase.execute(courseId: event.courseId);
-      emit(state.copyWith(
-        status: const BlocStatusComplete<CoursesLibraryInfoType>(
-          info: CoursesLibraryInfoType.courseHasBeenRemoved,
-        ),
-      ));
-    }
+    emit(state.copyWith(
+      status: const BlocStatusLoading(),
+    ));
+    await _deleteCourseUseCase.execute(courseId: event.courseId);
+    emit(state.copyWithInfo(
+      CoursesLibraryInfo.courseHasBeenRemoved,
+    ));
   }
 
   void _setAllCoursesListener() {

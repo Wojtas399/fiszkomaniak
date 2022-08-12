@@ -22,6 +22,7 @@ class CoursesLibraryCoursePopupMenu extends StatelessWidget {
             icon: const Icon(MdiIcons.dotsVertical),
             itemBuilder: (_) => [
               PopupMenuItem(
+                onTap: _onEditActionPressed,
                 child: Row(
                   children: const [
                     Icon(MdiIcons.squareEditOutline),
@@ -29,11 +30,9 @@ class CoursesLibraryCoursePopupMenu extends StatelessWidget {
                     Text('Edytuj'),
                   ],
                 ),
-                onTap: () {
-                  onActionSelected(CoursePopupAction.edit);
-                },
               ),
               PopupMenuItem(
+                onTap: _onDeleteActionPressed,
                 child: Row(
                   children: const [
                     Icon(MdiIcons.deleteOutline),
@@ -41,9 +40,6 @@ class CoursesLibraryCoursePopupMenu extends StatelessWidget {
                     Text('Usuń'),
                   ],
                 ),
-                onTap: () {
-                  onActionSelected(CoursePopupAction.remove);
-                },
               ),
             ],
           ),
@@ -51,9 +47,17 @@ class CoursesLibraryCoursePopupMenu extends StatelessWidget {
       ),
     );
   }
+
+  void _onEditActionPressed() {
+    onActionSelected(CoursePopupAction.edit);
+  }
+
+  void _onDeleteActionPressed() {
+    onActionSelected(CoursePopupAction.delete);
+  }
 }
 
 enum CoursePopupAction {
   edit,
-  remove,
+  delete,
 }

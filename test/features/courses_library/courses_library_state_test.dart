@@ -61,4 +61,19 @@ void main() {
       expect(state2.allCourses, expectedCourses);
     },
   );
+
+  test(
+    'copy with info',
+    () {
+      const CoursesLibraryInfo expectedInfo =
+          CoursesLibraryInfo.courseHasBeenRemoved;
+
+      state = state.copyWithInfo(expectedInfo);
+
+      expect(
+        state.status,
+        const BlocStatusComplete<CoursesLibraryInfo>(info: expectedInfo),
+      );
+    },
+  );
 }

@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/bouncing_scroll.dart';
 import '../../../components/course_item.dart';
+import '../../../components/dialogs/dialogs.dart';
 import '../../../config/navigation.dart';
 import '../../../domain/entities/course.dart';
 import '../../../domain/entities/group.dart';
 import '../../../domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
-import '../../course_creator/bloc/course_creator_mode.dart';
 import '../../../interfaces/groups_interface.dart';
+import '../../course_creator/bloc/course_creator_mode.dart';
 import '../bloc/courses_library_bloc.dart';
 import 'courses_library_course_popup_menu.dart';
 
@@ -39,6 +40,9 @@ class _CoursesList extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Course> allCourses = context.select(
       (CoursesLibraryBloc bloc) => bloc.state.allCourses,
+    );
+    allCourses.sort(
+      (Course course1, Course course2) => course1.name.compareTo(course2.name),
     );
     return Column(
       children: allCourses
@@ -83,21 +87,42 @@ class _CourseItem extends StatelessWidget {
     Navigation.navigateToCourseGroupsPreview(course.id);
   }
 
-  void _onActionSelected(
+  Future<void> _onActionSelected(
     CoursePopupAction action,
     BuildContext context,
-  ) {
+  ) async {
     switch (action) {
       case CoursePopupAction.edit:
-        Navigation.navigateToCourseCreator(
-          CourseCreatorEditMode(course: course),
-        );
+        _onEditCourse();
         break;
-      case CoursePopupAction.remove:
-        context.read<CoursesLibraryBloc>().add(
-              CoursesLibraryEventDeleteCourse(courseId: course.id),
-            );
+      case CoursePopupAction.delete:
+        await _onDeleteCourse(context);
         break;
     }
+  }
+
+  void _onEditCourse() {
+    Navigation.navigateToCourseCreator(
+      CourseCreatorEditMode(course: course),
+    );
+  }
+
+  Future<void> _onDeleteCourse(BuildContext context) async {
+    final CoursesLibraryBloc bloc = context.read<CoursesLibraryBloc>();
+    final bool confirmation = await _askForCourseDeletionConfirmation();
+    if (confirmation) {
+      bloc.add(
+        CoursesLibraryEventDeleteCourse(courseId: course.id),
+      );
+    }
+  }
+
+  Future<bool> _askForCourseDeletionConfirmation() async {
+    return await Dialogs.askForConfirmation(
+      title: 'Czy na pewno chcesz usunąć ten kurs?',
+      text:
+          'Usunięcie kursu spowoduje również usunięcie wszystkich grup, fiszek oraz sesji z nim powiązanych.',
+      confirmButtonText: 'Usuń',
+    );
   }
 }

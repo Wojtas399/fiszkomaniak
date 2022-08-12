@@ -26,8 +26,14 @@ class CoursesLibraryState extends Equatable {
       allCourses: allCourses ?? this.allCourses,
     );
   }
+
+  CoursesLibraryState copyWithInfo(CoursesLibraryInfo info) {
+    return copyWith(
+      status: BlocStatusComplete<CoursesLibraryInfo>(info: info),
+    );
+  }
 }
 
-enum CoursesLibraryInfoType {
+enum CoursesLibraryInfo {
   courseHasBeenRemoved,
 }

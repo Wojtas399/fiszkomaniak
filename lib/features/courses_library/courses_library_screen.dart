@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../components/dialogs/dialogs.dart';
+import '../../domain/use_cases/courses/delete_course_use_case.dart';
 import '../../domain/use_cases/courses/get_all_courses_use_case.dart';
 import '../../domain/use_cases/courses/load_all_courses_use_case.dart';
-import '../../domain/use_cases/courses/delete_course_use_case.dart';
 import '../../interfaces/courses_interface.dart';
 import '../../models/bloc_status.dart';
 import 'bloc/courses_library_bloc.dart';
 import 'components/courses_library_content.dart';
-import 'courses_library_dialogs.dart';
 
 class CoursesLibraryScreen extends StatelessWidget {
   const CoursesLibraryScreen({super.key});
@@ -42,7 +41,6 @@ class _CoursesLibraryBlocProvider extends StatelessWidget {
         deleteCourseUseCase: DeleteCourseUseCase(
           coursesInterface: coursesInterface,
         ),
-        coursesLibraryDialogs: CoursesLibraryDialogs(),
       )..add(CoursesLibraryEventInitialize()),
       child: child,
     );
@@ -63,9 +61,9 @@ class _CoursesLibraryBlocListener extends StatelessWidget {
           Dialogs.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
           Dialogs.closeLoadingDialog(context);
-          final CoursesLibraryInfoType? info = blocStatus.info;
+          final CoursesLibraryInfo? info = blocStatus.info;
           if (info != null) {
-            _displayAppropriateInfo(blocStatus.info, context);
+            _manageInfo(blocStatus.info);
           }
         }
       },
@@ -73,12 +71,9 @@ class _CoursesLibraryBlocListener extends StatelessWidget {
     );
   }
 
-  void _displayAppropriateInfo(
-    CoursesLibraryInfoType infoType,
-    BuildContext context,
-  ) {
-    switch (infoType) {
-      case CoursesLibraryInfoType.courseHasBeenRemoved:
+  void _manageInfo(CoursesLibraryInfo info) {
+    switch (info) {
+      case CoursesLibraryInfo.courseHasBeenRemoved:
         Dialogs.showSnackbarWithMessage('Pomyślnie usunięto kurs');
         break;
     }
