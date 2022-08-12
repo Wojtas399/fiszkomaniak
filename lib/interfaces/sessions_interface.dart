@@ -30,5 +30,5 @@ abstract class SessionsInterface {
     Time? notificationTime,
   });
 
-  Future<void> removeSession(String sessionId);
+  Future<void> deleteSession(String sessionId);
 }

@@ -21,7 +21,7 @@ void main() {
     'should call method responsible for deleting session, deleting session notification 15 min before start time and for deleting session scheduled notification',
     () async {
       when(
-        () => sessionsInterface.removeSession('s1'),
+        () => sessionsInterface.deleteSession('s1'),
       ).thenAnswer((_) async => '');
       when(
         () => notificationsInterface.deleteNotificationForSession15minBeforeStartTime(
@@ -37,7 +37,7 @@ void main() {
       await useCase.execute(sessionId: 's1');
 
       verify(
-        () => sessionsInterface.removeSession('s1'),
+        () => sessionsInterface.deleteSession('s1'),
       ).called(1);
       verify(
         () => notificationsInterface.deleteNotificationForSession15minBeforeStartTime(
