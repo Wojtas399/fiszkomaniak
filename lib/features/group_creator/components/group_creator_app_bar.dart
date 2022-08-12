@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/app_bar_with_close_button.dart';
 import '../bloc/group_creator_bloc.dart';
-import '../group_creator_mode.dart';
+import '../bloc/group_creator_mode.dart';
 
 class GroupCreatorAppBar extends StatelessWidget
     implements PreferredSizeWidget {

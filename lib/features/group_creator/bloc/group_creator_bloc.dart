@@ -7,7 +7,7 @@ import '../../../domain/use_cases/groups/add_group_use_case.dart';
 import '../../../domain/use_cases/groups/check_group_name_usage_in_course_use_case.dart';
 import '../../../domain/use_cases/groups/update_group_use_case.dart';
 import '../../../models/bloc_status.dart';
-import '../group_creator_mode.dart';
+import 'group_creator_mode.dart';
 
 part 'group_creator_event.dart';
 
@@ -71,14 +71,18 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
     final GroupCreatorMode mode = event.mode;
     if (mode is GroupCreatorCreateMode) {
       emit(state.copyWith(
-        status: const BlocStatusComplete(),
+        status: const BlocStatusComplete<GroupCreatorInfo>(
+          info: GroupCreatorInfo.dataHaveBeenInitialized,
+        ),
         mode: mode,
         allCourses: allCourses,
       ));
     } else if (mode is GroupCreatorEditMode) {
       emit(state.copyWith(
         mode: mode,
-        status: const BlocStatusComplete(),
+        status: const BlocStatusComplete<GroupCreatorInfo>(
+          info: GroupCreatorInfo.dataHaveBeenInitialized,
+        ),
         selectedCourse: allCourses.firstWhere(
           (course) => course.id == mode.group.courseId,
         ),
@@ -204,7 +208,7 @@ class GroupCreatorBloc extends Bloc<GroupCreatorEvent, GroupCreatorState> {
       nameForAnswers: nameForAnswers,
     );
     emit(state.copyWithInfo(
-      GroupCreatorInfo.groupHasBeenEdited,
+      GroupCreatorInfo.groupHasBeenUpdated,
     ));
   }
 

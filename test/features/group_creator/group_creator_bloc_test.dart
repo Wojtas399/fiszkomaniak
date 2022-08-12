@@ -9,7 +9,7 @@ import 'package:fiszkomaniak/domain/use_cases/groups/add_group_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/check_group_name_usage_in_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/update_group_use_case.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_bloc.dart';
-import 'package:fiszkomaniak/features/group_creator/group_creator_mode.dart';
+import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 
 class MockLoadAllCoursesUseCase extends Mock implements LoadAllCoursesUseCase {}
@@ -120,7 +120,9 @@ void main() {
             status: const BlocStatusLoading(),
           ),
           createState(
-            status: const BlocStatusComplete(),
+            status: const BlocStatusComplete<GroupCreatorInfo>(
+              info: GroupCreatorInfo.dataHaveBeenInitialized,
+            ),
             mode: const GroupCreatorCreateMode(),
             allCourses: courses,
           ),
@@ -140,7 +142,9 @@ void main() {
             status: const BlocStatusLoading(),
           ),
           createState(
-            status: const BlocStatusComplete(),
+            status: const BlocStatusComplete<GroupCreatorInfo>(
+              info: GroupCreatorInfo.dataHaveBeenInitialized,
+            ),
             mode: editMode,
             selectedCourse: courses[0],
             allCourses: courses,
@@ -382,7 +386,7 @@ void main() {
           createState(
             mode: editMode,
             status: const BlocStatusComplete<GroupCreatorInfo>(
-              info: GroupCreatorInfo.groupHasBeenEdited,
+              info: GroupCreatorInfo.groupHasBeenUpdated,
             ),
             selectedCourse: selectedCourse,
             groupName: 'new group name',

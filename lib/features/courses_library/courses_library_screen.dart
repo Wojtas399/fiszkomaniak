@@ -29,17 +29,16 @@ class _CoursesLibraryBlocProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final coursesInterface = context.read<CoursesInterface>();
     return BlocProvider(
       create: (BuildContext context) => CoursesLibraryBloc(
         getAllCoursesUseCase: GetAllCoursesUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
         loadAllCoursesUseCase: LoadAllCoursesUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
         deleteCourseUseCase: DeleteCourseUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
       )..add(CoursesLibraryEventInitialize()),
       child: child,

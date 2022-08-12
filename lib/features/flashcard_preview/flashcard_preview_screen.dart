@@ -13,7 +13,6 @@ import '../../models/bloc_status.dart';
 import 'bloc/flashcard_preview_bloc.dart';
 import 'components/flashcard_preview_content.dart';
 
-
 class FlashcardPreviewScreenArguments extends Equatable {
   final String groupId;
   final int flashcardIndex;
@@ -60,18 +59,19 @@ class _FlashcardPreviewBlocProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GroupsInterface groupsInterface = context.read<GroupsInterface>();
     return BlocProvider(
       create: (BuildContext context) => FlashcardPreviewBloc(
-        getGroupUseCase: GetGroupUseCase(groupsInterface: groupsInterface),
+        getGroupUseCase: GetGroupUseCase(
+          groupsInterface: context.read<GroupsInterface>(),
+        ),
         getCourseUseCase: GetCourseUseCase(
           coursesInterface: context.read<CoursesInterface>(),
         ),
         updateFlashcardUseCase: UpdateFlashcardUseCase(
-          groupsInterface: groupsInterface,
+          groupsInterface: context.read<GroupsInterface>(),
         ),
         deleteFlashcardUseCase: DeleteFlashcardUseCase(
-          groupsInterface: groupsInterface,
+          groupsInterface: context.read<GroupsInterface>(),
         ),
       )..add(
           FlashcardPreviewEventInitialize(

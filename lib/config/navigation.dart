@@ -3,7 +3,7 @@ import '../components/dialogs/dialogs.dart';
 import '../config/routes.dart';
 import '../config/slide_right_route_animation.dart';
 import '../features/flashcard_preview/flashcard_preview_screen.dart';
-import '../features/group_creator/group_creator_mode.dart';
+import '../features/group_creator/bloc/group_creator_mode.dart';
 import '../features/home/home_router.dart';
 import '../config/slide_up_route_animation.dart';
 import '../features/course_creator/bloc/course_creator_mode.dart';

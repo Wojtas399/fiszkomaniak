@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_bloc.dart';
-import 'package:fiszkomaniak/features/group_creator/group_creator_mode.dart';
+import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 
 void main() {
@@ -212,7 +212,7 @@ void main() {
   test(
     'copy with info',
     () {
-      const GroupCreatorInfo expectedInfo = GroupCreatorInfo.groupHasBeenEdited;
+      const GroupCreatorInfo expectedInfo = GroupCreatorInfo.groupHasBeenAdded;
 
       state = state.copyWithInfo(expectedInfo);
 

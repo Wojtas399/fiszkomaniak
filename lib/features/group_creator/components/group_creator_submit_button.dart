@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/buttons/button.dart';
 import '../bloc/group_creator_bloc.dart';
-import '../group_creator_mode.dart';
+import '../bloc/group_creator_mode.dart';
 
 class GroupCreatorSubmitButton extends StatelessWidget {
   const GroupCreatorSubmitButton({super.key});

@@ -39,12 +39,13 @@ class _FlashcardsEditorBlocProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GroupsInterface groupsInterface = context.read<GroupsInterface>();
     return BlocProvider(
       create: (BuildContext context) => FlashcardsEditorBloc(
-        getGroupUseCase: GetGroupUseCase(groupsInterface: groupsInterface),
+        getGroupUseCase: GetGroupUseCase(
+          groupsInterface: context.read<GroupsInterface>(),
+        ),
         saveEditedFlashcardsUseCase: SaveEditedFlashcardsUseCase(
-          groupsInterface: groupsInterface,
+          groupsInterface: context.read<GroupsInterface>(),
           achievementsInterface: context.read<AchievementsInterface>(),
         ),
       )..add(FlashcardsEditorEventInitialize(groupId: groupId)),

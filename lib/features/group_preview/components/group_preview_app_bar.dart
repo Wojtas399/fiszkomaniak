@@ -6,7 +6,7 @@ import '../../../components/popup_menu.dart';
 import '../../../components/app_bar_with_close_button.dart';
 import '../../../config/navigation.dart';
 import '../../../domain/entities/group.dart';
-import '../../../features/group_creator/group_creator_mode.dart';
+import '../../group_creator/bloc/group_creator_mode.dart';
 import '../bloc/group_preview_bloc.dart';
 
 class GroupPreviewAppBar extends StatelessWidget

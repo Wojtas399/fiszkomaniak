@@ -12,8 +12,8 @@ import '../../interfaces/courses_interface.dart';
 import '../../interfaces/groups_interface.dart';
 import '../../models/bloc_status.dart';
 import 'bloc/group_creator_bloc.dart';
+import 'bloc/group_creator_mode.dart';
 import 'components/group_creator_content.dart';
-import 'group_creator_mode.dart';
 
 class GroupCreatorScreen extends StatelessWidget {
   final GroupCreatorMode mode;
@@ -42,22 +42,22 @@ class _GroupCreatorBlocProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CoursesInterface coursesInterface = context.read<CoursesInterface>();
-    final GroupsInterface groupsInterface = context.read<GroupsInterface>();
     return BlocProvider(
       create: (_) => GroupCreatorBloc(
         getAllCoursesUseCase: GetAllCoursesUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
         loadAllCoursesUseCase: LoadAllCoursesUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
         checkGroupNameUsageInCourseUseCase: CheckGroupNameUsageInCourseUseCase(
-          groupsInterface: groupsInterface,
+          groupsInterface: context.read<GroupsInterface>(),
         ),
-        addGroupUseCase: AddGroupUseCase(groupsInterface: groupsInterface),
+        addGroupUseCase: AddGroupUseCase(
+          groupsInterface: context.read<GroupsInterface>(),
+        ),
         updateGroupUseCase: UpdateGroupUseCase(
-          groupsInterface: groupsInterface,
+          groupsInterface: context.read<GroupsInterface>(),
         ),
       )..add(GroupCreatorEventInitialize(mode: mode)),
       child: child,
@@ -96,16 +96,13 @@ class _GroupCreatorBlocListener extends StatelessWidget {
   }
 
   void _manageInfo(GroupCreatorInfo info, BuildContext context) {
-    switch (info) {
-      case GroupCreatorInfo.groupHasBeenAdded:
-        Navigation.backHome();
-        context.read<HomePageController>().moveToPage(0);
-        Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
-        break;
-      case GroupCreatorInfo.groupHasBeenEdited:
-        Navigation.moveBack();
-        Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizaowano grupę.');
-        break;
+    if (info == GroupCreatorInfo.groupHasBeenAdded) {
+      Navigation.backHome();
+      context.read<HomePageController>().moveToPage(0);
+      Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
+    } else if (info == GroupCreatorInfo.groupHasBeenUpdated) {
+      Navigation.moveBack();
+      Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizaowano grupę.');
     }
   }
 

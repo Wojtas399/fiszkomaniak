@@ -38,9 +38,9 @@ class GroupCreatorState extends Equatable {
         nameForAnswers.isEmpty;
     if (mode is GroupCreatorEditMode) {
       bool areTheSameData = selectedCourse?.id == mode.group.courseId &&
-          groupName == mode.group.name &&
-          nameForQuestions == mode.group.nameForQuestions &&
-          nameForAnswers == mode.group.nameForAnswers;
+          groupName.trim() == mode.group.name &&
+          nameForQuestions.trim() == mode.group.nameForQuestions &&
+          nameForAnswers.trim() == mode.group.nameForAnswers;
       return areDataNotEntered || areTheSameData;
     }
     return areDataNotEntered;
@@ -84,8 +84,9 @@ class GroupCreatorState extends Equatable {
 }
 
 enum GroupCreatorInfo {
+  dataHaveBeenInitialized,
   groupHasBeenAdded,
-  groupHasBeenEdited,
+  groupHasBeenUpdated,
 }
 
 enum GroupCreatorError {
