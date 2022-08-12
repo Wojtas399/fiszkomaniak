@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/dialogs/dialogs.dart';
 import '../../../utils/utils.dart';
 import '../bloc/flashcards_editor_bloc.dart';
 import '../components/flashcards_editor_item.dart';
@@ -88,12 +89,32 @@ class FlashcardsEditorList extends StatelessWidget {
         );
   }
 
-  void _onDelete(int flashcardIndex, BuildContext context) {
+  Future<void> _onDelete(int flashcardIndex, BuildContext context) async {
     Utils.unfocusElements();
-    context
-        .read<FlashcardsEditorBloc>()
-        .add(FlashcardsEditorEventRemoveFlashcard(
+    await _deleteFlashcard(flashcardIndex, context);
+  }
+
+  Future<void> _deleteFlashcard(
+    int flashcardIndex,
+    BuildContext context,
+  ) async {
+    final FlashcardsEditorBloc bloc = context.read<FlashcardsEditorBloc>();
+    final bool confirmation = await _askForFlashcardDeletionConfirmation();
+    if (confirmation) {
+      bloc.add(
+        FlashcardsEditorEventDeleteFlashcard(
           flashcardIndex: flashcardIndex,
-        ));
+        ),
+      );
+    }
+  }
+
+  Future<bool> _askForFlashcardDeletionConfirmation() async {
+    return await Dialogs.askForConfirmation(
+      title: 'Usuwanie',
+      text:
+          'Operacja ta jest nieodwracalna i spowoduje trwałe usunięcie fiszki. Czy na pewno chcesz usunąć fiszkę?',
+      confirmButtonText: 'Usuń',
+    );
   }
 }

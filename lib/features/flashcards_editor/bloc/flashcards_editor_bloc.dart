@@ -6,7 +6,6 @@ import '../../../domain/use_cases/flashcards/save_edited_flashcards_use_case.dar
 import '../../../domain/use_cases/groups/get_group_use_case.dart';
 import '../../../models/bloc_status.dart';
 import '../../../utils/utils.dart';
-import '../flashcards_editor_dialogs.dart';
 
 part 'flashcards_editor_event.dart';
 
@@ -19,12 +18,10 @@ class FlashcardsEditorBloc
     with FlashcardsEditorUtils {
   late final GetGroupUseCase _getGroupUseCase;
   late final SaveEditedFlashcardsUseCase _saveEditedFlashcardsUseCase;
-  late final FlashcardsEditorDialogs _flashcardsEditorDialogs;
 
   FlashcardsEditorBloc({
     required GetGroupUseCase getGroupUseCase,
     required SaveEditedFlashcardsUseCase saveEditedFlashcardsUseCase,
-    required FlashcardsEditorDialogs flashcardsEditorDialogs,
     BlocStatus status = const BlocStatusInitial(),
     Group? group,
     List<EditorFlashcard> editorFlashcards = const [],
@@ -39,9 +36,8 @@ class FlashcardsEditorBloc
         ) {
     _getGroupUseCase = getGroupUseCase;
     _saveEditedFlashcardsUseCase = saveEditedFlashcardsUseCase;
-    _flashcardsEditorDialogs = flashcardsEditorDialogs;
     on<FlashcardsEditorEventInitialize>(_initialize);
-    on<FlashcardsEditorEventRemoveFlashcard>(_removeFlashcard);
+    on<FlashcardsEditorEventDeleteFlashcard>(_deleteFlashcard);
     on<FlashcardsEditorEventValueChanged>(_valueChanged);
     on<FlashcardsEditorEventSave>(_save);
   }
@@ -61,28 +57,26 @@ class FlashcardsEditorBloc
     ));
   }
 
-  Future<void> _removeFlashcard(
-    FlashcardsEditorEventRemoveFlashcard event,
+  Future<void> _deleteFlashcard(
+    FlashcardsEditorEventDeleteFlashcard event,
     Emitter<FlashcardsEditorState> emit,
   ) async {
-    if (await _hasFlashcardRemovalBeenConfirmed()) {
-      List<EditorFlashcard> updatedEditorFlashcards = [
-        ...state.editorFlashcards,
-      ];
-      updatedEditorFlashcards.removeAt(event.flashcardIndex);
-      int keyCounter = state.keyCounter;
-      if (updatedEditorFlashcards.isEmpty) {
-        updatedEditorFlashcards = addNewEditorFlashcard(
-          updatedEditorFlashcards,
-          0,
-        );
-        keyCounter = 0;
-      }
-      emit(state.copyWith(
-        editorFlashcards: updatedEditorFlashcards,
-        keyCounter: keyCounter,
-      ));
+    List<EditorFlashcard> updatedEditorFlashcards = [
+      ...state.editorFlashcards,
+    ];
+    updatedEditorFlashcards.removeAt(event.flashcardIndex);
+    int keyCounter = state.keyCounter;
+    if (updatedEditorFlashcards.isEmpty) {
+      updatedEditorFlashcards = addNewEditorFlashcard(
+        updatedEditorFlashcards,
+        0,
+      );
+      keyCounter = 0;
     }
+    emit(state.copyWith(
+      editorFlashcards: updatedEditorFlashcards,
+      keyCounter: keyCounter,
+    ));
   }
 
   void _valueChanged(
@@ -124,7 +118,7 @@ class FlashcardsEditorBloc
     Emitter<FlashcardsEditorState> emit,
   ) async {
     final Group? group = state.group;
-    if (group != null && await _canSave(emit)) {
+    if (group != null && _canSave(emit)) {
       emit(state.copyWith(
         status: const BlocStatusLoading(),
       ));
@@ -140,10 +134,6 @@ class FlashcardsEditorBloc
         FlashcardsEditorInfo.editedFlashcardsHaveBeenSaved,
       ));
     }
-  }
-
-  Future<bool> _hasFlashcardRemovalBeenConfirmed() async {
-    return await _flashcardsEditorDialogs.askForDeleteConfirmation();
   }
 
   List<EditorFlashcard> _updateEditedFlashcard(
@@ -171,7 +161,7 @@ class FlashcardsEditorBloc
     return false;
   }
 
-  Future<bool> _canSave(Emitter<FlashcardsEditorState> emit) async {
+  bool _canSave(Emitter<FlashcardsEditorState> emit) {
     if (_areEditorFlashcardsSameAsGroupFlashcards()) {
       emit(state.copyWithError(
         FlashcardsEditorError.noChangesHaveBeenMade,
@@ -191,7 +181,7 @@ class FlashcardsEditorBloc
       ));
       return false;
     }
-    return await _flashcardsEditorDialogs.askForSaveConfirmation() == true;
+    return true;
   }
 
   List<EditorFlashcard> _getEditorFlashcardsWithoutLastOne() {

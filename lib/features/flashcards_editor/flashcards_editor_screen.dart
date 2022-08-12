@@ -8,7 +8,6 @@ import '../../interfaces/groups_interface.dart';
 import '../../models/bloc_status.dart';
 import 'bloc/flashcards_editor_bloc.dart';
 import 'components/flashcards_editor_content.dart';
-import 'flashcards_editor_dialogs.dart';
 
 class FlashcardsEditorScreen extends StatelessWidget {
   final String groupId;
@@ -48,7 +47,6 @@ class _FlashcardsEditorBlocProvider extends StatelessWidget {
           groupsInterface: groupsInterface,
           achievementsInterface: context.read<AchievementsInterface>(),
         ),
-        flashcardsEditorDialogs: FlashcardsEditorDialogs(),
       )..add(FlashcardsEditorEventInitialize(groupId: groupId)),
       child: child,
     );

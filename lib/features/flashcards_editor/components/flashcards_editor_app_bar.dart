@@ -29,8 +29,10 @@ class FlashcardsEditorAppBar extends StatelessWidget
     );
   }
 
-  void _onPressedSaveButton(BuildContext context) {
+  Future<void> _onPressedSaveButton(BuildContext context) async {
     Utils.unfocusElements();
-    context.read<FlashcardsEditorBloc>().add(FlashcardsEditorEventSave());
+    context.read<FlashcardsEditorBloc>().add(
+          FlashcardsEditorEventSave(),
+        );
   }
 }

@@ -48,11 +48,11 @@ void main() {
     () {
       const BlocStatus expectedBlocStatus = BlocStatusLoading();
 
-      final state2 = state.copyWith(status: expectedBlocStatus);
-      final state3 = state2.copyWith();
+      state = state.copyWith(status: expectedBlocStatus);
+      final state2 = state.copyWith();
 
-      expect(state2.status, expectedBlocStatus);
-      expect(state3.status, const BlocStatusInProgress());
+      expect(state.status, expectedBlocStatus);
+      expect(state2.status, const BlocStatusInProgress());
     },
   );
 
@@ -61,11 +61,11 @@ void main() {
     () {
       final Group expectedGroup = createGroup(id: 'g1', name: 'group 1');
 
-      final state2 = state.copyWith(group: expectedGroup);
-      final state3 = state2.copyWith();
+      state = state.copyWith(group: expectedGroup);
+      final state2 = state.copyWith();
 
+      expect(state.group, expectedGroup);
       expect(state2.group, expectedGroup);
-      expect(state3.group, expectedGroup);
     },
   );
 
@@ -77,11 +77,11 @@ void main() {
         createEditorFlashcard(key: 'f2', question: 'q2', answer: 'a2'),
       ];
 
-      final state2 = state.copyWith(editorFlashcards: expectedEditorFlashcards);
-      final state3 = state2.copyWith();
+      state = state.copyWith(editorFlashcards: expectedEditorFlashcards);
+      final state2 = state.copyWith();
 
+      expect(state.editorFlashcards, expectedEditorFlashcards);
       expect(state2.editorFlashcards, expectedEditorFlashcards);
-      expect(state3.editorFlashcards, expectedEditorFlashcards);
     },
   );
 
@@ -90,11 +90,11 @@ void main() {
     () {
       const int expectedKeyCounter = 2;
 
-      final state2 = state.copyWith(keyCounter: expectedKeyCounter);
-      final state3 = state2.copyWith();
+      state = state.copyWith(keyCounter: expectedKeyCounter);
+      final state2 = state.copyWith();
 
+      expect(state.keyCounter, expectedKeyCounter);
       expect(state2.keyCounter, expectedKeyCounter);
-      expect(state3.keyCounter, expectedKeyCounter);
     },
   );
 

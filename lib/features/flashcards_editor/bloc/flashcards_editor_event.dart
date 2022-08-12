@@ -8,10 +8,10 @@ class FlashcardsEditorEventInitialize extends FlashcardsEditorEvent {
   FlashcardsEditorEventInitialize({required this.groupId});
 }
 
-class FlashcardsEditorEventRemoveFlashcard extends FlashcardsEditorEvent {
+class FlashcardsEditorEventDeleteFlashcard extends FlashcardsEditorEvent {
   final int flashcardIndex;
 
-  FlashcardsEditorEventRemoveFlashcard({required this.flashcardIndex});
+  FlashcardsEditorEventDeleteFlashcard({required this.flashcardIndex});
 }
 
 class FlashcardsEditorEventValueChanged extends FlashcardsEditorEvent {
