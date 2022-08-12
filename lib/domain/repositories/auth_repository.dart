@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../firebase/fire_extensions.dart';
-import '../../interfaces/auth_interface.dart';
 import '../../firebase/services/fire_auth_service.dart';
+import '../../interfaces/auth_interface.dart';
 
 class AuthRepository implements AuthInterface {
   late final FireAuthService _fireAuthService;

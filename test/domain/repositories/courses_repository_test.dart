@@ -1,10 +1,10 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/repositories/courses_repository.dart';
 import 'package:fiszkomaniak/firebase/fire_document.dart';
 import 'package:fiszkomaniak/firebase/models/course_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_courses_service.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockFireCoursesService extends Mock implements FireCoursesService {}
 
@@ -26,6 +26,83 @@ void main() {
       final allCourses = await repository.allCourses$.first;
 
       expect(allCourses, []);
+    },
+  );
+
+  test(
+    'get course by id, should only return course if it has been already loaded',
+    () async {
+      final List<FireDocument<CourseDbModel>> coursesFromDb = [
+        FireDocument(id: 'c1', data: CourseDbModel(name: 'course 1')),
+        FireDocument(id: 'c2', data: CourseDbModel(name: 'course 2')),
+      ];
+      when(
+        () => fireCoursesService.loadAllCourses(),
+      ).thenAnswer((_) async => coursesFromDb);
+
+      await repository.loadAllCourses();
+      final Stream<Course> course$ = repository.getCourseById('c1');
+
+      expect(await course$.first, const Course(id: 'c1', name: 'course 1'));
+      verifyNever(
+        () => fireCoursesService.getCourseById(
+          courseId: any(named: 'courseId'),
+        ),
+      );
+    },
+  );
+
+  test(
+    'get course by id, should load course from db if it has not been loaded yet',
+    () async {
+      final FireDocument<CourseDbModel> courseFromDb = FireDocument(
+        id: 'c1',
+        data: CourseDbModel(name: 'course 1'),
+      );
+      when(
+        () => fireCoursesService.getCourseById(courseId: 'c1'),
+      ).thenAnswer((_) async => courseFromDb);
+
+      final Stream<Course> course$ = repository.getCourseById('c1');
+
+      expect(await course$.first, const Course(id: 'c1', name: 'course 1'));
+      verify(
+        () => fireCoursesService.getCourseById(courseId: 'c1'),
+      ).called(1);
+    },
+  );
+
+  test(
+    'get course by id, returned stream should be empty if course does not exist',
+    () async {
+      when(
+        () => fireCoursesService.getCourseById(courseId: 'c1'),
+      ).thenAnswer((_) async => null);
+
+      final Stream<Course> course$ = repository.getCourseById('c1');
+
+      expect(await course$.isEmpty, true);
+      verify(
+        () => fireCoursesService.getCourseById(courseId: 'c1'),
+      ).called(1);
+    },
+  );
+
+  test(
+    'get course name by id, should return course name',
+    () async {
+      final List<FireDocument<CourseDbModel>> coursesFromDb = [
+        FireDocument(id: 'c1', data: CourseDbModel(name: 'course 1')),
+        FireDocument(id: 'c2', data: CourseDbModel(name: 'course 2')),
+      ];
+      when(
+        () => fireCoursesService.loadAllCourses(),
+      ).thenAnswer((_) async => coursesFromDb);
+
+      await repository.loadAllCourses();
+      final Stream<String> courseName = repository.getCourseNameById('c1');
+
+      expect(await courseName.first, 'course 1');
     },
   );
 
@@ -120,7 +197,7 @@ void main() {
   );
 
   test(
-    'remove course, should remove course from db and update courses stream',
+    'delete course, should remove course from db and update courses stream',
     () async {
       final FireDocument<CourseDbModel> courseFromDb = FireDocument(
         id: 'c1',
@@ -133,88 +210,11 @@ void main() {
         () => fireCoursesService.removeCourse('c1'),
       ).thenAnswer((_) async => 'c1');
 
-      await repository.removeCourse(courseId: 'c1');
+      await repository.deleteCourse(courseId: 'c1');
 
       final List<Course> allCourses = await repository.allCourses$.first;
       verify(() => fireCoursesService.removeCourse('c1')).called(1);
       expect(allCourses, []);
-    },
-  );
-
-  test(
-    'get course by id, should only return course if it has been already loaded',
-    () async {
-      final List<FireDocument<CourseDbModel>> coursesFromDb = [
-        FireDocument(id: 'c1', data: CourseDbModel(name: 'course 1')),
-        FireDocument(id: 'c2', data: CourseDbModel(name: 'course 2')),
-      ];
-      when(
-        () => fireCoursesService.loadAllCourses(),
-      ).thenAnswer((_) async => coursesFromDb);
-
-      await repository.loadAllCourses();
-      final Stream<Course> course$ = repository.getCourseById('c1');
-
-      expect(await course$.first, const Course(id: 'c1', name: 'course 1'));
-      verifyNever(
-        () => fireCoursesService.getCourseById(
-          courseId: any(named: 'courseId'),
-        ),
-      );
-    },
-  );
-
-  test(
-    'get course by id, should load course from db if it has not been loaded yet',
-    () async {
-      final FireDocument<CourseDbModel> courseFromDb = FireDocument(
-        id: 'c1',
-        data: CourseDbModel(name: 'course 1'),
-      );
-      when(
-        () => fireCoursesService.getCourseById(courseId: 'c1'),
-      ).thenAnswer((_) async => courseFromDb);
-
-      final Stream<Course> course$ = repository.getCourseById('c1');
-
-      expect(await course$.first, const Course(id: 'c1', name: 'course 1'));
-      verify(
-        () => fireCoursesService.getCourseById(courseId: 'c1'),
-      ).called(1);
-    },
-  );
-
-  test(
-    'get course by id, returned stream should be empty if course does not exist',
-    () async {
-      when(
-        () => fireCoursesService.getCourseById(courseId: 'c1'),
-      ).thenAnswer((_) async => null);
-
-      final Stream<Course> course$ = repository.getCourseById('c1');
-
-      expect(await course$.isEmpty, true);
-      verify(
-        () => fireCoursesService.getCourseById(courseId: 'c1'),
-      ).called(1);
-    },
-  );
-
-  test(
-    'get course name by id, should return course name',
-    () async {
-      final List<FireDocument<CourseDbModel>> coursesFromDb = [
-        FireDocument(id: 'c1', data: CourseDbModel(name: 'course 1')),
-        FireDocument(id: 'c2', data: CourseDbModel(name: 'course 2')),
-      ];
-      when(
-        () => fireCoursesService.loadAllCourses(),
-      ).thenAnswer((_) async => coursesFromDb);
-
-      await repository.loadAllCourses();
-      final Stream<String> courseName = repository.getCourseNameById('c1');
-
-      expect(await courseName.first, 'course 1');
     },
   );
 
