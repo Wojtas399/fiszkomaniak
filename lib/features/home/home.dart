@@ -15,6 +15,7 @@ import '../../interfaces/sessions_interface.dart';
 import '../../interfaces/settings_interface.dart';
 import '../../interfaces/user_interface.dart';
 import '../../models/bloc_status.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../providers/theme_provider.dart';
 import 'bloc/home_bloc.dart';
 import 'home_error_screen.dart';
@@ -112,6 +113,7 @@ class _View extends StatelessWidget {
       (HomeBloc bloc) => bloc.state.status,
     );
     if (blocStatus is BlocStatusLoading) {
+      DialogsProvider.closeLoadingDialog(context);
       return const HomeLoadingScreen();
     } else if (blocStatus is BlocStatusComplete) {
       return ChangeNotifierProvider(

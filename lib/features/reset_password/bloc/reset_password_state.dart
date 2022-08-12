@@ -19,21 +19,27 @@ class ResetPasswordState extends Equatable {
     String? email,
   }) {
     return ResetPasswordState(
-      status: status ?? const BlocStatusComplete(),
+      status: status ?? const BlocStatusInProgress(),
       email: email ?? this.email,
     );
   }
 
-  ResetPasswordState copyWithError(ResetPasswordErrorType errorType) {
+  ResetPasswordState copyWithInfo(ResetPasswordInfo info) {
     return copyWith(
-      status: BlocStatusError<ResetPasswordErrorType>(error: errorType),
+      status: BlocStatusComplete<ResetPasswordInfo>(info: info),
+    );
+  }
+
+  ResetPasswordState copyWithError(ResetPasswordError error) {
+    return copyWith(
+      status: BlocStatusError<ResetPasswordError>(error: error),
     );
   }
 }
 
-enum ResetPasswordInfoType { emailHasBeenSent }
+enum ResetPasswordInfo { emailHasBeenSent }
 
-enum ResetPasswordErrorType {
+enum ResetPasswordError {
   invalidEmail,
   userNotFound,
 }

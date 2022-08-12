@@ -1,11 +1,11 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/use_cases/auth/send_password_reset_email_use_case.dart';
 import 'package:fiszkomaniak/exceptions/auth_exceptions.dart';
 import 'package:fiszkomaniak/features/reset_password/bloc/reset_password_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:fiszkomaniak/validators/email_validator.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockSendPasswordResetEmailUseCase extends Mock
     implements SendPasswordResetEmailUseCase {}
@@ -27,7 +27,7 @@ void main() {
   }
 
   ResetPasswordState createState({
-    BlocStatus status = const BlocStatusComplete(),
+    BlocStatus status = const BlocStatusInProgress(),
     String email = '',
   }) {
     return ResetPasswordState(
@@ -65,7 +65,9 @@ void main() {
       ).thenAnswer((_) async => '');
     },
     act: (ResetPasswordBloc bloc) {
-      bloc.add(ResetPasswordEventSubmit());
+      bloc.add(
+        ResetPasswordEventSubmit(),
+      );
     },
     expect: () => [
       createState(
@@ -73,8 +75,8 @@ void main() {
         email: 'email',
       ),
       createState(
-        status: const BlocStatusComplete<ResetPasswordInfoType>(
-          info: ResetPasswordInfoType.emailHasBeenSent,
+        status: const BlocStatusComplete<ResetPasswordInfo>(
+          info: ResetPasswordInfo.emailHasBeenSent,
         ),
         email: 'email',
       ),
@@ -98,18 +100,22 @@ void main() {
       ).thenAnswer((_) async => '');
     },
     act: (ResetPasswordBloc bloc) {
-      bloc.add(ResetPasswordEventSubmit());
+      bloc.add(
+        ResetPasswordEventSubmit(),
+      );
     },
     expect: () => [
       createState(
-        status: const BlocStatusError(
-          error: ResetPasswordErrorType.invalidEmail,
+        status: const BlocStatusError<ResetPasswordError>(
+          error: ResetPasswordError.invalidEmail,
         ),
         email: 'email',
       ),
     ],
     verify: (_) {
-      verifyNever(() => sendPasswordResetEmailUseCase.execute(email: 'email'));
+      verifyNever(
+        () => sendPasswordResetEmailUseCase.execute(email: 'email'),
+      );
     },
   );
 
@@ -127,7 +133,9 @@ void main() {
       ).thenThrow(AuthException.userNotFound);
     },
     act: (ResetPasswordBloc bloc) {
-      bloc.add(ResetPasswordEventSubmit());
+      bloc.add(
+        ResetPasswordEventSubmit(),
+      );
     },
     expect: () => [
       createState(
@@ -135,8 +143,8 @@ void main() {
         email: 'email',
       ),
       createState(
-        status: const BlocStatusError(
-          error: ResetPasswordErrorType.userNotFound,
+        status: const BlocStatusError<ResetPasswordError>(
+          error: ResetPasswordError.userNotFound,
         ),
         email: 'email',
       ),

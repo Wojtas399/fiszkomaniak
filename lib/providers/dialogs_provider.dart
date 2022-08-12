@@ -24,13 +24,14 @@ class DialogsProvider {
         context: mainContext,
         barrierDismissible: false,
         builder: (_) => SimpleLoadingDialog(text: loadingText),
-      ).then((_) => isLoadingDialogOpened = false);
+      );
     }
   }
 
   static void closeLoadingDialog(BuildContext context) {
     if (isLoadingDialogOpened) {
       Navigator.of(context, rootNavigator: true).pop();
+      isLoadingDialogOpened = false;
     }
   }
 
