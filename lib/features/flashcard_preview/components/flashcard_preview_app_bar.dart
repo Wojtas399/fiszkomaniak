@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/app_bar_with_close_button.dart';
 import '../../../components/custom_icon_button.dart';
+import '../../../components/dialogs/dialogs.dart';
 import '../../../utils/utils.dart';
 import '../bloc/flashcard_preview_bloc.dart';
 
@@ -38,16 +39,28 @@ class _DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         CustomIconButton(
           icon: MdiIcons.delete,
-          onPressed: () => _onDelete(context),
+          onPressed: () => _onDeleteActionPressed(context),
         ),
       ],
     );
   }
 
-  void _onDelete(BuildContext context) {
-    context
-        .read<FlashcardPreviewBloc>()
-        .add(FlashcardPreviewEventDeleteFlashcard());
+  Future<void> _onDeleteActionPressed(BuildContext context) async {
+    final FlashcardPreviewBloc bloc = context.read<FlashcardPreviewBloc>();
+    final bool confirmation = await _askForFlashcardDeletionConfirmation();
+    if (confirmation) {
+      bloc.add(
+        FlashcardPreviewEventDeleteFlashcard(),
+      );
+    }
+  }
+
+  Future<bool> _askForFlashcardDeletionConfirmation() async {
+    return await Dialogs.askForConfirmation(
+      title: 'Usuwanie',
+      text: 'Czy na pewno chcesz usunąć tę fiszkę?',
+      confirmButtonText: 'Usuń',
+    );
   }
 }
 
@@ -79,15 +92,35 @@ class _ConfirmationAppBar extends StatelessWidget
 
   void _onCancel(BuildContext context) {
     Utils.unfocusElements();
+    _resetChanges(context);
+  }
+
+  Future<void> _onAccept(BuildContext context) async {
+    Utils.unfocusElements();
+    await _saveChanges(context);
+  }
+
+  void _resetChanges(BuildContext context) {
     context
         .read<FlashcardPreviewBloc>()
         .add(FlashcardPreviewEventResetChanges());
   }
 
-  void _onAccept(BuildContext context) {
-    Utils.unfocusElements();
-    context
-        .read<FlashcardPreviewBloc>()
-        .add(FlashcardPreviewEventSaveChanges());
+  Future<void> _saveChanges(BuildContext context) async {
+    final FlashcardPreviewBloc bloc = context.read<FlashcardPreviewBloc>();
+    final bool confirmation = await _askForSavingChangesConfirmation();
+    if (confirmation) {
+      bloc.add(
+        FlashcardPreviewEventSaveChanges(),
+      );
+    }
+  }
+
+  Future<bool> _askForSavingChangesConfirmation() async {
+    return await Dialogs.askForConfirmation(
+      title: 'Zapisywanie',
+      text: 'Czy na pewno chcesz zapisać zmiany wprowadzone w tej fiszce?',
+      confirmButtonText: 'Zapisz',
+    );
   }
 }

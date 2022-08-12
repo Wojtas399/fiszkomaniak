@@ -5,11 +5,10 @@ import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/flashcards/remove_flashcard_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/flashcards/delete_flashcard_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/flashcards/update_flashcard_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview_dialogs.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 
 class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
@@ -19,18 +18,16 @@ class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
 class MockUpdateFlashcardUseCase extends Mock
     implements UpdateFlashcardUseCase {}
 
-class MockRemoveFlashcardUseCase extends Mock
-    implements RemoveFlashcardUseCase {}
+class MockDeleteFlashcardUseCase extends Mock
+    implements DeleteFlashcardUseCase {}
 
-class MockFlashcardPreviewDialogs extends Mock
-    implements FlashcardPreviewDialogs {}
+class FakeFlashcard extends Fake implements Flashcard {}
 
 void main() {
   final getGroupUseCase = MockGetGroupUseCase();
   final getCourseUseCase = MockGetCourseUseCase();
   final updateFlashcardUseCase = MockUpdateFlashcardUseCase();
-  final removeFlashcardUseCase = MockRemoveFlashcardUseCase();
-  final flashcardPreviewDialogs = MockFlashcardPreviewDialogs();
+  final deleteFlashcardUseCase = MockDeleteFlashcardUseCase();
 
   FlashcardPreviewBloc createBloc({
     BlocStatus status = const BlocStatusInitial(),
@@ -43,8 +40,7 @@ void main() {
       getGroupUseCase: getGroupUseCase,
       getCourseUseCase: getCourseUseCase,
       updateFlashcardUseCase: updateFlashcardUseCase,
-      removeFlashcardUseCase: removeFlashcardUseCase,
-      flashcardPreviewDialogs: flashcardPreviewDialogs,
+      deleteFlashcardUseCase: deleteFlashcardUseCase,
       status: status,
       flashcard: flashcard,
       group: group,
@@ -71,12 +67,15 @@ void main() {
     );
   }
 
+  setUpAll(() {
+    registerFallbackValue(FakeFlashcard());
+  });
+
   tearDown(() {
     reset(getGroupUseCase);
     reset(getCourseUseCase);
     reset(updateFlashcardUseCase);
-    reset(removeFlashcardUseCase);
-    reset(flashcardPreviewDialogs);
+    reset(deleteFlashcardUseCase);
   });
 
   group(
@@ -121,14 +120,6 @@ void main() {
             answer: flashcards[1].answer,
           ),
         ],
-        verify: (_) {
-          verify(
-            () => getGroupUseCase.execute(groupId: 'g1'),
-          ).called(2);
-          verify(
-            () => getCourseUseCase.execute(courseId: 'c1'),
-          ).called(1);
-        },
       );
     },
   );
@@ -264,7 +255,7 @@ void main() {
       final Group group = createGroup(id: 'g1');
 
       blocTest(
-        'confirmed, should call use case responsible for updating flashcard',
+        'should call use case responsible for updating flashcard',
         build: () => createBloc(
           group: group,
           flashcard: flashcard,
@@ -273,11 +264,8 @@ void main() {
         ),
         setUp: () {
           when(
-            () => flashcardPreviewDialogs.askForSaveConfirmation(),
-          ).thenAnswer((_) async => true);
-          when(
             () => updateFlashcardUseCase.execute(
-              groupId: 'g1',
+              groupId: group.id,
               flashcard: flashcard.copyWith(
                 question: 'question',
                 answer: 'answer',
@@ -311,7 +299,7 @@ void main() {
         verify: (_) {
           verify(
             () => updateFlashcardUseCase.execute(
-              groupId: 'g1',
+              groupId: group.id,
               flashcard: flashcard.copyWith(
                 question: 'question',
                 answer: 'answer',
@@ -322,20 +310,16 @@ void main() {
       );
 
       blocTest(
-        'cancelled, should not call use case responsible for updating flashcard',
+        'should not call use case responsible for updating flashcard if group has not been set',
         build: () => createBloc(
-          group: group,
           flashcard: flashcard,
           question: 'question',
           answer: 'answer',
         ),
         setUp: () {
           when(
-            () => flashcardPreviewDialogs.askForSaveConfirmation(),
-          ).thenAnswer((_) async => false);
-          when(
             () => updateFlashcardUseCase.execute(
-              groupId: 'g1',
+              groupId: any(named: 'groupId'),
               flashcard: flashcard.copyWith(
                 question: 'question',
                 answer: 'answer',
@@ -352,7 +336,7 @@ void main() {
         verify: (_) {
           verifyNever(
             () => updateFlashcardUseCase.execute(
-              groupId: 'g1',
+              groupId: any(named: 'groupId'),
               flashcard: flashcard.copyWith(
                 question: 'question',
                 answer: 'answer',
@@ -361,21 +345,49 @@ void main() {
           );
         },
       );
+
+      blocTest(
+        'should not call use case responsible for updating flashcard if flashcard has not been set',
+        build: () => createBloc(
+          group: group,
+          question: 'question',
+          answer: 'answer',
+        ),
+        setUp: () {
+          when(
+            () => updateFlashcardUseCase.execute(
+              groupId: group.id,
+              flashcard: any(named: 'flashcard'),
+            ),
+          ).thenAnswer((_) async => '');
+        },
+        act: (FlashcardPreviewBloc bloc) {
+          bloc.add(
+            FlashcardPreviewEventSaveChanges(),
+          );
+        },
+        expect: () => [],
+        verify: (_) {
+          verifyNever(
+            () => updateFlashcardUseCase.execute(
+              groupId: group.id,
+              flashcard: any(named: 'flashcard'),
+            ),
+          );
+        },
+      );
     },
   );
 
   blocTest(
-    'remove flashcard, confirmed, should call use case responsible for removing flashcard',
+    'delete flashcard, should call use case responsible for deleting flashcard',
     build: () => createBloc(
       group: createGroup(id: 'g1'),
       flashcard: createFlashcard(index: 0),
     ),
     setUp: () {
       when(
-        () => flashcardPreviewDialogs.askForDeleteConfirmation(),
-      ).thenAnswer((_) async => true);
-      when(
-        () => removeFlashcardUseCase.execute(
+        () => deleteFlashcardUseCase.execute(
           groupId: 'g1',
           flashcardIndex: 0,
         ),
@@ -402,7 +414,7 @@ void main() {
     ],
     verify: (_) {
       verify(
-        () => removeFlashcardUseCase.execute(
+        () => deleteFlashcardUseCase.execute(
           groupId: 'g1',
           flashcardIndex: 0,
         ),
@@ -411,18 +423,14 @@ void main() {
   );
 
   blocTest(
-    'remove flashcard, cancelled, should not call use case responsible for removing flashcard',
+    'delete flashcard, should not call use case responsible for deleting flashcard if group has not been set',
     build: () => createBloc(
-      group: createGroup(id: 'g1'),
       flashcard: createFlashcard(index: 0),
     ),
     setUp: () {
       when(
-        () => flashcardPreviewDialogs.askForDeleteConfirmation(),
-      ).thenAnswer((_) async => false);
-      when(
-        () => removeFlashcardUseCase.execute(
-          groupId: 'g1',
+        () => deleteFlashcardUseCase.execute(
+          groupId: any(named: 'groupId'),
           flashcardIndex: 0,
         ),
       ).thenAnswer((_) async => '');
@@ -435,9 +443,38 @@ void main() {
     expect: () => [],
     verify: (_) {
       verifyNever(
-        () => removeFlashcardUseCase.execute(
-          groupId: 'g1',
+        () => deleteFlashcardUseCase.execute(
+          groupId: any(named: 'groupId'),
           flashcardIndex: 0,
+        ),
+      );
+    },
+  );
+
+  blocTest(
+    'delete flashcard, should not call use case responsible for deleting flashcard if flashcard has not been set',
+    build: () => createBloc(
+      group: createGroup(id: 'g1'),
+    ),
+    setUp: () {
+      when(
+        () => deleteFlashcardUseCase.execute(
+          groupId: 'g1',
+          flashcardIndex: any(named: 'flashcardIndex'),
+        ),
+      ).thenAnswer((_) async => '');
+    },
+    act: (FlashcardPreviewBloc bloc) {
+      bloc.add(
+        FlashcardPreviewEventDeleteFlashcard(),
+      );
+    },
+    expect: () => [],
+    verify: (_) {
+      verifyNever(
+        () => deleteFlashcardUseCase.execute(
+          groupId: 'g1',
+          flashcardIndex: any(named: 'flashcardIndex'),
         ),
       );
     },

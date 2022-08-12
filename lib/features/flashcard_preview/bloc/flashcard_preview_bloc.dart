@@ -5,11 +5,10 @@ import '../../../domain/entities/course.dart';
 import '../../../domain/entities/flashcard.dart';
 import '../../../domain/entities/group.dart';
 import '../../../domain/use_cases/courses/get_course_use_case.dart';
-import '../../../domain/use_cases/flashcards/remove_flashcard_use_case.dart';
+import '../../../domain/use_cases/flashcards/delete_flashcard_use_case.dart';
 import '../../../domain/use_cases/flashcards/update_flashcard_use_case.dart';
 import '../../../domain/use_cases/groups/get_group_use_case.dart';
 import '../../../models/bloc_status.dart';
-import '../flashcard_preview_dialogs.dart';
 
 part 'flashcard_preview_event.dart';
 
@@ -20,16 +19,14 @@ class FlashcardPreviewBloc
   late final GetGroupUseCase _getGroupUseCase;
   late final GetCourseUseCase _getCourseUseCase;
   late final UpdateFlashcardUseCase _updateFlashcardUseCase;
-  late final RemoveFlashcardUseCase _removeFlashcardUseCase;
-  late final FlashcardPreviewDialogs _flashcardPreviewDialogs;
+  late final DeleteFlashcardUseCase _deleteFlashcardUseCase;
   StreamSubscription<Group>? _groupListener;
 
   FlashcardPreviewBloc({
     required GetGroupUseCase getGroupUseCase,
     required GetCourseUseCase getCourseUseCase,
     required UpdateFlashcardUseCase updateFlashcardUseCase,
-    required RemoveFlashcardUseCase removeFlashcardUseCase,
-    required FlashcardPreviewDialogs flashcardPreviewDialogs,
+    required DeleteFlashcardUseCase deleteFlashcardUseCase,
     BlocStatus status = const BlocStatusInitial(),
     Flashcard? flashcard,
     Group? group,
@@ -49,8 +46,7 @@ class FlashcardPreviewBloc
     _getGroupUseCase = getGroupUseCase;
     _getCourseUseCase = getCourseUseCase;
     _updateFlashcardUseCase = updateFlashcardUseCase;
-    _removeFlashcardUseCase = removeFlashcardUseCase;
-    _flashcardPreviewDialogs = flashcardPreviewDialogs;
+    _deleteFlashcardUseCase = deleteFlashcardUseCase;
     on<FlashcardPreviewEventInitialize>(_initialize);
     on<FlashcardPreviewEventGroupUpdated>(_groupUpdated);
     on<FlashcardPreviewEventQuestionChanged>(_questionChanged);
@@ -145,9 +141,7 @@ class FlashcardPreviewBloc
     } else {
       final String? groupId = state.group?.id;
       final Flashcard? flashcard = state.flashcard;
-      if (groupId != null &&
-          flashcard != null &&
-          await _hasSaveOperationBeenConfirmed()) {
+      if (groupId != null && flashcard != null) {
         emit(state.copyWith(
           status: const BlocStatusLoading(),
         ));
@@ -171,13 +165,11 @@ class FlashcardPreviewBloc
   ) async {
     final String? groupId = state.group?.id;
     final int? flashcardIndex = state.flashcard?.index;
-    if (groupId != null &&
-        flashcardIndex != null &&
-        await _hasFlashcardDeletionBeenConfirmed()) {
+    if (groupId != null && flashcardIndex != null) {
       emit(state.copyWith(
         status: const BlocStatusLoading(),
       ));
-      await _removeFlashcardUseCase.execute(
+      await _deleteFlashcardUseCase.execute(
         groupId: groupId,
         flashcardIndex: flashcardIndex,
       );
@@ -204,14 +196,6 @@ class FlashcardPreviewBloc
 
   bool _isFlashcardIncomplete() {
     return state.question.isEmpty || state.answer.isEmpty;
-  }
-
-  Future<bool> _hasSaveOperationBeenConfirmed() async {
-    return await _flashcardPreviewDialogs.askForSaveConfirmation();
-  }
-
-  Future<bool> _hasFlashcardDeletionBeenConfirmed() async {
-    return await _flashcardPreviewDialogs.askForDeleteConfirmation();
   }
 
   bool _hasFlashcardBeenDeleted() {
