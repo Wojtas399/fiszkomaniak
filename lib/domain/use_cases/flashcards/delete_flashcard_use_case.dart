@@ -11,7 +11,7 @@ class DeleteFlashcardUseCase {
     required String groupId,
     required int flashcardIndex,
   }) async {
-    await _groupsInterface.removeFlashcard(
+    await _groupsInterface.deleteFlashcard(
       groupId: groupId,
       flashcardIndex: flashcardIndex,
     );

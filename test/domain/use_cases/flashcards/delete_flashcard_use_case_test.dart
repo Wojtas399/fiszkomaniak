@@ -13,7 +13,7 @@ void main() {
     'should call method responsible for deleting flashcard',
     () async {
       when(
-        () => groupsInterface.removeFlashcard(
+        () => groupsInterface.deleteFlashcard(
           groupId: 'g1',
           flashcardIndex: 0,
         ),
@@ -22,7 +22,7 @@ void main() {
       await useCase.execute(groupId: 'g1', flashcardIndex: 0);
 
       verify(
-        () => groupsInterface.removeFlashcard(
+        () => groupsInterface.deleteFlashcard(
           groupId: 'g1',
           flashcardIndex: 0,
         ),

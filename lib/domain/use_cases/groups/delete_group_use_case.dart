@@ -8,6 +8,6 @@ class DeleteGroupUseCase {
   }
 
   Future<void> execute({required String groupId}) async {
-    await _groupsInterface.removeGroup(groupId);
+    await _groupsInterface.deleteGroup(groupId);
   }
 }

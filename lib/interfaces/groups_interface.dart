@@ -27,7 +27,7 @@ abstract class GroupsInterface {
     String? nameForAnswers,
   });
 
-  Future<void> removeGroup(String groupId);
+  Future<void> deleteGroup(String groupId);
 
   Future<bool> isGroupNameInCourseAlreadyTaken({
     required String groupName,
@@ -49,7 +49,7 @@ abstract class GroupsInterface {
     required Flashcard flashcard,
   });
 
-  Future<void> removeFlashcard({
+  Future<void> deleteFlashcard({
     required String groupId,
     required int flashcardIndex,
   });

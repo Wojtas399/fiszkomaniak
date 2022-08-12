@@ -97,7 +97,7 @@ class CoursesRepository implements CoursesInterface {
   void _addCourseToList(Course course) {
     final List<Course> updatedCourses = [..._courses$.value];
     updatedCourses.add(course);
-    _courses$.add(updatedCourses);
+    _courses$.add(updatedCourses.toSet().toList());
   }
 
   void _updateCourseInList(Course updatedCourse) {
