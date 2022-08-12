@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../config/navigation.dart';
 import '../../../features/session_preview/bloc/session_preview_mode.dart';
 import '../../../components/buttons/button.dart';
-import '../../../config/navigation.dart';
 import '../bloc/group_preview_bloc.dart';
 import 'group_preview_app_bar.dart';
 import 'group_preview_flashcards_status.dart';

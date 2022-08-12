@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SingleInputDialogCubit extends Cubit<String> {
@@ -20,9 +19,5 @@ class SingleInputDialogCubit extends Cubit<String> {
 
   void onValueChanged(String value) {
     emit(value);
-  }
-
-  void onSubmit(BuildContext context) {
-    Navigator.of(context).pop(state);
   }
 }

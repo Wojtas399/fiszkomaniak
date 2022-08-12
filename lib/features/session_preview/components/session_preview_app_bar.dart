@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/app_bar_with_close_button.dart';
-import '../../../components/dialogs/dialogs.dart';
-import '../../../components/popup_menu.dart';
 import '../../../config/navigation.dart';
+import '../../../providers/dialogs_provider.dart';
+import '../../../components/popup_menu.dart';
 import '../../../domain/entities/session.dart';
 import '../../session_creator/bloc/session_creator_mode.dart';
 import '../bloc/session_preview_bloc.dart';
@@ -91,7 +91,7 @@ class _SessionOptions extends StatelessWidget {
   }
 
   Future<bool> _askForSessionDeletionConfirmation() async {
-    return await Dialogs.askForConfirmation(
+    return await DialogsProvider.askForConfirmation(
       title: 'Usuwanie sesji',
       text: 'Czy na pewno chcesz usunąć tą sesję?',
       confirmButtonText: 'Usuń',

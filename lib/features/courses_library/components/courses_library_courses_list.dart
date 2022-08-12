@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/bouncing_scroll.dart';
 import '../../../components/course_item.dart';
-import '../../../components/dialogs/dialogs.dart';
 import '../../../config/navigation.dart';
+import '../../../providers/dialogs_provider.dart';
 import '../../../domain/entities/course.dart';
 import '../../../domain/entities/group.dart';
 import '../../../domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
@@ -118,7 +118,7 @@ class _CourseItem extends StatelessWidget {
   }
 
   Future<bool> _askForCourseDeletionConfirmation() async {
-    return await Dialogs.askForConfirmation(
+    return await DialogsProvider.askForConfirmation(
       title: 'Czy na pewno chcesz usunąć ten kurs?',
       text:
           'Usunięcie kursu spowoduje również usunięcie wszystkich grup, fiszek oraz sesji z nim powiązanych.',

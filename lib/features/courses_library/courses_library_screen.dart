@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/courses/delete_course_use_case.dart';
 import '../../domain/use_cases/courses/get_all_courses_use_case.dart';
 import '../../domain/use_cases/courses/load_all_courses_use_case.dart';
@@ -57,9 +57,9 @@ class _CoursesLibraryBlocListener extends StatelessWidget {
       listener: (BuildContext context, CoursesLibraryState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final CoursesLibraryInfo? info = blocStatus.info;
           if (info != null) {
             _manageInfo(blocStatus.info);
@@ -73,7 +73,7 @@ class _CoursesLibraryBlocListener extends StatelessWidget {
   void _manageInfo(CoursesLibraryInfo info) {
     switch (info) {
       case CoursesLibraryInfo.courseHasBeenRemoved:
-        Dialogs.showSnackbarWithMessage('Pomyślnie usunięto kurs');
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie usunięto kurs');
         break;
     }
   }

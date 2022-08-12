@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
 import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/courses/add_new_course_use_case.dart';
 import '../../domain/use_cases/courses/check_course_name_usage_use_case.dart';
 import '../../domain/use_cases/courses/update_course_name_use_case.dart';
@@ -77,15 +77,15 @@ class _CourseCreatorBlocListener extends StatelessWidget {
       listener: (BuildContext context, CourseCreatorState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final CourseCreatorInfo? info = blocStatus.info;
           if (info != null) {
             _manageInfo(blocStatus.info, context);
           }
         } else if (blocStatus is BlocStatusError) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final CourseCreatorError? error = blocStatus.error;
           if (error != null) {
             _manageError(error);
@@ -96,20 +96,19 @@ class _CourseCreatorBlocListener extends StatelessWidget {
     );
   }
 
-  void _manageInfo(
-    CourseCreatorInfo info,
-    BuildContext context,
-  ) {
+  void _manageInfo(CourseCreatorInfo info, BuildContext context) {
     switch (info) {
       case CourseCreatorInfo.courseHasBeenAdded:
         Navigation.backHome();
         context.read<HomePageController>().moveToPage(2);
-        Dialogs.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
         break;
       case CourseCreatorInfo.courseHasBeenUpdated:
         Navigation.backHome();
         context.read<HomePageController>().moveToPage(2);
-        Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano kurs');
+        DialogsProvider.showSnackbarWithMessage(
+          'Pomyślnie zaktualizowano kurs',
+        );
         break;
     }
   }
@@ -117,7 +116,7 @@ class _CourseCreatorBlocListener extends StatelessWidget {
   void _manageError(CourseCreatorError error) {
     switch (error) {
       case CourseCreatorError.courseNameIsAlreadyTaken:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           title: 'Zajęta nazwa',
           message:
               'Kurs o podanej nazwie już istnieje. Spróbuj wpisać inną nazwę.',

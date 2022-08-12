@@ -1,12 +1,12 @@
-import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
-import 'package:fiszkomaniak/components/buttons/button.dart';
-import 'package:fiszkomaniak/components/dialogs/single_input_dialog/single_input_dialog_cubit.dart';
-import 'package:fiszkomaniak/components/on_tap_focus_lose_area.dart';
-import 'package:fiszkomaniak/components/textfields/custom_textfield.dart';
-import 'package:fiszkomaniak/components/textfields/password_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../app_bar_with_close_button.dart';
+import '../../buttons/button.dart';
+import '../../on_tap_focus_lose_area.dart';
+import '../../textfields/custom_textfield.dart';
+import '../../textfields/password_textfield.dart';
+import 'single_input_dialog_cubit.dart';
 
 class SingleInputDialog extends StatelessWidget {
   final String appBarTitle;
@@ -147,7 +147,8 @@ class _SubmitButton extends StatelessWidget {
   }
 
   void _submit(BuildContext context) {
-    context.read<SingleInputDialogCubit>().onSubmit(context);
+    final String value = context.read<SingleInputDialogCubit>().state;
+    Navigator.of(context).pop(value);
   }
 }
 

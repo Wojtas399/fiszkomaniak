@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
 import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/achievements/get_remembered_flashcards_amount_use_case.dart';
 import '../../domain/use_cases/achievements/load_remembered_flashcards_amount_use_case.dart';
 import '../../domain/use_cases/auth/sign_out_use_case.dart';
@@ -97,15 +97,15 @@ class _ProfileBlocListener extends StatelessWidget {
       listener: (BuildContext context, ProfileState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final ProfileInfo? info = blocStatus.info;
           if (info != null) {
             _manageInfo(info, context);
           }
         } else if (blocStatus is BlocStatusError) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final ProfileError? error = blocStatus.error;
           if (error != null) {
             _manageError(error);
@@ -119,25 +119,25 @@ class _ProfileBlocListener extends StatelessWidget {
   void _manageInfo(ProfileInfo info, BuildContext context) {
     switch (info) {
       case ProfileInfo.avatarHasBeenUpdated:
-        Dialogs.showSnackbarWithMessage('Pomyślnie zmieniono avatar');
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie zmieniono avatar');
         break;
       case ProfileInfo.avatarHasBeenDeleted:
-        Dialogs.showSnackbarWithMessage('Pomyślnie usunięto avatar');
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie usunięto avatar');
         break;
       case ProfileInfo.usernameHasBeenUpdated:
-        Dialogs.showSnackbarWithMessage(
+        DialogsProvider.showSnackbarWithMessage(
           'Pomyślnie zmieniono nazwę użytkownika',
         );
         break;
       case ProfileInfo.passwordHasBeenUpdated:
-        Dialogs.showSnackbarWithMessage('Pomyślnie zmieniono hasło');
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie zmieniono hasło');
         break;
       case ProfileInfo.userHasBeenSignedOut:
         Navigation.pushReplacementToInitialHome();
         break;
       case ProfileInfo.userAccountHasBeenDeleted:
         Navigation.pushReplacementToInitialHome();
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           title: 'Konto usunięte',
           message:
               'Twoje konto zostało trwale usunięte. Jeśli chcesz ponownie skorzystać z aplikacji, załóż nowe konto.',
@@ -149,7 +149,7 @@ class _ProfileBlocListener extends StatelessWidget {
   void _manageError(ProfileError errorType) {
     switch (errorType) {
       case ProfileError.wrongPassword:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           title: 'Niepoprawne hasło',
           message:
               'Operacja nie powiodła się, ponieważ podano niepoprawne obecne hasło',

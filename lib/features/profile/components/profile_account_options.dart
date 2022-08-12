@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../../components/dialogs/dialogs.dart';
+import '../../../providers/dialogs_provider.dart';
 import '../../../components/dialogs/single_input_dialog/single_input_dialog.dart';
 import '../../../components/item_with_icon.dart';
 import '../../../components/section.dart';
@@ -57,7 +57,7 @@ class ProfileAccountOptions extends StatelessWidget {
   }
 
   Future<bool> _askForSignOutConfirmation() async {
-    return await Dialogs.askForConfirmation(
+    return await DialogsProvider.askForConfirmation(
       title: 'Wylogowywanie',
       text: 'Czy na pewno chcesz się wylogować z tego konta?',
       confirmButtonText: 'Wyloguj',
@@ -65,7 +65,7 @@ class ProfileAccountOptions extends StatelessWidget {
   }
 
   Future<String?> _askForAccountDeletionConfirmationPassword() async {
-    return await Dialogs.askForValue(
+    return await DialogsProvider.askForValue(
       appBarTitle: 'Usuwanie konta',
       textFieldIcon: MdiIcons.lock,
       textFieldType: TextFieldType.password,

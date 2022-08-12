@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
 import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/courses/get_all_courses_use_case.dart';
 import '../../domain/use_cases/courses/load_all_courses_use_case.dart';
 import '../../domain/use_cases/groups/add_group_use_case.dart';
@@ -76,15 +76,15 @@ class _GroupCreatorBlocListener extends StatelessWidget {
       listener: (BuildContext context, GroupCreatorState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final GroupCreatorInfo? info = blocStatus.info;
           if (info != null) {
             _manageInfo(info, context);
           }
         } else if (blocStatus is BlocStatusError) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final GroupCreatorError? error = blocStatus.error;
           if (error != null) {
             _manageError(error);
@@ -99,17 +99,19 @@ class _GroupCreatorBlocListener extends StatelessWidget {
     if (info == GroupCreatorInfo.groupHasBeenAdded) {
       Navigation.backHome();
       context.read<HomePageController>().moveToPage(0);
-      Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
+      DialogsProvider.showSnackbarWithMessage('Pomyślnie dodano nową grupę.');
     } else if (info == GroupCreatorInfo.groupHasBeenUpdated) {
       Navigation.moveBack();
-      Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizaowano grupę.');
+      DialogsProvider.showSnackbarWithMessage(
+        'Pomyślnie zaktualizaowano grupę.',
+      );
     }
   }
 
   void _manageError(GroupCreatorError error) {
     switch (error) {
       case GroupCreatorError.groupNameIsAlreadyTaken:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           title: 'Zajęta nazwa grupy',
           message:
               'Już istnieje grupa o takiej nazwie. Zmień ją aby móc kontynuować operację.',

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/custom_icon_button.dart';
-import '../../../components/dialogs/dialogs.dart';
+import '../../../providers/dialogs_provider.dart';
 import '../bloc/learning_process_bloc.dart';
 import 'learning_process_timer.dart';
 
@@ -44,7 +44,7 @@ class LearningProcessAppBar extends StatelessWidget
   }
 
   Future<bool> _askForSaveConfirmation() async {
-    return await Dialogs.askForConfirmation(
+    return await DialogsProvider.askForConfirmation(
       title: 'Koniec sesji',
       text: 'Czy chcesz zapisać zmiany przed zakończeniem sesji?',
       confirmButtonText: 'Zapisz',

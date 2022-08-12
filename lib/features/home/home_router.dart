@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../config/routes.dart';
+import '../../providers/global_navigator_key_provider.dart';
 import '../course_creator/bloc/course_creator_mode.dart';
 import '../course_creator/course_creator_screen.dart';
 import '../course_groups_preview/course_groups_preview_screen.dart';
@@ -20,8 +21,6 @@ import '../settings/settings_screen.dart';
 import 'home.dart';
 import 'home_view.dart';
 
-GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
 class HomeRouter extends StatefulWidget {
   const HomeRouter({super.key});
 
@@ -33,13 +32,13 @@ class _HomeRouterState extends State<HomeRouter> {
   @override
   void initState() {
     super.initState();
-    navigatorKey = GlobalKey<NavigatorState>();
+    GlobalNavigatorKeyProvider.setNewNavigatorKey();
   }
 
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      key: navigatorKey,
+      key: GlobalNavigatorKeyProvider.getKey(),
       initialRoute: Routes.home,
       onGenerateRoute: _onGenerateRoute,
     );

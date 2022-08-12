@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
+import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../components/flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import '../../components/flashcards_stack/flashcards_stack_model.dart';
 import '../../components/flashcards_stack/components/flashcards_stack_bloc_provider.dart';
-import '../../config/navigation.dart';
 import '../../domain/entities/flashcard.dart';
 import '../../domain/use_cases/achievements/add_finished_session_use_case.dart';
 import '../../domain/use_cases/courses/get_course_use_case.dart';
@@ -112,9 +112,9 @@ class _LearningProcessBlocListener extends StatelessWidget {
       listener: (BuildContext context, LearningProcessState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final LearningProcessInfo? info = blocStatus.info;
           if (info != null) {
             _manageInfo(

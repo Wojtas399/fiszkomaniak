@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../../components/dialogs/dialogs.dart';
+import '../../../config/navigation.dart';
+import '../../../providers/dialogs_provider.dart';
 import '../../../components/popup_menu.dart';
 import '../../../components/app_bar_with_close_button.dart';
-import '../../../config/navigation.dart';
 import '../../../domain/entities/group.dart';
 import '../../group_creator/bloc/group_creator_mode.dart';
 import '../bloc/group_preview_bloc.dart';
@@ -69,7 +69,7 @@ class GroupPreviewAppBar extends StatelessWidget
   }
 
   Future<bool> _askForDeletionOperationConfirmation() async {
-    return await Dialogs.askForConfirmation(
+    return await DialogsProvider.askForConfirmation(
       title: 'Czy na pewno chcesz usunąć grupę?',
       text:
           'Usunięcie grupy spowoduje również usunięcie wszystkich fiszek oraz sesji z nią powiązanych.',

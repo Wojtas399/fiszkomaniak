@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/courses/get_all_courses_use_case.dart';
 import '../../domain/use_cases/courses/get_course_use_case.dart';
 import '../../domain/use_cases/courses/load_all_courses_use_case.dart';
@@ -66,9 +66,9 @@ class _GroupSelectionBlocListener extends StatelessWidget {
       listener: (BuildContext context, GroupSelectionState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
         }
       },
       child: child,

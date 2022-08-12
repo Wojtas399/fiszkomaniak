@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
+import 'package:fiszkomaniak/providers/dialogs_provider.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:fiszkomaniak/validators/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -51,15 +51,15 @@ class _ResetPasswordStateListener extends StatelessWidget {
       listener: (BuildContext context, ResetPasswordState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog(context: context);
+          DialogsProvider.showLoadingDialog(context: context);
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final ResetPasswordInfoType? infoType = blocStatus.info;
           if (infoType != null) {
             _manageInfoType(infoType, context);
           }
         } else if (blocStatus is BlocStatusError) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final ResetPasswordErrorType? errorType = blocStatus.error;
           if (errorType != null) {
             _manageErrorType(errorType, context);
@@ -73,7 +73,7 @@ class _ResetPasswordStateListener extends StatelessWidget {
   void _manageInfoType(ResetPasswordInfoType infoType, BuildContext context) {
     switch (infoType) {
       case ResetPasswordInfoType.emailHasBeenSent:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           context: context,
           title: 'Email wysłany',
           message:
@@ -89,14 +89,14 @@ class _ResetPasswordStateListener extends StatelessWidget {
   ) {
     switch (errorType) {
       case ResetPasswordErrorType.invalidEmail:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           context: context,
           title: 'Niepoprawny adres email',
           message: 'Podano niepoprawny adres email do wysłania wiadomości',
         );
         break;
       case ResetPasswordErrorType.userNotFound:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           context: context,
           title: 'Brak użytkownika',
           message:

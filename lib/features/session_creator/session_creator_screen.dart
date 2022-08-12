@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
 import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/courses/get_all_courses_use_case.dart';
 import '../../domain/use_cases/courses/get_course_use_case.dart';
 import '../../domain/use_cases/courses/load_all_courses_use_case.dart';
@@ -99,9 +99,9 @@ class _SessionCreatorBlocListener extends StatelessWidget {
       listener: (BuildContext context, SessionCreatorState state) async {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final SessionCreatorInfo? info = blocStatus.info;
           if (info != null) {
             _manageInfo(info, context);
@@ -118,21 +118,21 @@ class _SessionCreatorBlocListener extends StatelessWidget {
   ) {
     switch (info) {
       case SessionCreatorInfo.timeFromThePast:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           title: 'Niedozwolony czas',
           message:
               'Godzina rozpoczęcia lub godzina powiadomienia wraz z wybraną datą są z przeszłości.',
         );
         break;
       case SessionCreatorInfo.chosenStartTimeIsEarlierThanNotificationTime:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           title: 'Niedozwolona godzina',
           message:
               'Wybrana godzina rozpoczęcia sesji jest godziną wcześniejszą niż godzina powiadomienia.',
         );
         break;
       case SessionCreatorInfo.chosenNotificationTimeIsLaterThanStartTime:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           title: 'Niedozwolona godzina',
           message:
               'Wybrana godzina powiadomienia jest godziną późniejszą, niż godzina rozpoczęcia sesji.',
@@ -141,11 +141,13 @@ class _SessionCreatorBlocListener extends StatelessWidget {
       case SessionCreatorInfo.sessionHasBeenAdded:
         Navigation.backHome();
         context.read<HomePageController>().moveToPage(1);
-        Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową sesję');
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie dodano nową sesję');
         break;
       case SessionCreatorInfo.sessionHasBeenUpdated:
         Navigation.moveBack();
-        Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano sesję');
+        DialogsProvider.showSnackbarWithMessage(
+          'Pomyślnie zaktualizowano sesję',
+        );
         break;
     }
   }

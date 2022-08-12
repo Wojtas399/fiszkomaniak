@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
 import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/courses/get_course_use_case.dart';
 import '../../domain/use_cases/flashcards/delete_flashcard_use_case.dart';
 import '../../domain/use_cases/flashcards/update_flashcard_use_case.dart';
@@ -95,15 +95,15 @@ class _FlashcardPreviewBlocListener extends StatelessWidget {
       listener: (BuildContext context, FlashcardPreviewState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final FlashcardPreviewInfo? info = blocStatus.info;
           if (info != null) {
             _manageInfo(info, context);
           }
         } else if (blocStatus is BlocStatusError) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final FlashcardPreviewError? error = blocStatus.error;
           if (error != null) {
             _manageError(error);
@@ -119,17 +119,19 @@ class _FlashcardPreviewBlocListener extends StatelessWidget {
     BuildContext context,
   ) {
     if (info == FlashcardPreviewInfo.flashcardHasBeenUpdated) {
-      Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano fiszkę');
+      DialogsProvider.showSnackbarWithMessage(
+        'Pomyślnie zaktualizowano fiszkę',
+      );
     } else if (info == FlashcardPreviewInfo.flashcardHasBeenDeleted) {
       Navigation.moveBack();
-      Dialogs.showSnackbarWithMessage('Pomyślnie usunięto fiszkę');
+      DialogsProvider.showSnackbarWithMessage('Pomyślnie usunięto fiszkę');
     }
   }
 
   void _manageError(FlashcardPreviewError error) {
     switch (error) {
       case FlashcardPreviewError.flashcardIsIncomplete:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           title: 'Niekompletna fiszka',
           message:
               'Pytanie lub odpowiedź pozostały puste. Uzupełnij je aby móc zapisać zmiany.',

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
 import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/courses/get_course_use_case.dart';
 import '../../domain/use_cases/groups/get_group_use_case.dart';
 import '../../domain/use_cases/groups/delete_group_use_case.dart';
@@ -67,9 +67,9 @@ class _GroupPreviewBlocListener extends StatelessWidget {
       listener: (BuildContext context, GroupPreviewState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final GroupPreviewInfo? info = blocStatus.info;
           if (info != null) {
             _manageInfo(info, context);
@@ -85,7 +85,7 @@ class _GroupPreviewBlocListener extends StatelessWidget {
       case GroupPreviewInfo.groupHasBeenDeleted:
         Navigation.backHome();
         context.read<HomePageController>().moveToPage(0);
-        Dialogs.showSnackbarWithMessage('Pomyślnie usunięto grupę.');
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie usunięto grupę.');
         break;
     }
   }

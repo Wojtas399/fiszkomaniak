@@ -1,5 +1,5 @@
 import 'dart:async';
-import '../../../components/dialogs/dialogs.dart';
+import '../../../providers/dialogs_provider.dart';
 import '../../../domain/entities/settings.dart';
 import '../../../domain/use_cases/achievements/get_all_flashcards_achieved_condition_use_case.dart';
 import '../../../domain/use_cases/achievements/get_finished_sessions_achieved_condition_use_case.dart';
@@ -108,7 +108,7 @@ class AchievementsListener {
   Future<void> _showInfoAboutNewAchievedConditionOfAllFlashcards(
     int newAchievedConditionValue,
   ) async {
-    await Dialogs.showAchievementDialog(
+    await DialogsProvider.showAchievementDialog(
       achievementValue: newAchievedConditionValue,
       title: 'Utworzone fiszki',
       textBeforeAchievementValue: 'Dotychczas utworzyłeś ponad',
@@ -119,7 +119,7 @@ class AchievementsListener {
   Future<void> _showInfoAboutNewAchievedConditionOfRememberedFlashcards(
     int newAchievedConditionValue,
   ) async {
-    Dialogs.showAchievementDialog(
+    DialogsProvider.showAchievementDialog(
       achievementValue: newAchievedConditionValue,
       title: 'Zapamiętane fiszki',
       textBeforeAchievementValue: 'Dotychczas zapamiętałeś ponad',
@@ -130,7 +130,7 @@ class AchievementsListener {
   Future<void> _showInfoAboutNewAchievedConditionOfFinishedSessions(
     int newAchievedConditionValue,
   ) async {
-    await Dialogs.showAchievementDialog(
+    await DialogsProvider.showAchievementDialog(
       achievementValue: newAchievedConditionValue,
       title: 'Ukończone sesje',
       textBeforeAchievementValue: 'Dotychczas ukończyłeś ponad',

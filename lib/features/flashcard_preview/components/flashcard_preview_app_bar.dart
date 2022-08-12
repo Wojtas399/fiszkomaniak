@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/app_bar_with_close_button.dart';
 import '../../../components/custom_icon_button.dart';
-import '../../../components/dialogs/dialogs.dart';
+import '../../../providers/dialogs_provider.dart';
 import '../../../utils/utils.dart';
 import '../bloc/flashcard_preview_bloc.dart';
 
@@ -56,7 +56,7 @@ class _DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Future<bool> _askForFlashcardDeletionConfirmation() async {
-    return await Dialogs.askForConfirmation(
+    return await DialogsProvider.askForConfirmation(
       title: 'Usuwanie',
       text: 'Czy na pewno chcesz usunąć tę fiszkę?',
       confirmButtonText: 'Usuń',
@@ -117,7 +117,7 @@ class _ConfirmationAppBar extends StatelessWidget
   }
 
   Future<bool> _askForSavingChangesConfirmation() async {
-    return await Dialogs.askForConfirmation(
+    return await DialogsProvider.askForConfirmation(
       title: 'Zapisywanie',
       text: 'Czy na pewno chcesz zapisać zmiany wprowadzone w tej fiszce?',
       confirmButtonText: 'Zapisz',

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
 import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/courses/get_course_use_case.dart';
 import '../../domain/use_cases/groups/get_group_use_case.dart';
 import '../../domain/use_cases/sessions/get_session_use_case.dart';
@@ -74,9 +74,9 @@ class _SessionPreviewBlocListener extends StatelessWidget {
       listener: (BuildContext context, SessionPreviewState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final SessionPreviewInfo? info = blocStatus.info;
           if (info != null) {
             _manageInfo(info, context);
@@ -94,7 +94,7 @@ class _SessionPreviewBlocListener extends StatelessWidget {
     switch (info) {
       case SessionPreviewInfo.sessionHasBeenDeleted:
         Navigation.moveBack();
-        Dialogs.showSnackbarWithMessage('Pomyślnie usunięto sesję');
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie usunięto sesję');
         break;
     }
   }

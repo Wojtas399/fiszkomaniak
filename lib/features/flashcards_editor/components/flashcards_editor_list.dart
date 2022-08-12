@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/dialogs/dialogs.dart';
+import '../../../providers/dialogs_provider.dart';
 import '../../../utils/utils.dart';
 import '../bloc/flashcards_editor_bloc.dart';
 import '../components/flashcards_editor_item.dart';
@@ -110,7 +110,7 @@ class FlashcardsEditorList extends StatelessWidget {
   }
 
   Future<bool> _askForFlashcardDeletionConfirmation() async {
-    return await Dialogs.askForConfirmation(
+    return await DialogsProvider.askForConfirmation(
       title: 'Usuwanie',
       text:
           'Operacja ta jest nieodwracalna i spowoduje trwałe usunięcie fiszki. Czy na pewno chcesz usunąć fiszkę?',

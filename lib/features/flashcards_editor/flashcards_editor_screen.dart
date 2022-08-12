@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/flashcards/save_edited_flashcards_use_case.dart';
 import '../../domain/use_cases/groups/get_group_use_case.dart';
 import '../../interfaces/achievements_interface.dart';
@@ -65,15 +65,15 @@ class _FlashcardsEditorBlocListener extends StatelessWidget {
       listener: (BuildContext context, FlashcardsEditorState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final FlashcardsEditorInfo? info = blocStatus.info;
           if (info != null) {
             _manageInfo(info);
           }
         } else if (blocStatus is BlocStatusError) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final FlashcardsEditorError? error = blocStatus.error;
           if (error != null) {
             _manageError(error);
@@ -87,7 +87,7 @@ class _FlashcardsEditorBlocListener extends StatelessWidget {
   void _manageInfo(FlashcardsEditorInfo info) {
     switch (info) {
       case FlashcardsEditorInfo.editedFlashcardsHaveBeenSaved:
-        Dialogs.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie zapisano zmiany');
         break;
     }
   }
@@ -95,14 +95,14 @@ class _FlashcardsEditorBlocListener extends StatelessWidget {
   void _manageError(FlashcardsEditorError error) {
     switch (error) {
       case FlashcardsEditorError.noChangesHaveBeenMade:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           title: 'Brak zmian',
           message:
               'Nie wprowadzono żadnych zmian do fiszek. Wprowadź je, aby móc wykonać tę operację.',
         );
         break;
       case FlashcardsEditorError.incompleteFlashcardsExist:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           title: 'Niekompletne fiszki',
           message: 'Niektóry fiszki nie zostały w pełni uzupełnione.',
         );

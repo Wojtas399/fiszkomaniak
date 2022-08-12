@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/avatar/avatar.dart';
 import '../../../components/avatar/avatar_image_type.dart';
-import '../../../components/dialogs/dialogs.dart';
+import '../../../providers/dialogs_provider.dart';
 import '../../../components/modal_bottom_sheet.dart';
 import '../bloc/profile_bloc.dart';
 
@@ -112,13 +112,13 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
   }
 
   Future<bool> _askForNewAvatarConfirmation(String imagePath) async {
-    return await Dialogs.askForImageConfirmation(
+    return await DialogsProvider.askForImageConfirmation(
       imageFile: File(imagePath),
     );
   }
 
   Future<bool> _askForAvatarDeletionConfirmation() async {
-    return await Dialogs.askForConfirmation(
+    return await DialogsProvider.askForConfirmation(
       title: "Usuwanie",
       text: 'Czy na pewno chcesz usunąć obecne zdjęcie profilowe?',
       confirmButtonText: 'Usuń',

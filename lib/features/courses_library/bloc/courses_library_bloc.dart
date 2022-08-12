@@ -48,6 +48,7 @@ class CoursesLibraryBloc
     CoursesLibraryEventInitialize event,
     Emitter<CoursesLibraryState> emit,
   ) async {
+    _setAllCoursesListener();
     await _loadAllCoursesUseCase.execute().timeout(
       const Duration(seconds: 1),
       onTimeout: () {
@@ -59,7 +60,6 @@ class CoursesLibraryBloc
     emit(state.copyWith(
       status: const BlocStatusComplete(),
     ));
-    _setAllCoursesListener();
   }
 
   void _allCoursesUpdated(

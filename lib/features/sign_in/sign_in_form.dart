@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/use_cases/auth/sign_in_use_case.dart';
 import '../../../interfaces/auth_interface.dart';
-import '../../../components/dialogs/dialogs.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../../models/bloc_status.dart';
 import 'bloc/sign_in_bloc.dart';
 import 'components/sign_in_submit_button.dart';
@@ -62,11 +62,11 @@ class _SignInBlocListener extends StatelessWidget {
       listener: (BuildContext context, SignInState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog(context: context);
+          DialogsProvider.showLoadingDialog(context: context);
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
         } else if (blocStatus is BlocStatusError) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final SignInErrorType? errorType = blocStatus.error;
           if (errorType != null) {
             _manageErrorType(errorType, context);
@@ -80,7 +80,7 @@ class _SignInBlocListener extends StatelessWidget {
   void _manageErrorType(SignInErrorType errorType, BuildContext context) {
     switch (errorType) {
       case SignInErrorType.userNotFound:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           context: context,
           title: 'Brak użytkownika',
           message:
@@ -88,13 +88,13 @@ class _SignInBlocListener extends StatelessWidget {
         );
         break;
       case SignInErrorType.invalidEmail:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           title: 'Nieprawidłowy adres email',
           message: 'Podano nieprawidłowy adres email',
         );
         break;
       case SignInErrorType.wrongPassword:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           context: context,
           title: 'Niepoprawne hasło',
           message: 'Podano niepoprawne hasło dla tego użytkownika',

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/dialogs/dialogs.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../../domain/use_cases/auth/sign_up_use_case.dart';
 import '../../../interfaces/achievements_interface.dart';
 import '../../../interfaces/auth_interface.dart';
@@ -74,11 +74,11 @@ class _SignUpBlocListener extends StatelessWidget {
       listener: (BuildContext context, SignUpState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog(context: context);
+          DialogsProvider.showLoadingDialog(context: context);
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
         } else if (blocStatus is BlocStatusError) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
           final SignUpErrorType? errorType = blocStatus.error;
           if (errorType != null) {
             _manageErrorType(errorType, context);
@@ -92,7 +92,7 @@ class _SignUpBlocListener extends StatelessWidget {
   void _manageErrorType(SignUpErrorType errorType, BuildContext context) {
     switch (errorType) {
       case SignUpErrorType.emailAlreadyInUse:
-        Dialogs.showDialogWithMessage(
+        DialogsProvider.showDialogWithMessage(
           context: context,
           title: 'Zajęty email',
           message:
