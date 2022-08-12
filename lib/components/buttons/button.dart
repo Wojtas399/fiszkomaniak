@@ -5,10 +5,10 @@ class Button extends StatelessWidget {
   final Function()? onPressed;
 
   const Button({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
