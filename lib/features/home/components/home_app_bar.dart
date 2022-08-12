@@ -9,6 +9,7 @@ import '../../../ui_extensions/ui_number_extensions.dart';
 import '../bloc/home_bloc.dart';
 import '../home.dart';
 
+
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key});
 
