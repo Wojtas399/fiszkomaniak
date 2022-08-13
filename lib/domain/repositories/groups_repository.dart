@@ -1,13 +1,13 @@
-import 'package:fiszkomaniak/firebase/fire_document.dart';
-import 'package:fiszkomaniak/firebase/fire_extensions.dart';
-import 'package:fiszkomaniak/firebase/models/flashcard_db_model.dart';
-import 'package:fiszkomaniak/firebase/models/group_db_model.dart';
-import 'package:fiszkomaniak/firebase/services/fire_flashcards_service.dart';
-import 'package:fiszkomaniak/firebase/services/fire_groups_service.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/domain/entities/group.dart';
-import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:rxdart/rxdart.dart';
+import '../../firebase/fire_document.dart';
+import '../../firebase/fire_extensions.dart';
+import '../../firebase/models/flashcard_db_model.dart';
+import '../../firebase/models/group_db_model.dart';
+import '../../firebase/services/fire_flashcards_service.dart';
+import '../../firebase/services/fire_groups_service.dart';
+import '../../interfaces/groups_interface.dart';
+import '../entities/flashcard.dart';
+import '../entities/group.dart';
 
 class GroupsRepository implements GroupsInterface {
   late final FireGroupsService _fireGroupsService;
@@ -29,18 +29,28 @@ class GroupsRepository implements GroupsInterface {
   Stream<Group> getGroupById({required String groupId}) {
     if (_isGroupLoaded(groupId)) {
       return allGroups$.map(
-        (groups) => groups.firstWhere((group) => group.id == groupId),
-      );
+        (List<Group> groups) {
+          final List<Group?> groupsForSearching = [...groups];
+          return groupsForSearching.firstWhere(
+            (Group? group) => group?.id == groupId,
+            orElse: () => null,
+          );
+        },
+      ).whereType<Group>();
     }
     return Rx.fromCallable(() async => await _loadGroupFromDb(groupId))
         .whereType<Group>()
-        .doOnData((group) => _addGroupsToStream([group]));
+        .doOnData((Group group) => _addGroupToList(group));
   }
 
   @override
   Stream<List<Group>> getGroupsByCourseId({required String courseId}) {
     return allGroups$.map(
-      (groups) => groups.where((group) => group.courseId == courseId).toList(),
+      (List<Group> groups) => groups
+          .where(
+            (Group group) => group.courseId == courseId,
+          )
+          .toList(),
     );
   }
 
@@ -69,10 +79,11 @@ class GroupsRepository implements GroupsInterface {
       courseId: courseId,
       nameForQuestions: nameForQuestions,
       nameForAnswers: nameForAnswers,
+      flashcards: const [],
     ));
     final Group? group = _convertGroupDbModelToGroup(groupFromDb);
     if (group != null) {
-      _addGroupsToStream([group]);
+      _addGroupToList(group);
     }
   }
 
@@ -91,15 +102,16 @@ class GroupsRepository implements GroupsInterface {
       nameForQuestions: nameForQuestion,
       nameForAnswers: nameForAnswers,
     );
-    _updateGroupInStream(updatedGroupFromDb);
+    final Group? updatedGroup = _convertGroupDbModelToGroup(updatedGroupFromDb);
+    if (updatedGroup != null) {
+      _updateGroupInList(updatedGroup);
+    }
   }
 
   @override
-  Future<void> removeGroup(String groupId) async {
+  Future<void> deleteGroup(String groupId) async {
     final removedGroupId = await _fireGroupsService.removeGroup(groupId);
-    final groups = [..._allGroups$.value];
-    groups.removeWhere((group) => group.id == removedGroupId);
-    _allGroups$.add(groups);
+    _removeGroupFromList(removedGroupId);
   }
 
   @override
@@ -130,7 +142,10 @@ class GroupsRepository implements GroupsInterface {
       groupId,
       flashcards.map(_convertFlashcardToDbModel).toList(),
     );
-    _updateGroupInStream(updatedGroupFromDb);
+    final Group? updatedGroup = _convertGroupDbModelToGroup(updatedGroupFromDb);
+    if (updatedGroup != null) {
+      _updateGroupInList(updatedGroup);
+    }
   }
 
   @override
@@ -138,12 +153,15 @@ class GroupsRepository implements GroupsInterface {
     required String groupId,
     required List<int> flashcardsIndexes,
   }) async {
-    final groupFromDb = await _fireFlashcardsService
+    final updatedGroupFromDb = await _fireFlashcardsService
         .setGivenFlashcardsAsRememberedAndRemainingAsNotRemembered(
       groupId: groupId,
       indexesOfRememberedFlashcards: flashcardsIndexes,
     );
-    _updateGroupInStream(groupFromDb);
+    final Group? updatedGroup = _convertGroupDbModelToGroup(updatedGroupFromDb);
+    if (updatedGroup != null) {
+      _updateGroupInList(updatedGroup);
+    }
   }
 
   @override
@@ -151,23 +169,50 @@ class GroupsRepository implements GroupsInterface {
     required String groupId,
     required Flashcard flashcard,
   }) async {
-    final groupFromDb = await _fireFlashcardsService.updateFlashcard(
+    final updatedGroupFromDb = await _fireFlashcardsService.updateFlashcard(
       groupId,
       _convertFlashcardToDbModel(flashcard),
     );
-    _updateGroupInStream(groupFromDb);
+    final Group? updatedGroup = _convertGroupDbModelToGroup(updatedGroupFromDb);
+    if (updatedGroup != null) {
+      _updateGroupInList(updatedGroup);
+    }
   }
 
   @override
-  Future<void> removeFlashcard({
+  Future<void> deleteFlashcard({
     required String groupId,
     required int flashcardIndex,
   }) async {
-    final groupFromDb = await _fireFlashcardsService.removeFlashcard(
+    final updatedGroupFromDb = await _fireFlashcardsService.removeFlashcard(
       groupId,
       flashcardIndex,
     );
-    _updateGroupInStream(groupFromDb);
+    final Group? updatedGroup = _convertGroupDbModelToGroup(updatedGroupFromDb);
+    if (updatedGroup != null) {
+      _updateGroupInList(updatedGroup);
+    }
+  }
+
+  void _addGroupToList(Group group) {
+    final List<Group> updatedGroups = [..._allGroups$.value];
+    updatedGroups.add(group);
+    _allGroups$.add(updatedGroups.toSet().toList());
+  }
+
+  void _updateGroupInList(Group updatedGroup) {
+    final updatedGroups = [..._allGroups$.value];
+    final updatedGroupIndex = updatedGroups.indexWhere(
+      (Group group) => group.id == updatedGroup.id,
+    );
+    updatedGroups[updatedGroupIndex] = updatedGroup;
+    _allGroups$.add(updatedGroups);
+  }
+
+  void _removeGroupFromList(String groupId) {
+    final List<Group> updatedGroups = [..._allGroups$.value];
+    updatedGroups.removeWhere((Group group) => group.id == groupId);
+    _allGroups$.add(updatedGroups);
   }
 
   bool _isGroupLoaded(String groupId) {
@@ -175,16 +220,10 @@ class GroupsRepository implements GroupsInterface {
   }
 
   Future<Group?> _loadGroupFromDb(String groupId) async {
-    final groupFromDb = await _fireGroupsService.loadGroupById(
+    final dbGroup = await _fireGroupsService.loadGroupById(
       groupId: groupId,
     );
-    return _convertGroupDbModelToGroup(groupFromDb);
-  }
-
-  void _addGroupsToStream(List<Group> groups) {
-    final List<Group> updatedGroups = [..._allGroups$.value];
-    updatedGroups.addAll(groups);
-    _allGroups$.add(updatedGroups.toSet().toList());
+    return _convertGroupDbModelToGroup(dbGroup);
   }
 
   Group? _convertGroupDbModelToGroup(FireDocument<GroupDbModel>? group) {
@@ -194,37 +233,27 @@ class GroupsRepository implements GroupsInterface {
     final String? courseId = groupData?.courseId;
     final String? nameForQuestions = groupData?.nameForQuestions;
     final String? nameForAnswers = groupData?.nameForAnswers;
+    final List<FlashcardDbModel>? flashcards = groupData?.flashcards;
     if (groupId != null &&
         groupData != null &&
         name != null &&
         courseId != null &&
         nameForQuestions != null &&
-        nameForAnswers != null) {
+        nameForAnswers != null &&
+        flashcards != null) {
       return Group(
         id: groupId,
         name: name,
         courseId: courseId,
         nameForQuestions: nameForQuestions,
         nameForAnswers: nameForAnswers,
-        flashcards: groupData.flashcards
+        flashcards: flashcards
             .map(_convertFlashcardDbModelToFlashcard)
             .whereType<Flashcard>()
             .toList(),
       );
     }
     return null;
-  }
-
-  void _updateGroupInStream(FireDocument<GroupDbModel>? groupFromDb) {
-    final Group? updatedGroup = _convertGroupDbModelToGroup(groupFromDb);
-    if (updatedGroup != null) {
-      final groups = [..._allGroups$.value];
-      final updatedGroupIndex = groups.indexWhere(
-        (group) => group.id == updatedGroup.id,
-      );
-      groups[updatedGroupIndex] = updatedGroup;
-      _allGroups$.add(groups);
-    }
   }
 
   FlashcardDbModel _convertFlashcardToDbModel(Flashcard flashcard) {

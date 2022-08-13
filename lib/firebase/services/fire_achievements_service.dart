@@ -8,9 +8,9 @@ class FireAchievementsService {
   final String rememberedFlashcardsAmountId = 'RememberedFlashcardsAmount';
   final String finishedSessionsAmountId = 'FinishedSessionsAmount';
 
-  Future<AchievementDbModel?> loadAllFlashcardsAmount() async {
+  Future<AchievementDbModel?> loadRememberedFlashcardsAmount() async {
     final doc = await FireReferences.achievementsRefWithConverter
-        .doc('AllFlashcardsAmount')
+        .doc(rememberedFlashcardsAmountId)
         .get();
     final data = doc.data();
     if (data != null) {

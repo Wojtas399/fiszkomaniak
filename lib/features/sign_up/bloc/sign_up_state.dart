@@ -66,12 +66,24 @@ class SignUpState extends Equatable {
       passwordConfirmation: passwordConfirmation ?? this.passwordConfirmation,
     );
   }
+
+  SignUpState copyWithInfo(SignUpInfo info) {
+    return copyWith(
+      status: BlocStatusComplete<SignUpInfo>(info: info),
+    );
+  }
+
+  SignUpState copyWithError(SignUpError error) {
+    return copyWith(
+      status: BlocStatusError<SignUpError>(error: error),
+    );
+  }
 }
 
-enum SignUpInfoType {
+enum SignUpInfo {
   userHasBeenSignedUp,
 }
 
-enum SignUpErrorType {
+enum SignUpError {
   emailAlreadyInUse,
 }

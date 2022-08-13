@@ -4,7 +4,7 @@ import '../../config/theme/colors.dart';
 class SimpleLoadingDialog extends StatelessWidget {
   final String? text;
 
-  const SimpleLoadingDialog({Key? key, this.text}) : super(key: key);
+  const SimpleLoadingDialog({super.key, this.text});
 
   @override
   Widget build(BuildContext context) {

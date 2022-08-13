@@ -90,17 +90,13 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
           email: state.email,
           password: state.password,
         );
-        emit(state.copyWith(
-          status: const BlocStatusComplete<SignUpInfoType>(
-            info: SignUpInfoType.userHasBeenSignedUp,
-          ),
+        emit(state.copyWithInfo(
+          SignUpInfo.userHasBeenSignedUp,
         ));
       } on AuthException catch (exception) {
         if (exception == AuthException.emailAlreadyInUse) {
-          emit(state.copyWith(
-            status: const BlocStatusError<SignUpErrorType>(
-              errorType: SignUpErrorType.emailAlreadyInUse,
-            ),
+          emit(state.copyWithError(
+            SignUpError.emailAlreadyInUse,
           ));
         }
       }

@@ -1,8 +1,8 @@
-import 'package:fiszkomaniak/components/buttons/button.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/group_selection/bloc/group_selection_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/buttons/button.dart';
+import '../../../config/navigation.dart';
+import '../bloc/group_selection_bloc.dart';
 
 class GroupSelectionButton extends StatelessWidget {
   const GroupSelectionButton({super.key});
@@ -22,7 +22,7 @@ class GroupSelectionButton extends StatelessWidget {
     final String? selectedGroupId =
         context.read<GroupSelectionBloc>().state.selectedGroup?.id;
     if (selectedGroupId != null) {
-      context.read<Navigation>().navigateToFlashcardsEditor(selectedGroupId);
+      Navigation.navigateToFlashcardsEditor(selectedGroupId);
     }
   }
 }

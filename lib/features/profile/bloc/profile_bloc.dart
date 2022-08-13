@@ -3,8 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 import '../../../domain/entities/user.dart';
-import '../../../domain/use_cases/achievements/get_all_flashcards_amount_use_case.dart';
-import '../../../domain/use_cases/achievements/load_all_flashcards_amount_use_case.dart';
+import '../../../domain/use_cases/achievements/get_remembered_flashcards_amount_use_case.dart';
+import '../../../domain/use_cases/achievements/load_remembered_flashcards_amount_use_case.dart';
 import '../../../domain/use_cases/auth/sign_out_use_case.dart';
 import '../../../domain/use_cases/auth/update_password_use_case.dart';
 import '../../../domain/use_cases/user/get_user_use_case.dart';
@@ -14,7 +14,6 @@ import '../../../domain/use_cases/user/get_days_streak_use_case.dart';
 import '../../../domain/use_cases/user/update_avatar_use_case.dart';
 import '../../../domain/use_cases/user/update_user_username_use_case.dart';
 import '../../../exceptions/auth_exceptions.dart';
-import '../../../features/profile/profile_dialogs.dart';
 import '../../../models/bloc_status.dart';
 
 part 'profile_event.dart';
@@ -22,9 +21,11 @@ part 'profile_event.dart';
 part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  late final LoadAllFlashcardsAmountUseCase _loadAllFlashcardsAmountUseCase;
+  late final LoadRememberedFlashcardsAmountUseCase
+      _loadRememberedFlashcardsAmountUseCase;
   late final GetUserUseCase _getUserUseCase;
-  late final GetAllFlashcardsAmountUseCase _getAllFlashcardsAmountUseCase;
+  late final GetRememberedFlashcardsAmountUseCase
+      _getRememberedFlashcardsAmountUseCase;
   late final GetDaysStreakUseCase _getDaysStreakUseCase;
   late final UpdateUserUsernameUseCase _updateUserUsernameUseCase;
   late final UpdatePasswordUseCase _updatePasswordUseCase;
@@ -32,13 +33,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   late final SignOutUseCase _signOutUseCase;
   late final DeleteLoggedUserAccountUseCase _deleteLoggedUserAccountUseCase;
   late final DeleteAvatarUseCase _deleteAvatarUseCase;
-  late final ProfileDialogs _profileDialogs;
   StreamSubscription<ProfileStateListenedParams>? _paramsListener;
 
   ProfileBloc({
-    required LoadAllFlashcardsAmountUseCase loadAllFlashcardsAmountUseCase,
+    required LoadRememberedFlashcardsAmountUseCase
+        loadRememberedFlashcardsAmountUseCase,
     required GetUserUseCase getUserUseCase,
-    required GetAllFlashcardsAmountUseCase getAllFlashcardsAmountUseCase,
+    required GetRememberedFlashcardsAmountUseCase
+        getRememberedFlashcardsAmountUseCase,
     required GetDaysStreakUseCase getDaysStreakUseCase,
     required UpdateUserUsernameUseCase updateUserUsernameUseCase,
     required UpdatePasswordUseCase updatePasswordUseCase,
@@ -46,22 +48,23 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     required SignOutUseCase signOutUseCase,
     required DeleteLoggedUserAccountUseCase deleteLoggedUserAccountUseCase,
     required DeleteAvatarUseCase deleteAvatarUseCase,
-    required ProfileDialogs profileDialogs,
     BlocStatus status = const BlocStatusInitial(),
     User? user,
     int daysStreak = 0,
-    int amountOfAllFlashcards = 0,
+    int amountOfRememberedFlashcards = 0,
   }) : super(
           ProfileState(
             status: status,
             user: user,
             daysStreak: daysStreak,
-            amountOfAllFlashcards: amountOfAllFlashcards,
+            amountOfRememberedFlashcards: amountOfRememberedFlashcards,
           ),
         ) {
-    _loadAllFlashcardsAmountUseCase = loadAllFlashcardsAmountUseCase;
+    _loadRememberedFlashcardsAmountUseCase =
+        loadRememberedFlashcardsAmountUseCase;
     _getUserUseCase = getUserUseCase;
-    _getAllFlashcardsAmountUseCase = getAllFlashcardsAmountUseCase;
+    _getRememberedFlashcardsAmountUseCase =
+        getRememberedFlashcardsAmountUseCase;
     _getDaysStreakUseCase = getDaysStreakUseCase;
     _updateUserUsernameUseCase = updateUserUsernameUseCase;
     _updatePasswordUseCase = updatePasswordUseCase;
@@ -69,7 +72,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     _signOutUseCase = signOutUseCase;
     _deleteLoggedUserAccountUseCase = deleteLoggedUserAccountUseCase;
     _deleteAvatarUseCase = deleteAvatarUseCase;
-    _profileDialogs = profileDialogs;
     on<ProfileEventInitialize>(_initialize);
     on<ProfileEventListenedParamsUpdated>(_listenedParamsUpdated);
     on<ProfileEventChangeAvatar>(_changeAvatar);
@@ -90,7 +92,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileEventInitialize event,
     Emitter<ProfileState> emit,
   ) async {
-    await _loadAllFlashcardsAmountUseCase.execute();
+    await _loadRememberedFlashcardsAmountUseCase.execute();
     _setParamsListener();
   }
 
@@ -101,7 +103,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(state.copyWith(
       user: event.params.user,
       daysStreak: event.params.daysStreak,
-      amountOfAllFlashcards: event.params.allFlashcardsAmount,
+      amountOfRememberedFlashcards: event.params.amountOfRememberedFlashcards,
     ));
   }
 
@@ -109,30 +111,26 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileEventChangeAvatar event,
     Emitter<ProfileState> emit,
   ) async {
-    if (await _hasNewAvatarBeenConfirmed(event.imagePath)) {
-      emit(state.copyWith(
-        status: const BlocStatusLoading(),
-      ));
-      await _updateAvatarUseCase.execute(imagePath: event.imagePath);
-      emit(state.copyWithInfoType(
-        ProfileInfoType.avatarHasBeenUpdated,
-      ));
-    }
+    emit(state.copyWith(
+      status: const BlocStatusLoading(),
+    ));
+    await _updateAvatarUseCase.execute(imagePath: event.imagePath);
+    emit(state.copyWithInfo(
+      ProfileInfo.avatarHasBeenUpdated,
+    ));
   }
 
   Future<void> _deleteAvatar(
     ProfileEventDeleteAvatar event,
     Emitter<ProfileState> emit,
   ) async {
-    if (await _hasAvatarDeletionBeenConfirmed()) {
-      emit(state.copyWith(
-        status: const BlocStatusLoading(),
-      ));
-      await _deleteAvatarUseCase.execute();
-      emit(state.copyWithInfoType(
-        ProfileInfoType.avatarHasBeenDeleted,
-      ));
-    }
+    emit(state.copyWith(
+      status: const BlocStatusLoading(),
+    ));
+    await _deleteAvatarUseCase.execute();
+    emit(state.copyWithInfo(
+      ProfileInfo.avatarHasBeenDeleted,
+    ));
   }
 
   Future<void> _changeUsername(
@@ -143,8 +141,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       status: const BlocStatusLoading(),
     ));
     await _updateUserUsernameUseCase.execute(username: event.newUsername);
-    emit(state.copyWithInfoType(
-      ProfileInfoType.usernameHasBeenUpdated,
+    emit(state.copyWithInfo(
+      ProfileInfo.usernameHasBeenUpdated,
     ));
   }
 
@@ -160,13 +158,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         currentPassword: event.currentPassword,
         newPassword: event.newPassword,
       );
-      emit(state.copyWithInfoType(
-        ProfileInfoType.passwordHasBeenUpdated,
+      emit(state.copyWithInfo(
+        ProfileInfo.passwordHasBeenUpdated,
       ));
     } on AuthException catch (exception) {
       if (exception == AuthException.wrongPassword) {
-        emit(state.copyWithErrorType(
-          ProfileErrorType.wrongPassword,
+        emit(state.copyWithError(
+          ProfileError.wrongPassword,
         ));
       }
     }
@@ -176,38 +174,34 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileEventSignOut event,
     Emitter<ProfileState> emit,
   ) async {
-    if (await _hasSignOutBeenConfirmed()) {
-      emit(state.copyWith(
-        status: const BlocStatusLoading(),
-      ));
-      await _signOutUseCase.execute();
-      emit(state.copyWithInfoType(
-        ProfileInfoType.userHasBeenSignedOut,
-      ));
-    }
+    emit(state.copyWith(
+      status: const BlocStatusLoading(),
+    ));
+    await _signOutUseCase.execute();
+    emit(state.copyWithInfo(
+      ProfileInfo.userHasBeenSignedOut,
+    ));
   }
 
   Future<void> _deleteAccount(
     ProfileEventDeleteAccount event,
     Emitter<ProfileState> emit,
   ) async {
-    final String? password =
-        await _profileDialogs.askForAccountDeletionConfirmationPassword();
-    if (password != null) {
-      try {
-        emit(state.copyWith(
-          status: const BlocStatusLoading(),
+    try {
+      emit(state.copyWith(
+        status: const BlocStatusLoading(),
+      ));
+      await _deleteLoggedUserAccountUseCase.execute(
+        password: event.password,
+      );
+      emit(state.copyWithInfo(
+        ProfileInfo.userAccountHasBeenDeleted,
+      ));
+    } on AuthException catch (exception) {
+      if (exception == AuthException.wrongPassword) {
+        emit(state.copyWithError(
+          ProfileError.wrongPassword,
         ));
-        await _deleteLoggedUserAccountUseCase.execute(password: password);
-        emit(state.copyWithInfoType(
-          ProfileInfoType.userAccountHasBeenDeleted,
-        ));
-      } on AuthException catch (exception) {
-        if (exception == AuthException.wrongPassword) {
-          emit(state.copyWithErrorType(
-            ProfileErrorType.wrongPassword,
-          ));
-        }
       }
     }
   }
@@ -215,32 +209,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   void _setParamsListener() {
     _paramsListener ??= Rx.combineLatest3(
       _getUserUseCase.execute(),
-      _getAllFlashcardsAmountUseCase.execute(),
+      _getRememberedFlashcardsAmountUseCase.execute(),
       _getDaysStreakUseCase.execute(),
       (
         User? user,
-        int allFlashcardsAmount,
+        int amountOfRememberedFlashcards,
         int daysStreak,
       ) =>
           ProfileStateListenedParams(
         user: user,
-        allFlashcardsAmount: allFlashcardsAmount,
+        amountOfRememberedFlashcards: amountOfRememberedFlashcards,
         daysStreak: daysStreak,
       ),
     ).listen(
       (params) => add(ProfileEventListenedParamsUpdated(params: params)),
     );
-  }
-
-  Future<bool> _hasNewAvatarBeenConfirmed(String imgPath) async {
-    return await _profileDialogs.askForNewAvatarConfirmation(imgPath);
-  }
-
-  Future<bool> _hasAvatarDeletionBeenConfirmed() async {
-    return await _profileDialogs.askForAvatarDeletionConfirmation();
-  }
-
-  Future<bool> _hasSignOutBeenConfirmed() async {
-    return await _profileDialogs.askForSignOutConfirmation();
   }
 }

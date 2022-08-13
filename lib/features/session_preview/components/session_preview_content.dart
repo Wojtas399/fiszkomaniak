@@ -1,14 +1,14 @@
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/features/learning_process/learning_process_data.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
-import 'package:fiszkomaniak/features/session_preview/components/session_preview_app_bar.dart';
-import 'package:fiszkomaniak/features/session_preview/components/session_preview_flashcards.dart';
-import 'package:fiszkomaniak/features/session_preview/components/session_preview_time.dart';
-import 'package:fiszkomaniak/features/session_preview/components/session_preview_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/bouncing_scroll.dart';
 import '../../../components/buttons/button.dart';
+import '../../../config/navigation.dart';
+import '../../learning_process/learning_process_arguments.dart';
+import '../bloc/session_preview_bloc.dart';
+import 'session_preview_app_bar.dart';
+import 'session_preview_flashcards.dart';
+import 'session_preview_time.dart';
+import 'session_preview_title.dart';
 
 class SessionPreviewContent extends StatelessWidget {
   const SessionPreviewContent({super.key});
@@ -69,16 +69,15 @@ class _StartLearningButton extends StatelessWidget {
     final SessionPreviewState state = context.read<SessionPreviewBloc>().state;
     final String? groupId = state.group?.id;
     if (groupId != null) {
-      context.read<Navigation>().navigateToLearningProcess(
-            LearningProcessData(
-              groupId: groupId,
-              flashcardsType: state.flashcardsType,
-              areQuestionsAndAnswersSwapped:
-                  state.areQuestionsAndAnswersSwapped,
-              sessionId: state.session?.id,
-              duration: state.duration,
-            ),
-          );
+      Navigation.navigateToLearningProcess(
+        LearningProcessArguments(
+          sessionId: state.session?.id,
+          groupId: groupId,
+          flashcardsType: state.flashcardsType,
+          areQuestionsAndAnswersSwapped: state.areQuestionsAndAnswersSwapped,
+          duration: state.duration,
+        ),
+      );
     }
   }
 }

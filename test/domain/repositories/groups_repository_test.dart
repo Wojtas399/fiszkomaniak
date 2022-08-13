@@ -81,7 +81,9 @@ void main() {
         await group$.first,
         createGroup(id: 'g1', name: 'group 1', courseId: 'c1'),
       );
-      verify(() => fireGroupsService.loadGroupById(groupId: 'g1')).called(1);
+      verify(
+        () => fireGroupsService.loadGroupById(groupId: 'g1'),
+      ).called(1);
     },
   );
 
@@ -95,7 +97,9 @@ void main() {
       final Stream<Group> group$ = repository.getGroupById(groupId: 'g1');
 
       expect(await group$.isEmpty, true);
-      verify(() => fireGroupsService.loadGroupById(groupId: 'g1')).called(1);
+      verify(
+        () => fireGroupsService.loadGroupById(groupId: 'g1'),
+      ).called(1);
     },
   );
 
@@ -170,6 +174,9 @@ void main() {
           createGroup(id: 'g3', name: 'group 3'),
         ],
       );
+      verify(
+        () => fireGroupsService.loadAllGroups(),
+      ).called(1);
     },
   );
 
@@ -187,6 +194,7 @@ void main() {
             courseId: 'c1',
             nameForQuestions: 'questions',
             nameForAnswers: 'answers',
+            flashcards: [],
           ),
         ),
       ).thenAnswer((_) async => groupFromDb);
@@ -205,6 +213,7 @@ void main() {
             courseId: 'c1',
             nameForQuestions: 'questions',
             nameForAnswers: 'answers',
+            flashcards: [],
           ),
         ),
       ).called(1);
@@ -253,7 +262,7 @@ void main() {
   );
 
   test(
-    'remove group, should remove group from db and from all groups stream',
+    'delete group, should call methods responsible for deleting group from db and from all groups stream',
     () async {
       final FireDocument<GroupDbModel> groupFromDb = FireDocument(
         id: 'g1',
@@ -267,9 +276,11 @@ void main() {
       ).thenAnswer((_) async => 'g1');
 
       await repository.loadAllGroups();
-      await repository.removeGroup('g1');
+      await repository.deleteGroup('g1');
 
-      verify(() => fireGroupsService.removeGroup('g1')).called(1);
+      verify(
+        () => fireGroupsService.removeGroup('g1'),
+      ).called(1);
       expect(await repository.allGroups$.first, []);
     },
   );
@@ -494,7 +505,7 @@ void main() {
       );
 
       test(
-        'remove flashcard, should call method responsible for removing flashcard and should update all groups stream',
+        'delete flashcard, should call method responsible for deleting flashcard from db and should update all groups stream',
         () async {
           final FireDocument<GroupDbModel> dbUpdatedGroup = FireDocument(
             id: 'g1',
@@ -507,7 +518,7 @@ void main() {
           ).thenAnswer((_) async => dbUpdatedGroup);
 
           await repository.loadAllGroups();
-          await repository.removeFlashcard(groupId: 'g1', flashcardIndex: 0);
+          await repository.deleteFlashcard(groupId: 'g1', flashcardIndex: 0);
 
           final List<Group> groups = await repository.allGroups$.first;
           expect(groups, [updatedGroup]);

@@ -1,4 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_all_courses_use_case.dart';
@@ -9,8 +11,6 @@ import 'package:fiszkomaniak/domain/use_cases/groups/update_group_use_case.dart'
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_bloc.dart';
 import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockLoadAllCoursesUseCase extends Mock implements LoadAllCoursesUseCase {}
 
@@ -30,17 +30,47 @@ void main() {
       MockCheckGroupNameUsageInCourseUseCase();
   final addGroupUseCase = MockAddGroupUseCase();
   final updateGroupUseCase = MockUpdateGroupUseCase();
-  late GroupCreatorBloc bloc;
 
-  setUp(() {
-    bloc = GroupCreatorBloc(
+  GroupCreatorBloc createBloc({
+    GroupCreatorMode mode = const GroupCreatorCreateMode(),
+    Course? selectedCourse,
+    String groupName = '',
+    String nameForQuestions = '',
+    String nameForAnswers = '',
+  }) {
+    return GroupCreatorBloc(
       loadAllCoursesUseCase: loadAllCoursesUseCase,
       getAllCoursesUseCase: getAllCoursesUseCase,
       checkGroupNameUsageInCourseUseCase: checkGroupNameUsageInCourseUseCase,
       addGroupUseCase: addGroupUseCase,
       updateGroupUseCase: updateGroupUseCase,
+      mode: mode,
+      selectedCourse: selectedCourse,
+      groupName: groupName,
+      nameForQuestions: nameForQuestions,
+      nameForAnswers: nameForAnswers,
     );
-  });
+  }
+
+  GroupCreatorState createState({
+    GroupCreatorMode mode = const GroupCreatorCreateMode(),
+    BlocStatus status = const BlocStatusInProgress(),
+    Course? selectedCourse,
+    List<Course> allCourses = const [],
+    String groupName = '',
+    String nameForQuestions = '',
+    String nameForAnswers = '',
+  }) {
+    return GroupCreatorState(
+      mode: mode,
+      status: status,
+      selectedCourse: selectedCourse,
+      allCourses: allCourses,
+      groupName: groupName,
+      nameForQuestions: nameForQuestions,
+      nameForAnswers: nameForAnswers,
+    );
+  }
 
   tearDown(() {
     reset(getAllCoursesUseCase);
@@ -77,14 +107,22 @@ void main() {
 
       blocTest(
         'create mode, should set mode and all courses in state',
-        build: () => bloc,
-        act: (_) => bloc.add(
-          GroupCreatorEventInitialize(mode: const GroupCreatorCreateMode()),
-        ),
+        build: () => createBloc(),
+        act: (GroupCreatorBloc bloc) {
+          bloc.add(
+            GroupCreatorEventInitialize(
+              mode: const GroupCreatorCreateMode(),
+            ),
+          );
+        },
         expect: () => [
-          const GroupCreatorState(status: BlocStatusLoading()),
-          GroupCreatorState(
-            status: const BlocStatusComplete<GroupCreatorInfoType>(),
+          createState(
+            status: const BlocStatusLoading(),
+          ),
+          createState(
+            status: const BlocStatusComplete<GroupCreatorInfo>(
+              info: GroupCreatorInfo.dataHaveBeenInitialized,
+            ),
             mode: const GroupCreatorCreateMode(),
             allCourses: courses,
           ),
@@ -93,12 +131,20 @@ void main() {
 
       blocTest(
         'edit mode, should set mode, all courses, and all group params in state',
-        build: () => bloc,
-        act: (_) => bloc.add(GroupCreatorEventInitialize(mode: editMode)),
+        build: () => createBloc(),
+        act: (GroupCreatorBloc bloc) {
+          bloc.add(
+            GroupCreatorEventInitialize(mode: editMode),
+          );
+        },
         expect: () => [
-          const GroupCreatorState(status: BlocStatusLoading()),
-          GroupCreatorState(
-            status: const BlocStatusComplete<GroupCreatorInfoType>(),
+          createState(
+            status: const BlocStatusLoading(),
+          ),
+          createState(
+            status: const BlocStatusComplete<GroupCreatorInfo>(
+              info: GroupCreatorInfo.dataHaveBeenInitialized,
+            ),
             mode: editMode,
             selectedCourse: courses[0],
             allCourses: courses,
@@ -113,13 +159,16 @@ void main() {
 
   blocTest(
     'on course changed, should update selected course in state',
-    build: () => bloc,
-    act: (_) => bloc.add(GroupCreatorEventCourseChanged(
-      course: createCourse(id: 'c2'),
-    )),
+    build: () => createBloc(),
+    act: (GroupCreatorBloc bloc) {
+      bloc.add(
+        GroupCreatorEventCourseChanged(
+          course: createCourse(id: 'c2'),
+        ),
+      );
+    },
     expect: () => [
-      GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfoType>(),
+      createState(
         selectedCourse: createCourse(id: 'c2'),
       ),
     ],
@@ -127,13 +176,16 @@ void main() {
 
   blocTest(
     'on group name changed, should update group name in state',
-    build: () => bloc,
-    act: (_) => bloc.add(
-      GroupCreatorEventGroupNameChanged(groupName: 'group 1'),
-    ),
+    build: () => createBloc(),
+    act: (GroupCreatorBloc bloc) {
+      bloc.add(
+        GroupCreatorEventGroupNameChanged(
+          groupName: 'group 1',
+        ),
+      );
+    },
     expect: () => [
-      const GroupCreatorState(
-        status: BlocStatusComplete<GroupCreatorInfoType>(),
+      createState(
         groupName: 'group 1',
       ),
     ],
@@ -141,13 +193,16 @@ void main() {
 
   blocTest(
     'on name for questions changed, should update name for questions in state',
-    build: () => bloc,
-    act: (_) => bloc.add(
-      GroupCreatorEventNameForQuestionsChanged(nameForQuestions: 'questions'),
-    ),
+    build: () => createBloc(),
+    act: (GroupCreatorBloc bloc) {
+      bloc.add(
+        GroupCreatorEventNameForQuestionsChanged(
+          nameForQuestions: 'questions',
+        ),
+      );
+    },
     expect: () => [
-      const GroupCreatorState(
-        status: BlocStatusComplete<GroupCreatorInfoType>(),
+      createState(
         nameForQuestions: 'questions',
       ),
     ],
@@ -155,13 +210,16 @@ void main() {
 
   blocTest(
     'on name for answers changed, should update name for answers in state',
-    build: () => bloc,
-    act: (_) => bloc.add(
-      GroupCreatorEventNameForAnswersChanged(nameForAnswers: 'answers'),
-    ),
+    build: () => createBloc(),
+    act: (GroupCreatorBloc bloc) {
+      bloc.add(
+        GroupCreatorEventNameForAnswersChanged(
+          nameForAnswers: 'answers',
+        ),
+      );
+    },
     expect: () => [
-      const GroupCreatorState(
-        status: BlocStatusComplete<GroupCreatorInfoType>(),
+      createState(
         nameForAnswers: 'answers',
       ),
     ],
@@ -170,113 +228,100 @@ void main() {
   group(
     'submit, create mode',
     () {
-      void setGroupParams() {
-        bloc.add(GroupCreatorEventCourseChanged(
-          course: createCourse(id: 'c1'),
-        ));
-        bloc.add(GroupCreatorEventGroupNameChanged(groupName: 'group 1'));
-        bloc.add(GroupCreatorEventNameForQuestionsChanged(
-          nameForQuestions: 'questions',
-        ));
-        bloc.add(GroupCreatorEventNameForAnswersChanged(
-          nameForAnswers: 'answers',
-        ));
-      }
-
-      final state1 = GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfoType>(),
-        selectedCourse: createCourse(id: 'c1'),
-      );
-      final state2 = GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfoType>(),
-        selectedCourse: createCourse(id: 'c1'),
-        groupName: 'group 1',
-      );
-      final state3 = GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfoType>(),
-        selectedCourse: createCourse(id: 'c1'),
-        groupName: 'group 1',
-        nameForQuestions: 'questions',
-      );
-      final state4 = GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfoType>(),
-        selectedCourse: createCourse(id: 'c1'),
-        groupName: 'group 1',
-        nameForQuestions: 'questions',
-        nameForAnswers: 'answers',
-      );
+      final Course selectedCourse = createCourse(id: 'c1');
+      const String groupName = 'group 1';
+      const String nameForQuestions = 'questions';
+      const String nameForAnswers = 'answers';
 
       blocTest(
-        'group name is already taken, should emit appropriate info type',
-        build: () => bloc,
+        'should emit appropriate error if group name is already taken',
+        build: () => createBloc(
+          selectedCourse: selectedCourse,
+          groupName: groupName,
+        ),
         setUp: () {
           when(
             () => checkGroupNameUsageInCourseUseCase.execute(
-              groupName: 'group 1',
-              courseId: 'c1',
+              groupName: groupName,
+              courseId: selectedCourse.id,
             ),
           ).thenAnswer((_) async => true);
         },
-        act: (_) {
-          setGroupParams();
-          bloc.add(GroupCreatorEventSubmit());
+        act: (GroupCreatorBloc bloc) {
+          bloc.add(
+            GroupCreatorEventSubmit(),
+          );
         },
         expect: () => [
-          state1,
-          state2,
-          state3,
-          state4,
-          state4.copyWith(status: const BlocStatusLoading()),
-          state4.copyWith(
-            status: const BlocStatusComplete<GroupCreatorInfoType>(
-              info: GroupCreatorInfoType.groupNameIsAlreadyTaken,
+          createState(
+            status: const BlocStatusLoading(),
+            selectedCourse: selectedCourse,
+            groupName: groupName,
+          ),
+          createState(
+            status: const BlocStatusError<GroupCreatorError>(
+              error: GroupCreatorError.groupNameIsAlreadyTaken,
             ),
+            selectedCourse: selectedCourse,
+            groupName: groupName,
           ),
         ],
       );
 
       blocTest(
-        'should call add group use case and emit appropriate info type',
-        build: () => bloc,
+        'should call use case responsible for adding new group',
+        build: () => createBloc(
+          selectedCourse: selectedCourse,
+          groupName: groupName,
+          nameForQuestions: nameForQuestions,
+          nameForAnswers: nameForAnswers,
+        ),
         setUp: () {
           when(
             () => checkGroupNameUsageInCourseUseCase.execute(
-              groupName: 'group 1',
-              courseId: 'c1',
+              groupName: groupName,
+              courseId: selectedCourse.id,
             ),
           ).thenAnswer((_) async => false);
           when(
             () => addGroupUseCase.execute(
-              name: 'group 1',
-              courseId: 'c1',
-              nameForQuestions: 'questions',
-              nameForAnswers: 'answers',
+              name: groupName,
+              courseId: selectedCourse.id,
+              nameForQuestions: nameForQuestions,
+              nameForAnswers: nameForAnswers,
             ),
           ).thenAnswer((_) async => '');
         },
-        act: (_) {
-          setGroupParams();
-          bloc.add(GroupCreatorEventSubmit());
+        act: (GroupCreatorBloc bloc) {
+          bloc.add(
+            GroupCreatorEventSubmit(),
+          );
         },
         expect: () => [
-          state1,
-          state2,
-          state3,
-          state4,
-          state4.copyWith(status: const BlocStatusLoading()),
-          state4.copyWith(
-            status: const BlocStatusComplete<GroupCreatorInfoType>(
-              info: GroupCreatorInfoType.groupHasBeenAdded,
+          createState(
+            status: const BlocStatusLoading(),
+            selectedCourse: selectedCourse,
+            groupName: groupName,
+            nameForQuestions: nameForQuestions,
+            nameForAnswers: nameForAnswers,
+          ),
+          createState(
+            status: const BlocStatusComplete<GroupCreatorInfo>(
+              info: GroupCreatorInfo.groupHasBeenAdded,
             ),
+            selectedCourse: selectedCourse,
+            groupName: groupName,
+            nameForQuestions: nameForQuestions,
+            nameForAnswers: nameForAnswers,
           ),
         ],
         verify: (_) {
           verify(
             () => addGroupUseCase.execute(
-              name: 'group 1',
-              courseId: 'c1',
-              nameForQuestions: 'questions',
-              nameForAnswers: 'answers',
+              name: groupName,
+              courseId: selectedCourse.id,
+              nameForQuestions: nameForQuestions,
+              nameForAnswers: nameForAnswers,
             ),
           ).called(1);
         },
@@ -296,55 +341,57 @@ void main() {
           nameForAnswers: 'answers',
         ),
       );
-      final stateAfterInitialization = GroupCreatorState(
-        status: const BlocStatusComplete<GroupCreatorInfoType>(),
-        mode: editMode,
-        selectedCourse: createCourse(id: 'c1'),
-        allCourses: [createCourse(id: 'c1')],
-        groupName: editMode.group.name,
-        nameForQuestions: editMode.group.nameForQuestions,
-        nameForAnswers: editMode.group.nameForAnswers,
-      );
+      final Course selectedCourse = createCourse(id: editMode.group.courseId);
 
       blocTest(
-        'submit, edit mode, should call update group use case and emit appropriate info type',
-        build: () => bloc,
+        'should call use case responsible for updating group',
+        build: () => createBloc(
+          mode: editMode,
+          selectedCourse: selectedCourse,
+          groupName: 'new group name',
+          nameForQuestions: editMode.group.nameForQuestions,
+          nameForAnswers: 'new name for answers',
+        ),
         setUp: () {
           when(
-            () => loadAllCoursesUseCase.execute(),
-          ).thenAnswer((_) async => '');
-          when(
-            () => getAllCoursesUseCase.execute(),
-          ).thenAnswer((_) => Stream.value([createCourse(id: 'c1')]));
-          when(
             () => checkGroupNameUsageInCourseUseCase.execute(
-              groupName: 'group 1',
-              courseId: 'c1',
+              groupName: 'new group name',
+              courseId: selectedCourse.id,
             ),
           ).thenAnswer((_) async => false);
           when(
             () => updateGroupUseCase.execute(
-              groupId: 'g1',
-              name: 'group 1',
-              courseId: 'c1',
-              nameForQuestions: 'questions',
-              nameForAnswers: 'answers',
+              groupId: editMode.group.id,
+              name: 'new group name',
+              courseId: selectedCourse.id,
+              nameForQuestions: editMode.group.nameForQuestions,
+              nameForAnswers: 'new name for answers',
             ),
           ).thenAnswer((_) async => '');
         },
-        act: (_) async {
-          bloc.add(GroupCreatorEventInitialize(mode: editMode));
-          await Future.delayed(const Duration(seconds: 2));
-          bloc.add(GroupCreatorEventSubmit());
+        act: (GroupCreatorBloc bloc) async {
+          bloc.add(
+            GroupCreatorEventSubmit(),
+          );
         },
         expect: () => [
-          const GroupCreatorState(status: BlocStatusLoading()),
-          stateAfterInitialization,
-          stateAfterInitialization.copyWith(status: const BlocStatusLoading()),
-          stateAfterInitialization.copyWith(
-            status: const BlocStatusComplete<GroupCreatorInfoType>(
-              info: GroupCreatorInfoType.groupHasBeenEdited,
+          createState(
+            mode: editMode,
+            status: const BlocStatusLoading(),
+            selectedCourse: selectedCourse,
+            groupName: 'new group name',
+            nameForQuestions: editMode.group.nameForQuestions,
+            nameForAnswers: 'new name for answers',
+          ),
+          createState(
+            mode: editMode,
+            status: const BlocStatusComplete<GroupCreatorInfo>(
+              info: GroupCreatorInfo.groupHasBeenUpdated,
             ),
+            selectedCourse: selectedCourse,
+            groupName: 'new group name',
+            nameForQuestions: editMode.group.nameForQuestions,
+            nameForAnswers: 'new name for answers',
           ),
         ],
       );

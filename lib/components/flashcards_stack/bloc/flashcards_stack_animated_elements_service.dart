@@ -92,7 +92,9 @@ mixin FlashcardsStackAnimatedCardsService {
       }
       final AnimatedCard card = updatedCards[i];
       updatedCards[i] = card.copyWith(
-        opacity: i == updatedCards.length - 1 ? 0.0 : 1.0,
+        opacity: i == updatedCards.length - 1 && updatedCards.length >= 3
+            ? 0.0
+            : 1.0,
         scale: _scaleSteps[i],
         position: card.position.copyWith(
           top: _topSteps[i],

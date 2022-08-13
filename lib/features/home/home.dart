@@ -10,12 +10,12 @@ import '../../domain/use_cases/user/get_user_avatar_url_use_case.dart';
 import '../../domain/use_cases/user/load_user_use_case.dart';
 import '../../domain/use_cases/sessions/load_all_sessions_use_case.dart';
 import '../../interfaces/groups_interface.dart';
+import '../../interfaces/notifications_interface.dart';
 import '../../interfaces/sessions_interface.dart';
 import '../../interfaces/settings_interface.dart';
 import '../../interfaces/user_interface.dart';
-import '../../interfaces/notifications_interface.dart';
-import '../../providers/theme_provider.dart';
 import '../../models/bloc_status.dart';
+import '../../providers/theme_provider.dart';
 import 'bloc/home_bloc.dart';
 import 'home_error_screen.dart';
 import 'home_loading_screen.dart';
@@ -135,6 +135,11 @@ class HomePageController extends ChangeNotifier {
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
     );
+    this.pageNumber = pageNumber;
+    notifyListeners();
+  }
+
+  void changePageNumber(int pageNumber) {
     this.pageNumber = pageNumber;
     notifyListeners();
   }

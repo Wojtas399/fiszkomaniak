@@ -1,20 +1,19 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/get_session_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
-import 'package:fiszkomaniak/features/session_preview/components/session_preview_content.dart';
-import 'package:fiszkomaniak/features/session_preview/session_preview_dialogs.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
-import 'package:fiszkomaniak/interfaces/notifications_interface.dart';
-import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
+import '../../domain/use_cases/courses/get_course_use_case.dart';
+import '../../domain/use_cases/groups/get_group_use_case.dart';
+import '../../domain/use_cases/sessions/get_session_use_case.dart';
+import '../../domain/use_cases/sessions/delete_session_use_case.dart';
+import '../../interfaces/courses_interface.dart';
+import '../../interfaces/groups_interface.dart';
+import '../../interfaces/notifications_interface.dart';
+import '../../interfaces/sessions_interface.dart';
+import '../../models/bloc_status.dart';
+import 'bloc/session_preview_bloc.dart';
+import 'bloc/session_preview_mode.dart';
+import 'components/session_preview_content.dart';
 
 class SessionPreviewScreen extends StatelessWidget {
   final SessionPreviewMode mode;
@@ -54,11 +53,10 @@ class _SessionPreviewBlocProvider extends StatelessWidget {
         getCourseUseCase: GetCourseUseCase(
           coursesInterface: context.read<CoursesInterface>(),
         ),
-        removeSessionUseCase: RemoveSessionUseCase(
+        deleteSessionUseCase: DeleteSessionUseCase(
           sessionsInterface: context.read<SessionsInterface>(),
           notificationsInterface: context.read<NotificationsInterface>(),
         ),
-        sessionPreviewDialogs: SessionPreviewDialogs(),
       )..add(SessionPreviewEventInitialize(mode: mode)),
       child: child,
     );
@@ -76,12 +74,12 @@ class _SessionPreviewBlocListener extends StatelessWidget {
       listener: (BuildContext context, SessionPreviewState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
-          final SessionPreviewInfoType? infoType = blocStatus.info;
-          if (infoType != null) {
-            _manageInfoType(infoType, context);
+          DialogsProvider.closeLoadingDialog(context);
+          final SessionPreviewInfo? info = blocStatus.info;
+          if (info != null) {
+            _manageInfo(info, context);
           }
         }
       },
@@ -89,14 +87,14 @@ class _SessionPreviewBlocListener extends StatelessWidget {
     );
   }
 
-  void _manageInfoType(
-    SessionPreviewInfoType infoType,
+  void _manageInfo(
+    SessionPreviewInfo info,
     BuildContext context,
   ) {
-    switch (infoType) {
-      case SessionPreviewInfoType.sessionHasBeenDeleted:
-        context.read<Navigation>().moveBack();
-        Dialogs.showSnackbarWithMessage('Pomyślnie usunięto sesję');
+    switch (info) {
+      case SessionPreviewInfo.sessionHasBeenDeleted:
+        Navigation.moveBack();
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie usunięto sesję');
         break;
     }
   }

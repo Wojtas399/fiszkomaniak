@@ -1,28 +1,28 @@
-import 'package:fiszkomaniak/components/custom_icon_button.dart';
-import 'package:fiszkomaniak/components/learning_progress_chart/learning_progress_cubit.dart';
-import 'package:fiszkomaniak/ui_extensions/ui_date_extensions.dart';
-import 'package:fiszkomaniak/domain/entities/day.dart';
-import 'package:fiszkomaniak/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../models/date_model.dart';
+import '../../providers/theme_provider.dart';
+import '../../ui_extensions/ui_date_extensions.dart';
+import '../custom_icon_button.dart';
+import 'learning_progress_chart_day.dart';
+import 'learning_progress_chart_cubit.dart';
 
 class LearningProgressChart extends StatelessWidget {
-  final List<Day>? daysFromUser;
+  final List<ChartDay>? chartDays;
   final Date initialDateOfWeek;
 
   const LearningProgressChart({
     super.key,
-    required this.daysFromUser,
+    required this.chartDays,
     required this.initialDateOfWeek,
   });
 
   @override
   Widget build(BuildContext context) {
     return _CubitProvider(
-      daysFromUser: daysFromUser,
+      days: chartDays,
       initialDateOfWeek: initialDateOfWeek,
       child: Center(
         child: Column(
@@ -38,12 +38,12 @@ class LearningProgressChart extends StatelessWidget {
 }
 
 class _CubitProvider extends StatelessWidget {
-  final List<Day>? daysFromUser;
+  final List<ChartDay>? days;
   final Date initialDateOfWeek;
   final Widget child;
 
   const _CubitProvider({
-    required this.daysFromUser,
+    required this.days,
     required this.initialDateOfWeek,
     required this.child,
   });
@@ -56,9 +56,7 @@ class _CubitProvider extends StatelessWidget {
       ),
       child: Builder(
         builder: (BuildContext context) {
-          context.read<LearningProgressCubit>().updateDaysFromUser(
-                daysFromUser,
-              );
+          context.read<LearningProgressCubit>().updateChartDays(days);
           return child;
         },
       ),
@@ -95,6 +93,9 @@ class _Header extends StatelessWidget {
 
   String _convertWeekToStr(List<Date> dates) {
     Date now = Date.now();
+    if (dates.isEmpty) {
+      return '';
+    }
     if (dates.contains(now)) {
       return 'Obecny tydzień';
     }
@@ -143,7 +144,7 @@ class _Chart extends StatelessWidget {
           color: Theme.of(context).colorScheme.primary,
           dataSource: days,
           xValueMapper: (ChartDay day, _) => day.date.toWeekDayShortName(),
-          yValueMapper: (ChartDay day, _) => day.amountOfRememberedFlashcards,
+          yValueMapper: (ChartDay day, _) => day.rememberedFlashcardsAmount,
           markerSettings: MarkerSettings(
             isVisible: true,
             color: Theme.of(context).colorScheme.primary,
@@ -153,11 +154,4 @@ class _Chart extends StatelessWidget {
       ],
     );
   }
-}
-
-class SalesData {
-  final String word;
-  final int num;
-
-  SalesData({required this.word, required this.num});
 }

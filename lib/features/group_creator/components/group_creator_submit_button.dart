@@ -1,8 +1,8 @@
-import 'package:fiszkomaniak/components/buttons/button.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_bloc.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/buttons/button.dart';
+import '../bloc/group_creator_bloc.dart';
+import '../bloc/group_creator_mode.dart';
 
 class GroupCreatorSubmitButton extends StatelessWidget {
   const GroupCreatorSubmitButton({super.key});

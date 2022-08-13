@@ -1,9 +1,9 @@
-import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_bloc.dart';
-import 'package:fiszkomaniak/features/group_flashcards_preview/components/group_flashcards_preview_content.dart';
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/use_cases/groups/get_group_use_case.dart';
+import '../../interfaces/groups_interface.dart';
+import 'bloc/group_flashcards_preview_bloc.dart';
+import 'components/group_flashcards_preview_content.dart';
 
 class GroupFlashcardsPreviewScreen extends StatelessWidget {
   final String groupId;

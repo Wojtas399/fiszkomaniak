@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/domain/entities/session.dart';
+import '../domain/entities/session.dart';
 import '../models/date_model.dart';
 import '../models/time_model.dart';
 
@@ -30,5 +30,5 @@ abstract class SessionsInterface {
     Time? notificationTime,
   });
 
-  Future<void> removeSession(String sessionId);
+  Future<void> deleteSession(String sessionId);
 }

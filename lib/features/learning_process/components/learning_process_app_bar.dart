@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/custom_icon_button.dart';
+import '../../../providers/dialogs_provider.dart';
 import '../bloc/learning_process_bloc.dart';
 import 'learning_process_timer.dart';
 
@@ -31,8 +32,23 @@ class LearningProcessAppBar extends StatelessWidget
     );
   }
 
-  void _exit(BuildContext context) {
-    context.read<LearningProcessBloc>().add(LearningProcessEventExit());
+  Future<void> _exit(BuildContext context) async {
+    final LearningProcessBloc learningProcessBloc =
+        context.read<LearningProcessBloc>();
+    final bool saveConfirmation = await _askForSaveConfirmation();
+    learningProcessBloc.add(
+      LearningProcessEventSessionAborted(
+        doesUserWantToSaveProgress: saveConfirmation,
+      ),
+    );
+  }
+
+  Future<bool> _askForSaveConfirmation() async {
+    return await DialogsProvider.askForConfirmation(
+      title: 'Koniec sesji',
+      text: 'Czy chcesz zapisać zmiany przed zakończeniem sesji?',
+      confirmButtonText: 'Zapisz',
+    );
   }
 }
 
@@ -45,7 +61,9 @@ class _LeftMargin extends StatelessWidget {
     final Duration? duration = context.select(
       (LearningProcessBloc bloc) => bloc.state.duration,
     );
-    return SizedBox(width: isTimerInvisible || duration == null ? 0.0 : 14.0);
+    return SizedBox(
+      width: isTimerInvisible || duration == null ? 0.0 : 14.0,
+    );
   }
 }
 

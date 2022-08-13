@@ -42,12 +42,12 @@ class LearningProcessState extends Equatable {
         amountOfFlashcardsInStack,
       ];
 
-  List<StackFlashcard> get stackFlashcards {
+  List<Flashcard> get flashcardsInStack {
     final FlashcardsType? flashcardsType = this.flashcardsType;
     if (flashcardsType == null) {
       return [];
     }
-    final List<Flashcard> flashcards = (group?.flashcards ?? [])
+    return (group?.flashcards ?? [])
         .where(
           (flashcard) => doesFlashcardBelongToFlashcardsType(
             flashcard,
@@ -55,7 +55,6 @@ class LearningProcessState extends Equatable {
           ),
         )
         .toList();
-    return _getBasicInfoOfFlashcards(flashcards);
   }
 
   int get amountOfAllFlashcards => group?.flashcards.length ?? 0;
@@ -100,7 +99,7 @@ class LearningProcessState extends Equatable {
     bool removedDuration = false,
   }) {
     return LearningProcessState(
-      status: status ?? const BlocStatusComplete<LearningProcessInfoType>(),
+      status: status ?? const BlocStatusInProgress(),
       sessionId: sessionId ?? this.sessionId,
       courseName: courseName ?? this.courseName,
       group: group ?? this.group,
@@ -118,6 +117,12 @@ class LearningProcessState extends Equatable {
     );
   }
 
+  LearningProcessState copyWithInfo(LearningProcessInfo info) {
+    return copyWith(
+      status: BlocStatusComplete<LearningProcessInfo>(info: info),
+    );
+  }
+
   bool doesFlashcardBelongToFlashcardsType(
     Flashcard flashcard,
     FlashcardsType type,
@@ -130,22 +135,6 @@ class LearningProcessState extends Equatable {
       case FlashcardsType.notRemembered:
         return notRememberedFlashcards.contains(flashcard);
     }
-  }
-
-  List<StackFlashcard> _getBasicInfoOfFlashcards(List<Flashcard> flashcards) {
-    return flashcards
-        .map(
-          (flashcard) => StackFlashcard(
-            index: flashcard.index,
-            question: areQuestionsAndAnswersSwapped
-                ? flashcard.answer
-                : flashcard.question,
-            answer: areQuestionsAndAnswersSwapped
-                ? flashcard.question
-                : flashcard.answer,
-          ),
-        )
-        .toList();
   }
 
   bool _areAllFlashcardsNotRemembered() {
@@ -175,8 +164,8 @@ class LearningProcessState extends Equatable {
   }
 }
 
-enum LearningProcessInfoType {
-  initialDataHasBeenLoaded,
+enum LearningProcessInfo {
+  initialDataHaveBeenSet,
   flashcardsStackHasBeenReset,
   sessionHasBeenFinished,
   sessionHasBeenAborted,

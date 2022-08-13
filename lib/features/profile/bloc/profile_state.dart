@@ -4,13 +4,13 @@ class ProfileState extends Equatable {
   final BlocStatus status;
   final User? user;
   final int daysStreak;
-  final int amountOfAllFlashcards;
+  final int amountOfRememberedFlashcards;
 
   const ProfileState({
     required this.status,
     required this.user,
     required this.daysStreak,
-    required this.amountOfAllFlashcards,
+    required this.amountOfRememberedFlashcards,
   });
 
   @override
@@ -18,7 +18,7 @@ class ProfileState extends Equatable {
         status,
         user ?? '',
         daysStreak,
-        amountOfAllFlashcards,
+        amountOfRememberedFlashcards,
       ];
 
   String? get avatarUrl => user?.avatarUrl;
@@ -27,50 +27,50 @@ class ProfileState extends Equatable {
     BlocStatus? status,
     User? user,
     int? daysStreak,
-    int? amountOfAllFlashcards,
+    int? amountOfRememberedFlashcards,
   }) {
     return ProfileState(
-      status: status ?? const BlocStatusComplete(),
+      status: status ?? const BlocStatusInProgress(),
       user: user ?? this.user,
       daysStreak: daysStreak ?? this.daysStreak,
-      amountOfAllFlashcards:
-          amountOfAllFlashcards ?? this.amountOfAllFlashcards,
+      amountOfRememberedFlashcards:
+          amountOfRememberedFlashcards ?? this.amountOfRememberedFlashcards,
     );
   }
 
-  ProfileState copyWithInfoType(ProfileInfoType infoType) {
+  ProfileState copyWithInfo(ProfileInfo info) {
     return copyWith(
-      status: BlocStatusComplete<ProfileInfoType>(info: infoType),
+      status: BlocStatusComplete<ProfileInfo>(info: info),
     );
   }
 
-  ProfileState copyWithErrorType(ProfileErrorType errorType) {
+  ProfileState copyWithError(ProfileError error) {
     return copyWith(
-      status: BlocStatusError<ProfileErrorType>(errorType: errorType),
+      status: BlocStatusError<ProfileError>(error: error),
     );
   }
 }
 
 class ProfileStateListenedParams extends Equatable {
   final User? user;
-  final int allFlashcardsAmount;
+  final int amountOfRememberedFlashcards;
   final int daysStreak;
 
   const ProfileStateListenedParams({
     required this.user,
-    required this.allFlashcardsAmount,
+    required this.amountOfRememberedFlashcards,
     required this.daysStreak,
   });
 
   @override
   List<Object> get props => [
         user ?? '',
-        allFlashcardsAmount,
+        amountOfRememberedFlashcards,
         daysStreak,
       ];
 }
 
-enum ProfileInfoType {
+enum ProfileInfo {
   avatarHasBeenUpdated,
   avatarHasBeenDeleted,
   usernameHasBeenUpdated,
@@ -79,6 +79,6 @@ enum ProfileInfoType {
   userAccountHasBeenDeleted,
 }
 
-enum ProfileErrorType {
+enum ProfileError {
   wrongPassword,
 }

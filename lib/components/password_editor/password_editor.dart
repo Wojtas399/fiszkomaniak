@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../config/navigation.dart';
 import '../../validators/password_validator.dart';
 import '../app_bar_with_close_button.dart';
 import '../buttons/button.dart';
@@ -171,11 +170,11 @@ class _SubmitButton extends StatelessWidget {
 
   void _onPressed(BuildContext context) {
     final PasswordEditorState state = context.read<PasswordEditorBloc>().state;
-    context.read<Navigation>().moveBack(
-          objectToReturn: PasswordEditorReturns(
-            currentPassword: state.currentPassword,
-            newPassword: state.newPassword,
-          ),
-        );
+    Navigator.of(context).pop(
+      PasswordEditorReturns(
+        currentPassword: state.currentPassword,
+        newPassword: state.newPassword,
+      ),
+    );
   }
 }

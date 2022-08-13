@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../config/navigation.dart';
 import '../../../domain/entities/notification.dart';
 import '../../../domain/use_cases/notifications/did_notification_launch_app_use_case.dart';
 import '../../../domain/use_cases/notifications/get_selected_notification_use_case.dart';
 import '../../../features/session_preview/bloc/session_preview_mode.dart';
-import '../../../config/navigation.dart';
-import '../home_router.dart';
 
 class NotificationsListener {
   late final GetSelectedNotificationUseCase _getSelectedNotificationUseCase;
@@ -47,11 +45,8 @@ class NotificationsListener {
   }
 
   void _navigateToSessionPreview(String sessionId) {
-    final context = navigatorKey.currentContext;
-    if (context != null) {
-      context.read<Navigation>().navigateToSessionPreview(
-            SessionPreviewModeNormal(sessionId: sessionId),
-          );
-    }
+    Navigation.navigateToSessionPreview(
+      SessionPreviewModeNormal(sessionId: sessionId),
+    );
   }
 }

@@ -38,15 +38,24 @@ class CourseCreatorState extends Equatable {
     );
   }
 
-  CourseCreatorState copyWithInfoType(CourseCreatorInfoType infoType) {
+  CourseCreatorState copyWithInfo(CourseCreatorInfo info) {
     return copyWith(
-      status: BlocStatusComplete<CourseCreatorInfoType>(info: infoType),
+      status: BlocStatusComplete<CourseCreatorInfo>(info: info),
+    );
+  }
+
+  CourseCreatorState copyWithError(CourseCreatorError error) {
+    return copyWith(
+      status: BlocStatusError<CourseCreatorError>(error: error),
     );
   }
 }
 
-enum CourseCreatorInfoType {
-  courseNameIsAlreadyTaken,
+enum CourseCreatorInfo {
   courseHasBeenAdded,
   courseHasBeenUpdated,
+}
+
+enum CourseCreatorError {
+  courseNameIsAlreadyTaken,
 }

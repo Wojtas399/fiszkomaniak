@@ -1,3 +1,4 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
@@ -7,14 +8,13 @@ import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.
 import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late SessionCreatorState state;
 
   setUp(
     () => state = const SessionCreatorState(
-      status: BlocStatusComplete<SessionCreatorInfoType>(),
+      status: BlocStatusInitial(),
       mode: SessionCreatorCreateMode(),
       courses: [],
       groups: null,
@@ -245,14 +245,11 @@ void main() {
     () {
       const BlocStatus expectedStatus = BlocStatusLoading();
 
-      final state2 = state.copyWith(status: expectedStatus);
-      final state3 = state2.copyWith();
+      state = state.copyWith(status: expectedStatus);
+      final state2 = state.copyWith();
 
-      expect(state2.status, expectedStatus);
-      expect(
-        state3.status,
-        const BlocStatusComplete<SessionCreatorInfoType>(),
-      );
+      expect(state.status, expectedStatus);
+      expect(state2.status, const BlocStatusInProgress());
     },
   );
 
@@ -263,11 +260,11 @@ void main() {
         session: createSession(),
       );
 
-      final state2 = state.copyWith(mode: expectedMode);
-      final state3 = state2.copyWith();
+      state = state.copyWith(mode: expectedMode);
+      final state2 = state.copyWith();
 
+      expect(state.mode, expectedMode);
       expect(state2.mode, expectedMode);
-      expect(state3.mode, expectedMode);
     },
   );
 
@@ -279,11 +276,11 @@ void main() {
         createCourse(id: 'c2', name: 'course 2'),
       ];
 
-      final state2 = state.copyWith(courses: expectedCourses);
-      final state3 = state2.copyWith();
+      state = state.copyWith(courses: expectedCourses);
+      final state2 = state.copyWith();
 
+      expect(state.courses, expectedCourses);
       expect(state2.courses, expectedCourses);
-      expect(state3.courses, expectedCourses);
     },
   );
 
@@ -295,11 +292,11 @@ void main() {
         createGroup(id: 'g2', name: 'group 2'),
       ];
 
-      final state2 = state.copyWith(groups: expectedGroups);
-      final state3 = state2.copyWith();
+      state = state.copyWith(groups: expectedGroups);
+      final state2 = state.copyWith();
 
+      expect(state.groups, expectedGroups);
       expect(state2.groups, expectedGroups);
-      expect(state3.groups, expectedGroups);
     },
   );
 
@@ -308,11 +305,11 @@ void main() {
     () {
       final Course expectedCourse = createCourse(id: 'c1');
 
-      final state2 = state.copyWith(selectedCourse: expectedCourse);
-      final state3 = state2.copyWith();
+      state = state.copyWith(selectedCourse: expectedCourse);
+      final state2 = state.copyWith();
 
+      expect(state.selectedCourse, expectedCourse);
       expect(state2.selectedCourse, expectedCourse);
-      expect(state3.selectedCourse, expectedCourse);
     },
   );
 
@@ -321,11 +318,11 @@ void main() {
     () {
       final Group expectedGroup = createGroup(id: 'g1');
 
-      final state2 = state.copyWith(selectedGroup: expectedGroup);
-      final state3 = state2.copyWith();
+      state = state.copyWith(selectedGroup: expectedGroup);
+      final state2 = state.copyWith();
 
+      expect(state.selectedGroup, expectedGroup);
       expect(state2.selectedGroup, expectedGroup);
-      expect(state3.selectedGroup, expectedGroup);
     },
   );
 
@@ -334,11 +331,11 @@ void main() {
     () {
       const FlashcardsType expectedFlashcardsType = FlashcardsType.all;
 
-      final state2 = state.copyWith(flashcardsType: expectedFlashcardsType);
-      final state3 = state2.copyWith();
+      state = state.copyWith(flashcardsType: expectedFlashcardsType);
+      final state2 = state.copyWith();
 
+      expect(state.flashcardsType, expectedFlashcardsType);
       expect(state2.flashcardsType, expectedFlashcardsType);
-      expect(state3.flashcardsType, expectedFlashcardsType);
     },
   );
 
@@ -347,13 +344,11 @@ void main() {
     () {
       const bool expectedValue = true;
 
-      final state2 = state.copyWith(
-        areQuestionsAndAnswersSwapped: expectedValue,
-      );
-      final state3 = state2.copyWith();
+      state = state.copyWith(areQuestionsAndAnswersSwapped: expectedValue);
+      final state2 = state.copyWith();
 
+      expect(state.areQuestionsAndAnswersSwapped, expectedValue);
       expect(state2.areQuestionsAndAnswersSwapped, expectedValue);
-      expect(state3.areQuestionsAndAnswersSwapped, expectedValue);
     },
   );
 
@@ -362,11 +357,11 @@ void main() {
     () {
       const Date expectedDate = Date(year: 2022, month: 1, day: 1);
 
-      final state2 = state.copyWith(date: expectedDate);
-      final state3 = state2.copyWith();
+      state = state.copyWith(date: expectedDate);
+      final state2 = state.copyWith();
 
+      expect(state.date, expectedDate);
       expect(state2.date, expectedDate);
-      expect(state3.date, expectedDate);
     },
   );
 
@@ -375,11 +370,11 @@ void main() {
     () {
       const Time expectedTime = Time(hour: 12, minute: 30);
 
-      final state2 = state.copyWith(startTime: expectedTime);
-      final state3 = state2.copyWith();
+      state = state.copyWith(startTime: expectedTime);
+      final state2 = state.copyWith();
 
+      expect(state.startTime, expectedTime);
       expect(state2.startTime, expectedTime);
-      expect(state3.startTime, expectedTime);
     },
   );
 
@@ -388,11 +383,11 @@ void main() {
     () {
       const Duration expectedDuration = Duration(minutes: 30);
 
-      final state2 = state.copyWith(duration: expectedDuration);
-      final state3 = state2.copyWith();
+      state = state.copyWith(duration: expectedDuration);
+      final state2 = state.copyWith();
 
+      expect(state.duration, expectedDuration);
       expect(state2.duration, expectedDuration);
-      expect(state3.duration, expectedDuration);
     },
   );
 
@@ -401,11 +396,11 @@ void main() {
     () {
       const Time expectedTime = Time(hour: 10, minute: 0);
 
-      final state2 = state.copyWith(notificationTime: expectedTime);
-      final state3 = state2.copyWith();
+      state = state.copyWith(notificationTime: expectedTime);
+      final state2 = state.copyWith();
 
+      expect(state.notificationTime, expectedTime);
       expect(state2.notificationTime, expectedTime);
-      expect(state3.notificationTime, expectedTime);
     },
   );
 
@@ -433,13 +428,14 @@ void main() {
   test(
     'copy with info, should copy state with appropriate info type',
     () {
-      state = state.copyWithInfo(SessionCreatorInfoType.sessionHasBeenAdded);
+      const SessionCreatorInfo expectedInfo =
+          SessionCreatorInfo.sessionHasBeenAdded;
+
+      state = state.copyWithInfo(expectedInfo);
 
       expect(
         state.status,
-        const BlocStatusComplete<SessionCreatorInfoType>(
-          info: SessionCreatorInfoType.sessionHasBeenAdded,
-        ),
+        const BlocStatusComplete<SessionCreatorInfo>(info: expectedInfo),
       );
     },
   );

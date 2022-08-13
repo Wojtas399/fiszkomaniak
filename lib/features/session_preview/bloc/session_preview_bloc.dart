@@ -1,17 +1,17 @@
 import 'dart:async';
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/get_session_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
-import 'package:fiszkomaniak/features/session_preview/session_preview_dialogs.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/domain/entities/group.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../models/date_model.dart';
+import 'package:equatable/equatable.dart';
+import '../../../domain/entities/course.dart';
+import '../../../domain/entities/group.dart';
 import '../../../domain/entities/session.dart';
+import '../../../domain/use_cases/courses/get_course_use_case.dart';
+import '../../../domain/use_cases/groups/get_group_use_case.dart';
+import '../../../domain/use_cases/sessions/get_session_use_case.dart';
+import '../../../domain/use_cases/sessions/delete_session_use_case.dart';
+import '../../../models/bloc_status.dart';
+import '../../../models/date_model.dart';
 import '../../../utils/group_utils.dart';
+import 'session_preview_mode.dart';
 
 part 'session_preview_event.dart';
 
@@ -22,16 +22,14 @@ class SessionPreviewBloc
   late final GetSessionUseCase _getSessionUseCase;
   late final GetGroupUseCase _getGroupUseCase;
   late final GetCourseUseCase _getCourseUseCase;
-  late final RemoveSessionUseCase _removeSessionUseCase;
-  late final SessionPreviewDialogs _sessionPreviewDialogs;
+  late final DeleteSessionUseCase _deleteSessionUseCase;
   StreamSubscription<Session>? _sessionListener;
 
   SessionPreviewBloc({
     required GetSessionUseCase getSessionUseCase,
     required GetGroupUseCase getGroupUseCase,
     required GetCourseUseCase getCourseUseCase,
-    required RemoveSessionUseCase removeSessionUseCase,
-    required SessionPreviewDialogs sessionPreviewDialogs,
+    required DeleteSessionUseCase deleteSessionUseCase,
     BlocStatus status = const BlocStatusInitial(),
     SessionPreviewMode? mode,
     Session? session,
@@ -55,15 +53,14 @@ class SessionPreviewBloc
     _getSessionUseCase = getSessionUseCase;
     _getGroupUseCase = getGroupUseCase;
     _getCourseUseCase = getCourseUseCase;
-    _removeSessionUseCase = removeSessionUseCase;
-    _sessionPreviewDialogs = sessionPreviewDialogs;
+    _deleteSessionUseCase = deleteSessionUseCase;
     on<SessionPreviewEventInitialize>(_initialize);
     on<SessionPreviewEventSessionUpdated>(_sessionUpdated);
     on<SessionPreviewEventDurationChanged>(_durationChanged);
     on<SessionPreviewEventResetDuration>(_resetDuration);
     on<SessionPreviewEventFlashcardsTypeChanged>(_flashcardsTypeChanged);
     on<SessionPreviewEventSwapQuestionsAndAnswers>(_swapQuestionsAndAnswers);
-    on<SessionPreviewEventRemoveSession>(_removeSession);
+    on<SessionPreviewEventDeleteSession>(_deleteSession);
   }
 
   @override
@@ -77,7 +74,9 @@ class SessionPreviewBloc
     Emitter<SessionPreviewState> emit,
   ) async {
     final SessionPreviewMode mode = event.mode;
-    emit(state.copyWith(status: const BlocStatusLoading()));
+    emit(state.copyWith(
+      status: const BlocStatusLoading(),
+    ));
     if (mode is SessionPreviewModeNormal) {
       await _initializeNormalMode(mode, emit);
     } else if (mode is SessionPreviewModeQuick) {
@@ -115,7 +114,9 @@ class SessionPreviewBloc
     SessionPreviewEventResetDuration event,
     Emitter<SessionPreviewState> emit,
   ) {
-    emit(state.copyWithDurationAsNull());
+    emit(state.copyWith(
+      durationAsNull: true,
+    ));
   }
 
   void _flashcardsTypeChanged(
@@ -136,18 +137,16 @@ class SessionPreviewBloc
     ));
   }
 
-  Future<void> _removeSession(
-    SessionPreviewEventRemoveSession event,
+  Future<void> _deleteSession(
+    SessionPreviewEventDeleteSession event,
     Emitter<SessionPreviewState> emit,
   ) async {
-    final Session? session = state.session;
-    if (session != null && await _hasSessionRemovalBeenConfirmed()) {
+    final String? sessionId = state.session?.id;
+    if (sessionId != null) {
       emit(state.copyWith(status: const BlocStatusLoading()));
-      await _removeSessionUseCase.execute(sessionId: session.id);
-      emit(state.copyWith(
-        status: const BlocStatusComplete<SessionPreviewInfoType>(
-          info: SessionPreviewInfoType.sessionHasBeenDeleted,
-        ),
+      await _deleteSessionUseCase.execute(sessionId: sessionId);
+      emit(state.copyWithInfo(
+        SessionPreviewInfo.sessionHasBeenDeleted,
       ));
     }
   }
@@ -158,6 +157,7 @@ class SessionPreviewBloc
   ) async {
     _setSessionListener(mode.sessionId);
     emit(state.copyWith(
+      status: const BlocStatusComplete(),
       mode: mode,
     ));
   }
@@ -169,6 +169,7 @@ class SessionPreviewBloc
     final Group group = await _getGroup(mode.groupId);
     final String courseName = await _getCourseName(group.courseId);
     emit(state.copyWith(
+      status: const BlocStatusComplete(),
       mode: mode,
       group: group,
       courseName: courseName,
@@ -176,11 +177,12 @@ class SessionPreviewBloc
   }
 
   void _setSessionListener(String sessionId) {
-    _sessionListener = _getSessionUseCase.execute(sessionId: sessionId).listen(
-          (session) => add(
-            SessionPreviewEventSessionUpdated(session: session),
-          ),
-        );
+    _sessionListener ??=
+        _getSessionUseCase.execute(sessionId: sessionId).listen(
+              (Session session) => add(
+                SessionPreviewEventSessionUpdated(session: session),
+              ),
+            );
   }
 
   Future<Group> _getGroup(String groupId) async {
@@ -190,11 +192,7 @@ class SessionPreviewBloc
   Future<String> _getCourseName(String courseId) async {
     return _getCourseUseCase
         .execute(courseId: courseId)
-        .map((course) => course.name)
+        .map((Course course) => course.name)
         .first;
-  }
-
-  Future<bool> _hasSessionRemovalBeenConfirmed() async {
-    return await _sessionPreviewDialogs.askForDeleteConfirmation();
   }
 }

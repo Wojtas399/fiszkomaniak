@@ -19,7 +19,7 @@ void main() {
   );
 
   test(
-    'for all sessions should call method responsible for deleting default notification',
+    'for all sessions should call method responsible for deleting notification 15 min before start time',
     () async {
       final List<Session> sessions = [
         createSession(id: 's1'),
@@ -29,7 +29,7 @@ void main() {
         () => sessionsInterface.allSessions$,
       ).thenAnswer((_) => Stream.value(sessions));
       when(
-        () => notificationsInterface.deleteDefaultNotificationForSession(
+        () => notificationsInterface.deleteNotificationForSession15minBeforeStartTime(
           sessionId: any(named: 'sessionId'),
         ),
       ).thenAnswer((_) async => '');
@@ -40,12 +40,12 @@ void main() {
         () => sessionsInterface.allSessions$,
       ).called(1);
       verify(
-        () => notificationsInterface.deleteDefaultNotificationForSession(
+        () => notificationsInterface.deleteNotificationForSession15minBeforeStartTime(
           sessionId: sessions[0].id,
         ),
       ).called(1);
       verify(
-        () => notificationsInterface.deleteDefaultNotificationForSession(
+        () => notificationsInterface.deleteNotificationForSession15minBeforeStartTime(
           sessionId: sessions[1].id,
         ),
       ).called(1);

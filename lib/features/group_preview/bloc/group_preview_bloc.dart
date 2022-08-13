@@ -1,15 +1,13 @@
 import 'dart:async';
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/entities/course.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/remove_group_use_case.dart';
-import 'package:fiszkomaniak/features/group_preview/group_preview_dialogs.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:equatable/equatable.dart';
+import '../../../domain/entities/course.dart';
 import '../../../domain/entities/flashcard.dart';
 import '../../../domain/entities/group.dart';
+import '../../../domain/use_cases/courses/get_course_use_case.dart';
+import '../../../domain/use_cases/groups/get_group_use_case.dart';
+import '../../../domain/use_cases/groups/delete_group_use_case.dart';
+import '../../../models/bloc_status.dart';
 
 part 'group_preview_event.dart';
 
@@ -17,25 +15,30 @@ part 'group_preview_state.dart';
 
 class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
   late final GetGroupUseCase _getGroupUseCase;
-  late final RemoveGroupUseCase _removeGroupUseCase;
+  late final DeleteGroupUseCase _deleteGroupUseCase;
   late final GetCourseUseCase _getCourseUseCase;
-  late final GroupPreviewDialogs _groupPreviewDialogs;
   StreamSubscription<Group>? _groupListener;
 
   GroupPreviewBloc({
     required GetGroupUseCase getGroupUseCase,
-    required RemoveGroupUseCase removeGroupUseCase,
+    required DeleteGroupUseCase deleteGroupUseCase,
     required GetCourseUseCase getCourseUseCase,
-    required GroupPreviewDialogs groupPreviewDialogs,
-  }) : super(const GroupPreviewState()) {
+    BlocStatus status = const BlocStatusInitial(),
+    Group? group,
+    Course? course,
+  }) : super(
+          GroupPreviewState(
+            status: status,
+            group: group,
+            course: course,
+          ),
+        ) {
     _getGroupUseCase = getGroupUseCase;
-    _removeGroupUseCase = removeGroupUseCase;
+    _deleteGroupUseCase = deleteGroupUseCase;
     _getCourseUseCase = getCourseUseCase;
-    _groupPreviewDialogs = groupPreviewDialogs;
     on<GroupPreviewEventInitialize>(_initialize);
     on<GroupPreviewEventGroupUpdated>(_groupUpdated);
-    on<GroupPreviewEventCourseChanged>(_courseChanged);
-    on<GroupPreviewEventRemoveGroup>(_removeGroup);
+    on<GroupPreviewEventDeleteGroup>(_deleteGroup);
   }
 
   @override
@@ -51,40 +54,36 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
     _setGroupListener(event.groupId);
   }
 
-  void _groupUpdated(
+  Future<void> _groupUpdated(
     GroupPreviewEventGroupUpdated event,
     Emitter<GroupPreviewState> emit,
-  ) {
-    emit(state.copyWith(
-      group: event.group,
-    ));
-  }
-
-  Future<void> _courseChanged(
-    GroupPreviewEventCourseChanged event,
-    Emitter<GroupPreviewState> emit,
   ) async {
-    final Course course =
-        await _getCourseUseCase.execute(courseId: event.courseId).first;
-    emit(state.copyWith(
-      course: course,
-    ));
+    final Group updatedGroup = event.group;
+    final String newCourseId = updatedGroup.courseId;
+    if (newCourseId != state.course?.id) {
+      emit(state.copyWith(
+        group: updatedGroup,
+        course: await _getCourseUseCase.execute(courseId: newCourseId).first,
+      ));
+    } else {
+      emit(state.copyWith(
+        group: updatedGroup,
+      ));
+    }
   }
 
-  Future<void> _removeGroup(
-    GroupPreviewEventRemoveGroup event,
+  Future<void> _deleteGroup(
+    GroupPreviewEventDeleteGroup event,
     Emitter<GroupPreviewState> emit,
   ) async {
     final String? groupId = state.group?.id;
-    if (groupId != null && await _isDeleteOperationConfirmed()) {
+    if (groupId != null) {
       emit(state.copyWith(
         status: const BlocStatusLoading(),
       ));
-      await _removeGroupUseCase.execute(groupId: groupId);
-      emit(state.copyWith(
-        status: const BlocStatusComplete(
-          info: GroupPreviewInfoType.groupHasBeenRemoved,
-        ),
+      await _deleteGroupUseCase.execute(groupId: groupId);
+      emit(state.copyWithInfo(
+        GroupPreviewInfo.groupHasBeenDeleted,
       ));
     }
   }
@@ -92,19 +91,6 @@ class GroupPreviewBloc extends Bloc<GroupPreviewEvent, GroupPreviewState> {
   void _setGroupListener(String groupId) {
     _groupListener ??= _getGroupUseCase
         .execute(groupId: groupId)
-        .doOnData(_updateCourseInStateIfItHasBeenChanged)
-        .listen(
-          (group) => add(GroupPreviewEventGroupUpdated(group: group)),
-        );
-  }
-
-  void _updateCourseInStateIfItHasBeenChanged(Group group) {
-    if (group.courseId != state.course?.id) {
-      add(GroupPreviewEventCourseChanged(courseId: group.courseId));
-    }
-  }
-
-  Future<bool> _isDeleteOperationConfirmed() async {
-    return await _groupPreviewDialogs.askForDeleteConfirmation();
+        .listen((group) => add(GroupPreviewEventGroupUpdated(group: group)));
   }
 }

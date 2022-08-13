@@ -233,7 +233,7 @@ void main() {
   );
 
   group(
-    'set default notification for session',
+    'set notification for session 15 min before start time',
     () {
       const String sessionId = 's1';
       const String groupName = 'group 1';
@@ -267,7 +267,7 @@ void main() {
             () => timeUtils.isNow(time15minBefore, date),
           ).thenReturn(false);
 
-          await repository.setDefaultNotificationForSession(
+          await repository.setNotificationForSession15minBeforeStartTime(
             sessionId: sessionId,
             groupName: groupName,
             date: date,
@@ -297,7 +297,7 @@ void main() {
             () => timeUtils.isPastTime(time15minBefore, date),
           ).thenReturn(true);
 
-          await repository.setDefaultNotificationForSession(
+          await repository.setNotificationForSession15minBeforeStartTime(
             sessionId: sessionId,
             groupName: groupName,
             date: date,
@@ -330,7 +330,7 @@ void main() {
             () => timeUtils.isNow(time15minBefore, date),
           ).thenReturn(true);
 
-          await repository.setDefaultNotificationForSession(
+          await repository.setNotificationForSession15minBeforeStartTime(
             sessionId: sessionId,
             groupName: groupName,
             date: date,
@@ -402,7 +402,7 @@ void main() {
   );
 
   test(
-    'delete default notification for session, should call method responsible for cancelling default notification for session',
+    'delete notification for session 15 min before start time, should call method responsible for cancelling default notification for session',
     () async {
       const String sessionId = 's1';
       when(
@@ -411,7 +411,7 @@ void main() {
         ),
       ).thenAnswer((_) async => '');
 
-      await repository.deleteDefaultNotificationForSession(
+      await repository.deleteNotificationForSession15minBeforeStartTime(
         sessionId: sessionId,
       );
 

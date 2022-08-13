@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/entities/session.dart';
-import 'package:fiszkomaniak/components/flashcards_stack/flashcards_stack_model.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 
@@ -26,26 +25,26 @@ void main() {
   );
 
   test(
-    'stack flashcards, should return empty array if flashcards type has not been set',
+    'flashcards in stack, should return empty array if flashcards type has not been set',
     () {
-      expect(state.stackFlashcards, []);
+      expect(state.flashcardsInStack, []);
     },
   );
 
   test(
-    'stack flashcards, should return empty array if group does not have any flashcards',
+    'flashcards in stack, should return empty array if group does not have any flashcards',
     () {
       state = state.copyWith(
         group: createGroup(id: 'g1', flashcards: []),
         flashcardsType: FlashcardsType.all,
       );
 
-      expect(state.stackFlashcards, []);
+      expect(state.flashcardsInStack, []);
     },
   );
 
   test(
-    'stack flashcards, should return flashcards for stack which match to flashcards type',
+    'flashcards in stack, should return flashcards which match to flashcards type',
     () {
       final Group group = createGroup(
         id: 'g1',
@@ -70,18 +69,6 @@ void main() {
           ),
         ],
       );
-      final List<StackFlashcard> expectedStackFlashcards = [
-        createStackFlashcard(
-          index: 0,
-          question: 'q0',
-          answer: 'a0',
-        ),
-        createStackFlashcard(
-          index: 2,
-          question: 'q2',
-          answer: 'a2',
-        ),
-      ];
 
       state = state.copyWith(
         group: group,
@@ -89,7 +76,10 @@ void main() {
         rememberedFlashcards: [group.flashcards[0], group.flashcards[2]],
       );
 
-      expect(state.stackFlashcards, expectedStackFlashcards);
+      expect(
+        state.flashcardsInStack,
+        [group.flashcards[0], group.flashcards[2]],
+      );
     },
   );
 
@@ -262,10 +252,7 @@ void main() {
       final state2 = state.copyWith();
 
       expect(state.status, expectedStatus);
-      expect(
-        state2.status,
-        const BlocStatusComplete<LearningProcessInfoType>(),
-      );
+      expect(state2.status, const BlocStatusInProgress());
     },
   );
 
@@ -415,6 +402,65 @@ void main() {
 
       expect(state.duration, duration);
       expect(state2.duration, null);
+    },
+  );
+
+  test(
+    'copy with info',
+    () {
+      const LearningProcessInfo expectedInfo =
+          LearningProcessInfo.flashcardsStackHasBeenReset;
+
+      state = state.copyWithInfo(expectedInfo);
+
+      expect(
+        state.status,
+        const BlocStatusComplete<LearningProcessInfo>(
+          info: expectedInfo,
+        ),
+      );
+    },
+  );
+
+  test(
+    'does flashcard belong to flashcards type, should be true if flashcard is assigned to group which matches to flashcards type',
+    () {
+      final Flashcard flashcard = createFlashcard(
+        index: 0,
+        question: 'q0',
+        answer: 'a0',
+      );
+      state = state.copyWith(
+        rememberedFlashcards: [flashcard],
+      );
+
+      final bool result = state.doesFlashcardBelongToFlashcardsType(
+        flashcard,
+        FlashcardsType.remembered,
+      );
+
+      expect(result, true);
+    },
+  );
+
+  test(
+    'does flashcard belong to flashcards type, should be false if flashcard is assigned to group which does not match to flashcards type',
+    () {
+      final Flashcard flashcard = createFlashcard(
+        index: 0,
+        question: 'q0',
+        answer: 'a0',
+      );
+      state = state.copyWith(
+        rememberedFlashcards: [flashcard],
+      );
+
+      final bool result = state.doesFlashcardBelongToFlashcardsType(
+        flashcard,
+        FlashcardsType.notRemembered,
+      );
+
+      expect(result, false);
     },
   );
 }

@@ -25,7 +25,9 @@ class SmallButton extends StatelessWidget {
             backgroundColor ?? Theme.of(context).colorScheme.primary,
           ),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
           ),
         ),
         child: Text(

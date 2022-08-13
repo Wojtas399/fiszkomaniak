@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fiszkomaniak/firebase/fire_document.dart';
-import 'package:fiszkomaniak/firebase/fire_instances.dart';
-import 'package:fiszkomaniak/firebase/fire_references.dart';
-import 'package:fiszkomaniak/firebase/models/course_db_model.dart';
-import 'package:fiszkomaniak/firebase/services/fire_groups_service.dart';
-import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
+import '../fire_document.dart';
+import '../fire_instances.dart';
+import '../fire_references.dart';
 import '../fire_utils.dart';
+import '../models/course_db_model.dart';
+import 'fire_groups_service.dart';
+import 'fire_sessions_service.dart';
 
 class FireCoursesService {
   Future<List<FireDocument<CourseDbModel>>> loadAllCourses() async {

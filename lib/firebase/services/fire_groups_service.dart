@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fiszkomaniak/firebase/fire_document.dart';
-import 'package:fiszkomaniak/firebase/fire_references.dart';
-import 'package:fiszkomaniak/firebase/fire_utils.dart';
-import 'package:fiszkomaniak/firebase/models/group_db_model.dart';
-import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
+import '../fire_document.dart';
 import '../fire_instances.dart';
+import '../fire_references.dart';
+import '../fire_utils.dart';
+import '../models/group_db_model.dart';
+import 'fire_sessions_service.dart';
 
 class FireGroupsService {
   static Future<QuerySnapshot<GroupDbModel>> getGroupsFromCourse(

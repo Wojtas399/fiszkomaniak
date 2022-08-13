@@ -3,9 +3,19 @@ part of 'learning_process_bloc.dart';
 abstract class LearningProcessEvent {}
 
 class LearningProcessEventInitialize extends LearningProcessEvent {
-  final LearningProcessData data;
+  final String? sessionId;
+  final String groupId;
+  final Duration? duration;
+  final FlashcardsType flashcardsType;
+  final bool areQuestionsAndAnswersSwapped;
 
-  LearningProcessEventInitialize({required this.data});
+  LearningProcessEventInitialize({
+    required this.sessionId,
+    required this.groupId,
+    required this.duration,
+    required this.flashcardsType,
+    required this.areQuestionsAndAnswersSwapped,
+  });
 }
 
 class LearningProcessEventRememberedFlashcard extends LearningProcessEvent {
@@ -26,8 +36,14 @@ class LearningProcessEventReset extends LearningProcessEvent {
   LearningProcessEventReset({required this.newFlashcardsType});
 }
 
-class LearningProcessEventTimeFinished extends LearningProcessEvent {}
+class LearningProcessEventRemoveDuration extends LearningProcessEvent {}
 
-class LearningProcessEventEndSession extends LearningProcessEvent {}
+class LearningProcessEventSessionFinished extends LearningProcessEvent {}
 
-class LearningProcessEventExit extends LearningProcessEvent {}
+class LearningProcessEventSessionAborted extends LearningProcessEvent {
+  final bool doesUserWantToSaveProgress;
+
+  LearningProcessEventSessionAborted({
+    required this.doesUserWantToSaveProgress,
+  });
+}

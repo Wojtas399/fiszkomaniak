@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../components/bouncing_scroll.dart';
 import '../../components/empty_content_info.dart';
-import '../../components/group_item/group_item.dart';
+import '../../components/group_item.dart';
 import '../../config/navigation.dart';
 import '../../domain/entities/course.dart';
 import '../../domain/entities/group.dart';
@@ -82,13 +82,14 @@ class _GroupItem extends StatelessWidget {
       stream: _getCourseName(context),
       builder: (_, AsyncSnapshot<String> snapshot) {
         return GroupItem(
+          key: ObjectKey(group),
           groupName: group.name,
           courseName: snapshot.data ?? '',
           amountOfRememberedFlashcards:
               GroupUtils.getAmountOfRememberedFlashcards(group),
           amountOfAllFlashcards: group.flashcards.length,
           onPressed: () {
-            context.read<Navigation>().navigateToGroupPreview(group.id);
+            Navigation.navigateToGroupPreview(group.id);
           },
         );
       },

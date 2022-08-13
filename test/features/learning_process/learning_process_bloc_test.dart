@@ -9,10 +9,8 @@ import 'package:fiszkomaniak/domain/use_cases/achievements/add_finished_session_
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/sessions/save_session_progress_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/delete_session_use_case.dart';
 import 'package:fiszkomaniak/features/learning_process/bloc/learning_process_bloc.dart';
-import 'package:fiszkomaniak/features/learning_process/learning_process_data.dart';
-import 'package:fiszkomaniak/features/learning_process/learning_process_dialogs.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 
 class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
@@ -25,18 +23,14 @@ class MockSaveSessionProgressUseCase extends Mock
 class MockAddFinishedSessionUseCase extends Mock
     implements AddFinishedSessionUseCase {}
 
-class MockRemoveSessionUseCase extends Mock implements RemoveSessionUseCase {}
-
-class MockLearningProcessDialogs extends Mock
-    implements LearningProcessDialogs {}
+class MockDeleteSessionUseCase extends Mock implements DeleteSessionUseCase {}
 
 void main() {
   final getGroupUseCase = MockGetGroupUseCase();
   final getCourseUseCase = MockGetCourseUseCase();
   final saveSessionProgressUseCase = MockSaveSessionProgressUseCase();
   final addFinishedSessionUseCase = MockAddFinishedSessionUseCase();
-  final removeSessionUseCase = MockRemoveSessionUseCase();
-  final learningProcessDialogs = MockLearningProcessDialogs();
+  final deleteSessionUseCase = MockDeleteSessionUseCase();
   final List<Flashcard> flashcards = [
     createFlashcard(index: 0, status: FlashcardStatus.remembered),
     createFlashcard(index: 1, status: FlashcardStatus.notRemembered),
@@ -63,8 +57,7 @@ void main() {
       getCourseUseCase: getCourseUseCase,
       saveSessionProgressUseCase: saveSessionProgressUseCase,
       addFinishedSessionUseCase: addFinishedSessionUseCase,
-      removeSessionUseCase: removeSessionUseCase,
-      learningProcessDialogs: learningProcessDialogs,
+      deleteSessionUseCase: deleteSessionUseCase,
       sessionId: sessionId,
       group: group,
       duration: duration,
@@ -76,7 +69,7 @@ void main() {
   }
 
   LearningProcessState createState({
-    BlocStatus status = const BlocStatusComplete<LearningProcessInfoType>(),
+    BlocStatus status = const BlocStatusInProgress(),
     String? sessionId,
     String courseName = '',
     Group? group,
@@ -108,8 +101,7 @@ void main() {
     reset(getCourseUseCase);
     reset(saveSessionProgressUseCase);
     reset(addFinishedSessionUseCase);
-    reset(removeSessionUseCase);
-    reset(learningProcessDialogs);
+    reset(deleteSessionUseCase);
   });
 
   blocTest(
@@ -126,21 +118,19 @@ void main() {
     act: (LearningProcessBloc bloc) {
       bloc.add(
         LearningProcessEventInitialize(
-          data: const LearningProcessData(
-            groupId: 'g1',
-            flashcardsType: FlashcardsType.all,
-            areQuestionsAndAnswersSwapped: false,
-            duration: Duration(minutes: 30),
-            sessionId: 's1',
-          ),
+          groupId: 'g1',
+          flashcardsType: FlashcardsType.all,
+          areQuestionsAndAnswersSwapped: false,
+          duration: const Duration(minutes: 30),
+          sessionId: 's1',
         ),
       );
     },
     expect: () => [
       createState(status: const BlocStatusLoading()),
       createState(
-        status: const BlocStatusComplete<LearningProcessInfoType>(
-          info: LearningProcessInfoType.initialDataHasBeenLoaded,
+        status: const BlocStatusComplete<LearningProcessInfo>(
+          info: LearningProcessInfo.initialDataHaveBeenSet,
         ),
         sessionId: 's1',
         courseName: course.name,
@@ -168,7 +158,9 @@ void main() {
       amountOfFlashcardsInStack: 3,
     ),
     act: (LearningProcessBloc bloc) {
-      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 1));
+      bloc.add(
+        LearningProcessEventRememberedFlashcard(flashcardIndex: 1),
+      );
     },
     expect: () => [
       createState(
@@ -190,7 +182,9 @@ void main() {
       amountOfFlashcardsInStack: 3,
     ),
     act: (LearningProcessBloc bloc) {
-      bloc.add(LearningProcessEventRememberedFlashcard(flashcardIndex: 0));
+      bloc.add(
+        LearningProcessEventRememberedFlashcard(flashcardIndex: 0),
+      );
     },
     expect: () => [
       createState(
@@ -212,7 +206,9 @@ void main() {
       amountOfFlashcardsInStack: 3,
     ),
     act: (LearningProcessBloc bloc) {
-      bloc.add(LearningProcessEventForgottenFlashcard(flashcardIndex: 2));
+      bloc.add(
+        LearningProcessEventForgottenFlashcard(flashcardIndex: 2),
+      );
     },
     expect: () => [
       createState(
@@ -234,7 +230,9 @@ void main() {
       amountOfFlashcardsInStack: 3,
     ),
     act: (LearningProcessBloc bloc) {
-      bloc.add(LearningProcessEventForgottenFlashcard(flashcardIndex: 1));
+      bloc.add(
+        LearningProcessEventForgottenFlashcard(flashcardIndex: 1),
+      );
     },
     expect: () => [
       createState(
@@ -265,8 +263,8 @@ void main() {
     },
     expect: () => [
       createState(
-        status: const BlocStatusComplete<LearningProcessInfoType>(
-          info: LearningProcessInfoType.flashcardsStackHasBeenReset,
+        status: const BlocStatusComplete<LearningProcessInfo>(
+          info: LearningProcessInfo.flashcardsStackHasBeenReset,
         ),
         group: group,
         rememberedFlashcards: [flashcards[0], flashcards[2]],
@@ -279,155 +277,92 @@ void main() {
   );
 
   blocTest(
-    'time finished, should remove duration if user want to continue',
+    'remove duration, should set duration as null',
     build: () => createBloc(
       duration: const Duration(minutes: 30),
     ),
-    setUp: () {
-      when(
-        () => learningProcessDialogs.askForContinuing(),
-      ).thenAnswer((_) async => true);
-    },
     act: (LearningProcessBloc bloc) {
-      bloc.add(LearningProcessEventTimeFinished());
-    },
-    expect: () => [
-      createState(duration: null),
-    ],
-    verify: (_) {
-      verify(() => learningProcessDialogs.askForContinuing()).called(1);
-    },
-  );
-
-  blocTest(
-    'time finished, should save progress, add session to achievements and remove session',
-    build: () => createBloc(
-      sessionId: 's1',
-      group: createGroup(id: 'g1'),
-      rememberedFlashcards: [flashcards[0], flashcards[2]],
-    ),
-    setUp: () {
-      when(
-        () => learningProcessDialogs.askForContinuing(),
-      ).thenAnswer(
-        (_) async => false,
+      bloc.add(
+        LearningProcessEventRemoveDuration(),
       );
-      when(
-        () => saveSessionProgressUseCase.execute(
-          groupId: 'g1',
-          rememberedFlashcards: [flashcards[0], flashcards[2]],
-        ),
-      ).thenAnswer((_) async => '');
-      when(
-        () => addFinishedSessionUseCase.execute(sessionId: 's1'),
-      ).thenAnswer((_) async => '');
-      when(
-        () => removeSessionUseCase.execute(sessionId: 's1'),
-      ).thenAnswer((_) async => '');
-    },
-    act: (LearningProcessBloc bloc) {
-      bloc.add(LearningProcessEventTimeFinished());
     },
     expect: () => [
       createState(
-        status: const BlocStatusLoading(),
-        sessionId: 's1',
-        group: createGroup(id: 'g1'),
-        rememberedFlashcards: [flashcards[0], flashcards[2]],
-      ),
-      createState(
-        status: const BlocStatusComplete<LearningProcessInfoType>(
-          info: LearningProcessInfoType.sessionHasBeenFinished,
-        ),
-        sessionId: 's1',
-        group: createGroup(id: 'g1'),
-        rememberedFlashcards: [flashcards[0], flashcards[2]],
+        duration: null,
       ),
     ],
-    verify: (_) {
-      verify(() => learningProcessDialogs.askForContinuing()).called(1);
-      verify(
-        () => saveSessionProgressUseCase.execute(
-          groupId: 'g1',
-          rememberedFlashcards: [flashcards[0], flashcards[2]],
-        ),
-      ).called(1);
-      verify(
-        () => addFinishedSessionUseCase.execute(sessionId: 's1'),
-      ).called(1);
-      verify(() => removeSessionUseCase.execute(sessionId: 's1')).called(1);
-    },
   );
 
   blocTest(
-    'end session, should save progress, add session to achievements and remove session',
+    'session finished, should call use cases responsible for saving progress, adding session to achievements and for deleting session',
     build: () => createBloc(
-      group: createGroup(id: 'g1'),
-      rememberedFlashcards: [flashcards[0], flashcards[2]],
       sessionId: 's1',
+      group: group,
+      rememberedFlashcards: [flashcards[0], flashcards[1]],
     ),
     setUp: () {
       when(
         () => saveSessionProgressUseCase.execute(
-          groupId: 'g1',
-          rememberedFlashcards: [flashcards[0], flashcards[2]],
+          groupId: group.id,
+          rememberedFlashcards: [flashcards[0], flashcards[1]],
         ),
       ).thenAnswer((_) async => '');
       when(
         () => addFinishedSessionUseCase.execute(sessionId: 's1'),
       ).thenAnswer((_) async => '');
       when(
-        () => removeSessionUseCase.execute(sessionId: 's1'),
+        () => deleteSessionUseCase.execute(sessionId: 's1'),
       ).thenAnswer((_) async => '');
     },
     act: (LearningProcessBloc bloc) {
-      bloc.add(LearningProcessEventEndSession());
+      bloc.add(
+        LearningProcessEventSessionFinished(),
+      );
     },
     expect: () => [
       createState(
         status: const BlocStatusLoading(),
-        group: createGroup(id: 'g1'),
-        rememberedFlashcards: [flashcards[0], flashcards[2]],
         sessionId: 's1',
+        group: group,
+        rememberedFlashcards: [flashcards[0], flashcards[1]],
       ),
       createState(
-        status: const BlocStatusComplete<LearningProcessInfoType>(
-          info: LearningProcessInfoType.sessionHasBeenFinished,
+        status: const BlocStatusComplete<LearningProcessInfo>(
+          info: LearningProcessInfo.sessionHasBeenFinished,
         ),
-        group: createGroup(id: 'g1'),
-        rememberedFlashcards: [flashcards[0], flashcards[2]],
         sessionId: 's1',
+        group: group,
+        rememberedFlashcards: [flashcards[0], flashcards[1]],
       ),
     ],
     verify: (_) {
       verify(
         () => saveSessionProgressUseCase.execute(
-          groupId: 'g1',
-          rememberedFlashcards: [flashcards[0], flashcards[2]],
+          groupId: group.id,
+          rememberedFlashcards: [flashcards[0], flashcards[1]],
         ),
       ).called(1);
       verify(
         () => addFinishedSessionUseCase.execute(sessionId: 's1'),
       ).called(1);
-      verify(() => removeSessionUseCase.execute(sessionId: 's1')).called(1);
+      verify(
+        () => deleteSessionUseCase.execute(sessionId: 's1'),
+      ).called(1);
     },
   );
 
   blocTest(
-    'exit, confirmed, should save progress and add session to achievements',
+    'session aborted, user wants to save progress, should call use cases responsible for saving progress and for adding session to achievements',
     build: () => createBloc(
       sessionId: 's1',
-      group: createGroup(id: 'g1'),
-      rememberedFlashcards: [flashcards[0], flashcards[2]],
+      group: group,
+      rememberedFlashcards: [flashcards[0]],
     ),
     setUp: () {
       when(
-        () => learningProcessDialogs.askForSaveConfirmation(),
-      ).thenAnswer((_) async => true);
-      when(
         () => saveSessionProgressUseCase.execute(
-          groupId: 'g1',
-          rememberedFlashcards: [flashcards[0], flashcards[2]],
+          groupId: group.id,
+          rememberedFlashcards: [flashcards[0]],
         ),
       ).thenAnswer((_) async => '');
       when(
@@ -435,30 +370,31 @@ void main() {
       ).thenAnswer((_) async => '');
     },
     act: (LearningProcessBloc bloc) {
-      bloc.add(LearningProcessEventExit());
+      bloc.add(
+        LearningProcessEventSessionAborted(doesUserWantToSaveProgress: true),
+      );
     },
     expect: () => [
       createState(
         status: const BlocStatusLoading(),
         sessionId: 's1',
-        group: createGroup(id: 'g1'),
-        rememberedFlashcards: [flashcards[0], flashcards[2]],
+        group: group,
+        rememberedFlashcards: [flashcards[0]],
       ),
       createState(
-        status: const BlocStatusComplete<LearningProcessInfoType>(
-          info: LearningProcessInfoType.sessionHasBeenAborted,
+        status: const BlocStatusComplete<LearningProcessInfo>(
+          info: LearningProcessInfo.sessionHasBeenAborted,
         ),
         sessionId: 's1',
-        group: createGroup(id: 'g1'),
-        rememberedFlashcards: [flashcards[0], flashcards[2]],
+        group: group,
+        rememberedFlashcards: [flashcards[0]],
       ),
     ],
     verify: (_) {
-      verify(() => learningProcessDialogs.askForSaveConfirmation()).called(1);
       verify(
         () => saveSessionProgressUseCase.execute(
-          groupId: 'g1',
-          rememberedFlashcards: [flashcards[0], flashcards[2]],
+          groupId: group.id,
+          rememberedFlashcards: [flashcards[0]],
         ),
       ).called(1);
       verify(
@@ -468,20 +404,17 @@ void main() {
   );
 
   blocTest(
-    'exit, cancelled, should not save progress and should not add session to achievements',
+    'session aborted, user does not want to save progress, should only emit appropriate info',
     build: () => createBloc(
       sessionId: 's1',
-      group: createGroup(id: 'g1'),
-      rememberedFlashcards: [flashcards[0], flashcards[2]],
+      group: group,
+      rememberedFlashcards: [flashcards[0]],
     ),
     setUp: () {
       when(
-        () => learningProcessDialogs.askForSaveConfirmation(),
-      ).thenAnswer((_) async => false);
-      when(
         () => saveSessionProgressUseCase.execute(
-          groupId: 'g1',
-          rememberedFlashcards: [flashcards[0], flashcards[2]],
+          groupId: group.id,
+          rememberedFlashcards: [flashcards[0]],
         ),
       ).thenAnswer((_) async => '');
       when(
@@ -489,24 +422,25 @@ void main() {
       ).thenAnswer((_) async => '');
     },
     act: (LearningProcessBloc bloc) {
-      bloc.add(LearningProcessEventExit());
+      bloc.add(
+        LearningProcessEventSessionAborted(doesUserWantToSaveProgress: false),
+      );
     },
     expect: () => [
       createState(
-        status: const BlocStatusComplete<LearningProcessInfoType>(
-          info: LearningProcessInfoType.sessionHasBeenAborted,
+        status: const BlocStatusComplete<LearningProcessInfo>(
+          info: LearningProcessInfo.sessionHasBeenAborted,
         ),
         sessionId: 's1',
-        group: createGroup(id: 'g1'),
-        rememberedFlashcards: [flashcards[0], flashcards[2]],
+        group: group,
+        rememberedFlashcards: [flashcards[0]],
       ),
     ],
     verify: (_) {
-      verify(() => learningProcessDialogs.askForSaveConfirmation()).called(1);
       verifyNever(
         () => saveSessionProgressUseCase.execute(
-          groupId: 'g1',
-          rememberedFlashcards: [flashcards[0], flashcards[2]],
+          groupId: group.id,
+          rememberedFlashcards: [flashcards[0]],
         ),
       );
       verifyNever(

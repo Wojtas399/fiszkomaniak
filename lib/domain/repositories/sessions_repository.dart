@@ -1,12 +1,12 @@
-import 'package:fiszkomaniak/firebase/fire_document.dart';
-import 'package:fiszkomaniak/firebase/fire_extensions.dart';
-import 'package:fiszkomaniak/firebase/models/session_db_model.dart';
-import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
-import 'package:fiszkomaniak/interfaces/sessions_interface.dart';
-import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:rxdart/rxdart.dart';
+import '../../firebase/fire_document.dart';
+import '../../firebase/fire_extensions.dart';
+import '../../firebase/models/session_db_model.dart';
+import '../../firebase/services/fire_sessions_service.dart';
+import '../../interfaces/sessions_interface.dart';
+import '../../models/date_model.dart';
 import '../../models/time_model.dart';
+import '../entities/session.dart';
 
 class SessionsRepository implements SessionsInterface {
   late final FireSessionsService _fireSessionsService;
@@ -23,10 +23,10 @@ class SessionsRepository implements SessionsInterface {
   Stream<Session> getSessionById(String sessionId) {
     if (_isSessionLoaded(sessionId)) {
       return allSessions$.map(
-        (sessions) {
-          final List<Session?> allSessions = [...sessions];
-          return allSessions.firstWhere(
-            (session) => session?.id == sessionId,
+        (List<Session> sessions) {
+          final List<Session?> sessionsForSearching = [...sessions];
+          return sessionsForSearching.firstWhere(
+            (Session? session) => session?.id == sessionId,
             orElse: () => null,
           );
         },
@@ -34,7 +34,7 @@ class SessionsRepository implements SessionsInterface {
     }
     return Rx.fromCallable(() async => await _loadSessionFromDb(sessionId))
         .whereType<Session>()
-        .doOnData((session) => _addSessionToList(session));
+        .doOnData((Session session) => _addSessionToList(session));
   }
 
   @override
@@ -105,13 +105,36 @@ class SessionsRepository implements SessionsInterface {
   }
 
   @override
-  Future<void> removeSession(String sessionId) async {
+  Future<void> deleteSession(String sessionId) async {
     await _fireSessionsService.removeSession(sessionId);
     _removeSessionFromList(sessionId);
   }
 
+  void _addSessionToList(Session session) {
+    final List<Session> updatedSessions = [..._allSessions$.value];
+    updatedSessions.add(session);
+    _allSessions$.add(updatedSessions.toSet().toList());
+  }
+
+  void _updateSessionInList(Session updatedSession) {
+    final List<Session> updatedSessions = [..._allSessions$.value];
+    final updatedSessionIndex = updatedSessions.indexWhere(
+      (Session session) => session.id == updatedSession.id,
+    );
+    updatedSessions[updatedSessionIndex] = updatedSession;
+    _allSessions$.add(updatedSessions);
+  }
+
+  void _removeSessionFromList(String sessionId) {
+    final List<Session> updatedSessions = [..._allSessions$.value];
+    updatedSessions.removeWhere((Session session) => session.id == sessionId);
+    _allSessions$.add(updatedSessions);
+  }
+
   bool _isSessionLoaded(String sessionId) {
-    return _allSessions$.value.map((session) => session.id).contains(sessionId);
+    return _allSessions$.value
+        .map((Session session) => session.id)
+        .contains(sessionId);
   }
 
   Future<Session?> _loadSessionFromDb(String sessionId) async {
@@ -153,26 +176,5 @@ class SessionsRepository implements SessionsInterface {
       );
     }
     return null;
-  }
-
-  void _addSessionToList(Session session) {
-    final List<Session> updatedSessions = [..._allSessions$.value];
-    updatedSessions.add(session);
-    _allSessions$.add(updatedSessions);
-  }
-
-  void _updateSessionInList(Session updatedSession) {
-    final List<Session> updatedSessions = [..._allSessions$.value];
-    final updatedSessionIndex = updatedSessions.indexWhere(
-      (session) => session.id == updatedSession.id,
-    );
-    updatedSessions[updatedSessionIndex] = updatedSession;
-    _allSessions$.add(updatedSessions);
-  }
-
-  void _removeSessionFromList(String sessionId) {
-    final List<Session> updatedSessions = [..._allSessions$.value];
-    updatedSessions.removeWhere((session) => session.id == sessionId);
-    _allSessions$.add(updatedSessions);
   }
 }

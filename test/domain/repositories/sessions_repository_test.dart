@@ -1,3 +1,5 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:fiszkomaniak/domain/repositories/sessions_repository.dart';
 import 'package:fiszkomaniak/firebase/fire_document.dart';
@@ -5,8 +7,6 @@ import 'package:fiszkomaniak/firebase/models/session_db_model.dart';
 import 'package:fiszkomaniak/firebase/services/fire_sessions_service.dart';
 import 'package:fiszkomaniak/models/date_model.dart';
 import 'package:fiszkomaniak/models/time_model.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockFireSessionsService extends Mock implements FireSessionsService {}
 
@@ -243,13 +243,13 @@ void main() {
   );
 
   test(
-    'remove session, should call method responsible for removing session and then should remove this session from all sessions list',
+    'delete session, should call method responsible for deleting session and then should delete this session from all sessions list',
     () async {
       when(
         () => fireSessionsService.removeSession('s2'),
       ).thenAnswer((_) async => '');
 
-      await repository.removeSession('s2');
+      await repository.deleteSession('s2');
 
       verify(() => fireSessionsService.removeSession('s2')).called(1);
       expect(

@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/interfaces/auth_interface.dart';
+import '../../../interfaces/auth_interface.dart';
 
 class SendPasswordResetEmailUseCase {
   late final AuthInterface _authInterface;

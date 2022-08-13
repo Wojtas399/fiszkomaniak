@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
 import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/courses/get_all_courses_use_case.dart';
 import '../../domain/use_cases/courses/get_course_use_case.dart';
 import '../../domain/use_cases/courses/load_all_courses_use_case.dart';
@@ -10,9 +10,6 @@ import '../../domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
 import '../../domain/use_cases/sessions/add_session_use_case.dart';
 import '../../domain/use_cases/sessions/update_session_use_case.dart';
 import '../../features/home/home.dart';
-import '../../features/session_creator/bloc/session_creator_bloc.dart';
-import '../../features/session_creator/bloc/session_creator_mode.dart';
-import '../../features/session_creator/components/session_creator_content.dart';
 import '../../interfaces/courses_interface.dart';
 import '../../interfaces/groups_interface.dart';
 import '../../interfaces/notifications_interface.dart';
@@ -20,6 +17,9 @@ import '../../interfaces/settings_interface.dart';
 import '../../interfaces/sessions_interface.dart';
 import '../../models/bloc_status.dart';
 import '../../utils/time_utils.dart';
+import 'bloc/session_creator_bloc.dart';
+import 'bloc/session_creator_mode.dart';
+import 'components/session_creator_content.dart';
 
 class SessionCreatorScreen extends StatelessWidget {
   final SessionCreatorMode mode;
@@ -79,6 +79,7 @@ class _SessionCreatorBlocProvider extends StatelessWidget {
           groupsInterface: context.read<GroupsInterface>(),
           notificationsInterface: context.read<NotificationsInterface>(),
           settingsInterface: context.read<SettingsInterface>(),
+          timeUtils: TimeUtils(),
         ),
         timeUtils: TimeUtils(),
       )..add(SessionCreatorEventInitialize(mode: mode)),
@@ -98,12 +99,12 @@ class _SessionCreatorBlocListener extends StatelessWidget {
       listener: (BuildContext context, SessionCreatorState state) async {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
-          final SessionCreatorInfoType? infoType = blocStatus.info;
-          if (infoType != null) {
-            _manageInfoType(infoType, context);
+          DialogsProvider.closeLoadingDialog(context);
+          final SessionCreatorInfo? info = blocStatus.info;
+          if (info != null) {
+            _manageInfo(info, context);
           }
         }
       },
@@ -111,40 +112,42 @@ class _SessionCreatorBlocListener extends StatelessWidget {
     );
   }
 
-  void _manageInfoType(
-    SessionCreatorInfoType infoType,
+  void _manageInfo(
+    SessionCreatorInfo info,
     BuildContext context,
   ) {
-    switch (infoType) {
-      case SessionCreatorInfoType.timeFromThePast:
-        Dialogs.showDialogWithMessage(
+    switch (info) {
+      case SessionCreatorInfo.timeFromThePast:
+        DialogsProvider.showDialogWithMessage(
           title: 'Niedozwolony czas',
           message:
               'Godzina rozpoczęcia lub godzina powiadomienia wraz z wybraną datą są z przeszłości.',
         );
         break;
-      case SessionCreatorInfoType.chosenStartTimeIsEarlierThanNotificationTime:
-        Dialogs.showDialogWithMessage(
+      case SessionCreatorInfo.chosenStartTimeIsEarlierThanNotificationTime:
+        DialogsProvider.showDialogWithMessage(
           title: 'Niedozwolona godzina',
           message:
               'Wybrana godzina rozpoczęcia sesji jest godziną wcześniejszą niż godzina powiadomienia.',
         );
         break;
-      case SessionCreatorInfoType.chosenNotificationTimeIsLaterThanStartTime:
-        Dialogs.showDialogWithMessage(
+      case SessionCreatorInfo.chosenNotificationTimeIsLaterThanStartTime:
+        DialogsProvider.showDialogWithMessage(
           title: 'Niedozwolona godzina',
           message:
               'Wybrana godzina powiadomienia jest godziną późniejszą, niż godzina rozpoczęcia sesji.',
         );
         break;
-      case SessionCreatorInfoType.sessionHasBeenAdded:
-        context.read<Navigation>().backHome();
+      case SessionCreatorInfo.sessionHasBeenAdded:
+        Navigation.backHome();
         context.read<HomePageController>().moveToPage(1);
-        Dialogs.showSnackbarWithMessage('Pomyślnie dodano nową sesję');
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie dodano nową sesję');
         break;
-      case SessionCreatorInfoType.sessionHasBeenUpdated:
-        context.read<Navigation>().moveBack();
-        Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano sesję');
+      case SessionCreatorInfo.sessionHasBeenUpdated:
+        Navigation.moveBack();
+        DialogsProvider.showSnackbarWithMessage(
+          'Pomyślnie zaktualizowano sesję',
+        );
         break;
     }
   }

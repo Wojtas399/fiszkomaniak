@@ -63,7 +63,7 @@ void main() {
       () => groupsInterface.getGroupName(groupId: groupId),
     ).thenAnswer((_) => Stream.value(groupName));
     when(
-      () => notificationsInterface.setDefaultNotificationForSession(
+      () => notificationsInterface.setNotificationForSession15minBeforeStartTime(
         sessionId: sessionId,
         groupName: groupName,
         date: date,
@@ -123,28 +123,11 @@ void main() {
           notificationTime: notificationTime,
         ),
       ).called(1);
-      verifyNever(
-        () => notificationsInterface.setDefaultNotificationForSession(
-          sessionId: sessionId,
-          groupName: groupName,
-          date: date,
-          sessionStartTime: startTime,
-        ),
-      );
-      verifyNever(
-        () => notificationsInterface.setScheduledNotificationForSession(
-          sessionId: sessionId,
-          groupName: groupName,
-          date: date,
-          time: notificationTime,
-          sessionStartTime: startTime,
-        ),
-      );
     },
   );
 
   test(
-    'additionally should call method responsible for setting default notification if default notifications are turned on',
+    'additionally should call method responsible for setting notification 15 min before start time if default notifications are turned on',
     () async {
       when(
         () => settingsInterface.notificationsSettings$,
@@ -168,22 +151,13 @@ void main() {
       );
 
       verify(
-        () => notificationsInterface.setDefaultNotificationForSession(
+        () => notificationsInterface.setNotificationForSession15minBeforeStartTime(
           sessionId: sessionId,
           groupName: groupName,
           date: date,
           sessionStartTime: startTime,
         ),
       ).called(1);
-      verifyNever(
-        () => notificationsInterface.setScheduledNotificationForSession(
-          sessionId: sessionId,
-          groupName: groupName,
-          date: date,
-          time: notificationTime,
-          sessionStartTime: startTime,
-        ),
-      );
     },
   );
 
@@ -211,14 +185,6 @@ void main() {
         notificationTime: notificationTime,
       );
 
-      verifyNever(
-        () => notificationsInterface.setDefaultNotificationForSession(
-          sessionId: sessionId,
-          groupName: groupName,
-          date: date,
-          sessionStartTime: startTime,
-        ),
-      );
       verify(
         () => notificationsInterface.setScheduledNotificationForSession(
           sessionId: sessionId,

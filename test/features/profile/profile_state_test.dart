@@ -1,7 +1,7 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/user.dart';
 import 'package:fiszkomaniak/features/profile/bloc/profile_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late ProfileState state;
@@ -11,7 +11,7 @@ void main() {
       status: BlocStatusInitial(),
       user: null,
       daysStreak: 0,
-      amountOfAllFlashcards: 0,
+      amountOfRememberedFlashcards: 0,
     ),
   );
 
@@ -35,7 +35,7 @@ void main() {
       final state2 = state.copyWith();
 
       expect(state.status, expectedStatus);
-      expect(state2.status, const BlocStatusComplete());
+      expect(state2.status, const BlocStatusInProgress());
     },
   );
 
@@ -66,42 +66,42 @@ void main() {
   );
 
   test(
-    'copy with amount of all flashcards',
+    'copy with amount of remembered flashcards',
     () {
       const int expectedAmount = 200;
 
-      state = state.copyWith(amountOfAllFlashcards: expectedAmount);
+      state = state.copyWith(amountOfRememberedFlashcards: expectedAmount);
       final state2 = state.copyWith();
 
-      expect(state.amountOfAllFlashcards, expectedAmount);
-      expect(state2.amountOfAllFlashcards, expectedAmount);
+      expect(state.amountOfRememberedFlashcards, expectedAmount);
+      expect(state2.amountOfRememberedFlashcards, expectedAmount);
     },
   );
 
   test(
-    'copy with info type',
+    'copy with info',
     () {
-      state = state.copyWithInfoType(ProfileInfoType.userHasBeenSignedOut);
+      const ProfileInfo expectedInfo = ProfileInfo.userHasBeenSignedOut;
+
+      state = state.copyWithInfo(expectedInfo);
 
       expect(
         state.status,
-        const BlocStatusComplete<ProfileInfoType>(
-          info: ProfileInfoType.userHasBeenSignedOut,
-        ),
+        const BlocStatusComplete<ProfileInfo>(info: expectedInfo),
       );
     },
   );
 
   test(
-    'copy with error type',
+    'copy with error',
     () {
-      state = state.copyWithErrorType(ProfileErrorType.wrongPassword);
+      const ProfileError expectedError = ProfileError.wrongPassword;
+
+      state = state.copyWithError(expectedError);
 
       expect(
         state.status,
-        const BlocStatusError<ProfileErrorType>(
-          errorType: ProfileErrorType.wrongPassword,
-        ),
+        const BlocStatusError<ProfileError>(error: expectedError),
       );
     },
   );

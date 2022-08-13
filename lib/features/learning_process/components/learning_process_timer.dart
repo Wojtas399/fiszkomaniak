@@ -5,6 +5,7 @@ import '../../../components/countdown_timer/bloc/timer_bloc.dart';
 import '../../../components/countdown_timer/countdown_timer.dart';
 import '../../../components/countdown_timer/countdown_timer_provider.dart';
 import '../../../components/custom_icon_button.dart';
+import '../../../providers/dialogs_provider.dart';
 import '../bloc/learning_process_bloc.dart';
 
 class LearningProcessTimer extends StatelessWidget {
@@ -53,8 +54,29 @@ class _TimerListener extends StatelessWidget {
     );
   }
 
-  void _onTimeFinished(BuildContext context) {
-    context.read<LearningProcessBloc>().add(LearningProcessEventTimeFinished());
+  Future<void> _onTimeFinished(BuildContext context) async {
+    final LearningProcessBloc learningProcessBloc =
+        context.read<LearningProcessBloc>();
+    final bool doesUserWantToContinue = await _askForContinuing();
+    if (doesUserWantToContinue) {
+      learningProcessBloc.add(
+        LearningProcessEventRemoveDuration(),
+      );
+    } else {
+      learningProcessBloc.add(
+        LearningProcessEventSessionFinished(),
+      );
+    }
+  }
+
+  Future<bool> _askForContinuing() async {
+    return await DialogsProvider.askForConfirmation(
+      title: 'Koniec czasu',
+      text:
+          'Upłynął czas trwania sesji. Chcesz kontynuować bez minutnika czy zapisać postępy i wyjść?',
+      confirmButtonText: 'Kontynuuj',
+      cancelButtonText: 'Zapisz i wyjdź',
+    );
   }
 }
 

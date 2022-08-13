@@ -1,14 +1,14 @@
-import 'package:fiszkomaniak/components/custom_icon_button.dart';
-import 'package:fiszkomaniak/components/section.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
-import 'package:fiszkomaniak/features/session_creator/components/session_creator_date_picker.dart';
-import 'package:fiszkomaniak/ui_extensions/ui_duration_extensions.dart';
-import 'package:fiszkomaniak/ui_extensions/ui_time_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/custom_icon_button.dart';
+import '../../../components/section.dart';
+import '../../../ui_extensions/ui_duration_extensions.dart';
+import '../../../ui_extensions/ui_time_extensions.dart';
 import '../../../components/time_picker.dart';
 import '../../../models/time_model.dart';
+import '../bloc/session_creator_bloc.dart';
+import 'session_creator_date_picker.dart';
 
 class SessionCreatorDateAndTime extends StatelessWidget {
   const SessionCreatorDateAndTime({super.key});

@@ -1,17 +1,17 @@
 import 'dart:io';
-import 'package:fiszkomaniak/components/avatar/avatar.dart';
-import 'package:fiszkomaniak/components/avatar/avatar_image_type.dart';
-import 'package:fiszkomaniak/components/buttons/small_button.dart';
-import 'package:fiszkomaniak/config/theme/colors.dart';
 import 'package:flutter/material.dart';
+import '../../config/theme/colors.dart';
+import '../avatar/avatar.dart';
+import '../avatar/avatar_image_type.dart';
+import '../buttons/small_button.dart';
 
 class ImageConfirmationDialog extends StatelessWidget {
   final File imageFile;
 
   const ImageConfirmationDialog({
-    Key? key,
+    super.key,
     required this.imageFile,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

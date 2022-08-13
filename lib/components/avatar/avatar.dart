@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fiszkomaniak/components/avatar/avatar_image_type.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'avatar_image_type.dart';
 
 class Avatar extends StatelessWidget {
   final AvatarImageType? imageType;
@@ -18,7 +18,7 @@ class Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AvatarImageType? type = imageType;
+    final AvatarImageType? imageType = this.imageType;
     return SizedBox(
       width: size,
       height: size,
@@ -33,8 +33,8 @@ class Avatar extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(200.0),
           ),
-          child: type != null
-              ? _AvatarImage(imageType: type)
+          child: imageType != null
+              ? _AvatarImage(imageType: imageType)
               : _AvatarIcon(size: size * 0.6),
         ),
       ),
@@ -49,17 +49,9 @@ class _AvatarImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AvatarImageType type = imageType;
-    ImageProvider<Object>? imageProvider;
-    Widget? image;
-    if (type is AvatarImageTypeUrl) {
-      imageProvider = CachedNetworkImageProvider(type.url);
-      image = _UrlImage(url: type.url);
-    } else if (type is AvatarImageTypeFile) {
-      imageProvider = FileImage(type.file);
-      image = Image.file(type.file);
-    }
-    if (imageProvider != null && image != null) {
+    final ImageProvider<Object>? imageProvider = _getImageProvider();
+    final Widget? imageWidget = _getImageWidget();
+    if (imageProvider != null && imageWidget != null) {
       return Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -70,7 +62,7 @@ class _AvatarImage extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: Center(
-            child: image,
+            child: imageWidget,
           ),
         ),
       );
@@ -78,6 +70,26 @@ class _AvatarImage extends StatelessWidget {
     return const Center(
       child: Icon(Icons.error),
     );
+  }
+
+  ImageProvider<Object>? _getImageProvider() {
+    final AvatarImageType imageType = this.imageType;
+    if (imageType is AvatarImageTypeUrl) {
+      return CachedNetworkImageProvider(imageType.url);
+    } else if (imageType is AvatarImageTypeFile) {
+      return FileImage(imageType.file);
+    }
+    return null;
+  }
+
+  Widget? _getImageWidget() {
+    final AvatarImageType imageType = this.imageType;
+    if (imageType is AvatarImageTypeUrl) {
+      return _UrlImage(url: imageType.url);
+    } else if (imageType is AvatarImageTypeFile) {
+      return Image.file(imageType.file);
+    }
+    return null;
   }
 }
 

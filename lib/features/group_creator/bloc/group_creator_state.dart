@@ -10,13 +10,13 @@ class GroupCreatorState extends Equatable {
   final String nameForAnswers;
 
   const GroupCreatorState({
-    this.mode = const GroupCreatorCreateMode(),
-    this.status = const BlocStatusInitial(),
-    this.selectedCourse,
-    this.allCourses = const [],
-    this.groupName = '',
-    this.nameForQuestions = '',
-    this.nameForAnswers = '',
+    required this.mode,
+    required this.status,
+    required this.selectedCourse,
+    required this.allCourses,
+    required this.groupName,
+    required this.nameForQuestions,
+    required this.nameForAnswers,
   });
 
   @override
@@ -38,9 +38,9 @@ class GroupCreatorState extends Equatable {
         nameForAnswers.isEmpty;
     if (mode is GroupCreatorEditMode) {
       bool areTheSameData = selectedCourse?.id == mode.group.courseId &&
-          groupName == mode.group.name &&
-          nameForQuestions == mode.group.nameForQuestions &&
-          nameForAnswers == mode.group.nameForAnswers;
+          groupName.trim() == mode.group.name &&
+          nameForQuestions.trim() == mode.group.nameForQuestions &&
+          nameForAnswers.trim() == mode.group.nameForAnswers;
       return areDataNotEntered || areTheSameData;
     }
     return areDataNotEntered;
@@ -57,7 +57,7 @@ class GroupCreatorState extends Equatable {
   }) {
     return GroupCreatorState(
       mode: mode ?? this.mode,
-      status: status ?? const BlocStatusComplete<GroupCreatorInfoType>(),
+      status: status ?? const BlocStatusInProgress(),
       selectedCourse: selectedCourse ?? this.selectedCourse,
       allCourses: allCourses ?? this.allCourses,
       groupName: groupName ?? this.groupName,
@@ -65,10 +65,30 @@ class GroupCreatorState extends Equatable {
       nameForAnswers: nameForAnswers ?? this.nameForAnswers,
     );
   }
+
+  GroupCreatorState copyWithInfo(GroupCreatorInfo info) {
+    return copyWith(
+      status: BlocStatusComplete<GroupCreatorInfo>(
+        info: info,
+      ),
+    );
+  }
+
+  GroupCreatorState copyWithError(GroupCreatorError error) {
+    return copyWith(
+      status: BlocStatusError<GroupCreatorError>(
+        error: error,
+      ),
+    );
+  }
 }
 
-enum GroupCreatorInfoType {
-  groupNameIsAlreadyTaken,
+enum GroupCreatorInfo {
+  dataHaveBeenInitialized,
   groupHasBeenAdded,
-  groupHasBeenEdited,
+  groupHasBeenUpdated,
+}
+
+enum GroupCreatorError {
+  groupNameIsAlreadyTaken,
 }

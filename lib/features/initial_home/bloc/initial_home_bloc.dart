@@ -9,7 +9,6 @@ part 'initial_home_state.dart';
 
 class InitialHomeBloc extends Bloc<InitialHomeEvent, InitialHomeState> {
   late final IsUserLoggedUseCase _isUserLoggedUseCase;
-  StreamSubscription<bool>? _userLoginStatusListener;
 
   InitialHomeBloc({
     required IsUserLoggedUseCase isUserLoggedUseCase,
@@ -21,24 +20,16 @@ class InitialHomeBloc extends Bloc<InitialHomeEvent, InitialHomeState> {
     _isUserLoggedUseCase = isUserLoggedUseCase;
     on<InitialHomeEventInitialize>(_initialize);
     on<InitialHomeEventChangeMode>(_changeMode);
-    on<InitialHomeEventUserLoginStatusChanged>(_loginStatusChanged);
   }
 
-  @override
-  Future<void> close() {
-    _userLoginStatusListener?.cancel();
-    return super.close();
-  }
-
-  void _initialize(
+  Future<void> _initialize(
     InitialHomeEventInitialize event,
     Emitter<InitialHomeState> emit,
-  ) {
-    _userLoginStatusListener ??= _isUserLoggedUseCase.execute().listen(
-          (isUserLogged) => add(
-            InitialHomeEventUserLoginStatusChanged(isUserLogged: isUserLogged),
-          ),
-        );
+  ) async {
+    final bool isUserLogged = await _isUserLoggedUseCase.execute().first;
+    emit(state.copyWith(
+      isUserLogged: isUserLogged,
+    ));
   }
 
   void _changeMode(
@@ -47,15 +38,6 @@ class InitialHomeBloc extends Bloc<InitialHomeEvent, InitialHomeState> {
   ) {
     emit(state.copyWith(
       mode: event.mode,
-    ));
-  }
-
-  void _loginStatusChanged(
-    InitialHomeEventUserLoginStatusChanged event,
-    Emitter<InitialHomeState> emit,
-  ) {
-    emit(state.copyWith(
-      isUserLogged: event.isUserLogged,
     ));
   }
 }

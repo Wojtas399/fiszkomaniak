@@ -57,7 +57,7 @@ class _Body extends StatelessWidget {
 }
 
 class _FlashcardsStack extends StatelessWidget {
-  const _FlashcardsStack({Key? key}) : super(key: key);
+  const _FlashcardsStack();
 
   @override
   Widget build(BuildContext context) {

@@ -79,7 +79,7 @@ class SessionCreatorState extends Equatable {
     Time? notificationTime,
   }) {
     return SessionCreatorState(
-      status: status ?? const BlocStatusComplete<SessionCreatorInfoType>(),
+      status: status ?? const BlocStatusInProgress(),
       mode: mode ?? this.mode,
       courses: courses ?? this.courses,
       groups: groups ?? this.groups,
@@ -101,7 +101,7 @@ class SessionCreatorState extends Equatable {
     bool notificationTime = false,
   }) {
     return SessionCreatorState(
-      status: const BlocStatusComplete<SessionCreatorInfoType>(),
+      status: const BlocStatusInProgress(),
       mode: mode,
       courses: courses,
       groups: groups,
@@ -116,9 +116,9 @@ class SessionCreatorState extends Equatable {
     );
   }
 
-  SessionCreatorState copyWithInfo(SessionCreatorInfoType infoType) {
+  SessionCreatorState copyWithInfo(SessionCreatorInfo info) {
     return copyWith(
-      status: BlocStatusComplete<SessionCreatorInfoType>(info: infoType),
+      status: BlocStatusComplete<SessionCreatorInfo>(info: info),
     );
   }
 
@@ -147,7 +147,7 @@ class SessionCreatorState extends Equatable {
   }
 }
 
-enum SessionCreatorInfoType {
+enum SessionCreatorInfo {
   timeFromThePast,
   chosenStartTimeIsEarlierThanNotificationTime,
   chosenNotificationTimeIsLaterThanStartTime,

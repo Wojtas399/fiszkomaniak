@@ -8,6 +8,6 @@ class DeleteCourseUseCase {
   }
 
   Future<void> execute({required String courseId}) async {
-    await _coursesInterface.removeCourse(courseId: courseId);
+    await _coursesInterface.deleteCourse(courseId: courseId);
   }
 }

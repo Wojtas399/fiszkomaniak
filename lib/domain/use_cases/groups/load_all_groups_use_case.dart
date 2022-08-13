@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/interfaces/groups_interface.dart';
+import '../../../interfaces/groups_interface.dart';
 
 class LoadAllGroupsUseCase {
   late final GroupsInterface _groupsInterface;

@@ -1,15 +1,15 @@
-import 'package:fiszkomaniak/components/custom_icon_button.dart';
-import 'package:fiszkomaniak/components/item_with_icon.dart';
-import 'package:fiszkomaniak/components/section.dart';
-import 'package:fiszkomaniak/components/select_item/select_item.dart';
-import 'package:fiszkomaniak/domain/entities/course.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_bloc.dart';
-import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/custom_icon_button.dart';
 import '../../../components/flashcards_type_picker.dart';
+import '../../../components/item_with_icon.dart';
+import '../../../components/section.dart';
+import '../../../components/select_item.dart';
+import '../../../domain/entities/course.dart';
+import '../../../domain/entities/group.dart';
 import '../../../domain/entities/session.dart';
+import '../bloc/session_creator_bloc.dart';
 
 class SessionCreatorFlashcards extends StatelessWidget {
   const SessionCreatorFlashcards({super.key});
@@ -54,7 +54,7 @@ class _CourseSelector extends StatelessWidget {
       label: 'Kurs',
       optionsListTitle: 'Wybierz kurs',
       options: _createCoursesOptions(coursesToSelect),
-      onOptionSelected: (String key, String value) => _onSelected(key, context),
+      onOptionSelected: (String courseId, _) => _onSelected(courseId, context),
     );
   }
 
@@ -86,7 +86,7 @@ class _GroupSelector extends StatelessWidget {
       label: 'Grupa',
       optionsListTitle: 'Wybierz grupę',
       options: _createGroupsOptions(groupsToSelect),
-      onOptionSelected: (String key, String value) => _onSelected(key, context),
+      onOptionSelected: (String groupId, _) => _onSelected(groupId, context),
     );
   }
 

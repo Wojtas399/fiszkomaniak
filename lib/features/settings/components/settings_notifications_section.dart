@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../../components/switch_item.dart';
-import '../../../features/settings/bloc/settings_bloc.dart';
-import '../../../features/settings/components/settings_switch_item_with_description.dart';
 import '../../../components/section.dart';
+import '../../../components/switch_item.dart';
+import '../bloc/settings_bloc.dart';
+import 'settings_switch_item_with_description.dart';
 
 class SettingsNotificationsSection extends StatelessWidget {
   const SettingsNotificationsSection({super.key});

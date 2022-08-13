@@ -55,23 +55,21 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
           email: state.email,
           password: state.password,
         );
-        emit(state.copyWith(
-          status: const BlocStatusComplete<SignInInfoType>(
-            info: SignInInfoType.userHasBeenSignedIn,
-          ),
+        emit(state.copyWithInfo(
+          SignInInfo.userHasBeenSignedIn,
         ));
       } on AuthException catch (exception) {
         if (exception == AuthException.userNotFound) {
           emit(state.copyWithError(
-            SignInErrorType.userNotFound,
+            SignInError.userNotFound,
           ));
         } else if (exception == AuthException.invalidEmail) {
           emit(state.copyWithError(
-            SignInErrorType.invalidEmail,
+            SignInError.invalidEmail,
           ));
         } else if (exception == AuthException.wrongPassword) {
           emit(state.copyWithError(
-            SignInErrorType.wrongPassword,
+            SignInError.wrongPassword,
           ));
         }
       }

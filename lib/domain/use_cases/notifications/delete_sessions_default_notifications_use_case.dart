@@ -17,7 +17,7 @@ class DeleteSessionsDefaultNotificationsUseCase {
   Future<void> execute() async {
     final List<Session> sessions = await _sessionsInterface.allSessions$.first;
     for (final Session session in sessions) {
-      await _notificationsInterface.deleteDefaultNotificationForSession(
+      await _notificationsInterface.deleteNotificationForSession15minBeforeStartTime(
         sessionId: session.id,
       );
     }

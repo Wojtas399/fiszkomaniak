@@ -1,60 +1,60 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
-import 'package:fiszkomaniak/config/routes.dart';
-import 'package:fiszkomaniak/config/slide_right_route_animation.dart';
-import 'package:fiszkomaniak/features/flashcard_preview/flashcard_preview_screen.dart';
-import 'package:fiszkomaniak/features/group_creator/bloc/group_creator_mode.dart';
-import 'package:fiszkomaniak/features/home/home_router.dart';
-import 'package:fiszkomaniak/config/slide_up_route_animation.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
-import 'package:fiszkomaniak/features/initial_home/initial_home.dart';
-import 'package:fiszkomaniak/features/reset_password/reset_password_screen.dart';
-import 'package:fiszkomaniak/features/session_creator/bloc/session_creator_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:flutter/material.dart';
+import '../config/routes.dart';
+import '../config/slide_right_route_animation.dart';
+import '../features/flashcard_preview/flashcard_preview_screen.dart';
+import '../features/group_creator/bloc/group_creator_mode.dart';
+import '../config/slide_up_route_animation.dart';
+import '../features/course_creator/bloc/course_creator_mode.dart';
+import '../features/initial_home/initial_home.dart';
+import '../features/reset_password/reset_password_screen.dart';
+import '../features/session_creator/bloc/session_creator_mode.dart';
+import '../features/session_preview/bloc/session_preview_mode.dart';
 import '../features/home/home.dart';
-import '../features/learning_process/learning_process_data.dart';
+import '../features/learning_process/learning_process_arguments.dart';
+import '../providers/dialogs_provider.dart';
+import '../providers/global_navigator_key_provider.dart';
 
 class Navigation {
-  void moveBack({Object? objectToReturn}) {
-    Dialogs.hideSnackbar();
-    navigatorKey.currentState?.pop(objectToReturn);
+  static void moveBack({Object? objectToReturn}) {
+    DialogsProvider.hideSnackbar();
+    _getNavigatorState()?.pop(objectToReturn);
   }
 
-  void pushReplacementToInitialHome() {
-    navigatorKey.currentState?.pushReplacement(
+  static void pushReplacementToInitialHome() {
+    _getNavigatorState()?.pushReplacement(
       SlideRightRouteAnimation(page: const InitialHome()),
     );
   }
 
-  void pushReplacementToHome(BuildContext context) {
+  static void pushReplacementToHome(BuildContext context) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const Home()),
     );
   }
 
-  void navigateToResetPassword(BuildContext context) {
+  static void navigateToResetPassword(BuildContext context) {
     Navigator.of(context).push(SlideUpRouteAnimation(
       page: const ResetPasswordScreen(),
     ));
   }
 
-  void backHome() {
-    navigatorKey.currentState?.popUntil(
+  static void backHome() {
+    _getNavigatorState()?.popUntil(
       ModalRoute.withName(Routes.home),
     );
   }
 
-  void navigateToSettings() {
-    Dialogs.hideSnackbar();
-    navigatorKey.currentState?.pushNamed(Routes.settings);
+  static void navigateToSettings() {
+    _hideSnackbar();
+    _getNavigatorState()?.pushNamed(Routes.settings);
   }
 
-  Future<void> navigateToCourseCreator(CourseCreatorMode mode) async {
-    Dialogs.hideSnackbar();
+  static Future<void> navigateToCourseCreator(CourseCreatorMode mode) async {
+    _hideSnackbar();
     await Future.delayed(
       const Duration(milliseconds: 1),
       () {
-        navigatorKey.currentState?.pushNamed(
+        _getNavigatorState()?.pushNamed(
           Routes.courseCreator,
           arguments: mode,
         );
@@ -62,12 +62,12 @@ class Navigation {
     );
   }
 
-  Future<void> navigateToGroupCreator(GroupCreatorMode mode) async {
-    Dialogs.hideSnackbar();
+  static Future<void> navigateToGroupCreator(GroupCreatorMode mode) async {
+    _hideSnackbar();
     await Future.delayed(
       const Duration(milliseconds: 1),
       () {
-        navigatorKey.currentState?.pushNamed(
+        _getNavigatorState()?.pushNamed(
           Routes.groupCreator,
           arguments: mode,
         );
@@ -75,12 +75,12 @@ class Navigation {
     );
   }
 
-  void navigateToSessionCreator(SessionCreatorMode mode) async {
-    Dialogs.hideSnackbar();
+  static void navigateToSessionCreator(SessionCreatorMode mode) async {
+    _hideSnackbar();
     await Future.delayed(
       const Duration(milliseconds: 1),
       () {
-        navigatorKey.currentState?.pushNamed(
+        _getNavigatorState()?.pushNamed(
           Routes.sessionCreator,
           arguments: mode,
         );
@@ -88,48 +88,48 @@ class Navigation {
     );
   }
 
-  void navigateToGroupSelection() {
-    Dialogs.hideSnackbar();
-    navigatorKey.currentState?.pushNamed(
+  static void navigateToGroupSelection() {
+    _hideSnackbar();
+    _getNavigatorState()?.pushNamed(
       Routes.groupSelection,
     );
   }
 
-  void navigateToFlashcardsEditor(String groupId) {
-    Dialogs.hideSnackbar();
-    navigatorKey.currentState?.pushNamed(
+  static void navigateToFlashcardsEditor(String groupId) {
+    _hideSnackbar();
+    _getNavigatorState()?.pushNamed(
       Routes.flashcardsEditor,
       arguments: groupId,
     );
   }
 
-  void navigateToCourseGroupsPreview(String courseId) {
-    Dialogs.hideSnackbar();
-    navigatorKey.currentState?.pushNamed(
+  static void navigateToCourseGroupsPreview(String courseId) {
+    _hideSnackbar();
+    _getNavigatorState()?.pushNamed(
       Routes.courseGroupsPreview,
       arguments: courseId,
     );
   }
 
-  void navigateToGroupFlashcardsPreview(String groupId) {
-    Dialogs.hideSnackbar();
-    navigatorKey.currentState?.pushNamed(
+  static void navigateToGroupFlashcardsPreview(String groupId) {
+    _hideSnackbar();
+    _getNavigatorState()?.pushNamed(
       Routes.groupFlashcardsPreview,
       arguments: groupId,
     );
   }
 
-  void navigateToGroupPreview(String groupId) {
-    Dialogs.hideSnackbar();
-    navigatorKey.currentState?.pushNamed(
+  static void navigateToGroupPreview(String groupId) {
+    _hideSnackbar();
+    _getNavigatorState()?.pushNamed(
       Routes.groupPreview,
       arguments: groupId,
     );
   }
 
-  void navigateToFlashcardPreview(String groupId, int flashcardIndex) {
-    Dialogs.hideSnackbar();
-    navigatorKey.currentState?.pushNamed(
+  static void navigateToFlashcardPreview(String groupId, int flashcardIndex) {
+    _hideSnackbar();
+    _getNavigatorState()?.pushNamed(
       Routes.flashcardPreview,
       arguments: FlashcardPreviewScreenArguments(
         groupId: groupId,
@@ -138,19 +138,27 @@ class Navigation {
     );
   }
 
-  void navigateToSessionPreview(SessionPreviewMode mode) {
-    Dialogs.hideSnackbar();
-    navigatorKey.currentState?.pushNamed(
+  static void navigateToSessionPreview(SessionPreviewMode mode) {
+    _hideSnackbar();
+    _getNavigatorState()?.pushNamed(
       Routes.sessionPreview,
       arguments: mode,
     );
   }
 
-  void navigateToLearningProcess(LearningProcessData data) {
-    Dialogs.hideSnackbar();
-    navigatorKey.currentState?.pushNamed(
+  static void navigateToLearningProcess(LearningProcessArguments arguments) {
+    _hideSnackbar();
+    _getNavigatorState()?.pushNamed(
       Routes.session,
-      arguments: data,
+      arguments: arguments,
     );
+  }
+
+  static void _hideSnackbar() {
+    DialogsProvider.hideSnackbar();
+  }
+
+  static NavigatorState? _getNavigatorState() {
+    return GlobalNavigatorKeyProvider.getState();
   }
 }

@@ -32,18 +32,24 @@ class SignInState extends Equatable {
     );
   }
 
-  SignInState copyWithError(SignInErrorType errorType) {
+  SignInState copyWithInfo(SignInInfo info) {
     return copyWith(
-      status: BlocStatusError<SignInErrorType>(errorType: errorType),
+      status: BlocStatusComplete<SignInInfo>(info: info),
+    );
+  }
+
+  SignInState copyWithError(SignInError error) {
+    return copyWith(
+      status: BlocStatusError<SignInError>(error: error),
     );
   }
 }
 
-enum SignInInfoType {
+enum SignInInfo {
   userHasBeenSignedIn,
 }
 
-enum SignInErrorType {
+enum SignInError {
   userNotFound,
   invalidEmail,
   wrongPassword,

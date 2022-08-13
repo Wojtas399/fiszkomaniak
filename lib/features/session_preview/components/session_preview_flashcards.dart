@@ -1,12 +1,12 @@
-import 'package:fiszkomaniak/components/custom_icon_button.dart';
-import 'package:fiszkomaniak/components/item_with_icon.dart';
-import 'package:fiszkomaniak/components/flashcards_type_picker.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/custom_icon_button.dart';
+import '../../../components/item_with_icon.dart';
+import '../../../components/flashcards_type_picker.dart';
+import '../../../domain/entities/session.dart';
+import '../bloc/session_preview_bloc.dart';
+import '../bloc/session_preview_mode.dart';
 
 class SessionPreviewFlashcards extends StatelessWidget {
   const SessionPreviewFlashcards({super.key});

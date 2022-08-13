@@ -7,12 +7,12 @@ class Section extends StatelessWidget {
   final bool? displayDividerAtTheBottom;
 
   const Section({
-    Key? key,
+    super.key,
     required this.title,
     required this.child,
     this.trailing,
     this.displayDividerAtTheBottom = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

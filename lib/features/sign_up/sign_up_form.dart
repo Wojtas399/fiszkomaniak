@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/dialogs/dialogs.dart';
-import '../../../domain/use_cases/auth/sign_up_use_case.dart';
-import '../../../interfaces/achievements_interface.dart';
-import '../../../interfaces/auth_interface.dart';
-import '../../../interfaces/settings_interface.dart';
-import '../../../interfaces/user_interface.dart';
-import '../../../models/bloc_status.dart';
-import '../../../validators/email_validator.dart';
-import '../../../validators/password_validator.dart';
-import '../../../validators/username_validator.dart';
+import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
+import '../../domain/use_cases/auth/sign_up_use_case.dart';
+import '../../interfaces/achievements_interface.dart';
+import '../../interfaces/auth_interface.dart';
+import '../../interfaces/settings_interface.dart';
+import '../../interfaces/user_interface.dart';
+import '../../models/bloc_status.dart';
+import '../../validators/email_validator.dart';
+import '../../validators/password_validator.dart';
+import '../../validators/username_validator.dart';
 import 'bloc/sign_up_bloc.dart';
 import 'components/sign_up_inputs.dart';
 import 'components/sign_up_alternative_option.dart';
@@ -74,14 +75,18 @@ class _SignUpBlocListener extends StatelessWidget {
       listener: (BuildContext context, SignUpState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog(context: context);
+          DialogsProvider.showLoadingDialog(context: context);
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
+          DialogsProvider.closeLoadingDialog(context);
+          final SignUpInfo? info = blocStatus.info;
+          if (info != null) {
+            _manageInfo(info, context);
+          }
         } else if (blocStatus is BlocStatusError) {
-          Dialogs.closeLoadingDialog(context);
-          final SignUpErrorType? errorType = blocStatus.errorType;
-          if (errorType != null) {
-            _manageErrorType(errorType, context);
+          DialogsProvider.closeLoadingDialog(context);
+          final SignUpError? error = blocStatus.error;
+          if (error != null) {
+            _manageError(error, context);
           }
         }
       },
@@ -89,10 +94,18 @@ class _SignUpBlocListener extends StatelessWidget {
     );
   }
 
-  void _manageErrorType(SignUpErrorType errorType, BuildContext context) {
-    switch (errorType) {
-      case SignUpErrorType.emailAlreadyInUse:
-        Dialogs.showDialogWithMessage(
+  void _manageInfo(SignUpInfo info, BuildContext context) {
+    switch (info) {
+      case SignUpInfo.userHasBeenSignedUp:
+        Navigation.pushReplacementToHome(context);
+        break;
+    }
+  }
+
+  void _manageError(SignUpError error, BuildContext context) {
+    switch (error) {
+      case SignUpError.emailAlreadyInUse:
+        DialogsProvider.showDialogWithMessage(
           context: context,
           title: 'Zajęty email',
           message:

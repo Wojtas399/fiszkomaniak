@@ -1,19 +1,38 @@
-import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
-import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/buttons/button.dart';
 import '../../../config/navigation.dart';
-import 'group_preview_flashcards_state.dart';
-import 'group_preview_information.dart';
+import '../../../features/session_preview/bloc/session_preview_mode.dart';
+import '../../../components/buttons/button.dart';
+import '../bloc/group_preview_bloc.dart';
+import 'group_preview_app_bar.dart';
+import 'group_preview_flashcards_status.dart';
+import 'group_preview_data.dart';
 
 class GroupPreviewContent extends StatelessWidget {
   const GroupPreviewContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final bool doesGroupExist =
-        context.select((GroupPreviewBloc bloc) => bloc.state.group) != null;
+    return const Scaffold(
+      appBar: GroupPreviewAppBar(),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: _Body(),
+        ),
+      ),
+    );
+  }
+}
+
+class _Body extends StatelessWidget {
+  const _Body();
+
+  @override
+  Widget build(BuildContext context) {
+    final bool doesGroupExist = context.select(
+      (GroupPreviewBloc bloc) => bloc.state.doesGroupExist,
+    );
     if (doesGroupExist) {
       return const _GroupInformation();
     }
@@ -34,8 +53,8 @@ class _GroupInformation extends StatelessWidget {
           children: const [
             _GroupName(),
             SizedBox(height: 16),
-            GroupPreviewInformation(),
-            GroupPreviewFlashcardsState(),
+            GroupPreviewData(),
+            GroupPreviewFlashcardsStatus(),
           ],
         ),
         const _QuickSessionButton(),
@@ -76,9 +95,9 @@ class _QuickSessionButton extends StatelessWidget {
   void _onPressedQuickSession(BuildContext context) {
     final String? groupId = context.read<GroupPreviewBloc>().state.group?.id;
     if (groupId != null) {
-      context.read<Navigation>().navigateToSessionPreview(
-            SessionPreviewModeQuick(groupId: groupId),
-          );
+      Navigation.navigateToSessionPreview(
+        SessionPreviewModeQuick(groupId: groupId),
+      );
     }
   }
 }

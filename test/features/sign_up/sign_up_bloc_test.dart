@@ -163,8 +163,8 @@ void main() {
             passwordConfirmation: 'password',
           ),
           createState(
-            status: const BlocStatusComplete<SignUpInfoType>(
-              info: SignUpInfoType.userHasBeenSignedUp,
+            status: const BlocStatusComplete<SignUpInfo>(
+              info: SignUpInfo.userHasBeenSignedUp,
             ),
             username: 'username',
             email: 'email',
@@ -319,8 +319,8 @@ void main() {
             passwordConfirmation: 'password',
           ),
           createState(
-            status: const BlocStatusError<SignUpErrorType>(
-              errorType: SignUpErrorType.emailAlreadyInUse,
+            status: const BlocStatusError<SignUpError>(
+              error: SignUpError.emailAlreadyInUse,
             ),
             username: 'username',
             email: 'email',

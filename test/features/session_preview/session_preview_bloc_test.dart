@@ -1,17 +1,16 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/entities/session.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/sessions/get_session_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/sessions/remove_session_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/sessions/delete_session_use_case.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_bloc.dart';
 import 'package:fiszkomaniak/features/session_preview/bloc/session_preview_mode.dart';
-import 'package:fiszkomaniak/features/session_preview/session_preview_dialogs.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockGetSessionUseCase extends Mock implements GetSessionUseCase {}
 
@@ -19,16 +18,13 @@ class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
 
 class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
 
-class MockRemoveSessionUseCase extends Mock implements RemoveSessionUseCase {}
-
-class MockSessionPreviewDialogs extends Mock implements SessionPreviewDialogs {}
+class MockDeleteSessionUseCase extends Mock implements DeleteSessionUseCase {}
 
 void main() {
   final getSessionUseCase = MockGetSessionUseCase();
   final getGroupUseCase = MockGetGroupUseCase();
   final getCourseUseCase = MockGetCourseUseCase();
-  final removeSessionUseCase = MockRemoveSessionUseCase();
-  final sessionPreviewDialogs = MockSessionPreviewDialogs();
+  final deleteSessionUseCase = MockDeleteSessionUseCase();
 
   SessionPreviewBloc createBloc({
     BlocStatus status = const BlocStatusInitial(),
@@ -40,8 +36,7 @@ void main() {
       getSessionUseCase: getSessionUseCase,
       getGroupUseCase: getGroupUseCase,
       getCourseUseCase: getCourseUseCase,
-      removeSessionUseCase: removeSessionUseCase,
-      sessionPreviewDialogs: sessionPreviewDialogs,
+      deleteSessionUseCase: deleteSessionUseCase,
       status: status,
       session: session,
       duration: duration,
@@ -50,7 +45,7 @@ void main() {
   }
 
   SessionPreviewState createState({
-    BlocStatus status = const BlocStatusComplete<SessionPreviewInfoType>(),
+    BlocStatus status = const BlocStatusInProgress(),
     SessionPreviewMode? mode,
     Session? session,
     Group? group,
@@ -75,8 +70,7 @@ void main() {
     reset(getSessionUseCase);
     reset(getGroupUseCase);
     reset(getCourseUseCase);
-    reset(removeSessionUseCase);
-    reset(sessionPreviewDialogs);
+    reset(deleteSessionUseCase);
   });
 
   group(
@@ -121,8 +115,13 @@ void main() {
           );
         },
         expect: () => [
-          createState(status: const BlocStatusLoading()),
-          createState(mode: SessionPreviewModeNormal(sessionId: 's1')),
+          createState(
+            status: const BlocStatusLoading(),
+          ),
+          createState(
+            status: const BlocStatusComplete(),
+            mode: SessionPreviewModeNormal(sessionId: 's1'),
+          ),
           createState(
             mode: SessionPreviewModeNormal(sessionId: 's1'),
             session: session,
@@ -134,11 +133,6 @@ void main() {
                 session.areQuestionsAndAnswersSwapped,
           ),
         ],
-        verify: (_) {
-          verify(() => getSessionUseCase.execute(sessionId: 's1')).called(1);
-          verify(() => getGroupUseCase.execute(groupId: 'g1')).called(1);
-          verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
-        },
       );
 
       blocTest(
@@ -152,17 +146,16 @@ void main() {
           );
         },
         expect: () => [
-          createState(status: const BlocStatusLoading()),
           createState(
+            status: const BlocStatusLoading(),
+          ),
+          createState(
+            status: const BlocStatusComplete(),
             mode: SessionPreviewModeQuick(groupId: 'g1'),
             group: group,
             courseName: course.name,
           ),
         ],
-        verify: (_) {
-          verify(() => getGroupUseCase.execute(groupId: 'g1')).called(1);
-          verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
-        },
       );
     },
   );
@@ -192,7 +185,9 @@ void main() {
           ).thenAnswer((_) => Stream.value(course));
         },
         act: (SessionPreviewBloc bloc) {
-          bloc.add(SessionPreviewEventSessionUpdated(session: session));
+          bloc.add(
+            SessionPreviewEventSessionUpdated(session: session),
+          );
         },
         expect: () => [
           createState(
@@ -205,10 +200,6 @@ void main() {
                 session.areQuestionsAndAnswersSwapped,
           ),
         ],
-        verify: (_) {
-          verify(() => getGroupUseCase.execute(groupId: 'g1')).called(1);
-          verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
-        },
       );
     },
   );
@@ -233,11 +224,12 @@ void main() {
   blocTest(
     'reset duration, should set duration as null in state',
     build: () => createBloc(
-      status: const BlocStatusComplete<SessionPreviewInfoType>(),
       duration: const Duration(minutes: 30),
     ),
     act: (SessionPreviewBloc bloc) {
-      bloc.add(SessionPreviewEventResetDuration());
+      bloc.add(
+        SessionPreviewEventResetDuration(),
+      );
     },
     expect: () => [
       createState(duration: null),
@@ -277,28 +269,25 @@ void main() {
   );
 
   group(
-    'remove session',
+    'delete session session',
     () {
       final Session session = createSession(id: 's1', groupId: 'g1');
 
       setUp(() {
         when(
-          () => removeSessionUseCase.execute(sessionId: 's1'),
+          () => deleteSessionUseCase.execute(sessionId: session.id),
         ).thenAnswer((_) async => '');
       });
 
       blocTest(
-        'confirmed, should call use case responsible for removing session',
+        'should call use case responsible for deleting session',
         build: () => createBloc(
           session: session,
         ),
-        setUp: () {
-          when(
-            () => sessionPreviewDialogs.askForDeleteConfirmation(),
-          ).thenAnswer((_) async => true);
-        },
         act: (SessionPreviewBloc bloc) {
-          bloc.add(SessionPreviewEventRemoveSession());
+          bloc.add(
+            SessionPreviewEventDeleteSession(),
+          );
         },
         expect: () => [
           createState(
@@ -306,38 +295,34 @@ void main() {
             session: session,
           ),
           createState(
-            status: const BlocStatusComplete<SessionPreviewInfoType>(
-              info: SessionPreviewInfoType.sessionHasBeenDeleted,
+            status: const BlocStatusComplete<SessionPreviewInfo>(
+              info: SessionPreviewInfo.sessionHasBeenDeleted,
             ),
             session: session,
           )
         ],
         verify: (_) {
           verify(
-            () => sessionPreviewDialogs.askForDeleteConfirmation(),
+            () => deleteSessionUseCase.execute(sessionId: 's1'),
           ).called(1);
-          verify(() => removeSessionUseCase.execute(sessionId: 's1')).called(1);
         },
       );
 
       blocTest(
-        'cancelled, should not call use case responsible for removing session',
-        build: () => createBloc(
-          session: session,
-        ),
-        setUp: () {
-          when(
-            () => sessionPreviewDialogs.askForDeleteConfirmation(),
-          ).thenAnswer((_) async => false);
-        },
+        'should not call use case responsible for removing session if session has not been set in state',
+        build: () => createBloc(),
         act: (SessionPreviewBloc bloc) {
-          bloc.add(SessionPreviewEventRemoveSession());
+          bloc.add(
+            SessionPreviewEventDeleteSession(),
+          );
         },
         expect: () => [],
         verify: (_) {
-          verify(
-            () => sessionPreviewDialogs.askForDeleteConfirmation(),
-          ).called(1);
+          verifyNever(
+            () => deleteSessionUseCase.execute(
+              sessionId: any(named: 'sessionId'),
+            ),
+          );
         },
       );
     },

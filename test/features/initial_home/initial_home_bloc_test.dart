@@ -1,8 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fiszkomaniak/features/initial_home/bloc/initial_home_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/use_cases/auth/is_user_logged_use_case.dart';
+import 'package:fiszkomaniak/features/initial_home/bloc/initial_home_bloc.dart';
 
 class MockIsUserLoggedUseCase extends Mock implements IsUserLoggedUseCase {}
 
@@ -28,7 +28,7 @@ void main() {
   });
 
   blocTest(
-    'initialize, should set user login status listener',
+    'initialize, should set user login status',
     build: () => createBloc(),
     setUp: () {
       when(
@@ -42,7 +42,9 @@ void main() {
       createState(isUserLogged: true),
     ],
     verify: (_) {
-      verify(() => isUserLoggedUseCase.execute()).called(1);
+      verify(
+        () => isUserLoggedUseCase.execute(),
+      ).called(1);
     },
   );
 
@@ -56,19 +58,6 @@ void main() {
     },
     expect: () => [
       createState(mode: InitialHomeMode.register),
-    ],
-  );
-
-  blocTest(
-    'login status changed, should update user login status in state',
-    build: () => createBloc(),
-    act: (InitialHomeBloc bloc) {
-      bloc.add(
-        InitialHomeEventUserLoginStatusChanged(isUserLogged: true),
-      );
-    },
-    expect: () => [
-      createState(isUserLogged: true),
     ],
   );
 }

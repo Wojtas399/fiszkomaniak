@@ -7,12 +7,12 @@ class ConfirmationDialog extends StatelessWidget {
   final String? cancelButtonText;
 
   const ConfirmationDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.text,
     this.confirmButtonText,
     this.cancelButtonText,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

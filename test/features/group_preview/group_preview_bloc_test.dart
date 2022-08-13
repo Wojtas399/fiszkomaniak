@@ -1,169 +1,206 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/get_course_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/groups/get_group_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/groups/remove_group_use_case.dart';
+import 'package:fiszkomaniak/domain/use_cases/groups/delete_group_use_case.dart';
 import 'package:fiszkomaniak/features/group_preview/bloc/group_preview_bloc.dart';
-import 'package:fiszkomaniak/features/group_preview/group_preview_dialogs.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockGetGroupUseCase extends Mock implements GetGroupUseCase {}
 
-class MockRemoveGroupUseCase extends Mock implements RemoveGroupUseCase {}
+class MockDeleteGroupUseCase extends Mock implements DeleteGroupUseCase {}
 
 class MockGetCourseUseCase extends Mock implements GetCourseUseCase {}
 
-class MockGroupPreviewDialogs extends Mock implements GroupPreviewDialogs {}
-
 void main() {
   final getGroupUseCase = MockGetGroupUseCase();
-  final removeGroupUseCase = MockRemoveGroupUseCase();
+  final deleteGroupUseCase = MockDeleteGroupUseCase();
   final getCourseUseCase = MockGetCourseUseCase();
-  final groupPreviewDialogs = MockGroupPreviewDialogs();
-  late GroupPreviewBloc bloc;
 
-  setUp(() {
-    bloc = GroupPreviewBloc(
+  GroupPreviewBloc createBloc({
+    Group? group,
+    Course? course,
+  }) {
+    return GroupPreviewBloc(
       getGroupUseCase: getGroupUseCase,
-      removeGroupUseCase: removeGroupUseCase,
+      deleteGroupUseCase: deleteGroupUseCase,
       getCourseUseCase: getCourseUseCase,
-      groupPreviewDialogs: groupPreviewDialogs,
+      group: group,
+      course: course,
     );
-  });
+  }
+
+  GroupPreviewState createState({
+    BlocStatus status = const BlocStatusInProgress(),
+    Group? group,
+    Course? course,
+  }) {
+    return GroupPreviewState(
+      status: status,
+      group: group,
+      course: course,
+    );
+  }
 
   tearDown(() {
     reset(getGroupUseCase);
-    reset(removeGroupUseCase);
+    reset(deleteGroupUseCase);
     reset(getCourseUseCase);
-    reset(groupPreviewDialogs);
   });
 
-  blocTest(
-    'initialize, should set group listener',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => getGroupUseCase.execute(groupId: 'g1'),
-      ).thenAnswer(
-        (_) => Stream.value(
-          createGroup(id: 'g1', courseId: 'c1', name: 'group 1'),
-        ),
-      );
-      when(
-        () => getCourseUseCase.execute(courseId: 'c1'),
-      ).thenAnswer(
-        (_) => Stream.value(
-          createCourse(id: 'c1', name: 'course 1'),
-        ),
+  group(
+    'initialize',
+    () {
+      final Group group = createGroup(id: 'g1', courseId: 'c1');
+      final Course course = createCourse(id: 'c1');
+
+      blocTest(
+        'initialize, should set group listener',
+        build: () => createBloc(),
+        setUp: () {
+          when(
+            () => getGroupUseCase.execute(groupId: group.id),
+          ).thenAnswer((_) => Stream.value(group));
+          when(
+            () => getCourseUseCase.execute(courseId: group.courseId),
+          ).thenAnswer((_) => Stream.value(course));
+        },
+        act: (GroupPreviewBloc bloc) {
+          bloc.add(
+            GroupPreviewEventInitialize(groupId: group.id),
+          );
+        },
+        expect: () => [
+          createState(
+            group: group,
+            course: course,
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => getGroupUseCase.execute(groupId: group.id),
+          ).called(1);
+        },
       );
     },
-    act: (_) => bloc.add(GroupPreviewEventInitialize(groupId: 'g1')),
-    expect: () => [
-      GroupPreviewState(
-        status: const BlocStatusComplete<GroupPreviewInfoType>(),
-        group: createGroup(id: 'g1', courseId: 'c1', name: 'group 1'),
-      ),
-      GroupPreviewState(
-        status: const BlocStatusComplete<GroupPreviewInfoType>(),
-        group: createGroup(id: 'g1', courseId: 'c1', name: 'group 1'),
-        course: createCourse(id: 'c1', name: 'course 1'),
-      ),
-    ],
+  );
+
+  group(
+    'group updated',
+    () {
+      final Group updatedGroup = createGroup(id: 'g1', courseId: 'c1');
+      final Course course1 = createCourse(id: 'c1');
+      final Course course2 = createCourse(id: 'c2');
+
+      setUp(() {
+        when(
+          () => getCourseUseCase.execute(courseId: updatedGroup.courseId),
+        ).thenAnswer((_) => Stream.value(course1));
+      });
+
+      blocTest(
+        'group updated, should update group and course in state if new course id is different than current course id',
+        build: () => createBloc(
+          course: course2,
+        ),
+        act: (GroupPreviewBloc bloc) {
+          bloc.add(
+            GroupPreviewEventGroupUpdated(group: updatedGroup),
+          );
+        },
+        expect: () => [
+          createState(
+            group: updatedGroup,
+            course: course1,
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => getCourseUseCase.execute(courseId: updatedGroup.courseId),
+          ).called(1);
+        },
+      );
+
+      blocTest(
+        'group updated, should update only group in state if new course id is the same as current course id',
+        build: () => createBloc(
+          course: course1,
+        ),
+        act: (GroupPreviewBloc bloc) {
+          bloc.add(
+            GroupPreviewEventGroupUpdated(group: updatedGroup),
+          );
+        },
+        expect: () => [
+          createState(
+            group: updatedGroup,
+            course: course1,
+          ),
+        ],
+        verify: (_) {
+          verifyNever(
+            () => getCourseUseCase.execute(courseId: updatedGroup.courseId),
+          );
+        },
+      );
+    },
   );
 
   blocTest(
-    'group updated, should update group in state',
-    build: () => bloc,
-    act: (_) => bloc.add(
-      GroupPreviewEventGroupUpdated(
-        group: createGroup(id: 'g1', courseId: 'c1', name: 'group 1'),
-      ),
+    'delete group, should call use case responsible for deleting group',
+    build: () => createBloc(
+      group: createGroup(id: 'g1'),
     ),
-    expect: () => [
-      GroupPreviewState(
-        status: const BlocStatusComplete<GroupPreviewInfoType>(),
-        group: createGroup(id: 'g1', courseId: 'c1', name: 'group 1'),
-      )
-    ],
-  );
-
-  blocTest(
-    'course changed, should get course from repo and update state',
-    build: () => bloc,
     setUp: () {
       when(
-        () => getCourseUseCase.execute(courseId: 'c1'),
-      ).thenAnswer(
-        (_) => Stream.value(createCourse(id: 'c1', name: 'course 1')),
-      );
-    },
-    act: (_) => bloc.add(GroupPreviewEventCourseChanged(courseId: 'c1')),
-    expect: () => [
-      GroupPreviewState(
-        status: const BlocStatusComplete<GroupPreviewInfoType>(),
-        course: createCourse(id: 'c1', name: 'course 1'),
-      )
-    ],
-    verify: (_) {
-      verify(() => getCourseUseCase.execute(courseId: 'c1')).called(1);
-    },
-  );
-
-  blocTest(
-    'remove group, cancelled, should not remove group',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => groupPreviewDialogs.askForDeleteConfirmation(),
-      ).thenAnswer((_) async => false);
-    },
-    act: (_) {
-      bloc.add(GroupPreviewEventGroupUpdated(group: createGroup(id: 'g1')));
-      bloc.add(GroupPreviewEventRemoveGroup());
-    },
-    verify: (_) {
-      verify(() => groupPreviewDialogs.askForDeleteConfirmation()).called(1);
-      verifyNever(() => removeGroupUseCase.execute(groupId: 'g1'));
-    },
-  );
-
-  blocTest(
-    'remove group, confirmed, should remove group',
-    build: () => bloc,
-    setUp: () {
-      when(
-        () => groupPreviewDialogs.askForDeleteConfirmation(),
-      ).thenAnswer((_) async => true);
-      when(
-        () => removeGroupUseCase.execute(groupId: 'g1'),
+        () => deleteGroupUseCase.execute(groupId: 'g1'),
       ).thenAnswer((_) async => '');
     },
-    act: (_) {
-      bloc.add(GroupPreviewEventGroupUpdated(group: createGroup(id: 'g1')));
-      bloc.add(GroupPreviewEventRemoveGroup());
+    act: (GroupPreviewBloc bloc) {
+      bloc.add(
+        GroupPreviewEventDeleteGroup(),
+      );
     },
     expect: () => [
-      GroupPreviewState(
-        status: const BlocStatusComplete<GroupPreviewInfoType>(),
-        group: createGroup(id: 'g1'),
-      ),
-      GroupPreviewState(
+      createState(
         status: const BlocStatusLoading(),
         group: createGroup(id: 'g1'),
       ),
-      GroupPreviewState(
-        status: const BlocStatusComplete<GroupPreviewInfoType>(
-          info: GroupPreviewInfoType.groupHasBeenRemoved,
+      createState(
+        status: const BlocStatusComplete<GroupPreviewInfo>(
+          info: GroupPreviewInfo.groupHasBeenDeleted,
         ),
         group: createGroup(id: 'g1'),
       ),
     ],
     verify: (_) {
-      verify(() => groupPreviewDialogs.askForDeleteConfirmation()).called(1);
-      verify(() => removeGroupUseCase.execute(groupId: 'g1')).called(1);
+      verify(
+        () => deleteGroupUseCase.execute(groupId: 'g1'),
+      ).called(1);
+    },
+  );
+
+  blocTest(
+    'delete group, should not call use case responsible for deleting group if group is null',
+    build: () => createBloc(),
+    setUp: () {
+      when(
+        () => deleteGroupUseCase.execute(groupId: any(named: 'groupId')),
+      ).thenAnswer((_) async => '');
+    },
+    act: (GroupPreviewBloc bloc) {
+      bloc.add(
+        GroupPreviewEventDeleteGroup(),
+      );
+    },
+    expect: () => [],
+    verify: (_) {
+      verifyNever(
+        () => deleteGroupUseCase.execute(groupId: any(named: 'groupId')),
+      );
     },
   );
 }

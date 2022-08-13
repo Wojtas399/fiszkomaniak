@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/validators/email_validator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/use_cases/auth/send_password_reset_email_use_case.dart';
 import '../../../exceptions/auth_exceptions.dart';
 import '../../../models/bloc_status.dart';
+import '../../../validators/email_validator.dart';
 
 part 'reset_password_event.dart';
 
@@ -44,19 +44,23 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
     Emitter<ResetPasswordState> emit,
   ) async {
     if (!_emailValidator.isValid(state.email)) {
-      emit(state.copyWithError(ResetPasswordErrorType.invalidEmail));
+      emit(state.copyWithError(
+        ResetPasswordError.invalidEmail,
+      ));
     } else {
       try {
-        emit(state.copyWith(status: const BlocStatusLoading()));
-        await _sendPasswordResetEmailUseCase.execute(email: state.email);
         emit(state.copyWith(
-          status: const BlocStatusComplete<ResetPasswordInfoType>(
-            info: ResetPasswordInfoType.emailHasBeenSent,
-          ),
+          status: const BlocStatusLoading(),
+        ));
+        await _sendPasswordResetEmailUseCase.execute(email: state.email);
+        emit(state.copyWithInfo(
+          ResetPasswordInfo.emailHasBeenSent,
         ));
       } on AuthException catch (exception) {
         if (exception == AuthException.userNotFound) {
-          emit(state.copyWithError(ResetPasswordErrorType.userNotFound));
+          emit(state.copyWithError(
+            ResetPasswordError.userNotFound,
+          ));
         }
       }
     }

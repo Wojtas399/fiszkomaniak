@@ -6,7 +6,7 @@ import 'package:fiszkomaniak/domain/use_cases/courses/add_new_course_use_case.da
 import 'package:fiszkomaniak/domain/use_cases/courses/check_course_name_usage_use_case.dart';
 import 'package:fiszkomaniak/domain/use_cases/courses/update_course_name_use_case.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_mode.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 
 class MockAddNewCourseUseCase extends Mock implements AddNewCourseUseCase {}
@@ -129,8 +129,8 @@ void main() {
         courseName: 'courseName',
       ),
       createState(
-        status: const BlocStatusComplete(
-          info: CourseCreatorInfoType.courseNameIsAlreadyTaken,
+        status: const BlocStatusError(
+          error: CourseCreatorError.courseNameIsAlreadyTaken,
         ),
         courseName: 'courseName',
       ),
@@ -163,7 +163,7 @@ void main() {
       ),
       createState(
         status: const BlocStatusComplete(
-          info: CourseCreatorInfoType.courseHasBeenAdded,
+          info: CourseCreatorInfo.courseHasBeenAdded,
         ),
         courseName: 'courseName',
       ),
@@ -215,7 +215,7 @@ void main() {
           ),
           createState(
             status: const BlocStatusComplete(
-              info: CourseCreatorInfoType.courseHasBeenUpdated,
+              info: CourseCreatorInfo.courseHasBeenUpdated,
             ),
             mode: mode,
             courseName: newCourseName,

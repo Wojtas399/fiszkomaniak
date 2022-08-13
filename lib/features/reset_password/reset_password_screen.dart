@@ -1,10 +1,10 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:fiszkomaniak/validators/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/use_cases/auth/send_password_reset_email_use_case.dart';
 import '../../../interfaces/auth_interface.dart';
+import '../../models/bloc_status.dart';
+import '../../providers/dialogs_provider.dart';
+import '../../validators/email_validator.dart';
 import 'bloc/reset_password_bloc.dart';
 import 'reset_password_content.dart';
 
@@ -51,18 +51,18 @@ class _ResetPasswordStateListener extends StatelessWidget {
       listener: (BuildContext context, ResetPasswordState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog(context: context);
+          DialogsProvider.showLoadingDialog(context: context);
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
-          final ResetPasswordInfoType? infoType = blocStatus.info;
-          if (infoType != null) {
-            _manageInfoType(infoType, context);
+          DialogsProvider.closeLoadingDialog(context);
+          final ResetPasswordInfo? info = blocStatus.info;
+          if (info != null) {
+            _manageInfo(info, context);
           }
         } else if (blocStatus is BlocStatusError) {
-          Dialogs.closeLoadingDialog(context);
-          final ResetPasswordErrorType? errorType = blocStatus.errorType;
-          if (errorType != null) {
-            _manageErrorType(errorType, context);
+          DialogsProvider.closeLoadingDialog(context);
+          final ResetPasswordError? error = blocStatus.error;
+          if (error != null) {
+            _manageError(error, context);
           }
         }
       },
@@ -70,10 +70,10 @@ class _ResetPasswordStateListener extends StatelessWidget {
     );
   }
 
-  void _manageInfoType(ResetPasswordInfoType infoType, BuildContext context) {
-    switch (infoType) {
-      case ResetPasswordInfoType.emailHasBeenSent:
-        Dialogs.showDialogWithMessage(
+  void _manageInfo(ResetPasswordInfo info, BuildContext context) {
+    switch (info) {
+      case ResetPasswordInfo.emailHasBeenSent:
+        DialogsProvider.showDialogWithMessage(
           context: context,
           title: 'Email wysłany',
           message:
@@ -83,20 +83,17 @@ class _ResetPasswordStateListener extends StatelessWidget {
     }
   }
 
-  void _manageErrorType(
-    ResetPasswordErrorType errorType,
-    BuildContext context,
-  ) {
-    switch (errorType) {
-      case ResetPasswordErrorType.invalidEmail:
-        Dialogs.showDialogWithMessage(
+  void _manageError(ResetPasswordError error, BuildContext context) {
+    switch (error) {
+      case ResetPasswordError.invalidEmail:
+        DialogsProvider.showDialogWithMessage(
           context: context,
           title: 'Niepoprawny adres email',
           message: 'Podano niepoprawny adres email do wysłania wiadomości',
         );
         break;
-      case ResetPasswordErrorType.userNotFound:
-        Dialogs.showDialogWithMessage(
+      case ResetPasswordError.userNotFound:
+        DialogsProvider.showDialogWithMessage(
           context: context,
           title: 'Brak użytkownika',
           message:

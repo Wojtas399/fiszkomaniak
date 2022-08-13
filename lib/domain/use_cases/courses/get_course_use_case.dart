@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
+import '../../../interfaces/courses_interface.dart';
 import '../../entities/course.dart';
 
 class GetCourseUseCase {

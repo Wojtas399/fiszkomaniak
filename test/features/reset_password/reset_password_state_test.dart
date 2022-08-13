@@ -1,6 +1,6 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/features/reset_password/bloc/reset_password_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late ResetPasswordState state;
@@ -37,7 +37,7 @@ void main() {
       final state2 = state.copyWith();
 
       expect(state.status, expectedStatus);
-      expect(state2.status, const BlocStatusComplete());
+      expect(state2.status, const BlocStatusInProgress());
     },
   );
 
@@ -55,15 +55,29 @@ void main() {
   );
 
   test(
-    'copy with error',
+    'copy with info',
     () {
-      state = state.copyWithError(ResetPasswordErrorType.userNotFound);
+      const ResetPasswordInfo expectedInfo = ResetPasswordInfo.emailHasBeenSent;
+
+      state = state.copyWithInfo(expectedInfo);
 
       expect(
         state.status,
-        const BlocStatusError<ResetPasswordErrorType>(
-          errorType: ResetPasswordErrorType.userNotFound,
-        ),
+        const BlocStatusComplete<ResetPasswordInfo>(info: expectedInfo),
+      );
+    },
+  );
+
+  test(
+    'copy with error',
+    () {
+      const ResetPasswordError expectedError = ResetPasswordError.userNotFound;
+
+      state = state.copyWithError(expectedError);
+
+      expect(
+        state.status,
+        const BlocStatusError<ResetPasswordError>(error: expectedError),
       );
     },
   );

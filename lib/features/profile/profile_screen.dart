@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
 import '../../config/navigation.dart';
-import '../../domain/use_cases/achievements/get_all_flashcards_amount_use_case.dart';
-import '../../domain/use_cases/achievements/load_all_flashcards_amount_use_case.dart';
+import '../../providers/dialogs_provider.dart';
+import '../../domain/use_cases/achievements/get_remembered_flashcards_amount_use_case.dart';
+import '../../domain/use_cases/achievements/load_remembered_flashcards_amount_use_case.dart';
 import '../../domain/use_cases/auth/sign_out_use_case.dart';
 import '../../domain/use_cases/auth/update_password_use_case.dart';
 import '../../domain/use_cases/user/get_user_use_case.dart';
@@ -19,7 +19,6 @@ import '../../interfaces/settings_interface.dart';
 import '../../models/bloc_status.dart';
 import 'bloc/profile_bloc.dart';
 import 'components/profile_content.dart';
-import 'profile_dialogs.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -43,13 +42,15 @@ class _ProfileBlocProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => ProfileBloc(
-        loadAllFlashcardsAmountUseCase: LoadAllFlashcardsAmountUseCase(
+        loadRememberedFlashcardsAmountUseCase:
+            LoadRememberedFlashcardsAmountUseCase(
           achievementsInterface: context.read<AchievementsInterface>(),
         ),
         getUserUseCase: GetUserUseCase(
           userInterface: context.read<UserInterface>(),
         ),
-        getAllFlashcardsAmountUseCase: GetAllFlashcardsAmountUseCase(
+        getRememberedFlashcardsAmountUseCase:
+            GetRememberedFlashcardsAmountUseCase(
           achievementsInterface: context.read<AchievementsInterface>(),
         ),
         getDaysStreakUseCase: GetDaysStreakUseCase(
@@ -79,7 +80,6 @@ class _ProfileBlocProvider extends StatelessWidget {
         deleteAvatarUseCase: DeleteAvatarUseCase(
           userInterface: context.read<UserInterface>(),
         ),
-        profileDialogs: ProfileDialogs(),
       )..add(ProfileEventInitialize()),
       child: child,
     );
@@ -97,18 +97,18 @@ class _ProfileBlocListener extends StatelessWidget {
       listener: (BuildContext context, ProfileState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
-          final ProfileInfoType? infoType = blocStatus.info;
-          if (infoType != null) {
-            _manageInfoType(infoType, context);
+          DialogsProvider.closeLoadingDialog(context);
+          final ProfileInfo? info = blocStatus.info;
+          if (info != null) {
+            _manageInfo(info, context);
           }
         } else if (blocStatus is BlocStatusError) {
-          Dialogs.closeLoadingDialog(context);
-          final ProfileErrorType? errorType = blocStatus.errorType;
-          if (errorType != null) {
-            _manageErrorType(errorType);
+          DialogsProvider.closeLoadingDialog(context);
+          final ProfileError? error = blocStatus.error;
+          if (error != null) {
+            _manageError(error);
           }
         }
       },
@@ -116,28 +116,28 @@ class _ProfileBlocListener extends StatelessWidget {
     );
   }
 
-  void _manageInfoType(ProfileInfoType infoType, BuildContext context) {
-    switch (infoType) {
-      case ProfileInfoType.avatarHasBeenUpdated:
-        Dialogs.showSnackbarWithMessage('Pomyślnie zmieniono avatar');
+  void _manageInfo(ProfileInfo info, BuildContext context) {
+    switch (info) {
+      case ProfileInfo.avatarHasBeenUpdated:
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie zmieniono avatar');
         break;
-      case ProfileInfoType.avatarHasBeenDeleted:
-        Dialogs.showSnackbarWithMessage('Pomyślnie usunięto avatar');
+      case ProfileInfo.avatarHasBeenDeleted:
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie usunięto avatar');
         break;
-      case ProfileInfoType.usernameHasBeenUpdated:
-        Dialogs.showSnackbarWithMessage(
+      case ProfileInfo.usernameHasBeenUpdated:
+        DialogsProvider.showSnackbarWithMessage(
           'Pomyślnie zmieniono nazwę użytkownika',
         );
         break;
-      case ProfileInfoType.passwordHasBeenUpdated:
-        Dialogs.showSnackbarWithMessage('Pomyślnie zmieniono hasło');
+      case ProfileInfo.passwordHasBeenUpdated:
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie zmieniono hasło');
         break;
-      case ProfileInfoType.userHasBeenSignedOut:
-        context.read<Navigation>().pushReplacementToInitialHome();
+      case ProfileInfo.userHasBeenSignedOut:
+        Navigation.pushReplacementToInitialHome();
         break;
-      case ProfileInfoType.userAccountHasBeenDeleted:
-        context.read<Navigation>().pushReplacementToInitialHome();
-        Dialogs.showDialogWithMessage(
+      case ProfileInfo.userAccountHasBeenDeleted:
+        Navigation.pushReplacementToInitialHome();
+        DialogsProvider.showDialogWithMessage(
           title: 'Konto usunięte',
           message:
               'Twoje konto zostało trwale usunięte. Jeśli chcesz ponownie skorzystać z aplikacji, załóż nowe konto.',
@@ -146,10 +146,10 @@ class _ProfileBlocListener extends StatelessWidget {
     }
   }
 
-  void _manageErrorType(ProfileErrorType errorType) {
+  void _manageError(ProfileError errorType) {
     switch (errorType) {
-      case ProfileErrorType.wrongPassword:
-        Dialogs.showDialogWithMessage(
+      case ProfileError.wrongPassword:
+        DialogsProvider.showDialogWithMessage(
           title: 'Niepoprawne hasło',
           message:
               'Operacja nie powiodła się, ponieważ podano niepoprawne obecne hasło',

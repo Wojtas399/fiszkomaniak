@@ -1,8 +1,8 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/features/flashcard_preview/bloc/flashcard_preview_bloc.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late FlashcardPreviewState state;
@@ -68,14 +68,11 @@ void main() {
     () {
       const BlocStatus expectedStatus = BlocStatusLoading();
 
-      final state2 = state.copyWith(status: expectedStatus);
-      final state3 = state2.copyWith();
+      state = state.copyWith(status: expectedStatus);
+      final state2 = state.copyWith();
 
-      expect(state2.status, expectedStatus);
-      expect(
-        state3.status,
-        const BlocStatusComplete<FlashcardPreviewInfoType>(),
-      );
+      expect(state.status, expectedStatus);
+      expect(state2.status, const BlocStatusInProgress());
     },
   );
 
@@ -88,11 +85,11 @@ void main() {
         answer: 'a1',
       );
 
-      final state2 = state.copyWith(flashcard: expectedFlashcard);
-      final state3 = state2.copyWith();
+      state = state.copyWith(flashcard: expectedFlashcard);
+      final state2 = state.copyWith();
 
+      expect(state.flashcard, expectedFlashcard);
       expect(state2.flashcard, expectedFlashcard);
-      expect(state3.flashcard, expectedFlashcard);
     },
   );
 
@@ -101,11 +98,11 @@ void main() {
     () {
       final Group expectedGroup = createGroup(id: 'g1', name: 'group 1');
 
-      final state2 = state.copyWith(group: expectedGroup);
-      final state3 = state2.copyWith();
+      state = state.copyWith(group: expectedGroup);
+      final state2 = state.copyWith();
 
+      expect(state.group, expectedGroup);
       expect(state2.group, expectedGroup);
-      expect(state3.group, expectedGroup);
     },
   );
 
@@ -114,11 +111,11 @@ void main() {
     () {
       const String expectedCourseName = 'course name';
 
-      final state2 = state.copyWith(courseName: expectedCourseName);
-      final state3 = state2.copyWith();
+      state = state.copyWith(courseName: expectedCourseName);
+      final state2 = state.copyWith();
 
+      expect(state.courseName, expectedCourseName);
       expect(state2.courseName, expectedCourseName);
-      expect(state3.courseName, expectedCourseName);
     },
   );
 
@@ -127,11 +124,11 @@ void main() {
     () {
       const String expectedQuestion = 'question';
 
-      final state2 = state.copyWith(question: expectedQuestion);
-      final state3 = state2.copyWith();
+      state = state.copyWith(question: expectedQuestion);
+      final state2 = state.copyWith();
 
+      expect(state.question, expectedQuestion);
       expect(state2.question, expectedQuestion);
-      expect(state3.question, expectedQuestion);
     },
   );
 
@@ -140,11 +137,45 @@ void main() {
     () {
       const String expectedAnswer = 'answer';
 
-      final state2 = state.copyWith(answer: expectedAnswer);
-      final state3 = state2.copyWith();
+      state = state.copyWith(answer: expectedAnswer);
+      final state2 = state.copyWith();
 
+      expect(state.answer, expectedAnswer);
       expect(state2.answer, expectedAnswer);
-      expect(state3.answer, expectedAnswer);
+    },
+  );
+
+  test(
+    'copy with info',
+    () {
+      const FlashcardPreviewInfo expectedInfo =
+          FlashcardPreviewInfo.flashcardHasBeenDeleted;
+
+      state = state.copyWithInfo(expectedInfo);
+
+      expect(
+        state.status,
+        const BlocStatusComplete<FlashcardPreviewInfo>(
+          info: expectedInfo,
+        ),
+      );
+    },
+  );
+
+  test(
+    'copy with error',
+    () {
+      const FlashcardPreviewError expectedError =
+          FlashcardPreviewError.flashcardIsIncomplete;
+
+      state = state.copyWithError(expectedError);
+
+      expect(
+        state.status,
+        const BlocStatusError<FlashcardPreviewError>(
+          error: expectedError,
+        ),
+      );
     },
   );
 }

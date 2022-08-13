@@ -1,7 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/entities/flashcard.dart';
-import 'package:fiszkomaniak/domain/entities/group.dart';
-import 'package:fiszkomaniak/models/bloc_status.dart';
+part of 'flashcards_editor_bloc.dart';
 
 class FlashcardsEditorState extends Equatable {
   final BlocStatus status;
@@ -36,10 +33,22 @@ class FlashcardsEditorState extends Equatable {
     int? keyCounter,
   }) {
     return FlashcardsEditorState(
-      status: status ?? const BlocStatusComplete<FlashcardsEditorInfoType>(),
+      status: status ?? const BlocStatusInProgress(),
       group: group ?? this.group,
       editorFlashcards: editorFlashcards ?? this.editorFlashcards,
       keyCounter: keyCounter ?? this.keyCounter,
+    );
+  }
+
+  FlashcardsEditorState copyWithInfo(FlashcardsEditorInfo info) {
+    return copyWith(
+      status: BlocStatusComplete<FlashcardsEditorInfo>(info: info),
+    );
+  }
+
+  FlashcardsEditorState copyWithError(FlashcardsEditorError error) {
+    return copyWith(
+      status: BlocStatusError<FlashcardsEditorError>(error: error),
     );
   }
 }
@@ -59,6 +68,15 @@ class EditorFlashcard extends Equatable {
     required this.completionStatus,
   });
 
+  @override
+  List<Object> get props => [
+        key,
+        question,
+        answer,
+        flashcardStatus,
+        completionStatus,
+      ];
+
   EditorFlashcard copyWith({
     String? key,
     String? question,
@@ -73,15 +91,6 @@ class EditorFlashcard extends Equatable {
       completionStatus: completionStatus ?? this.completionStatus,
     );
   }
-
-  @override
-  List<Object> get props => [
-        key,
-        question,
-        answer,
-        flashcardStatus,
-        completionStatus,
-      ];
 }
 
 enum EditorFlashcardCompletionStatus {
@@ -107,8 +116,11 @@ EditorFlashcard createEditorFlashcard({
   );
 }
 
-enum FlashcardsEditorInfoType {
+enum FlashcardsEditorInfo {
+  editedFlashcardsHaveBeenSaved,
+}
+
+enum FlashcardsEditorError {
   noChangesHaveBeenMade,
   incompleteFlashcardsExist,
-  editedFlashcardsHaveBeenSaved,
 }

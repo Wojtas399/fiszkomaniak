@@ -1,9 +1,9 @@
-import 'package:fiszkomaniak/features/settings/bloc/settings_bloc.dart';
-import 'package:fiszkomaniak/features/settings/components/settings_switch_item_with_description.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../components/section.dart';
+import '../bloc/settings_bloc.dart';
+import 'settings_switch_item_with_description.dart';
 
 class SettingsAppearanceSection extends StatelessWidget {
   const SettingsAppearanceSection({super.key});

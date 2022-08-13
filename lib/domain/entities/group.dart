@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:fiszkomaniak/domain/entities/flashcard.dart';
+import 'flashcard.dart';
 
 class Group extends Equatable {
   final String id;

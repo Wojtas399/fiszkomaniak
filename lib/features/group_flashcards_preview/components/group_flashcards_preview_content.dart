@@ -1,10 +1,10 @@
-import 'package:fiszkomaniak/components/bouncing_scroll.dart';
-import 'package:fiszkomaniak/components/empty_content_info.dart';
-import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_bloc.dart';
-import 'package:fiszkomaniak/features/group_flashcards_preview/components/group_flashcards_preview_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/bouncing_scroll.dart';
+import '../../../components/empty_content_info.dart';
+import '../bloc/group_flashcards_preview_bloc.dart';
+import 'group_flashcards_preview_list.dart';
 import 'group_flashcards_preview_app_bar.dart';
 
 class GroupFlashcardsPreviewContent extends StatelessWidget {

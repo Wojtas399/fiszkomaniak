@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../components/dialogs/dialogs.dart';
+import '../../providers/dialogs_provider.dart';
+import '../../domain/use_cases/courses/delete_course_use_case.dart';
 import '../../domain/use_cases/courses/get_all_courses_use_case.dart';
 import '../../domain/use_cases/courses/load_all_courses_use_case.dart';
-import '../../domain/use_cases/courses/delete_course_use_case.dart';
 import '../../interfaces/courses_interface.dart';
 import '../../models/bloc_status.dart';
 import 'bloc/courses_library_bloc.dart';
 import 'components/courses_library_content.dart';
-import 'courses_library_dialogs.dart';
 
 class CoursesLibraryScreen extends StatelessWidget {
   const CoursesLibraryScreen({super.key});
@@ -30,19 +29,17 @@ class _CoursesLibraryBlocProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final coursesInterface = context.read<CoursesInterface>();
     return BlocProvider(
       create: (BuildContext context) => CoursesLibraryBloc(
         getAllCoursesUseCase: GetAllCoursesUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
         loadAllCoursesUseCase: LoadAllCoursesUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
         deleteCourseUseCase: DeleteCourseUseCase(
-          coursesInterface: coursesInterface,
+          coursesInterface: context.read<CoursesInterface>(),
         ),
-        coursesLibraryDialogs: CoursesLibraryDialogs(),
       )..add(CoursesLibraryEventInitialize()),
       child: child,
     );
@@ -60,12 +57,12 @@ class _CoursesLibraryBlocListener extends StatelessWidget {
       listener: (BuildContext context, CoursesLibraryState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
-          final CoursesLibraryInfoType? info = blocStatus.info;
+          DialogsProvider.closeLoadingDialog(context);
+          final CoursesLibraryInfo? info = blocStatus.info;
           if (info != null) {
-            _displayAppropriateInfo(blocStatus.info, context);
+            _manageInfo(blocStatus.info);
           }
         }
       },
@@ -73,13 +70,10 @@ class _CoursesLibraryBlocListener extends StatelessWidget {
     );
   }
 
-  void _displayAppropriateInfo(
-    CoursesLibraryInfoType infoType,
-    BuildContext context,
-  ) {
-    switch (infoType) {
-      case CoursesLibraryInfoType.courseHasBeenRemoved:
-        Dialogs.showSnackbarWithMessage('Pomyślnie usunięto kurs');
+  void _manageInfo(CoursesLibraryInfo info) {
+    switch (info) {
+      case CoursesLibraryInfo.courseHasBeenRemoved:
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie usunięto kurs');
         break;
     }
   }

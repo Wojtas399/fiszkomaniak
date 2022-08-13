@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:flutter/material.dart';
+import '../../../domain/entities/flashcard.dart';
 
 class GroupFlashcardsPreviewItem extends StatelessWidget {
   final Flashcard flashcard;

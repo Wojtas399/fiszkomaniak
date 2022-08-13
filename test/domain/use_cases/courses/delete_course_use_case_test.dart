@@ -10,15 +10,17 @@ void main() {
   final useCase = DeleteCourseUseCase(coursesInterface: coursesInterface);
 
   test(
-    'should call method from courses interface responsible for removing course',
+    'should call method from courses interface responsible for deleting course',
     () async {
       when(
-        () => coursesInterface.removeCourse(courseId: 'c1'),
+        () => coursesInterface.deleteCourse(courseId: 'c1'),
       ).thenAnswer((_) async => '');
 
       await useCase.execute(courseId: 'c1');
 
-      verify(() => coursesInterface.removeCourse(courseId: 'c1')).called(1);
+      verify(
+        () => coursesInterface.deleteCourse(courseId: 'c1'),
+      ).called(1);
     },
   );
 }

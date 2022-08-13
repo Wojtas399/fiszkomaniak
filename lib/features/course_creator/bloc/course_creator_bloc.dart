@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/use_cases/courses/add_new_course_use_case.dart';
 import '../../../domain/use_cases/courses/check_course_name_usage_use_case.dart';
 import '../../../domain/use_cases/courses/update_course_name_use_case.dart';
-import '../../../features/course_creator/course_creator_mode.dart';
 import '../../../models/bloc_status.dart';
+import 'course_creator_mode.dart';
 
 part 'course_creator_event.dart';
 
@@ -72,8 +72,8 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     final bool isCourseNameAlreadyTaken =
         await _checkCourseNameUsageUseCase.execute(courseName: courseName);
     if (isCourseNameAlreadyTaken) {
-      emit(state.copyWithInfoType(
-        CourseCreatorInfoType.courseNameIsAlreadyTaken,
+      emit(state.copyWithError(
+        CourseCreatorError.courseNameIsAlreadyTaken,
       ));
     } else {
       CourseCreatorMode mode = state.mode;
@@ -90,8 +90,8 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
     Emitter<CourseCreatorState> emit,
   ) async {
     await _addNewCourseUseCase.execute(courseName: courseName);
-    emit(state.copyWithInfoType(
-      CourseCreatorInfoType.courseHasBeenAdded,
+    emit(state.copyWithInfo(
+      CourseCreatorInfo.courseHasBeenAdded,
     ));
   }
 
@@ -104,8 +104,8 @@ class CourseCreatorBloc extends Bloc<CourseCreatorEvent, CourseCreatorState> {
       courseId: courseId,
       newCourseName: newCourseName,
     );
-    emit(state.copyWithInfoType(
-      CourseCreatorInfoType.courseHasBeenUpdated,
+    emit(state.copyWithInfo(
+      CourseCreatorInfo.courseHasBeenUpdated,
     ));
   }
 }

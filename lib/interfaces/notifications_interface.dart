@@ -17,7 +17,7 @@ abstract class NotificationsInterface {
     required Time sessionStartTime,
   });
 
-  Future<void> setDefaultNotificationForSession({
+  Future<void> setNotificationForSession15minBeforeStartTime({
     required String sessionId,
     required String groupName,
     required Date date,
@@ -30,7 +30,7 @@ abstract class NotificationsInterface {
     required String sessionId,
   });
 
-  Future<void> deleteDefaultNotificationForSession({
+  Future<void> deleteNotificationForSession15minBeforeStartTime({
     required String sessionId,
   });
 

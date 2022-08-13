@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
+import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_mode.dart';
 import 'package:fiszkomaniak/models/bloc_status.dart';
 
 void main() {
@@ -100,17 +100,34 @@ void main() {
   );
 
   test(
-    'copy with info type',
+    'copy with info',
     () {
-      const CourseCreatorInfoType expectedInfoType =
-          CourseCreatorInfoType.courseHasBeenAdded;
+      const CourseCreatorInfo expectedInfo =
+          CourseCreatorInfo.courseHasBeenAdded;
 
-      state = state.copyWithInfoType(expectedInfoType);
+      state = state.copyWithInfo(expectedInfo);
 
       expect(
         state.status,
-        const BlocStatusComplete<CourseCreatorInfoType>(
-          info: expectedInfoType,
+        const BlocStatusComplete<CourseCreatorInfo>(
+          info: expectedInfo,
+        ),
+      );
+    },
+  );
+
+  test(
+    'copy with error',
+    () {
+      const CourseCreatorError expectedError =
+          CourseCreatorError.courseNameIsAlreadyTaken;
+
+      state = state.copyWithError(expectedError);
+
+      expect(
+        state.status,
+        const BlocStatusError<CourseCreatorError>(
+          error: CourseCreatorError.courseNameIsAlreadyTaken,
         ),
       );
     },

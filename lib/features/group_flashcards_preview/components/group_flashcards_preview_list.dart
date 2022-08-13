@@ -1,8 +1,8 @@
-import 'package:fiszkomaniak/domain/entities/flashcard.dart';
-import 'package:fiszkomaniak/features/group_flashcards_preview/bloc/group_flashcards_preview_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../config/navigation.dart';
+import '../../../domain/entities/flashcard.dart';
+import '../bloc/group_flashcards_preview_bloc.dart';
 import 'group_flashcards_preview_item.dart';
 
 class GroupFlashcardsPreviewList extends StatelessWidget {
@@ -39,6 +39,6 @@ class GroupFlashcardsPreviewList extends StatelessWidget {
     int index,
     BuildContext context,
   ) {
-    context.read<Navigation>().navigateToFlashcardPreview(groupId, index);
+    Navigation.navigateToFlashcardPreview(groupId, index);
   }
 }

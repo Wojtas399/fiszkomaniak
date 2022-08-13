@@ -7,11 +7,11 @@ class FlashcardsProgressBar extends StatelessWidget {
   final double barHeight;
 
   const FlashcardsProgressBar({
-    Key? key,
+    super.key,
     required this.amountOfRememberedFlashcards,
     required this.amountOfAllFlashcards,
     this.barHeight = 10,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

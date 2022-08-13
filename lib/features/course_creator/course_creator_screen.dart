@@ -1,17 +1,17 @@
-import 'package:fiszkomaniak/components/dialogs/dialogs.dart';
-import 'package:fiszkomaniak/config/navigation.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/add_new_course_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/check_course_name_usage_use_case.dart';
-import 'package:fiszkomaniak/domain/use_cases/courses/update_course_name_use_case.dart';
-import 'package:fiszkomaniak/features/course_creator/bloc/course_creator_bloc.dart';
-import 'package:fiszkomaniak/features/course_creator/components/course_creator_app_bar.dart';
-import 'package:fiszkomaniak/features/course_creator/components/course_creator_content.dart';
-import 'package:fiszkomaniak/features/course_creator/course_creator_mode.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../config/navigation.dart';
+import '../../providers/dialogs_provider.dart';
+import '../../domain/use_cases/courses/add_new_course_use_case.dart';
+import '../../domain/use_cases/courses/check_course_name_usage_use_case.dart';
+import '../../domain/use_cases/courses/update_course_name_use_case.dart';
+import '../../interfaces/courses_interface.dart';
 import '../../models/bloc_status.dart';
 import '../home/home.dart';
+import 'bloc/course_creator_bloc.dart';
+import 'bloc/course_creator_mode.dart';
+import 'components/course_creator_app_bar.dart';
+import 'components/course_creator_content.dart';
 
 class CourseCreatorScreen extends StatelessWidget {
   final CourseCreatorMode mode;
@@ -77,12 +77,18 @@ class _CourseCreatorBlocListener extends StatelessWidget {
       listener: (BuildContext context, CourseCreatorState state) {
         final BlocStatus blocStatus = state.status;
         if (blocStatus is BlocStatusLoading) {
-          Dialogs.showLoadingDialog();
+          DialogsProvider.showLoadingDialog();
         } else if (blocStatus is BlocStatusComplete) {
-          Dialogs.closeLoadingDialog(context);
-          final CourseCreatorInfoType? info = blocStatus.info;
+          DialogsProvider.closeLoadingDialog(context);
+          final CourseCreatorInfo? info = blocStatus.info;
           if (info != null) {
-            _displayAppropriateUIInfo(blocStatus.info, context);
+            _manageInfo(blocStatus.info, context);
+          }
+        } else if (blocStatus is BlocStatusError) {
+          DialogsProvider.closeLoadingDialog(context);
+          final CourseCreatorError? error = blocStatus.error;
+          if (error != null) {
+            _manageError(error);
           }
         }
       },
@@ -90,27 +96,31 @@ class _CourseCreatorBlocListener extends StatelessWidget {
     );
   }
 
-  void _displayAppropriateUIInfo(
-    CourseCreatorInfoType infoType,
-    BuildContext context,
-  ) {
-    switch (infoType) {
-      case CourseCreatorInfoType.courseNameIsAlreadyTaken:
-        Dialogs.showDialogWithMessage(
+  void _manageInfo(CourseCreatorInfo info, BuildContext context) {
+    switch (info) {
+      case CourseCreatorInfo.courseHasBeenAdded:
+        Navigation.backHome();
+        context.read<HomePageController>().moveToPage(2);
+        DialogsProvider.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
+        break;
+      case CourseCreatorInfo.courseHasBeenUpdated:
+        Navigation.backHome();
+        context.read<HomePageController>().moveToPage(2);
+        DialogsProvider.showSnackbarWithMessage(
+          'Pomyślnie zaktualizowano kurs',
+        );
+        break;
+    }
+  }
+
+  void _manageError(CourseCreatorError error) {
+    switch (error) {
+      case CourseCreatorError.courseNameIsAlreadyTaken:
+        DialogsProvider.showDialogWithMessage(
           title: 'Zajęta nazwa',
           message:
               'Kurs o podanej nazwie już istnieje. Spróbuj wpisać inną nazwę.',
         );
-        break;
-      case CourseCreatorInfoType.courseHasBeenAdded:
-        context.read<Navigation>().backHome();
-        context.read<HomePageController>().moveToPage(2);
-        Dialogs.showSnackbarWithMessage('Pomyślnie dodano nowy kurs');
-        break;
-      case CourseCreatorInfoType.courseHasBeenUpdated:
-        context.read<Navigation>().backHome();
-        context.read<HomePageController>().moveToPage(2);
-        Dialogs.showSnackbarWithMessage('Pomyślnie zaktualizowano kurs');
         break;
     }
   }

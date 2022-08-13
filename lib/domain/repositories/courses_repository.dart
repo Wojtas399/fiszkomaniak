@@ -1,9 +1,9 @@
-import 'package:fiszkomaniak/firebase/fire_document.dart';
-import 'package:fiszkomaniak/firebase/models/course_db_model.dart';
-import 'package:fiszkomaniak/firebase/services/fire_courses_service.dart';
-import 'package:fiszkomaniak/interfaces/courses_interface.dart';
-import 'package:fiszkomaniak/domain/entities/course.dart';
 import 'package:rxdart/rxdart.dart';
+import '../../firebase/fire_document.dart';
+import '../../firebase/models/course_db_model.dart';
+import '../../firebase/services/fire_courses_service.dart';
+import '../../interfaces/courses_interface.dart';
+import '../entities/course.dart';
 
 class CoursesRepository implements CoursesInterface {
   final _courses$ = BehaviorSubject<List<Course>>.seeded([]);
@@ -15,6 +15,26 @@ class CoursesRepository implements CoursesInterface {
 
   @override
   Stream<List<Course>> get allCourses$ => _courses$.stream;
+
+  @override
+  Stream<Course> getCourseById(String courseId) {
+    if (_isCourseLoaded(courseId)) {
+      return allCourses$.map(
+        (List<Course> courses) => courses.firstWhere(
+          (Course course) => course.id == courseId,
+        ),
+      );
+    } else {
+      return Rx.fromCallable(
+        () async => await _loadCourseFromDb(courseId),
+      ).whereType<Course>();
+    }
+  }
+
+  @override
+  Stream<String> getCourseNameById(String courseId) {
+    return getCourseById(courseId).map((Course course) => course.name);
+  }
 
   @override
   Future<void> loadAllCourses() async {
@@ -32,9 +52,7 @@ class CoursesRepository implements CoursesInterface {
     final courseFromDb = await _fireCoursesService.addNewCourse(name);
     if (courseFromDb != null) {
       final Course course = _convertCourseFromDbToCourseModel(courseFromDb);
-      final courses = [..._courses$.value];
-      courses.add(course);
-      _courses$.add(courses);
+      _addCourseToList(course);
     }
   }
 
@@ -48,56 +66,53 @@ class CoursesRepository implements CoursesInterface {
       newName: newCourseName,
     );
     if (updatedCourseFromDb != null) {
-      final courses = [..._courses$.value];
-      final updatedCourseIndex = courses.indexWhere(
-        (course) => course.id == updatedCourseFromDb.id,
-      );
-      courses[updatedCourseIndex] = _convertCourseFromDbToCourseModel(
+      final Course updatedCourse = _convertCourseFromDbToCourseModel(
         updatedCourseFromDb,
       );
-      _courses$.add(courses);
+      _updateCourseInList(updatedCourse);
     }
   }
 
   @override
-  Future<void> removeCourse({required String courseId}) async {
+  Future<void> deleteCourse({required String courseId}) async {
     final removedCourseId = await _fireCoursesService.removeCourse(courseId);
-    final courses = [..._courses$.value];
-    courses.removeWhere((course) => course.id == removedCourseId);
-    _courses$.add(courses);
-  }
-
-  @override
-  Stream<Course> getCourseById(String courseId) {
-    if (_isCourseLoaded(courseId)) {
-      return allCourses$.map(
-        (courses) => courses.firstWhere((course) => course.id == courseId),
-      );
-    } else {
-      return Rx.fromCallable(
-        () async => await _loadCourseFromDb(courseId),
-      ).whereType<Course>();
-    }
-  }
-
-  @override
-  Stream<String> getCourseNameById(String courseId) {
-    return getCourseById(courseId).map((course) => course.name);
+    _removeCourseFromList(removedCourseId);
   }
 
   @override
   Future<bool> isCourseNameAlreadyTaken(String courseName) async {
     final List<Course?> allCourses = [..._courses$.value];
-    final Course? course = allCourses.firstWhere(
-      (element) => element?.name == courseName,
+    final Course? courseWithTheSameName = allCourses.firstWhere(
+      (Course? course) => course?.name == courseName,
       orElse: () => null,
     );
-    if (course != null) {
+    if (courseWithTheSameName != null) {
       return true;
     }
     return await _fireCoursesService.isThereCourseWithTheName(
       courseName: courseName,
     );
+  }
+
+  void _addCourseToList(Course course) {
+    final List<Course> updatedCourses = [..._courses$.value];
+    updatedCourses.add(course);
+    _courses$.add(updatedCourses.toSet().toList());
+  }
+
+  void _updateCourseInList(Course updatedCourse) {
+    final List<Course> updatedCourses = [..._courses$.value];
+    final updatedCourseIndex = updatedCourses.indexWhere(
+      (Course course) => course.id == updatedCourse.id,
+    );
+    updatedCourses[updatedCourseIndex] = updatedCourse;
+    _courses$.add(updatedCourses);
+  }
+
+  void _removeCourseFromList(String courseId) {
+    final List<Course> updatedCourses = [..._courses$.value];
+    updatedCourses.removeWhere((Course course) => course.id == courseId);
+    _courses$.add(updatedCourses);
   }
 
   Future<Course?> _loadCourseFromDb(String courseId) async {
@@ -106,7 +121,9 @@ class CoursesRepository implements CoursesInterface {
     );
     if (courseFromDb != null) {
       final Course course = _convertCourseFromDbToCourseModel(courseFromDb);
-      _addNewCourse(course);
+      if (!_isCourseLoaded(course.id)) {
+        _addCourseToList(course);
+      }
       return course;
     }
     return null;
@@ -114,18 +131,10 @@ class CoursesRepository implements CoursesInterface {
 
   bool _isCourseLoaded(String courseId) {
     final List<Course> loadedCourses = _courses$.value;
-    return loadedCourses.map((course) => course.id).contains(courseId);
+    return loadedCourses.map((Course course) => course.id).contains(courseId);
   }
 
   Course _convertCourseFromDbToCourseModel(FireDocument<CourseDbModel> doc) {
     return Course(id: doc.id, name: doc.data.name);
-  }
-
-  void _addNewCourse(Course course) {
-    if (!_isCourseLoaded(course.id)) {
-      final updatedCourses = [..._courses$.value];
-      updatedCourses.add(course);
-      _courses$.add(updatedCourses);
-    }
   }
 }

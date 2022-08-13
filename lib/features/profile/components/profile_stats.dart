@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/learning_progress_chart/learning_progress_chart_day.dart';
 import '../../../components/learning_progress_chart/learning_progress_chart.dart';
 import '../../../components/section.dart';
 import '../../../models/date_model.dart';
@@ -49,7 +50,7 @@ class _DaysInARow extends StatelessWidget {
     );
     return _NumberInfo(
       icon: MdiIcons.medalOutline,
-      label: 'Dni z rzędu',
+      label: 'Dni nauki z rzędu',
       value: daysInARow,
     );
   }
@@ -61,11 +62,11 @@ class _AmountOfFlashcards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int amount = context.select(
-      (ProfileBloc bloc) => bloc.state.amountOfAllFlashcards,
+      (ProfileBloc bloc) => bloc.state.amountOfRememberedFlashcards,
     );
     return _NumberInfo(
       icon: MdiIcons.cardsOutline,
-      label: 'Ilość fiszek',
+      label: 'Nauczone fiszki',
       value: amount,
     );
   }
@@ -91,9 +92,12 @@ class _NumberInfo extends StatelessWidget {
         const SizedBox(width: 8.0),
         Column(
           children: [
-            Text(label),
+            Text(label, textAlign: TextAlign.center),
             const SizedBox(height: 4.0),
-            Text('$value'),
+            Text(
+              '$value',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
           ],
         ),
       ],
@@ -110,8 +114,22 @@ class _Chart extends StatelessWidget {
       (ProfileBloc bloc) => bloc.state.user?.days,
     );
     return LearningProgressChart(
-      daysFromUser: days,
+      chartDays: _convertUserDaysToChartDays(days),
       initialDateOfWeek: Date.now(),
     );
+  }
+
+  List<ChartDay> _convertUserDaysToChartDays(List<Day>? days) {
+    if (days == null) {
+      return [];
+    }
+    return days
+        .map(
+          (Day day) => ChartDay(
+            date: day.date,
+            rememberedFlashcardsAmount: day.amountOfRememberedFlashcards,
+          ),
+        )
+        .toList();
   }
 }

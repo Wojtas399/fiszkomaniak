@@ -6,11 +6,11 @@ class EmptyContentInfo extends StatelessWidget {
   final String? subtitle;
 
   const EmptyContentInfo({
-    Key? key,
+    super.key,
     this.icon,
     this.title,
     this.subtitle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

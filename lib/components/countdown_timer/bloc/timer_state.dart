@@ -9,6 +9,12 @@ class TimerState extends Equatable {
     this.duration = const Duration(),
   });
 
+  @override
+  List<Object> get props => [
+        status,
+        duration,
+      ];
+
   TimerState copyWith({
     TimerStatus? status,
     Duration? duration,
@@ -18,10 +24,4 @@ class TimerState extends Equatable {
       duration: duration ?? this.duration,
     );
   }
-
-  @override
-  List<Object> get props => [
-        status,
-        duration,
-      ];
 }
