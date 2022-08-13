@@ -55,7 +55,7 @@ class SessionPreviewState extends Equatable {
     if (group == null) {
       return FlashcardsType.values;
     }
-    return GroupUtils.getAvailableFlashcardsTypes(group);
+    return GroupsUtils.getAvailableFlashcardsTypes(group);
   }
 
   SessionPreviewState copyWith({

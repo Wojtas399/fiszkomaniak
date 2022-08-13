@@ -11,7 +11,7 @@ import '../../domain/use_cases/courses/get_course_use_case.dart';
 import '../../domain/use_cases/groups/get_all_groups_use_case.dart';
 import '../../interfaces/courses_interface.dart';
 import '../../interfaces/groups_interface.dart';
-import '../../utils/group_utils.dart';
+import '../../utils/groups_utils.dart';
 
 class StudyScreen extends StatelessWidget {
   const StudyScreen({super.key});
@@ -51,7 +51,6 @@ class _GroupsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    allGroups.sort(_compareGroupsNames);
     return BouncingScroll(
       child: Padding(
         padding: const EdgeInsets.only(
@@ -61,7 +60,7 @@ class _GroupsList extends StatelessWidget {
           left: 16,
         ),
         child: Column(
-          children: allGroups
+          children: GroupsUtils.setGroupInAlphabeticalOrderByName(allGroups)
               .map(
                 (Group group) => _GroupItem(group: group),
               )
@@ -69,10 +68,6 @@ class _GroupsList extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  int _compareGroupsNames(Group group1, Group group2) {
-    return group1.name.compareTo(group2.name);
   }
 }
 
@@ -91,7 +86,7 @@ class _GroupItem extends StatelessWidget {
           groupName: group.name,
           courseName: snapshot.data ?? '',
           amountOfRememberedFlashcards:
-              GroupUtils.getAmountOfRememberedFlashcards(group),
+              GroupsUtils.getAmountOfRememberedFlashcards(group),
           amountOfAllFlashcards: group.flashcards.length,
           onPressed: () {
             Navigation.navigateToGroupPreview(group.id);
