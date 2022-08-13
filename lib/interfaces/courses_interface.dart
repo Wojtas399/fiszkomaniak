@@ -1,4 +1,4 @@
-import 'package:fiszkomaniak/domain/entities/course.dart';
+import '../domain/entities/course.dart';
 
 abstract class CoursesInterface {
   Stream<List<Course>> get allCourses$;
