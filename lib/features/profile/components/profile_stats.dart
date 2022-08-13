@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../../../components/learning_progress_chart/learning_progress_chart_day.dart';
 import '../../../components/learning_progress_chart/learning_progress_chart.dart';
 import '../../../components/section.dart';
 import '../../../models/date_model.dart';
@@ -113,8 +114,22 @@ class _Chart extends StatelessWidget {
       (ProfileBloc bloc) => bloc.state.user?.days,
     );
     return LearningProgressChart(
-      daysFromUser: days,
+      chartDays: _convertUserDaysToChartDays(days),
       initialDateOfWeek: Date.now(),
     );
+  }
+
+  List<ChartDay> _convertUserDaysToChartDays(List<Day>? days) {
+    if (days == null) {
+      return [];
+    }
+    return days
+        .map(
+          (Day day) => ChartDay(
+            date: day.date,
+            rememberedFlashcardsAmount: day.amountOfRememberedFlashcards,
+          ),
+        )
+        .toList();
   }
 }
