@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/models/time_model.dart';
-import 'package:fiszkomaniak/utils/utils.dart';
+import '../models/time_model.dart';
+import '../utils/utils.dart';
 
 extension UITimeExtensions on Time? {
   String toUIFormat() {

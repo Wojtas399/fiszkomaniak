@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/models/date_model.dart';
-import 'package:fiszkomaniak/utils/utils.dart';
+import '../models/date_model.dart';
+import '../utils/utils.dart';
 
 extension UIDateExtensions on Date? {
   String toUIFormat() {
