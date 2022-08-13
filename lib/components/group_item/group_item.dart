@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fiszkomaniak/components/card_item.dart';
-import 'package:fiszkomaniak/components/flashcards_progress_bar.dart';
-import 'package:fiszkomaniak/components/group_item/group_item_info.dart';
+import '../card_item.dart';
+import '../flashcards_progress_bar.dart';
+import 'group_item_info.dart';
+
 
 class GroupItem extends StatelessWidget {
   final String groupName;
