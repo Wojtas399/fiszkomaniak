@@ -196,4 +196,32 @@ void main() {
       expect(state2.passwordConfirmation, expectedPasswordConfirmation);
     },
   );
+
+  test(
+    'copy with info',
+    () {
+      const SignUpInfo expectedInfo = SignUpInfo.userHasBeenSignedUp;
+
+      state = state.copyWithInfo(expectedInfo);
+
+      expect(
+        state.status,
+        const BlocStatusComplete<SignUpInfo>(info: expectedInfo),
+      );
+    },
+  );
+
+  test(
+    'copy with error',
+    () {
+      const SignUpError expectedError = SignUpError.emailAlreadyInUse;
+
+      state = state.copyWithError(expectedError);
+
+      expect(
+        state.status,
+        const BlocStatusError<SignUpError>(error: expectedError),
+      );
+    },
+  );
 }

@@ -80,17 +80,29 @@ void main() {
   );
 
   test(
-    'copy with error type',
+    'copy with info',
     () {
-      const SignInErrorType expectedErrorType = SignInErrorType.invalidEmail;
+      const SignInInfo expectedInfo = SignInInfo.userHasBeenSignedIn;
 
-      state = state.copyWithError(expectedErrorType);
+      state = state.copyWithInfo(expectedInfo);
 
       expect(
         state.status,
-        const BlocStatusError<SignInErrorType>(
-          error: SignInErrorType.invalidEmail,
-        ),
+        const BlocStatusComplete<SignInInfo>(info: expectedInfo),
+      );
+    },
+  );
+
+  test(
+    'copy with error',
+    () {
+      const SignInError expectedError = SignInError.invalidEmail;
+
+      state = state.copyWithError(expectedError);
+
+      expect(
+        state.status,
+        const BlocStatusError<SignInError>(error: expectedError),
       );
     },
   );

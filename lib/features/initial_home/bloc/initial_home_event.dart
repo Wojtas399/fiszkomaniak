@@ -9,9 +9,3 @@ class InitialHomeEventChangeMode extends InitialHomeEvent {
 
   InitialHomeEventChangeMode({required this.mode});
 }
-
-class InitialHomeEventUserLoginStatusChanged extends InitialHomeEvent {
-  final bool isUserLogged;
-
-  InitialHomeEventUserLoginStatusChanged({required this.isUserLogged});
-}
