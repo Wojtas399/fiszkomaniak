@@ -1,5 +1,5 @@
-import 'package:fiszkomaniak/firebase/fire_references.dart';
-import 'package:fiszkomaniak/firebase/models/appearance_settings_db_model.dart';
+import '../fire_references.dart';
+import '../models/appearance_settings_db_model.dart';
 
 class FireAppearanceSettingsService {
   Future<void> setDefaultSettings() async {

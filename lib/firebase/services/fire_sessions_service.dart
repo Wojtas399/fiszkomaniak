@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fiszkomaniak/firebase/fire_document.dart';
-import 'package:fiszkomaniak/firebase/fire_references.dart';
-import 'package:fiszkomaniak/firebase/fire_utils.dart';
-import 'package:fiszkomaniak/firebase/models/session_db_model.dart';
+import '../fire_document.dart';
+import '../fire_references.dart';
+import '../fire_utils.dart';
+import '../models/session_db_model.dart';
 
 class FireSessionsService {
   static Future<QuerySnapshot<SessionDbModel>> getSessionsByGroupsIds(
