@@ -51,6 +51,7 @@ class _GroupsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    allGroups.sort(_compareGroupsNames);
     return BouncingScroll(
       child: Padding(
         padding: const EdgeInsets.only(
@@ -68,6 +69,10 @@ class _GroupsList extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  int _compareGroupsNames(Group group1, Group group2) {
+    return group1.name.compareTo(group2.name);
   }
 }
 
