@@ -1,7 +1,7 @@
 import '../models/date_model.dart';
 
 class DateUtils {
-  static int compareDates(Date date1, Date date2) {
+  int compareDates(Date date1, Date date2) {
     if (date1.year == date2.year) {
       if (date1.month == date2.month) {
         if (date1.day == date2.day) {
@@ -17,21 +17,21 @@ class DateUtils {
     }
   }
 
-  static bool isPastDate(Date? date) {
+  bool isPastDate(Date? date) {
     if (date == null) {
       return false;
     }
     return compareDates(date, Date.now()) == -1;
   }
 
-  static bool isTodayDate(Date? date) {
+  bool isTodayDate(Date? date) {
     if (date == null) {
       return false;
     }
     return compareDates(date, Date.now()) == 0;
   }
 
-  static List<Date> getDaysInARow(
+  List<Date> getDaysInARow(
     Date fromDate,
     List<Date> dates,
   ) {
@@ -56,7 +56,7 @@ class DateUtils {
     return days;
   }
 
-  static List<Date> getDaysFromWeek(Date dayFromWeek) {
+  List<Date> getDaysFromWeek(Date dayFromWeek) {
     DateTime firstDayOfWeek = DateTime(
       dayFromWeek.year,
       dayFromWeek.month,
@@ -75,7 +75,7 @@ class DateUtils {
         .toList();
   }
 
-  static int _daysBetween(Date from, Date to) {
+  int _daysBetween(Date from, Date to) {
     final fromDateTime = DateTime(from.year, from.month, from.day);
     final toDateTime = DateTime(to.year, to.month, to.day);
     return (fromDateTime.difference(toDateTime).inHours / 24).round();
