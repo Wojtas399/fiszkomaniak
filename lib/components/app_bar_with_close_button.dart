@@ -1,6 +1,6 @@
-import 'package:fiszkomaniak/components/custom_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'custom_icon_button.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String label;
@@ -8,11 +8,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
 
   const CustomAppBar({
-    Key? key,
+    super.key,
     required this.label,
     this.leadingIcon = MdiIcons.arrowLeft,
     this.actions,
-  }) : super(key: key);
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);

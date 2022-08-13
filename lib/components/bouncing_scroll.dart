@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class BouncingScroll extends StatelessWidget {
   final Widget child;
 
-  const BouncingScroll({Key? key, required this.child}) : super(key: key);
+  const BouncingScroll({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

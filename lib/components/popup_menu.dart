@@ -6,10 +6,10 @@ class PopupMenu extends StatelessWidget {
   final Function(int actionIndex) onPopupActionSelected;
 
   const PopupMenu({
-    Key? key,
+    super.key,
     required this.items,
     required this.onPopupActionSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

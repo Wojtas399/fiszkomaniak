@@ -5,7 +5,7 @@ import '../../../components/custom_icon_button.dart';
 import '../../../components/flashcards_type_picker.dart';
 import '../../../components/item_with_icon.dart';
 import '../../../components/section.dart';
-import '../../../components/select_item/select_item.dart';
+import '../../../components/select_item.dart';
 import '../../../domain/entities/course.dart';
 import '../../../domain/entities/group.dart';
 import '../../../domain/entities/session.dart';

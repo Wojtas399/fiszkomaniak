@@ -9,9 +9,9 @@ class ImageConfirmationDialog extends StatelessWidget {
   final File imageFile;
 
   const ImageConfirmationDialog({
-    Key? key,
+    super.key,
     required this.imageFile,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

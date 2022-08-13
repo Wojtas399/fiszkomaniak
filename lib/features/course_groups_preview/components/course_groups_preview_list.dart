@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/group_item/group_item.dart';
+import '../../../components/group_item.dart';
 import '../../../components/bouncing_scroll.dart';
 import '../../../components/on_tap_focus_lose_area.dart';
 import '../../../config/navigation.dart';

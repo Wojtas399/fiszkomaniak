@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class CoursesLibraryCourseItemInfo extends StatelessWidget {
+class CourseItemInfo extends StatelessWidget {
   final String title;
   final int amountOfGroups;
 
-  const CoursesLibraryCourseItemInfo({
+  const CourseItemInfo({
     super.key,
     required this.title,
     required this.amountOfGroups,

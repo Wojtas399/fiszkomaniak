@@ -1,7 +1,7 @@
-import 'package:fiszkomaniak/components/item_with_icon.dart';
-import 'package:fiszkomaniak/providers/global_navigator_key_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../providers/global_navigator_key_provider.dart';
+import 'item_with_icon.dart';
 
 class ModalBottomSheet {
   static Future<int?> showWithOptions({

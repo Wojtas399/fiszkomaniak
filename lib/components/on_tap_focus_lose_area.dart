@@ -1,13 +1,13 @@
-import 'package:fiszkomaniak/utils/utils.dart';
 import 'package:flutter/material.dart';
+import '../utils/utils.dart';
 
 class OnTapFocusLoseArea extends StatelessWidget {
   final Widget child;
 
   const OnTapFocusLoseArea({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

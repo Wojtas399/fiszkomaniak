@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class CoursesLibraryCoursePopupMenu extends StatelessWidget {
+class CourseItemPopupMenu extends StatelessWidget {
   final Function(CoursePopupAction action) onActionSelected;
 
-  const CoursesLibraryCoursePopupMenu({
+  const CourseItemPopupMenu({
     super.key,
     required this.onActionSelected,
   });

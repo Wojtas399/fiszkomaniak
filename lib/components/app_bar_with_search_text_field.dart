@@ -1,6 +1,6 @@
-import 'package:fiszkomaniak/config/theme/global_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../config/theme/global_theme.dart';
 import 'custom_icon_button.dart';
 
 class AppBarWithSearchTextField extends StatelessWidget
@@ -9,10 +9,10 @@ class AppBarWithSearchTextField extends StatelessWidget
   final Function(String value)? onChanged;
 
   const AppBarWithSearchTextField({
-    Key? key,
+    super.key,
     required this.label,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);

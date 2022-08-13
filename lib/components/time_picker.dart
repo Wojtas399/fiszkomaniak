@@ -15,7 +15,7 @@ class TimePicker extends StatelessWidget {
   final Function(Time time)? onSelect;
 
   const TimePicker({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     required this.value,
@@ -26,7 +26,7 @@ class TimePicker extends StatelessWidget {
     this.paddingTop,
     this.paddingBottom,
     this.onSelect,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

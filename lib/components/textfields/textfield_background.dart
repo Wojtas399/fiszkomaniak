@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TextFieldBackground extends StatelessWidget {
-  const TextFieldBackground({Key? key}) : super(key: key);
+  const TextFieldBackground({super.key});
 
   @override
   Widget build(BuildContext context) {

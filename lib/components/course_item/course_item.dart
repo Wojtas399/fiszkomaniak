@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../features/courses_library/components/courses_library_course_item_info.dart';
-import '../features/courses_library/components/courses_library_course_popup_menu.dart';
+import 'course_item_info.dart';
+import 'course_item_popup_menu.dart';
 
 class CourseItem extends StatelessWidget {
   final String courseName;
@@ -31,11 +31,11 @@ class CourseItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CoursesLibraryCourseItemInfo(
+              CourseItemInfo(
                 title: courseName,
                 amountOfGroups: amountOfGroups,
               ),
-              CoursesLibraryCoursePopupMenu(
+              CourseItemPopupMenu(
                 onActionSelected: onActionSelected,
               ),
             ],

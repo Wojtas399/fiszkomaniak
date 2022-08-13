@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../components/bouncing_scroll.dart';
-import '../../../components/course_item.dart';
+import '../../../components/course_item/course_item.dart';
+import '../../../components/course_item/course_item_popup_menu.dart';
 import '../../../config/navigation.dart';
 import '../../../providers/dialogs_provider.dart';
 import '../../../domain/entities/course.dart';
@@ -10,7 +11,6 @@ import '../../../domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
 import '../../../interfaces/groups_interface.dart';
 import '../../course_creator/bloc/course_creator_mode.dart';
 import '../bloc/courses_library_bloc.dart';
-import 'courses_library_course_popup_menu.dart';
 
 class CoursesLibraryCoursesList extends StatelessWidget {
   const CoursesLibraryCoursesList({super.key});

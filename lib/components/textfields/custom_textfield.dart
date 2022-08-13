@@ -1,6 +1,6 @@
-import 'package:fiszkomaniak/components/textfields/textfield_background.dart';
-import 'package:fiszkomaniak/config/theme/text_field_theme.dart';
 import 'package:flutter/material.dart';
+import '../../config/theme/text_field_theme.dart';
+import 'textfield_background.dart';
 
 class CustomTextField extends StatelessWidget {
   final IconData icon;
@@ -12,7 +12,7 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     this.isRequired = false,
@@ -20,7 +20,7 @@ class CustomTextField extends StatelessWidget {
     this.placeholder,
     this.validator,
     this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

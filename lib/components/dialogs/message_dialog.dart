@@ -5,10 +5,10 @@ class MessageDialog extends StatelessWidget {
   final String message;
 
   const MessageDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.message,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

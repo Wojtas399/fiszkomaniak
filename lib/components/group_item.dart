@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import '../card_item.dart';
-import '../flashcards_progress_bar.dart';
-import 'group_item_info.dart';
-
+import 'card_item.dart';
+import 'flashcards_progress_bar.dart';
 
 class GroupItem extends StatelessWidget {
   final String groupName;
@@ -27,7 +25,7 @@ class GroupItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GroupItemInfo(
+          _Info(
             courseName: courseName,
             groupName: groupName,
           ),
@@ -38,6 +36,33 @@ class GroupItem extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _Info extends StatelessWidget {
+  final String? courseName;
+  final String groupName;
+
+  const _Info({
+    required this.courseName,
+    required this.groupName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        courseName != null
+            ? Text(
+                courseName ?? '',
+                style: Theme.of(context).textTheme.caption,
+              )
+            : const SizedBox(),
+        SizedBox(height: courseName != null ? 4 : 0),
+        Text(groupName, style: Theme.of(context).textTheme.subtitle1),
+      ],
     );
   }
 }

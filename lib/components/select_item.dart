@@ -1,15 +1,68 @@
-import 'package:fiszkomaniak/components/app_bar_with_close_button.dart';
-import 'package:fiszkomaniak/components/empty_content_info.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import '../config/slide_up_route_animation.dart';
+import 'app_bar_with_close_button.dart';
+import 'empty_content_info.dart';
+import 'item_with_icon.dart';
 
-class OptionsOfSelectItem extends StatelessWidget {
+class SelectItem extends StatelessWidget {
+  final IconData icon;
+  final String? value;
+  final String label;
+  final String optionsListTitle;
+  final Map<String, String> options;
+  final Function(String key, String value) onOptionSelected;
+  final String noOptionsMessage;
+
+  const SelectItem({
+    super.key,
+    required this.icon,
+    required this.value,
+    required this.label,
+    required this.optionsListTitle,
+    required this.options,
+    required this.onOptionSelected,
+    this.noOptionsMessage = 'Brak opcji do wyboru',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ItemWithIcon(
+      icon: icon,
+      label: label,
+      text: value ?? '--',
+      paddingRight: 8.0,
+      paddingLeft: 8.0,
+      onTap: () => _onTap(context),
+    );
+  }
+
+  Future<void> _onTap(BuildContext context) async {
+    final selectedOption = await Navigator.of(context).push(
+      SlideUpRouteAnimation(
+        page: _Options(
+          options: options,
+          title: optionsListTitle,
+          noOptionsMessage: noOptionsMessage,
+        ),
+      ),
+    );
+    if (selectedOption != null) {
+      String? key = selectedOption['key'];
+      String? value = selectedOption['value'];
+      if (key != null && value != null) {
+        onOptionSelected(key, value);
+      }
+    }
+  }
+}
+
+class _Options extends StatelessWidget {
   final String title;
   final Map<String, String> options;
   final String noOptionsMessage;
 
-  const OptionsOfSelectItem({
-    super.key,
+  const _Options({
     required this.title,
     required this.options,
     required this.noOptionsMessage,
