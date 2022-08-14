@@ -10,7 +10,7 @@ import '../../../domain/use_cases/sessions/get_session_use_case.dart';
 import '../../../domain/use_cases/sessions/delete_session_use_case.dart';
 import '../../../models/bloc_status.dart';
 import '../../../models/date_model.dart';
-import '../../../utils/group_utils.dart';
+import '../../../utils/groups_utils.dart';
 import 'session_preview_mode.dart';
 
 part 'session_preview_event.dart';

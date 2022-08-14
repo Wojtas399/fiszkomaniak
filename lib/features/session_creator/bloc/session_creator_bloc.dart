@@ -13,7 +13,7 @@ import '../../../domain/use_cases/sessions/update_session_use_case.dart';
 import '../../../models/bloc_status.dart';
 import '../../../models/date_model.dart';
 import '../../../models/time_model.dart';
-import '../../../utils/group_utils.dart';
+import '../../../utils/groups_utils.dart';
 import '../../../utils/time_utils.dart';
 import 'session_creator_mode.dart';
 

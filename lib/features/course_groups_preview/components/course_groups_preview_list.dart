@@ -6,7 +6,7 @@ import '../../../components/on_tap_focus_lose_area.dart';
 import '../../../config/navigation.dart';
 import '../../../domain/entities/group.dart';
 import '../../../features/course_groups_preview/bloc/course_groups_preview_bloc.dart';
-import '../../../utils/group_utils.dart';
+import '../../../utils/groups_utils.dart';
 
 class CourseGroupsPreviewList extends StatelessWidget {
   const CourseGroupsPreviewList({super.key});
@@ -39,7 +39,9 @@ class _GroupsList extends StatelessWidget {
           bloc.state.groupsFromCourseMatchingToSearchValue,
     );
     return Column(
-      children: groupsFromCourseMatchingToSearchValue
+      children: GroupsUtils.setGroupInAlphabeticalOrderByName(
+        groupsFromCourseMatchingToSearchValue,
+      )
           .map(
             (Group group) => _GroupItem(
               group: group,
@@ -66,7 +68,7 @@ class _GroupItem extends StatelessWidget {
       groupName: group.name,
       courseName: courseName,
       amountOfRememberedFlashcards:
-          GroupUtils.getAmountOfRememberedFlashcards(group),
+          GroupsUtils.getAmountOfRememberedFlashcards(group),
       amountOfAllFlashcards: group.flashcards.length,
       onPressed: () {
         Navigation.navigateToGroupPreview(group.id);

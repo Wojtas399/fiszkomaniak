@@ -1,8 +1,8 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fiszkomaniak/domain/entities/flashcard.dart';
 import 'package:fiszkomaniak/domain/entities/group.dart';
 import 'package:fiszkomaniak/domain/entities/session.dart';
-import 'package:fiszkomaniak/utils/group_utils.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:fiszkomaniak/utils/groups_utils.dart';
 
 void main() {
   group('get available flashcards types', () {
@@ -16,7 +16,7 @@ void main() {
       );
 
       final List<FlashcardsType> types =
-          GroupUtils.getAvailableFlashcardsTypes(group);
+          GroupsUtils.getAvailableFlashcardsTypes(group);
 
       expect(types, [FlashcardsType.all]);
     });
@@ -31,7 +31,7 @@ void main() {
       );
 
       final List<FlashcardsType> types =
-          GroupUtils.getAvailableFlashcardsTypes(group);
+          GroupsUtils.getAvailableFlashcardsTypes(group);
 
       expect(types, [FlashcardsType.all]);
     });
@@ -46,7 +46,7 @@ void main() {
       );
 
       final List<FlashcardsType> types =
-          GroupUtils.getAvailableFlashcardsTypes(group);
+          GroupsUtils.getAvailableFlashcardsTypes(group);
 
       expect(types, FlashcardsType.values);
     });

@@ -6,13 +6,16 @@ import 'learning_progress_chart_day.dart';
 class LearningProgressCubit extends Cubit<List<ChartDay>> {
   List<ChartDay>? _allDays;
   late Date _firstDayOfDisplayedWeek;
+  late DateUtils _dateUtils;
 
   LearningProgressCubit({
     required Date initialDateOfWeek,
+    required DateUtils dateUtils,
   }) : super([]) {
     _firstDayOfDisplayedWeek = initialDateOfWeek.subtractDays(
       initialDateOfWeek.weekday - 1,
     );
+    _dateUtils = dateUtils;
   }
 
   List<Date> get onlyDates => state.map((ChartDay day) => day.date).toList();
@@ -33,7 +36,7 @@ class LearningProgressCubit extends Cubit<List<ChartDay>> {
   }
 
   void _setDays() {
-    final List<Date> datesFromDisplayedWeek = DateUtils.getDaysFromWeek(
+    final List<Date> datesFromDisplayedWeek = _dateUtils.getDaysFromWeek(
       _firstDayOfDisplayedWeek,
     );
     List<ChartDay> daysFromDisplayedWeek = List<ChartDay>.generate(

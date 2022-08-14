@@ -3,11 +3,13 @@ import 'package:fiszkomaniak/utils/date_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  final DateUtils utils = DateUtils();
+
   test('compare dates, year of date1 is higher', () {
     final Date date1 = createDate(year: 2022);
     final Date date2 = createDate(year: 2021);
 
-    final int result = DateUtils.compareDates(date1, date2);
+    final int result = utils.compareDates(date1, date2);
 
     expect(result, 1);
   });
@@ -16,7 +18,7 @@ void main() {
     final Date date1 = createDate(year: 2021);
     final Date date2 = createDate(year: 2022);
 
-    final int result = DateUtils.compareDates(date1, date2);
+    final int result = utils.compareDates(date1, date2);
 
     expect(result, -1);
   });
@@ -25,7 +27,7 @@ void main() {
     final Date date1 = createDate(month: 2);
     final Date date2 = createDate(month: 1);
 
-    final int result = DateUtils.compareDates(date1, date2);
+    final int result = utils.compareDates(date1, date2);
 
     expect(result, 1);
   });
@@ -34,7 +36,7 @@ void main() {
     final Date date1 = createDate(month: 1);
     final Date date2 = createDate(month: 2);
 
-    final int result = DateUtils.compareDates(date1, date2);
+    final int result = utils.compareDates(date1, date2);
 
     expect(result, -1);
   });
@@ -43,7 +45,7 @@ void main() {
     final Date date1 = createDate(day: 2);
     final Date date2 = createDate(day: 1);
 
-    final int result = DateUtils.compareDates(date1, date2);
+    final int result = utils.compareDates(date1, date2);
 
     expect(result, 1);
   });
@@ -52,7 +54,7 @@ void main() {
     final Date date1 = createDate(day: 1);
     final Date date2 = createDate(day: 2);
 
-    final int result = DateUtils.compareDates(date1, date2);
+    final int result = utils.compareDates(date1, date2);
 
     expect(result, -1);
   });
@@ -61,7 +63,7 @@ void main() {
     final Date date1 = createDate();
     final Date date2 = createDate();
 
-    final int result = DateUtils.compareDates(date1, date2);
+    final int result = utils.compareDates(date1, date2);
 
     expect(result, 0);
   });
@@ -69,7 +71,7 @@ void main() {
   test('is past date, date as null', () {
     const Date? date = null;
 
-    final bool isPastDate = DateUtils.isPastDate(date);
+    final bool isPastDate = utils.isPastDate(date);
 
     expect(isPastDate, false);
   });
@@ -77,7 +79,7 @@ void main() {
   test('is past date, date from the past', () {
     final Date date = createDate(year: 2022, month: 1, day: 1);
 
-    final bool isPastDate = DateUtils.isPastDate(date);
+    final bool isPastDate = utils.isPastDate(date);
 
     expect(isPastDate, true);
   });
@@ -85,7 +87,7 @@ void main() {
   test('is past date, date from the future', () {
     final Date date = Date.now().addDays(4);
 
-    final bool isPastDate = DateUtils.isPastDate(date);
+    final bool isPastDate = utils.isPastDate(date);
 
     expect(isPastDate, false);
   });
@@ -93,7 +95,7 @@ void main() {
   test('is today date, date as null', () {
     const Date? date = null;
 
-    final bool isTodayDate = DateUtils.isTodayDate(date);
+    final bool isTodayDate = utils.isTodayDate(date);
 
     expect(isTodayDate, false);
   });
@@ -101,7 +103,7 @@ void main() {
   test('is today date, today date', () {
     final Date date = Date.now();
 
-    final bool isTodayDate = DateUtils.isTodayDate(date);
+    final bool isTodayDate = utils.isTodayDate(date);
 
     expect(isTodayDate, true);
   });
@@ -109,7 +111,7 @@ void main() {
   test('is today date, date from the past', () {
     final Date date = createDate(year: 2022, month: 1, day: 1);
 
-    final bool isTodayDate = DateUtils.isTodayDate(date);
+    final bool isTodayDate = utils.isTodayDate(date);
 
     expect(isTodayDate, false);
   });
@@ -117,7 +119,7 @@ void main() {
   test('is today date, date from the future', () {
     final Date date = Date.now().addDays(4);
 
-    final bool isTodayDate = DateUtils.isTodayDate(date);
+    final bool isTodayDate = utils.isTodayDate(date);
 
     expect(isTodayDate, false);
   });
@@ -129,7 +131,7 @@ void main() {
       createDate(day: 8),
     ];
 
-    final List<Date> days = DateUtils.getDaysInARow(fromDate, dates);
+    final List<Date> days = utils.getDaysInARow(fromDate, dates);
 
     expect(days, [dates[0]]);
   });
@@ -141,7 +143,7 @@ void main() {
       createDate(day: 4),
     ];
 
-    final List<Date> days = DateUtils.getDaysInARow(fromDate, dates);
+    final List<Date> days = utils.getDaysInARow(fromDate, dates);
 
     expect(days, []);
   });
@@ -156,7 +158,7 @@ void main() {
       createDate(day: 8),
     ];
 
-    final List<Date> days = DateUtils.getDaysInARow(fromDate, dates);
+    final List<Date> days = utils.getDaysInARow(fromDate, dates);
 
     expect(days, [
       dates[2],
@@ -168,7 +170,7 @@ void main() {
   });
 
   test('get days from week', () {
-    final List<Date> daysFromWeek = DateUtils.getDaysFromWeek(
+    final List<Date> daysFromWeek = utils.getDaysFromWeek(
       createDate(month: 5, day: 14),
     );
 

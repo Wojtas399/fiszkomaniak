@@ -14,6 +14,7 @@ import '../../interfaces/groups_interface.dart';
 import '../../interfaces/sessions_interface.dart';
 import '../../models/date_model.dart';
 import '../../models/time_model.dart';
+import '../../utils/sessions_utils.dart';
 import 'sessions_list_item.dart';
 
 class SessionsListScreen extends StatelessWidget {
@@ -38,8 +39,9 @@ class SessionsListScreen extends StatelessWidget {
 
 class _AllSessionsList extends StatelessWidget {
   final List<Session> allSessions;
+  final SessionsUtils _sessionsUtils = SessionsUtils();
 
-  const _AllSessionsList({required this.allSessions});
+  _AllSessionsList({required this.allSessions});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +55,8 @@ class _AllSessionsList extends StatelessWidget {
             left: 16,
           ),
           child: Column(
-            children: allSessions
+            children: _sessionsUtils
+                .setSessionsFromFirstToLastByStartTime(allSessions)
                 .map(
                   (Session session) => _SessionItem(
                     sessionId: session.id,

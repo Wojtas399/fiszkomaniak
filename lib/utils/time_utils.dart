@@ -3,6 +3,8 @@ import '../models/time_model.dart';
 import 'date_utils.dart';
 
 class TimeUtils {
+  final DateUtils _dateUtils = DateUtils();
+
   int compareTimes(Time time1, Time time2) {
     if (time1.hour == time2.hour) {
       if (time1.minute == time2.minute) {
@@ -16,8 +18,8 @@ class TimeUtils {
   }
 
   bool isPastTime(Time time, Date date) {
-    return DateUtils.isPastDate(date) ||
-        DateUtils.isTodayDate(date) &&
+    return _dateUtils.isPastDate(date) ||
+        _dateUtils.isTodayDate(date) &&
             isTime1EarlierThanTime2(
               time1: time,
               time2: Time.now(),

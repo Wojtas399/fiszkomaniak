@@ -9,6 +9,7 @@ import '../../../domain/entities/course.dart';
 import '../../../domain/entities/group.dart';
 import '../../../domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
 import '../../../interfaces/groups_interface.dart';
+import '../../../utils/courses_utils.dart';
 import '../../course_creator/bloc/course_creator_mode.dart';
 import '../bloc/courses_library_bloc.dart';
 
@@ -17,10 +18,10 @@ class CoursesLibraryCoursesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const BouncingScroll(
+    return BouncingScroll(
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.only(
+          padding: const EdgeInsets.only(
             top: 16,
             right: 16,
             bottom: 32,
@@ -34,18 +35,16 @@ class CoursesLibraryCoursesList extends StatelessWidget {
 }
 
 class _CoursesList extends StatelessWidget {
-  const _CoursesList();
+  final CoursesUtils _coursesUtils = CoursesUtils();
 
   @override
   Widget build(BuildContext context) {
     final List<Course> allCourses = context.select(
       (CoursesLibraryBloc bloc) => bloc.state.allCourses,
     );
-    allCourses.sort(
-      (Course course1, Course course2) => course1.name.compareTo(course2.name),
-    );
     return Column(
-      children: allCourses
+      children: _coursesUtils
+          .setCourseInAlphabeticalOrderByName(allCourses)
           .map((Course course) => _CourseItem(course: course))
           .toList(),
     );

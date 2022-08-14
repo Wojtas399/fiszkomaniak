@@ -5,6 +5,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../models/date_model.dart';
 import '../../providers/theme_provider.dart';
 import '../../ui_extensions/ui_date_extensions.dart';
+import '../../utils/date_utils.dart' as date_utils;
 import '../custom_icon_button.dart';
 import 'learning_progress_chart_day.dart';
 import 'learning_progress_chart_cubit.dart';
@@ -53,6 +54,7 @@ class _CubitProvider extends StatelessWidget {
     return BlocProvider(
       create: (_) => LearningProgressCubit(
         initialDateOfWeek: initialDateOfWeek,
+        dateUtils: date_utils.DateUtils(),
       ),
       child: Builder(
         builder: (BuildContext context) {
