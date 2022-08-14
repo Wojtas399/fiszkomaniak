@@ -53,6 +53,6 @@ flutter:
     - assets/
 
 flutter_icons:
-  android: "logo_short"
+  android: "ic_launcher"
   ios: true
-  image_path: "assets/logo_short.png"
+  image_path: "assets/ic_launcher.png"
