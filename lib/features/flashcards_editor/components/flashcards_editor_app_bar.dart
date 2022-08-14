@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../../components/app_bar_with_close_button.dart';
+import '../../../components/app_bars/app_bar_with_close_button.dart';
 import '../../../components/custom_icon_button.dart';
 import '../../../utils/utils.dart';
 import '../bloc/flashcards_editor_bloc.dart';

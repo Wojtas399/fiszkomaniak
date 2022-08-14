@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../components/app_bar_with_close_button.dart';
+import '../../../components/app_bars/app_bar_with_close_button.dart';
 import 'group_selection_button.dart';
 import 'group_selection_flashcards_info.dart';
 import 'group_selection_select_course_item.dart';

@@ -4,7 +4,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../../../config/navigation.dart';
 import '../../../providers/dialogs_provider.dart';
 import '../../../components/popup_menu.dart';
-import '../../../components/app_bar_with_close_button.dart';
+import '../../../components/app_bars/app_bar_with_close_button.dart';
 import '../../../domain/entities/group.dart';
 import '../../group_creator/bloc/group_creator_mode.dart';
 import '../bloc/group_preview_bloc.dart';
