@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../components/app_bar_with_close_button.dart';
+import '../../../components/app_bars/app_bar_with_close_button.dart';
 import 'settings_appearance_section.dart';
 import 'settings_notifications_section.dart';
 

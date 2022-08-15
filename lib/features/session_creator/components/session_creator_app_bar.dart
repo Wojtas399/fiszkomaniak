@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/app_bar_with_close_button.dart';
+import '../../../components/app_bars/app_bar_with_close_button.dart';
 import '../bloc/session_creator_bloc.dart';
 import '../bloc/session_creator_mode.dart';
 

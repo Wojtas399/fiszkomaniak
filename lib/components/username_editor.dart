@@ -5,7 +5,7 @@ import '../validators/username_validator.dart';
 import 'buttons/button.dart';
 import 'textfields/custom_textfield.dart';
 import 'on_tap_focus_lose_area.dart';
-import 'app_bar_with_close_button.dart';
+import 'app_bars/app_bar_with_close_button.dart';
 
 class UsernameEditor extends StatefulWidget {
   final String currentUsername;

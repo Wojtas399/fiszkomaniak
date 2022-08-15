@@ -24,7 +24,7 @@ class LocalNotificationsService {
 
   Future<void> initializeSettings() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('logo_short');
+        AndroidInitializationSettings('ic_launcher');
     const IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings(
       requestSoundPermission: true,

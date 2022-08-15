@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../config/theme/global_theme.dart';
-import 'custom_icon_button.dart';
+import '../../config/theme/global_theme.dart';
+import '../../providers/ui_elements_provider.dart';
+import '../custom_icon_button.dart';
 
 class AppBarWithSearchTextField extends StatelessWidget
     implements PreferredSizeWidget {
@@ -27,7 +28,7 @@ class AppBarWithSearchTextField extends StatelessWidget
           height: double.infinity,
           child: Stack(
             children: [
-              const _BackButton(),
+              _BackButton(),
               _Title(label: label),
               _SearchTextField(onChanged: (String value) {
                 onChanged!(value.trim());
@@ -41,14 +42,14 @@ class AppBarWithSearchTextField extends StatelessWidget
 }
 
 class _BackButton extends StatelessWidget {
-  const _BackButton({Key? key}) : super(key: key);
+  final UIElementsProvider _uiElementsProvider = UIElementsProvider();
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
       bottom: 0,
       child: CustomIconButton(
-        icon: MdiIcons.arrowLeft,
+        icon: _uiElementsProvider.getAppBarBackIcon(),
         onPressed: () {
           Navigator.pop(context);
         },
@@ -60,7 +61,7 @@ class _BackButton extends StatelessWidget {
 class _Title extends StatelessWidget {
   final String label;
 
-  const _Title({Key? key, required this.label}) : super(key: key);
+  const _Title({required this.label});
 
   @override
   Widget build(BuildContext context) {
