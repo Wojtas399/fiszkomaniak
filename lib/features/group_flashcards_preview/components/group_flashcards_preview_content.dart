@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../../components/bouncing_scroll.dart';
+
 import '../../../components/empty_content_info.dart';
 import '../bloc/group_flashcards_preview_bloc.dart';
-import 'group_flashcards_preview_list.dart';
 import 'group_flashcards_preview_app_bar.dart';
+import 'group_flashcards_preview_list.dart';
 
 class GroupFlashcardsPreviewContent extends StatelessWidget {
   const GroupFlashcardsPreviewContent({super.key});
@@ -28,25 +28,11 @@ class _Body extends StatelessWidget {
       (GroupFlashcardsPreviewBloc bloc) => bloc.state.doesGroupHaveFlashcards,
     );
     if (doesGroupHaveFlashcards) {
-      return const _FlashcardsList();
+      return const SafeArea(
+        child: GroupFlashcardsPreviewList(),
+      );
     }
     return const _NoFlashcardsInfo();
-  }
-}
-
-class _FlashcardsList extends StatelessWidget {
-  const _FlashcardsList();
-
-  @override
-  Widget build(BuildContext context) {
-    return const BouncingScroll(
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(24.0),
-          child: GroupFlashcardsPreviewList(),
-        ),
-      ),
-    );
   }
 }
 
