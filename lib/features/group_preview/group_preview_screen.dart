@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../config/navigation.dart';
-import '../../providers/dialogs_provider.dart';
 import '../../domain/use_cases/courses/get_course_use_case.dart';
-import '../../domain/use_cases/groups/get_group_use_case.dart';
 import '../../domain/use_cases/groups/delete_group_use_case.dart';
+import '../../domain/use_cases/groups/get_group_use_case.dart';
 import '../../features/home/home.dart';
 import '../../interfaces/courses_interface.dart';
 import '../../interfaces/groups_interface.dart';
 import '../../models/bloc_status.dart';
+import '../../providers/dialogs_provider.dart';
 import 'bloc/group_preview_bloc.dart';
 import 'components/group_preview_content.dart';
 
@@ -83,7 +84,7 @@ class _GroupPreviewBlocListener extends StatelessWidget {
   void _manageInfo(GroupPreviewInfo info, BuildContext context) {
     switch (info) {
       case GroupPreviewInfo.groupHasBeenDeleted:
-        Navigation.backHome();
+        Navigation.moveBack();
         context.read<HomePageController>().moveToPage(0);
         DialogsProvider.showSnackbarWithMessage('Pomyślnie usunięto grupę.');
         break;
