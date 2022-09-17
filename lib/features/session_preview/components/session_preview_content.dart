@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/bouncing_scroll.dart';
+
 import '../../../components/buttons/button.dart';
 import '../../../config/navigation.dart';
 import '../../learning_process/learning_process_arguments.dart';
@@ -22,7 +22,7 @@ class SessionPreviewContent extends StatelessWidget {
           height: double.infinity,
           child: Stack(
             children: [
-              BouncingScroll(
+              SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.only(
                     left: 24.0,
