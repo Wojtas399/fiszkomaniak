@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../components/bouncing_scroll.dart';
+
 import '../../components/empty_content_info.dart';
 import '../../components/group_item.dart';
+import '../../components/list_view_fade_animated_item.dart';
 import '../../config/navigation.dart';
 import '../../domain/entities/course.dart';
 import '../../domain/entities/group.dart';
@@ -27,19 +28,17 @@ class _StudyContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: StreamBuilder(
-        stream: GetAllGroupsUseCase(
-          groupsInterface: context.read<GroupsInterface>(),
-        ).execute(),
-        builder: (BuildContext context, AsyncSnapshot<List<Group>> snapshot) {
-          final List<Group>? allGroups = snapshot.data;
-          if (allGroups != null && allGroups.isNotEmpty) {
-            return _GroupsList(allGroups: allGroups);
-          }
-          return const _NoGroupsInfo();
-        },
-      ),
+    return StreamBuilder(
+      stream: GetAllGroupsUseCase(
+        groupsInterface: context.read<GroupsInterface>(),
+      ).execute(),
+      builder: (BuildContext context, AsyncSnapshot<List<Group>> snapshot) {
+        final List<Group>? allGroups = snapshot.data;
+        if (allGroups != null && allGroups.isNotEmpty) {
+          return _GroupsList(allGroups: allGroups);
+        }
+        return const _NoGroupsInfo();
+      },
     );
   }
 }
@@ -51,22 +50,26 @@ class _GroupsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BouncingScroll(
-      child: Padding(
-        padding: const EdgeInsets.only(
-          top: 16,
-          right: 16,
-          bottom: 32,
-          left: 16,
-        ),
-        child: Column(
-          children: GroupsUtils.setGroupInAlphabeticalOrderByName(allGroups)
-              .map(
-                (Group group) => _GroupItem(group: group),
-              )
-              .toList(),
-        ),
+    final List<Group> allGroups = GroupsUtils.setGroupInAlphabeticalOrderByName(
+      this.allGroups,
+    );
+
+    return ListView.builder(
+      cacheExtent: 0,
+      padding: const EdgeInsets.only(
+        top: 16,
+        right: 16,
+        bottom: 100,
+        left: 16,
       ),
+      itemCount: allGroups.length,
+      itemBuilder: (_, int index) {
+        return ListViewFadeAnimatedItem(
+          child: _GroupItem(
+            group: allGroups[index],
+          ),
+        );
+      },
     );
   }
 }

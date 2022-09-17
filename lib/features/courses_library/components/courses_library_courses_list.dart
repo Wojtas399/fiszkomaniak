@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/bouncing_scroll.dart';
+
 import '../../../components/course_item/course_item.dart';
 import '../../../components/course_item/course_item_popup_menu.dart';
+import '../../../components/list_view_fade_animated_item.dart';
 import '../../../config/navigation.dart';
-import '../../../providers/dialogs_provider.dart';
 import '../../../domain/entities/course.dart';
 import '../../../domain/entities/group.dart';
 import '../../../domain/use_cases/groups/get_groups_by_course_id_use_case.dart';
 import '../../../interfaces/groups_interface.dart';
-import '../../../utils/courses_utils.dart';
+import '../../../providers/dialogs_provider.dart';
 import '../../course_creator/bloc/course_creator_mode.dart';
 import '../bloc/courses_library_bloc.dart';
 
@@ -18,35 +18,26 @@ class CoursesLibraryCoursesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BouncingScroll(
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            top: 16,
-            right: 16,
-            bottom: 32,
-            left: 16,
-          ),
-          child: _CoursesList(),
-        ),
-      ),
-    );
-  }
-}
-
-class _CoursesList extends StatelessWidget {
-  final CoursesUtils _coursesUtils = CoursesUtils();
-
-  @override
-  Widget build(BuildContext context) {
     final List<Course> allCourses = context.select(
       (CoursesLibraryBloc bloc) => bloc.state.allCourses,
     );
-    return Column(
-      children: _coursesUtils
-          .setCourseInAlphabeticalOrderByName(allCourses)
-          .map((Course course) => _CourseItem(course: course))
-          .toList(),
+
+    return ListView.builder(
+      padding: const EdgeInsets.only(
+        top: 16,
+        right: 16,
+        bottom: 100,
+        left: 16,
+      ),
+      cacheExtent: 0,
+      itemCount: allCourses.length,
+      itemBuilder: (_, int index) {
+        return ListViewFadeAnimatedItem(
+          child: _CourseItem(
+            course: allCourses[index],
+          ),
+        );
+      },
     );
   }
 }

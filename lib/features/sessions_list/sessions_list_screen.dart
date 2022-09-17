@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../../components/bouncing_scroll.dart';
+
 import '../../components/empty_content_info.dart';
+import '../../components/list_view_fade_animated_item.dart';
 import '../../domain/entities/course.dart';
 import '../../domain/entities/group.dart';
 import '../../domain/entities/session.dart';
@@ -45,31 +46,31 @@ class _AllSessionsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BouncingScroll(
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            top: 16,
-            right: 16,
-            bottom: 32,
-            left: 16,
-          ),
-          child: Column(
-            children: _sessionsUtils
-                .setSessionsFromFirstToLastByStartTime(allSessions)
-                .map(
-                  (Session session) => _SessionItem(
-                    sessionId: session.id,
-                    date: session.date,
-                    startTime: session.startTime,
-                    duration: session.duration,
-                    groupId: session.groupId,
-                  ),
-                )
-                .toList(),
-          ),
-        ),
+    final List<Session> allSessions =
+        _sessionsUtils.setSessionsFromFirstToLastByStartTime(this.allSessions);
+
+    return ListView.builder(
+      padding: const EdgeInsets.only(
+        top: 16,
+        right: 16,
+        bottom: 100,
+        left: 16,
       ),
+      cacheExtent: 0,
+      itemCount: allSessions.length,
+      itemBuilder: (_, int index) {
+        final Session session = allSessions[index];
+
+        return ListViewFadeAnimatedItem(
+          child: _SessionItem(
+            sessionId: session.id,
+            date: session.date,
+            startTime: session.startTime,
+            duration: session.duration,
+            groupId: session.groupId,
+          ),
+        );
+      },
     );
   }
 }
