@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+
 import '../../models/date_model.dart';
-import '../../providers/theme_provider.dart';
 import '../../ui_extensions/ui_date_extensions.dart';
 import '../../utils/date_utils.dart' as date_utils;
 import '../custom_icon_button.dart';
-import 'learning_progress_chart_day.dart';
 import 'learning_progress_chart_cubit.dart';
+import 'learning_progress_chart_day.dart';
 
 class LearningProgressChart extends StatelessWidget {
   final List<ChartDay>? chartDays;
@@ -120,15 +120,12 @@ class _Chart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = context.select(
-      (ThemeProvider provider) => provider.isDarkMode,
-    );
-    final Color linesColor = isDarkMode
-        ? Colors.white.withOpacity(0.4)
-        : Colors.black.withOpacity(0.4);
     final List<ChartDay> days = context.select(
       (LearningProgressCubit cubit) => cubit.state,
     );
+    final Color? linesColor =
+        Theme.of(context).textTheme.bodyText2?.color?.withOpacity(0.4);
+
     return SfCartesianChart(
       primaryXAxis: CategoryAxis(
         majorGridLines: const MajorGridLines(width: 0),
