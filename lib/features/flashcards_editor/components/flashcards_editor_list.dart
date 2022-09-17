@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../components/list_view_fade_animated_item.dart';
 import '../../../providers/dialogs_provider.dart';
 import '../../../utils/utils.dart';
 import '../bloc/flashcards_editor_bloc.dart';
@@ -14,52 +16,41 @@ class FlashcardsEditorList extends StatelessWidget {
       builder: (BuildContext context, FlashcardsEditorState state) {
         final String nameForQuestions = state.group?.nameForQuestions ?? '';
         final String nameForAnswers = state.group?.nameForAnswers ?? '';
-        return Column(
-          children: state.editorFlashcards
-              .asMap()
-              .entries
-              .map(
-                (entry) => _buildFlashcard(
-                  entry.key,
-                  entry.value,
-                  nameForQuestions,
-                  nameForAnswers,
-                  state.isEditorFlashcardMarkedAsIncomplete(entry.value),
+
+        return ListView.builder(
+          cacheExtent: 0,
+          padding: const EdgeInsets.all(24),
+          itemCount: state.editorFlashcards.length,
+          itemBuilder: (_, int index) {
+            final EditorFlashcard editorFlashcard =
+                state.editorFlashcards[index];
+
+            return ListViewFadeAnimatedItem(
+              child: FlashcardsEditorItem(
+                key: ValueKey(editorFlashcard.key),
+                questionInitialValue: editorFlashcard.question,
+                answerInitialValue: editorFlashcard.answer,
+                nameForQuestion: nameForQuestions,
+                nameForAnswer: nameForAnswers,
+                displayRedBorder: state.isEditorFlashcardMarkedAsIncomplete(
+                  editorFlashcard,
+                ),
+                onQuestionChanged: (String value) => _onQuestionChanged(
+                  index,
+                  value,
                   context,
                 ),
-              )
-              .toList(),
+                onAnswerChanged: (String value) => _onAnswerChanged(
+                  index,
+                  value,
+                  context,
+                ),
+                onTapDeleteButton: () => _onDelete(index, context),
+              ),
+            );
+          },
         );
       },
-    );
-  }
-
-  Widget _buildFlashcard(
-    int index,
-    EditorFlashcard editorFlashcard,
-    String nameForQuestions,
-    String nameForAnswers,
-    bool isIncomplete,
-    BuildContext context,
-  ) {
-    return FlashcardsEditorItem(
-      key: ValueKey(editorFlashcard.key),
-      questionInitialValue: editorFlashcard.question,
-      answerInitialValue: editorFlashcard.answer,
-      nameForQuestion: nameForQuestions,
-      nameForAnswer: nameForAnswers,
-      displayRedBorder: isIncomplete,
-      onQuestionChanged: (String value) => _onQuestionChanged(
-        index,
-        value,
-        context,
-      ),
-      onAnswerChanged: (String value) => _onAnswerChanged(
-        index,
-        value,
-        context,
-      ),
-      onTapDeleteButton: () => _onDelete(index, context),
     );
   }
 
