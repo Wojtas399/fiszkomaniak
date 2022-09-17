@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../components/list_view_fade_animated_item.dart';
 import '../../../config/navigation.dart';
 import '../../../domain/entities/flashcard.dart';
 import '../bloc/group_flashcards_preview_bloc.dart';
@@ -16,21 +18,18 @@ class GroupFlashcardsPreviewList extends StatelessWidget {
     final List<Flashcard> flashcards = context.select(
       (GroupFlashcardsPreviewBloc bloc) => bloc.state.matchingFlashcards,
     );
-    return Column(
-      children: flashcards
-          .map((flashcard) => _buildFlashcardItem(flashcard, groupId, context))
-          .toList(),
-    );
-  }
-
-  Widget _buildFlashcardItem(
-    Flashcard flashcard,
-    String groupId,
-    BuildContext context,
-  ) {
-    return GroupFlashcardsPreviewItem(
-      flashcard: flashcard,
-      onTap: () => _showFlashcardDetails(groupId, flashcard.index, context),
+    return ListView.builder(
+      cacheExtent: 0,
+      padding: const EdgeInsets.all(24),
+      itemCount: flashcards.length,
+      itemBuilder: (_, int index) {
+        return ListViewFadeAnimatedItem(
+          child: GroupFlashcardsPreviewItem(
+            flashcard: flashcards[index],
+            onTap: () => _showFlashcardDetails(groupId, index, context),
+          ),
+        );
+      },
     );
   }
 

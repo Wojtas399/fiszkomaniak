@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../components/group_item.dart';
-import '../../../components/bouncing_scroll.dart';
+import '../../../components/list_view_fade_animated_item.dart';
 import '../../../components/on_tap_focus_lose_area.dart';
 import '../../../config/navigation.dart';
 import '../../../domain/entities/group.dart';
@@ -14,13 +15,8 @@ class CourseGroupsPreviewList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const OnTapFocusLoseArea(
-      child: BouncingScroll(
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: _GroupsList(),
-          ),
-        ),
+      child: SafeArea(
+        child: _GroupsList(),
       ),
     );
   }
@@ -38,17 +34,22 @@ class _GroupsList extends StatelessWidget {
       (CourseGroupsPreviewBloc bloc) =>
           bloc.state.groupsFromCourseMatchingToSearchValue,
     );
-    return Column(
-      children: GroupsUtils.setGroupInAlphabeticalOrderByName(
-        groupsFromCourseMatchingToSearchValue,
-      )
-          .map(
-            (Group group) => _GroupItem(
-              group: group,
-              courseName: courseName,
-            ),
-          )
-          .toList(),
+    final List<Group> groups = GroupsUtils.setGroupInAlphabeticalOrderByName(
+      groupsFromCourseMatchingToSearchValue,
+    );
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      cacheExtent: 0,
+      itemCount: groups.length,
+      itemBuilder: (_, int index) {
+        return ListViewFadeAnimatedItem(
+          child: _GroupItem(
+            group: groups[index],
+            courseName: courseName,
+          ),
+        );
+      },
     );
   }
 }

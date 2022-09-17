@@ -43,7 +43,7 @@ class _CommonStyles {
 
   static final elevatedButtonThemeData = ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all<Color>(AppColors.primary),
+      foregroundColor: MaterialStateProperty.all<Color>(AppColors.primary),
       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       ),

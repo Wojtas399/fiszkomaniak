@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../domain/entities/session.dart';
-import '../../../providers/theme_provider.dart';
 import '../../../ui_extensions/flashcards_type_converters.dart';
 import '../bloc/learning_process_bloc.dart';
 
@@ -62,13 +62,12 @@ class _FlashcardsType extends StatelessWidget {
     final FlashcardsType? type = context.select(
       (LearningProcessBloc bloc) => bloc.state.flashcardsType,
     );
-    final ThemeProvider themeProvider = context.read<ThemeProvider>();
-    final Color color = themeProvider.isDarkMode
-        ? Colors.white.withOpacity(0.6)
-        : Colors.black.withOpacity(0.6);
+
     return Text(
       convertFlashcardsTypeToViewFormat(type),
-      style: TextStyle(color: color),
+      style: TextStyle(
+        color: Theme.of(context).textTheme.bodyText2?.color?.withOpacity(0.5),
+      ),
     );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../components/flashcards_stack/bloc/flashcards_stack_bloc.dart';
 import '../../../components/flashcards_stack/flashcards_stack.dart';
-import '../../../providers/theme_provider.dart';
 import '../bloc/learning_process_bloc.dart';
 
 class LearningProcessFlashcards extends StatelessWidget {
@@ -79,10 +79,7 @@ class _SideName extends StatelessWidget {
     final FlashcardsStackStatus flashcardsStackStatus = context.select(
       (FlashcardsStackBloc bloc) => bloc.state.status,
     );
-    final ThemeProvider themeProvider = context.read<ThemeProvider>();
-    final Color color = themeProvider.isDarkMode
-        ? Colors.white.withOpacity(0.6)
-        : Colors.black.withOpacity(0.6);
+
     return Text(
       '(${_getQuestionOrAnswerName(
         flashcardsStackStatus,
@@ -92,7 +89,7 @@ class _SideName extends StatelessWidget {
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-        color: color,
+        color: Theme.of(context).textTheme.bodyText2?.color?.withOpacity(0.5),
       ),
     );
   }

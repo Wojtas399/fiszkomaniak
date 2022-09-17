@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/bouncing_scroll.dart';
+
 import '../../../components/on_tap_focus_lose_area.dart';
 import '../../../domain/entities/flashcard.dart';
 import '../bloc/flashcard_preview_bloc.dart';
@@ -14,7 +14,7 @@ class FlashcardPreviewContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: FlashcardPreviewAppBar(),
-      body: BouncingScroll(
+      body: SingleChildScrollView(
         child: SafeArea(
           child: OnTapFocusLoseArea(
             child: Padding(

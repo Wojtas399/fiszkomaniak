@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../components/bouncing_scroll.dart';
+
 import '../../../components/buttons/button.dart';
 import '../bloc/session_creator_bloc.dart';
 import '../bloc/session_creator_mode.dart';
@@ -15,7 +15,7 @@ class SessionCreatorContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const SessionCreatorAppBar(),
-      body: BouncingScroll(
+      body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
