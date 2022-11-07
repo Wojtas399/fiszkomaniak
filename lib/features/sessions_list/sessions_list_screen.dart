@@ -121,14 +121,14 @@ class _SessionItem extends StatelessWidget {
           stream: GetCourseUseCase(
             coursesInterface: context.read<CoursesInterface>(),
           ).execute(courseId: group.courseId),
-          builder: (_, AsyncSnapshot<Course> course) {
+          builder: (_, AsyncSnapshot<Course> courseSnapshot) {
             return SessionsListItem(
               sessionId: sessionId,
               date: date,
               startTime: startTime,
               duration: duration,
               groupName: group.name,
-              courseName: snapshot.data?.name ?? '',
+              courseName: courseSnapshot.data?.name ?? '',
             );
           },
         );

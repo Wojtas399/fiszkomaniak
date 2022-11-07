@@ -12,9 +12,7 @@ class FlashcardsEditorContent extends StatelessWidget {
     return const Scaffold(
       appBar: FlashcardsEditorAppBar(),
       body: OnTapFocusLoseArea(
-        child: SafeArea(
-          child: FlashcardsEditorList(),
-        ),
+        child: FlashcardsEditorList(),
       ),
     );
   }

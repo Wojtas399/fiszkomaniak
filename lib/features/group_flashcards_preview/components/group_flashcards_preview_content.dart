@@ -28,9 +28,7 @@ class _Body extends StatelessWidget {
       (GroupFlashcardsPreviewBloc bloc) => bloc.state.doesGroupHaveFlashcards,
     );
     if (doesGroupHaveFlashcards) {
-      return const SafeArea(
-        child: GroupFlashcardsPreviewList(),
-      );
+      return const GroupFlashcardsPreviewList();
     }
     return const _NoFlashcardsInfo();
   }
